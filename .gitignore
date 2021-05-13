@@ -1,0 +1,29 @@
+# IDE
+.idea
+/.vscode/
+
+# Gradle
+.gradle
+/build/
+/out/
+/target/
+
+# VSCode
+
+/bin/
+.project
+
+# Ignore Gradle GUI config
+gradle-app.setting
+
+# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
+!gradle-wrapper.jar
+
+# Cache of project
+.gradletasknamecache
+
+# Local Test Files
+src/main/resources/testing
+src/main/resources/partner_models
+
+.env
