@@ -1,0 +1,9 @@
+{
+  "jobIdentifier": "<uuid>",
+  "results": {
+    "results.json": {
+      "result": "zero",
+      "confidence": "1.0"
+    }
+  }
+}

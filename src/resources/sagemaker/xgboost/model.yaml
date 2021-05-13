@@ -1,0 +1,109 @@
+specification: "0.3"
+type: "file"
+source: "Custom Model"
+version: "0.0.1"
+name: "XG Boost"
+author: "AWS Sagamaker"
+
+description:
+  summary: "The XGBoost (eXtreme Gradient Boosting) is a popular and efficient open-source implementation of the gradient boosted trees algorithm."
+  details: "Gradient boosting is a supervised learning algorithm that attempts to accurately predict a target variable by combining an ensemble of
+            estimates from a set of simpler and weaker models. The XGBoost algorithm performs well in machine learning competitions because of its
+            robust handling of a variety of data types, relationships, distributions, and the variety of hyperparameters that you can fine-tune.
+            You can use XGBoost for regression, classification (binary and multiclass), and ranking problems."
+
+  technical: |-
+    #OVERVIEW:
+    You can use the new release of the XGBoost algorithm either as a Amazon SageMaker built-in algorithm or as a framework to run training scripts in
+    your local environments. This implementation has a smaller memory footprint, better logging, improved hyperparameter validation, and an expanded
+    set of metrics than the original versions. It provides an XGBoost estimator that executes a training script in a managed XGBoost environment.
+    The current release of SageMaker XGBoost is based on the original XGBoost versions 0.90, 1.0, and 1.2.
+
+    #TRAINING:
+    Gradient boosting operates on tabular data, with the rows representing observations, one column representing the target variable or label, and the
+    remaining columns representing features.
+
+    The SageMaker implementation of XGBoost supports CSV and libsvm formats for training and inference.
+
+    For CSV training, the algorithm assumes that the target variable is in the first column and that the CSV does not have a header record.
+
+    For libsvm training, the algorithm assumes that the label is in the first column. Subsequent columns contain the zero-based index value pairs for
+    features. So each row has the format: <label> <index0>:<value0> <index1>:<value1> ... Inference requests for libsvm might not have labels in the
+    libsvm format.
+
+    #VALIDATION:
+    The XGBoost algorithm computes the following metrics to use for model validation. When tuning the model, choose one of these metrics to evaluate the model.
+    For full list of valid eval_metric values, refer to XGBoost Learning Task Parameters.
+
+    #INPUT SPECIFICATION:
+    The input(s) to this model must adhere to the following specifications:
+    | Filename      | Maximum Size | Accepted Format(s) |
+    | --------      | ------------ | ------------------ |
+    | image         | 1K           | jpg, png, tif      |
+
+    #OUTPUT DETAILS:
+    This model will output the following:
+    | Filename      | Maximum Size | Format |
+    | --------      | ------------ | ------ |
+    | results.json  | 128 B        | .json  |
+
+  performance: "This algorithm reports a wide range of metrics to maximize like, accuracy, auc, f1 and map and also objectives to minimize like error, logloss,
+                mae, map, merror, mlogloss, mse and rmse"
+
+releaseNotes: "XGBoost 1.1 is not supported on SageMaker because XGBoost 1.1 has a broken capability to run prediction when the test input has fewer features than the training data in LIBSVM
+               inputs. This capability has been restored in XGBoost 1.2. Consider using SageMaker XGBoost 1.2-1."
+
+tags:
+- "classification"
+- "regression"
+- "random forests"
+- "trees"
+filters:
+- type: "Task"
+  label: "Boosting"
+- type: "Input Type"
+  label: "Image"
+- type: "Subject"
+  label: "Mostly tabular data"
+
+metrics:
+- label: "F1 Score"
+  value: 0.71
+  type: "percentage"
+  description: "It's called gradient boosting because it uses a gradient descent algorithm to minimize the loss when adding new models."
+
+inputs:
+  image:
+    acceptedMediaTypes:
+      - "image/jpeg"
+      - "image/png"
+      - "image/tiff"
+    maxSize: 1K
+    description: "Any jpg or png image for classification"
+
+outputs:
+  results.json:
+    mediaType: "application/json"
+    maxSize: 128
+    description: "Is zero or not the digit in the image"
+
+resources:
+  memory:
+    size: 512M
+  cpu:
+    count: 1
+  gpu:
+    count: 0
+
+timeout:
+  status: 60s
+  run: 60s
+
+internal:
+  recommended: false
+  experimental: false
+  available: true
+  active: true
+  features:
+    explainable: false
+    adversarialDefense: false

@@ -1,0 +1,14 @@
+# this list is the minimal requirements for using flask_psc_model
+Click
+Flask>=1.1
+gunicorn>=19.8
+humanfriendly
+python-box
+PyYAML
+werkzeug>=1.0.0
+
+# you may add your own base requirements here and use a tool like
+# `pip-compile` from the `pip-tools` package to generate a pinned
+# requirements.txt file
+#
+# or you can manage your dependencies however you prefer

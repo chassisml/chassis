@@ -1,0 +1,1 @@
+unable to read image, must be RGB JPEG or PNG image

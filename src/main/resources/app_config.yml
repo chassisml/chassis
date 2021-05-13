@@ -1,0 +1,24 @@
+version: 0.1
+released: 2021-02-10
+
+# Application general parameters
+resourceDir: src/resources
+workingDir: src/tmp
+
+# Importer specific paths
+importerResDir: asset_bundle
+importerRootDir: all_models
+importerModelDir: model_one
+modelScriptDir: model_lib
+
+# Image build values
+kanikoWaitTime: 2
+kanikoTimeout: 60
+
+# File name values
+modelConfigName: config.yaml
+modelFileName: model.yaml
+
+# User specific parameters
+paramsDirName: weights
+otherResDirName: resources

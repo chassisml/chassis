@@ -1,0 +1,78 @@
+specification: '0.3'
+type: "file"
+source: "bah"
+version: "1.0.0"
+name: "MLFlow Model"
+author: "Modzy"
+description: 
+  summary: "Placeholder - to fill in later"
+  details: "Placeholder - to fill in later"
+  technical: |-
+    #OVERVIEW:
+
+    #TRAINING:
+
+    #VALIDATION:
+
+    #INPUT SPECIFICATION:
+    The input(s) to this model must adhere to the following specifications:
+    | Filename      | Maximum Size | Accepted Format(s) |
+    | --------      | ------------ | ------------------ |
+
+    Additional information describing input file(s) can go in a short paragraph here if necessary. Feel free to add an additional markdown table if many values need to be listed.
+
+    #OUTPUT DETAILS:
+    This model will output the following:
+    | Filename      | Maximum Size | Format |
+    | --------      | ------------ | ------ |
+
+    Additional information describing the output file(s) can go in a short paragraph here. Feel free to add an additional markdown table if many values need to be listed. If you want to use an additional table, please use the following headerless format:
+    | | | | |
+    |-|-|-|-|
+    | Entry 1 | Entry 2 | Entry 3 | Entry 4 |
+    | Entry 5 | Entry 6 | Entry 7 | Entry 8 |
+releaseNotes: "1.0.0 - Initial Release"
+tags: []
+filters:
+- type: "Subject"
+  label: "Placeholder"
+- type: "Input Type"
+  label: "Placeholder"
+- type: "Input Type"
+  label: "Placeholder"
+metrics: []
+# - label:
+#   type:
+#   value:
+#   description:
+inputs:
+  input.csv:
+    acceptedMediaTypes: "application/csv"
+    maxSize: 100000000
+    description: "Tabular data in the same format as the training data. The structure of the input data will be enforced by the required signature that accompanies each model."
+
+outputs:
+  results.json:
+    mediaType: "application/json"
+    maxSize: 100000000
+    description: "JSON file that contains the target column that mimics the target column used in training."
+
+resources:
+  memory:
+    size: "2Gi"
+  cpu:
+    count: 1
+  gpu:
+    count: 0
+timeout:
+  status: 60
+  run: 600
+
+internal:
+  recommended: false
+  experimental: false
+  available: true
+  active: true
+  features:
+    explainable: false
+    adversarialDefense: false

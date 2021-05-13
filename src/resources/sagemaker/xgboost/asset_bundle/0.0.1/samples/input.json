@@ -1,0 +1,20 @@
+{
+  "model": {
+    "identifier": "",
+    "version": "3.0"
+  },
+  "input": {
+    "type": "aws-s3",
+    "accessKeyID": "<accessKeyID>",
+    "secretAccessKey": "<secretAccessKey>",
+    "region": "<region>",
+    "sources": {
+      "0001": {
+        "image": {
+          "bucket": "<bucket>",
+          "key": "/qa/fm/data/example/0001/image"
+        }
+      }
+    }
+  }
+}
