@@ -80,4 +80,4 @@ In order to generate the container for model-converter implementation the steps 
 
 3. `run-converter`: Kicks off the complete execution of **model-converter** pipeline.
 #### Example request
-`http://localhost:8080/run-converter?aws_key_id=AKIAUX272I2XL6D3MX7N&aws_access_key=M3Yq1VGhOaySVp8YjXRCZcOXl5zj5kNvgOVk5Oh4&s3Bucket=sagemaker-testing-ds&weightsPath=XGBoost%2Fweights.tar.gz&resourcesPath=XGBoost%2Fresources.tar.gz&platform=sagemaker&model_type=xgboost`
+`http://localhost:8080/run-converter?aws_key_id=<xxxxx>&aws_access_key=<xxxxx>&s3Bucket=sagemaker-testing-ds&weightsPath=XGBoost%2Fweights.tar.gz&resourcesPath=XGBoost%2Fresources.tar.gz&platform=sagemaker&model_type=xgboost`
