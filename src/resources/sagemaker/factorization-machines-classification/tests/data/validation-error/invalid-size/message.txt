@@ -1,1 +1,0 @@
-The size of the incoming array is out of the allowed limits

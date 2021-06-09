@@ -1,0 +1,3 @@
+requests
+kubernetes==12.0.1
+loguru

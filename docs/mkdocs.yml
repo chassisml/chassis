@@ -1,0 +1,10 @@
+site_name: Containerizer
+nav:
+    - index.md
+    - Tutorials:
+        - tutorials/devops-deploy.md
+        - tutorials/ds-connect.md
+        - tutorials/ds-deploy.md
+        - tutorials/devops-cli.md
+    - About: about.md
+theme: material

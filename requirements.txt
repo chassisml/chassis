@@ -1,0 +1,8 @@
+flask
+requests
+kubernetes==12.0.1
+loguru
+pytest
+pylint
+flake8
+mkdocs
