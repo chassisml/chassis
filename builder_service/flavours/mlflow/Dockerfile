@@ -28,8 +28,7 @@ ENV MODEL_CLASS ${MODEL_CLASS}
 
 ENV MODEL_NAME ${MODEL_NAME}
 ENV MODEL_DIR /model/${MODEL_NAME}
-ENV MODEL_PATH ${MODEL_DIR}/${MODEL_FILENAME}
 
 ENTRYPOINT ["mlflow"]
 
-CMD ["models", "serve", "-m", "model-converter_mlflow_pyfunc"]
+CMD ["models", "serve", "-m", "$MODEL_DIR"]
