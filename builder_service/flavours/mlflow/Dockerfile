@@ -22,13 +22,17 @@ RUN pip install mlflow
 
 COPY flavours/${MODEL_CLASS}/${MODEL_DIR} /model/${MODEL_NAME}
 
-# COPY flavours/${MODEL_CLASS}/entrypoint.sh /
+COPY flavours/${MODEL_CLASS}/entrypoint.sh /
 
 ENV MODEL_CLASS ${MODEL_CLASS}
 
 ENV MODEL_NAME ${MODEL_NAME}
 ENV MODEL_DIR /model/${MODEL_NAME}
 
-ENTRYPOINT ["mlflow"]
+ENV CONDA_ENV env
 
-CMD ["models", "serve", "-m", "$MODEL_DIR"]
+RUN conda env create --name $CONDA_ENV --file $MODEL_DIR/conda.yaml
+
+ENTRYPOINT ["/entrypoint.sh"]
+
+CMD mlflow models serve --model-uri $MODEL_DIR --no-conda
