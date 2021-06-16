@@ -1,0 +1,167 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the action will run.
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ main, mlflow ]
+    # tags: v*
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          # Semantic version range syntax or exact version of a Python version
+          python-version: 3.8
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Lint with flake8
+        run: |
+          # stop the build if there are Python syntax errors or undefined names
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          # Semantic version range syntax or exact version of a Python version
+          python-version: 3.8
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Test with pytest
+        run: |
+          pytest
+
+  docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Deploy docs
+        uses: mhausenblas/mkdocs-deploy-gh-pages@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CONFIG_FILE: docs/mkdocs.yml
+
+  helm:
+    # This is required since mkdocs wipes the
+    # branch so it could delete all helm stuff.
+    needs: [docs]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Prepare helm chart
+        run: |
+          helm template --debug charts/*
+
+      - name: Publish Helm charts
+        uses: stefanprodan/helm-gh-pages@master
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          charts_dir: charts
+
+  build-proxy:
+    # if: false
+    needs: [lint, tests]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build with xgo
+        uses: crazy-max/ghaction-xgo@v1
+        with:
+          xgo_version: v0.6.5
+          go_version: 1.16.0
+          dest: out
+          pkg: cmd/proxy/main.go
+          prefix: proxy
+          # targets: windows/386,windows/amd64,linux/386,linux/amd64,darwin/386,darwin/amd64
+          targets: linux/amd64
+          v: true
+          x: false
+          race: false
+          ldflags: -s -w
+          buildmode: default
+          working_dir: ./builder_service/proxy
+
+      - name: Upload proxy binary
+        uses: actions/upload-artifact@v2
+        with:
+          name: proxy-binaries
+          path: ./builder_service/proxy/out
+
+  docker-builder-service:
+    needs: [build-proxy]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Copy flavours to volume directory
+        run: |
+          mkdir -p ./builder_service/service/volume/proxy/out
+          cp -r ./builder_service/flavours ./builder_service/service/volume
+          cp -r ./builder_service/proxy/scripts ./builder_service/service/volume/proxy
+
+      - name: Download proxy binaries to volume directory
+        uses: actions/download-artifact@v2
+        with:
+          name: proxy-binaries
+          path: ./builder_service/service/volume/proxy/out
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push service
+        uses: docker/build-push-action@v2
+        with:
+          context: ./builder_service/service
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}-service:${{ github.sha }}
+            ghcr.io/${{ github.repository }}-service:latest
+
+      - name: Build and push builder
+        uses: docker/build-push-action@v2
+        with:
+          context: ./builder_service/builder
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}-builder:${{ github.sha }}
+            ghcr.io/${{ github.repository }}-builder:latest
