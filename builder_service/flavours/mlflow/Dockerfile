@@ -22,7 +22,7 @@ RUN pip install mlflow
 
 COPY flavours/${MODEL_CLASS}/${MODEL_DIR} /model/${MODEL_NAME}
 
-COPY flavours/${MODEL_CLASS}/entrypoint.sh /
+# COPY flavours/${MODEL_CLASS}/entrypoint.sh /
 
 ENV MODEL_CLASS ${MODEL_CLASS}
 
