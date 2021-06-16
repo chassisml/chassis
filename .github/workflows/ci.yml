@@ -41,6 +41,7 @@ jobs:
 
   tests:
     runs-on: ubuntu-latest
+    if: false
 
     steps:
       - uses: actions/checkout@v2
@@ -62,6 +63,7 @@ jobs:
 
   docs:
     runs-on: ubuntu-latest
+    if: false
 
     steps:
       - uses: actions/checkout@v2
@@ -92,7 +94,7 @@ jobs:
           charts_dir: charts
 
   build-proxy:
-    # if: false
+    if: false
     needs: [lint, tests]
     runs-on: ubuntu-latest
 
@@ -123,7 +125,8 @@ jobs:
           path: ./builder_service/proxy/out
 
   docker-builder-service:
-    needs: [build-proxy]
+    # needs: [build-proxy]
+    needs: [lint]
     runs-on: ubuntu-latest
 
     steps:
@@ -133,13 +136,13 @@ jobs:
         run: |
           mkdir -p ./builder_service/service/volume/proxy/out
           cp -r ./builder_service/flavours ./builder_service/service/volume
-          cp -r ./builder_service/proxy/scripts ./builder_service/service/volume/proxy
+          # cp -r ./builder_service/proxy/scripts ./builder_service/service/volume/proxy
 
-      - name: Download proxy binaries to volume directory
-        uses: actions/download-artifact@v2
-        with:
-          name: proxy-binaries
-          path: ./builder_service/service/volume/proxy/out
+      # - name: Download proxy binaries to volume directory
+      #   uses: actions/download-artifact@v2
+      #   with:
+      #     name: proxy-binaries
+      #     path: ./builder_service/service/volume/proxy/out
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
