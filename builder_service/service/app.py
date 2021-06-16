@@ -258,6 +258,8 @@ def build_image():
 
     image_name = image_data.get('name')
     module_name = image_data.get('module_name')
+    # XXX
+    module_name = 'mlflow'
     model_name = image_data.get('model_name')
     # It should match the version that
     # has been used to generate the model.
