@@ -2,6 +2,6 @@
 
 set -e
 
-conda activate $CONDA_ENV
+source /venv/bin/activate
 
 exec "$@"

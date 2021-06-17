@@ -1,41 +1,54 @@
 # The context is /workspace, which contains:
 # - proxy
 # - flavours
-#   - sklearn
-#   - pytorch
-#   - xgboost
+#   - mlflow
 
-FROM continuumio/miniconda3:4.9.2-alpine
+FROM continuumio/miniconda3:4.9.2-alpine AS build
+
+# At the moment it's always model.
+ARG MODEL_DIR
+# Should be: mlflow.
+ARG MODEL_CLASS
+
+WORKDIR /app
+
+COPY flavours/${MODEL_CLASS}/${MODEL_DIR}/conda.yaml ./conda.yaml
+
+ENV CONDA_ENV containerizer-env
+
+# Create conda environment.
+RUN conda env create --name $CONDA_ENV --file ./conda.yaml
+# Install conda-pack.
+RUN conda install -c conda-forge conda-pack
+# Use conda-pack to create a standalone enviornment in /venv.
+RUN conda-pack -n $CONDA_ENV -o /tmp/env.tar && \
+  mkdir /venv && tar xf /tmp/env.tar -C /venv
+
+####################################
+
+FROM debian:buster-slim AS runtime
 
 # At the moment it's always model.
 ARG MODEL_DIR
 # Could be: whatever the user specifies for the name of the model.
 ARG MODEL_NAME
-# The model filename.
-ARG MODEL_FILENAME
-# Could be: sklearn, pytorch, tf.
+# Should be: mlflow.
 ARG MODEL_CLASS
-# E.g.: 0.24.1
-ARG MODULE_VERSION
-
-RUN pip install mlflow
 
 WORKDIR /app
 
 COPY flavours/${MODEL_CLASS}/${MODEL_DIR} ./model/${MODEL_NAME}
+COPY flavours/${MODEL_CLASS}/entrypoint.sh /
 
-# COPY flavours/${MODEL_CLASS}/entrypoint.sh /
-
-ENV MODEL_CLASS ${MODEL_CLASS}
-
-ENV MODEL_NAME ${MODEL_NAME}
 ENV MODEL_DIR ./model/${MODEL_NAME}
 
-ENV CONDA_ENV containerizer-env
+COPY --from=build /venv /venv
 
-RUN conda env create --name $CONDA_ENV --file $MODEL_DIR/conda.yaml
-RUN conda activate $CONDA_ENV
+SHELL ["/bin/bash", "-c"]
 
-# ENTRYPOINT ["/entrypoint.sh"]
+# Run conda-unpack to re-create symlinks and set everything up.
+RUN source /venv/bin/activate && conda-unpack
 
-CMD mlflow models serve --model-uri $MODEL_DIR --no-conda
+ENTRYPOINT ["/entrypoint.sh"]
+
+CMD mlflow models serve --no-conda --model-uri $MODEL_DIR
