@@ -5,9 +5,7 @@
 #   - pytorch
 #   - xgboost
 
-FROM continuumio/miniconda3:4.9.2
-
-SHELL ["/bin/bash", "-c"]
+FROM continuumio/miniconda3:4.9.2-alpine
 
 # At the moment it's always model.
 ARG MODEL_DIR
@@ -22,16 +20,18 @@ ARG MODULE_VERSION
 
 RUN pip install mlflow
 
-COPY flavours/${MODEL_CLASS}/${MODEL_DIR} /model/${MODEL_NAME}
+WORKDIR /app
 
-COPY flavours/${MODEL_CLASS}/entrypoint.sh /
+COPY flavours/${MODEL_CLASS}/${MODEL_DIR} ./model/${MODEL_NAME}
+
+COPY flavours/${MODEL_CLASS}/entrypoint.sh ./
 
 ENV MODEL_CLASS ${MODEL_CLASS}
 
 ENV MODEL_NAME ${MODEL_NAME}
-ENV MODEL_DIR /model/${MODEL_NAME}
+ENV MODEL_DIR ./model/${MODEL_NAME}
 
-ENV CONDA_ENV env
+ENV CONDA_ENV containerizer-env
 
 RUN conda env create --name $CONDA_ENV --file $MODEL_DIR/conda.yaml
 
