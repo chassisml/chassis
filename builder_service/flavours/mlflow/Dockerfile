@@ -7,6 +7,8 @@
 
 FROM continuumio/miniconda3:4.9.2
 
+SHELL ["/bin/bash", "-c"]
+
 # At the moment it's always model.
 ARG MODEL_DIR
 # Could be: whatever the user specifies for the name of the model.
