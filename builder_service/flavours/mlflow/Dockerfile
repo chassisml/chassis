@@ -1,5 +1,4 @@
 # The context is /workspace, which contains:
-# - proxy
 # - flavours
 #   - mlflow
 

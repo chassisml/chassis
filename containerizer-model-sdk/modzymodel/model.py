@@ -56,7 +56,6 @@ class ModzyModel:
 
     def get_module_data(self, module):
         # The value of each element points out the minimum required version.
-        available_models = {'torch': None, 'sklearn': '0.20.3', 'xgboost': '0.82'}
         module_name = None
         module_version = None
 
@@ -65,14 +64,6 @@ class ModzyModel:
             module_version = module.__version__
         except AttributeError:
             pass
-
-        if module_name not in available_models.keys():
-            raise RuntimeError('Model type %s not supported' % (module_name,))
-
-        # For models that have minimum version defined, it's not possible to use a minor
-        # version than the one defined in the dict since kfserving won't be able to load it.
-        if version.parse(module_version) < version.parse(available_models[module_name] or module_version):
-            raise RuntimeError('%s version should be >= %s' % (module_name, available_models.get(module_name)))
 
         return {'module_name': module_name, 'module_version': module_version}
 

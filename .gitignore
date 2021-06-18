@@ -7,4 +7,6 @@ builder_service/test
 builder_service/proxy/test.*
 builder_service/proxy/out
 builder_service/backend/kubernetes
+containerizer-model-sdk/examples/model
+mlflow
 __pycache__
