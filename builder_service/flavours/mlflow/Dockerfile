@@ -48,6 +48,12 @@ SHELL ["/bin/bash", "-c"]
 # Run conda-unpack to re-create symlinks and set everything up.
 RUN source /venv/bin/activate && conda-unpack
 
+COPY requirements.txt .
+RUN source /venv/bin/activate && pip install -r requirements.txt
+
+COPY app.py .
+COPY interfaces ./interfaces
+
 ENTRYPOINT ["/entrypoint.sh"]
 
-CMD mlflow models serve --no-conda --model-uri $MODEL_DIR
+CMD ["python", "app.py"]
