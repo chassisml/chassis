@@ -1,10 +1,13 @@
 import os
-from .common import MLFlowFlavour
+import sys
+from loguru import logger
 
-# XXX
-INTERFACE = os.getenv('INTERFACE') or 'kfserving'
+INTERFACE = os.getenv('INTERFACE')
 
-def get_blueprint():
+def start_interface_server():
     if INTERFACE == 'kfserving':
-        from .kfserving import kfserving_blueprint
-        return kfserving_blueprint
+        from .kfserving import start_server
+        start_server()
+    else:
+        logger.critical('No valid INTERFACE environment variable defined.')
+        sys.exit(1)

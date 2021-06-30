@@ -20,6 +20,4 @@ class MLFlowFlavour:
 
         predictions = self.model.predict(input_data)
 
-        logger.debug(f'MLFlow predictions: {predictions}')
-
         return predictions
