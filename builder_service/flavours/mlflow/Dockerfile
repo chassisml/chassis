@@ -48,7 +48,7 @@ SHELL ["/bin/bash", "-c"]
 # Run conda-unpack to re-create symlinks and set everything up.
 RUN source /venv/bin/activate && conda-unpack
 
-COPY requirements.txt .
+COPY flavours/${MODEL_CLASS}/requirements.txt .
 RUN source /venv/bin/activate && pip install -r requirements.txt
 
 COPY app.py .
