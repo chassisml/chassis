@@ -51,8 +51,8 @@ RUN source /venv/bin/activate && conda-unpack
 COPY flavours/${MODEL_CLASS}/requirements.txt .
 RUN source /venv/bin/activate && pip install -r requirements.txt
 
-COPY app.py .
-COPY interfaces ./interfaces
+COPY flavours/${MODEL_CLASS}/app.py .
+COPY flavours/${MODEL_CLASS}/interfaces ./interfaces
 
 ENTRYPOINT ["/entrypoint.sh"]
 
