@@ -17,9 +17,9 @@ $> ./kfserving/hack/quick_install.sh
 There are some environment variables that must be defined for KFServing to work:
 
 - INTERFACE: kfserving
-- HTTP_PORT: <port where kfserving will be running>
-- PROTOCOL: <it can be v1 or [v2](https://github.com/kubeflow/kfserving/blob/master/docs/predict-api/v2/required_api.md)>
-- MODEL_NAME: <a name for the model must be defined>
+- HTTP_PORT: port where kfserving will be running
+- PROTOCOL: it can be v1 or [v2](https://github.com/kubeflow/kfserving/blob/master/docs/predict-api/v2/required_api.md)
+- MODEL_NAME: a name for the model must be defined
 
 ## Deploy the model
 
@@ -77,7 +77,7 @@ export SERVICE_HOSTNAME=$(kubectl get inferenceservice ${MODEL_NAME} -o jsonpath
 Now you can just make a request to predict some data:
 
 ```bash
-➜ curl -H "Host: ${SERVICE_HOSTNAME}" "http://${INGRESS_HOST}:${INGRESS_PORT}/v1/models/${MODEL_NAME}:predict" -d@inputsv1.json | jq
+$> curl -H "Host: ${SERVICE_HOSTNAME}" "http://${INGRESS_HOST}:${INGRESS_PORT}/v1/models/${MODEL_NAME}:predict" -d@inputsv1.json | jq
 ```
 
 The output should be similar to this:
@@ -167,7 +167,7 @@ the image using the protocol v2 and make the request using the [data for v2](int
 The model can also be deployed locally:
 
 ```bash
-docker run --rm -p 8080:8080 \
+$> docker run --rm -p 8080:8080 \
 -e INTERFACE=kfserving \
 -e HTTP_PORT=8080 \
 -e PROTOCOL=v2 \
@@ -177,5 +177,5 @@ carmilso/chassisml-sklearn-demo:latest
 So we can query it this way:
 
 ```bash
-curl localhost:8080/v2/models/digits/infer -d@/tmp/inputsv2.json
+$> curl localhost:8080/v2/models/digits/infer -d@/tmp/inputsv2.json
 ```
