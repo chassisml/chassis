@@ -13,7 +13,7 @@ WORKDIR /app
 
 COPY flavours/${MODEL_CLASS}/${MODEL_DIR}/conda.yaml ./conda.yaml
 
-ENV CONDA_ENV containerizer-env
+ENV CONDA_ENV chassis-env
 
 # Create conda environment.
 RUN conda env create --name $CONDA_ENV --file ./conda.yaml

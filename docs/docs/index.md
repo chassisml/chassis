@@ -1,8 +1,8 @@
 # Containerizing your models easily
 
-Containerizer makes it easy to create a deployable docker image from your trained ML model.
+Chassis makes it easy to create a deployable docker image from your trained ML model.
 
-Containerizer is compatible with platforms like Modzy, KFServing, Sagemaker, Seldon-Core and more! Only the ML model file is needed to create the docker image that will set up the inference process for you.
+Chassis is compatible with platforms like Modzy, KFServing, Sagemaker, Seldon-Core and more! Only the ML model file is needed to create the docker image that will set up the inference process for you.
 
 ## Test Drive
 

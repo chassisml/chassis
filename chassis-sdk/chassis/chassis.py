@@ -26,8 +26,8 @@ class Constants(Enum):
     IMAGE_COLOR = 'color'
 
 
-class ModzyModel:
-    """The Modzy Model object.
+class Chassis:
+    """The Chassis object.
 
     This class is used to interact with the Kaniko service.
 
@@ -145,11 +145,11 @@ class ModzyModel:
             print(f'Error download tar: {r.text}')
 
 
-# Modzy Model instance that is used in the SDK.
-_defaultMM = ModzyModel()
+# Chassis instance that is used in the SDK.
+_defaultMM = Chassis()
 
 def publish(api_key, module, image_data, deploy=False, input_example_path=None, metadata=None, image_type=None, base_url=None):
-    """Uploads the tarball to Modzy API to create a model.
+    """Uploads the tarball to Chassis API to create a model.
 
     If `deploy` is False it just prints the draft Url once the tarball has been uploaded.
     Example of image_data:
@@ -197,7 +197,7 @@ def publish(api_key, module, image_data, deploy=False, input_example_path=None, 
         deploy (bool): Whether the model should be deployed or fixed as draft.
         input_example_path (str): Path to the input file that will be used as example during deployment. Only required if deploy==True.
         metadata (json): Required data when deploying the model. Only required if deploy==True.
-        image_type (str): It defines the type of image (in case of using images). It can be modzymodel.Constants.{IMAGE_GREY ,IMAGE_COLOR}
+        image_type (str): It defines the type of image (in case of using images). It can be chassis.Constants.{IMAGE_GREY ,IMAGE_COLOR}
         base_url (str): Default base_url is localhost:5000.
     """
     return _defaultMM.publish(api_key, module, image_data, deploy, input_example_path, metadata, image_type, base_url)

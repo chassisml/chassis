@@ -18,7 +18,7 @@ PROXY_PORT = os.getenv('PROXY_PORT')
 ENVIRONMENT = os.getenv('ENVIRONMENT')
 
 MODZY_BASE_URL = 'https://master.dev.modzy.engineering'
-JOB_NAME = 'containerizer-builder-job'
+JOB_NAME = 'chassis-builder-job'
 
 routes = {
     'details': '/api/accounting/access-keys/{}',
@@ -80,7 +80,7 @@ def create_job_object(
     )
     container = client.V1Container(
         name='builder',
-        image='ghcr.io/mlopsworks/containerizer-builder:latest',
+        image='ghcr.io/mlopsworks/chassis-builder:latest',
         env=[
             client.V1EnvVar(name='API_KEY', value=api_key),
             client.V1EnvVar(name='JOB_NAME', value=job_name),

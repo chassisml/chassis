@@ -1,7 +1,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "containerizer.name" -}}
+{{- define "chassis.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -10,7 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "containerizer.fullname" -}}
+{{- define "chassis.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -26,16 +26,16 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "containerizer.chart" -}}
+{{- define "chassis.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "containerizer.labels" -}}
-helm.sh/chart: {{ include "containerizer.chart" . }}
-{{ include "containerizer.selectorLabels" . }}
+{{- define "chassis.labels" -}}
+helm.sh/chart: {{ include "chassis.chart" . }}
+{{ include "chassis.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -45,17 +45,17 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "containerizer.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "containerizer.name" . }}
+{{- define "chassis.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "chassis.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "containerizer.serviceAccountName" -}}
+{{- define "chassis.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "containerizer.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "chassis.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}

@@ -1,6 +1,6 @@
-# Containerizer + SDK
+# Chassis + SDK
 
-## Containerizer image builder
+## Chassis image builder
 
 ### Default ports used
 
@@ -36,28 +36,28 @@ $> curl -X POST -d '{ "type": "file", "input": "/input", "output": "/output" }' 
 $> curl -X POST localhost:3000/shutdown
 ```
 
-## Containerizer SDK
+## Chassis SDK
 
 ### Installation
 
 ```
-$> cd ./containerizer-model-sdk
+$> cd ./chassis-sdk
 $> pip3 install .
 ```
 
 ### Jupyter notebook examples
 
-[SKlearn training](./containerizer-model-sdk/examples/sklearn-train.ipynb)
+[SKlearn training](./chassis-sdk/examples/sklearn-train.ipynb)
 
-[Pytorch training](./containerizer-model-sdk/examples/torch-train.ipynb)
+[Pytorch training](./chassis-sdk/examples/torch-train.ipynb)
 
-[SKlearn draft model](./containerizer-model-sdk/examples/modzy-sklearn.ipynb)
+[SKlearn draft model](./chassis-sdk/examples/modzy-sklearn.ipynb)
 
-[SKlearn deployed model](./containerizer-model-sdk/examples/modzy-sklearn-deploy.ipynb)
+[SKlearn deployed model](./chassis-sdk/examples/modzy-sklearn-deploy.ipynb)
 
-[Pytorch draft model](./containerizer-model-sdk/examples/modzy-torch.ipynb)
+[Pytorch draft model](./chassis-sdk/examples/modzy-torch.ipynb)
 
-[Pytorch deployed model](./containerizer-model-sdk/examples/modzy-torch-deploy.ipynb)
+[Pytorch deployed model](./chassis-sdk/examples/modzy-torch-deploy.ipynb)
 
 ### Default values
 

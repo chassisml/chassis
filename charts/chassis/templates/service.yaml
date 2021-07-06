@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "containerizer.fullname" . }}
+  name: {{ include "chassis.fullname" . }}
   labels:
-    {{- include "containerizer.labels" . | nindent 4 }}
+    {{- include "chassis.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -12,4 +12,4 @@ spec:
       protocol: TCP
       name: http
   selector:
-    {{- include "containerizer.selectorLabels" . | nindent 4 }}
+    {{- include "chassis.selectorLabels" . | nindent 4 }}

@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "containerizer.fullname" . }}
+  name: {{ include "chassis.fullname" . }}
   labels:
-    {{- include "containerizer.labels" . | nindent 4 }}
+    {{- include "chassis.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "containerizer.selectorLabels" . | nindent 6 }}
+      {{- include "chassis.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -18,13 +18,13 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "containerizer.selectorLabels" . | nindent 8 }}
+        {{- include "chassis.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "containerizer.serviceAccountName" . }}
+      serviceAccountName: {{ include "chassis.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       {{- with .Values.volumes }}

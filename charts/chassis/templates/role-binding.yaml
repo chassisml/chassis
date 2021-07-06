@@ -3,14 +3,14 @@ apiVersion: rbac.authorization.k8s.io/v1
 # You need to already have a Role named "pod-reader" in that namespace.
 kind: RoleBinding
 metadata:
-  name: {{ include "containerizer.serviceAccountName" . }}
+  name: {{ include "chassis.serviceAccountName" . }}
   namespace: default
 subjects:
 # You can specify more than one "subject"
 - kind: ServiceAccount
-  name: {{ include "containerizer.serviceAccountName" . }}
+  name: {{ include "chassis.serviceAccountName" . }}
 roleRef:
   # "roleRef" specifies the binding to a Role / ClusterRole
   kind: Role #this must be Role or ClusterRole
-  name: {{ include "containerizer.serviceAccountName" . }}
+  name: {{ include "chassis.serviceAccountName" . }}
   apiGroup: rbac.authorization.k8s.io
