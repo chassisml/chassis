@@ -8,4 +8,4 @@ Chassis is compatible with platforms like Modzy, KFServing, Sagemaker, Seldon-Co
 
 The fastest way to get started is to use the test drive functionality provided by [TestFaster](https://testfaster.ci). Click on the "Launch Test Drive" button below (opens a new window).
 
-<a href="https://testfaster.ci/launch?embedded=true&amp;repo=https://github.com/carmilso/terraform-kk&amp;file=examples/testfaster/.testfaster.yml" target="\_blank">Launch Test Drive</a>
+<a href="https://testfaster.ci/launch?embedded=true&repo=https://github.com/combinator-ml/terraform-k8s-modelconverter&file=examples/testfaster/.testfaster.yml" target="\_blank">Launch Test Drive</a>
