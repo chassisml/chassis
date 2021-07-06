@@ -6,11 +6,11 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='modzymodel',
+    name='chassisml',
     version='0.0.1',
     author='Modzy',
     author_email='support@modzy.com',
-    description='Python API client for Modzy models.',
+    description='Python API client for Chassis.',
     packages=find_packages(),
     python_requires='>=3.4',
     install_requires=['requests'],

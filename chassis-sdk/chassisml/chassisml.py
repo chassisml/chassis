@@ -26,8 +26,8 @@ class Constants(Enum):
     IMAGE_COLOR = 'color'
 
 
-class Chassis:
-    """The Chassis object.
+class ChassisML:
+    """The ChassisML object.
 
     This class is used to interact with the Kaniko service.
 
@@ -145,11 +145,11 @@ class Chassis:
             print(f'Error download tar: {r.text}')
 
 
-# Chassis instance that is used in the SDK.
-_defaultMM = Chassis()
+# ChassisML instance that is used in the SDK.
+_defaultChassisML = ChassisML()
 
 def publish(api_key, module, image_data, deploy=False, input_example_path=None, metadata=None, image_type=None, base_url=None):
-    """Uploads the tarball to Chassis API to create a model.
+    """Uploads the tarball to ChassisML API to create a model.
 
     If `deploy` is False it just prints the draft Url once the tarball has been uploaded.
     Example of image_data:
@@ -197,17 +197,17 @@ def publish(api_key, module, image_data, deploy=False, input_example_path=None, 
         deploy (bool): Whether the model should be deployed or fixed as draft.
         input_example_path (str): Path to the input file that will be used as example during deployment. Only required if deploy==True.
         metadata (json): Required data when deploying the model. Only required if deploy==True.
-        image_type (str): It defines the type of image (in case of using images). It can be chassis.Constants.{IMAGE_GREY ,IMAGE_COLOR}
+        image_type (str): It defines the type of image (in case of using images). It can be chassisML.Constants.{IMAGE_GREY ,IMAGE_COLOR}
         base_url (str): Default base_url is localhost:5000.
     """
-    return _defaultMM.publish(api_key, module, image_data, deploy, input_example_path, metadata, image_type, base_url)
+    return _defaultChassisML.publish(api_key, module, image_data, deploy, input_example_path, metadata, image_type, base_url)
 
 def get_job_status(job_id, api_key=None):
     """Returns the data once the model has been deployed.
     """
-    return _defaultMM.get_job_status(job_id, api_key)
+    return _defaultChassisML.get_job_status(job_id, api_key)
 
 def download_tar(job_id, output_filename, api_key=None):
     """Returns the data once the model has been deployed.
     """
-    return _defaultMM.download_tar(job_id, output_filename, api_key)
+    return _defaultChassisML.download_tar(job_id, output_filename, api_key)

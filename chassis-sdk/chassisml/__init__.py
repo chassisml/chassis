@@ -3,7 +3,7 @@
 
 """Chassis Python API Client."""
 
-name = 'chassis'
+name = 'chassisml'
 __version__ = '0.0.1'
 
-from .chassis import publish, get_job_status, download_tar, Constants
+from .chassisml import publish, get_job_status, download_tar, Constants
