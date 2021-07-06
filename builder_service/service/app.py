@@ -80,6 +80,7 @@ def create_job_object(
     )
     container = client.V1Container(
         name='builder',
+        # XXX: this should no be hardcoded.
         image='ghcr.io/mlopsworks/chassis-builder:latest',
         env=[
             client.V1EnvVar(name='API_KEY', value=api_key),
