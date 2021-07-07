@@ -42,11 +42,7 @@ def create_job_object(
     model_name,
     path_to_tar_file,
     random_name,
-    input_filename,
-    metadata,
     deploy,
-    image_type,
-    api_key
 ):
     job_name = f'{JOB_NAME}-{random_name}'
 
@@ -55,7 +51,7 @@ def create_job_object(
         mount_path=MOUNT_PATH_DIR,
         name='kaniko-data'
     )
-    init_container = client.V1Container(
+    container = client.V1Container(
         name='kaniko',
         image='gcr.io/kaniko-project/executor:latest',
         volume_mounts=[volume_mount],
@@ -75,25 +71,6 @@ def create_job_object(
             f'--build-arg=KFSERVING_PORT={KFSERVING_PORT}',
             f'--build-arg=PROXY_PORT={PROXY_PORT}',
             f'--build-arg=MODULE_VERSION={module_version}',
-            f'--build-arg=IMAGE_TYPE={image_type}',
-        ]
-    )
-    container = client.V1Container(
-        name='builder',
-        # XXX: this should no be hardcoded.
-        image='ghcr.io/mlopsworks/chassis-builder:latest',
-        env=[
-            client.V1EnvVar(name='API_KEY', value=api_key),
-            client.V1EnvVar(name='JOB_NAME', value=job_name),
-            client.V1EnvVar(name='ENVIRONMENT', value=ENVIRONMENT)
-        ],
-        volume_mounts=[volume_mount],
-        args=[
-            f'--tar_path={path_to_tar_file}',
-            f'--model_dir={WORKSPACE_DIR}/flavours/{module_name}/model-{random_name}',
-            f'--input_filename={input_filename}',
-            f'--metadata={json.dumps(metadata)}',
-            f'--deploy={deploy}',
         ]
     )
     pv_claim = client.V1PersistentVolumeClaimVolumeSource(
@@ -103,20 +80,12 @@ def create_job_object(
         name='kaniko-data',
         persistent_volume_claim=pv_claim
     )
-    # XXX
     pod_spec = client.V1PodSpec(
         service_account_name='job-builder',
         restart_policy='Never',
-        containers=[init_container],
+        containers=[container],
         volumes=[volume]
     )
-    #  pod_spec = client.V1PodSpec(
-    #      service_account_name='job-builder',
-    #      restart_policy='Never',
-    #      containers=[container],
-    #      init_containers=[init_container],
-    #      volumes=[volume]
-    #  )
     template = client.V1PodTemplateSpec(
         metadata=client.V1ObjectMeta(name=job_name),
         spec=pod_spec
@@ -153,11 +122,7 @@ def run_kaniko(
     model_name,
     path_to_tar_file,
     random_name,
-    input_filename,
-    metadata,
     deploy,
-    image_type,
-    api_key
 ):
     config.load_incluster_config()
     batch_v1 = client.BatchV1Api()
@@ -170,11 +135,7 @@ def run_kaniko(
             model_name,
             path_to_tar_file,
             random_name,
-            input_filename,
-            metadata,
             deploy,
-            image_type,
-            api_key
         )
         create_job(batch_v1, job)
     except Exception as err:
@@ -196,30 +157,7 @@ def unzip_model(model, module_name, random_name):
 
     return zip_content_dst
 
-def authenticate():
-    # XXX:
-    return True
-
-    api_key = request.headers.get('Authorization')
-
-    if not api_key:
-        return None
-
-    account_key = api_key.split()[1].split('.')[0]
-    headers = {'Authorization': api_key}
-    route = format_url(routes['details'], account_key)
-
-    res = requests.get(route, headers=headers)
-    res.raise_for_status()
-
-    return api_key
-
 def get_job_status(job_id):
-    api_key = authenticate()
-
-    if not api_key:
-        return 'Authorization required', 401
-
     config.load_incluster_config()
     batch_v1 = client.BatchV1Api()
 
@@ -243,14 +181,7 @@ def download_tar(job_id):
     return send_from_directory(WORKSPACE_DIR, path=f'kaniko_image-{uid}.tar', as_attachment=False)
 
 def build_image():
-    api_key = authenticate()
-
-    if not api_key:
-        return 'Authorization required', 401
-
     image_data = json.load(request.files.get('image_data'))
-    metadata = request.files.get('metadata')
-    metadata = {} if not metadata else json.load(metadata)
     model = request.files.get('model')
     input_file = request.files.get('input_file')
 
@@ -266,20 +197,10 @@ def build_image():
     # has been used to generate the model.
     module_version = image_data.get('module_version')
     deploy = image_data.get('deploy', False)
-    image_type = image_data.get('image_type')
     deploy = True if deploy else ''
-
-    builder_data = {**metadata, **image_data}
 
     random_name = str(uuid.uuid4())
     model_unzipped_dir = unzip_model(model, module_name, random_name)
-
-    # If the model is not being to be deployed input_file is not necessary.
-    # XXX
-    #  input_filename = input_file.filename if deploy else ''
-    input_filename = ''
-    #  if deploy:
-    #      input_file.save(f'{model_unzipped_dir}/{input_filename}')
 
     path_to_tar_file = f'{WORKSPACE_DIR}/kaniko_image-{random_name}.tar'
 
@@ -290,11 +211,7 @@ def build_image():
         model_name,
         path_to_tar_file,
         random_name,
-        input_filename,
-        builder_data,
         deploy,
-        image_type,
-        api_key,
     )
 
     if error:

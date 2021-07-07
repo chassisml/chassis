@@ -84,11 +84,6 @@ class ChassisML:
             ('model', open(f'{tmp_zip_dir}/{MODEL_ZIP_NAME}', 'rb')),
         ]
 
-        # XXX
-        #  if deploy:
-        #      files.append(('input_file', open(input_example_path, 'rb')))
-        #      files.append(('metadata', json.dumps(metadata)))
-
         self.headers = {'Authorization': f'ApiKey {api_key}'}
         route = urllib.parse.urljoin(self.base_url, routes['build'])
 
