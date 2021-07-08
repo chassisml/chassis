@@ -73,7 +73,7 @@ def create_job_object(
         command=[
             '/bin/sh',
             '-c',
-            f'echo "{registry_credentials}" > /tmp/credentials/config.json'
+            f'echo "{registry_credentials}" > /tmp/credentials/config.json && cat /tmp/credentials/config.json'
         ]
     )
     container = client.V1Container(
