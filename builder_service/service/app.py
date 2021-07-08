@@ -61,7 +61,7 @@ def create_job_object(
         name='registry-credentials'
     )
 
-    registry_credentials = f'{{\"auths\":{{\"https://index.docker.io/v1/\":{{\"auth\":\"{registry_auth}\"}}}}}}'
+    registry_credentials = f'{{"auths":{{"https://index.docker.io/v1/":{{"auth":"{registry_auth}"}}}}}}'
 
     init_container = client.V1Container(
         name='credentials',
@@ -73,7 +73,7 @@ def create_job_object(
         command=[
             '/bin/sh',
             '-c',
-            f'echo -e "{registry_credentials}" > /tmp/credentials/config.json && cat /tmp/credentials/config.json'
+            f'echo \'{registry_credentials}\' > /tmp/credentials/config.json'
         ]
     )
     container = client.V1Container(
