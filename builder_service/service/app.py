@@ -67,15 +67,7 @@ def create_job_object(
         name='credentials',
         image='busybox',
         volume_mounts=[
-            volume_mount,
             volume_mount_empty_dir_init_container
-        ],
-        args=[
-            f'--tar_path={path_to_tar_file}',
-            f'--model_dir={WORKSPACE_DIR}/flavours/{module_name}/model-{random_name}',
-            f'--input_filename={input_filename}',
-            f'--metadata={json.dumps(metadata)}',
-            f'--deploy={deploy}',
         ],
         # XXX: only compatible with Docker Hub at the moment.
         command=[
