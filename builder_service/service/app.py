@@ -61,15 +61,11 @@ def create_job_object(
         name='registry-credentials'
     )
 
-    # XXX: only compatible with Docker Hub at the moment.
-    registry_credentials = f'{"auths":{"https://index.docker.io/v1/":{"auth":"{registry_auth}"}}}'
+    registry_credentials = f'{{"auths":{{"https://index.docker.io/v1/":{{"auth":"{registry_auth}"}}}}}}'
 
     init_container = client.V1Container(
         name='credentials',
         image='busybox',
-        env=[
-            client.V1EnvVar(name='AUTH', value=registry_credentials),
-        ],
         volume_mounts=[
             volume_mount,
             volume_mount_empty_dir_init_container
@@ -81,6 +77,7 @@ def create_job_object(
             f'--metadata={json.dumps(metadata)}',
             f'--deploy={deploy}',
         ],
+        # XXX: only compatible with Docker Hub at the moment.
         command=[
             '/bin/sh',
             '-c',
