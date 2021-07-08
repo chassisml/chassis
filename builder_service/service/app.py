@@ -13,8 +13,6 @@ from kubernetes import client, config
 MOUNT_PATH_DIR = '/data'
 WORKSPACE_DIR = f'{MOUNT_PATH_DIR}/workspace'
 #  WORKSPACE_DIR = f'{MOUNT_PATH_DIR}'
-KFSERVING_PORT = os.getenv('KFSERVING_PORT')
-PROXY_PORT = os.getenv('PROXY_PORT')
 ENVIRONMENT = os.getenv('ENVIRONMENT')
 
 MODZY_BASE_URL = 'https://master.dev.modzy.engineering'
@@ -38,7 +36,6 @@ routes = {
 def create_job_object(
     image_name,
     module_name,
-    module_version,
     model_name,
     path_to_tar_file,
     random_name,
@@ -47,77 +44,76 @@ def create_job_object(
 ):
     job_name = f'{JOB_NAME}-{random_name}'
 
-    # Configureate Pod template container
-    volume_mount = client.V1VolumeMount(
+    # XXX: Only for Docker Hub.
+    registry_credentials = f'{{"auths":{{"https://index.docker.io/v1/":{{"auth":"{registry_auth}"}}}}}}'
+
+    data_volume_mount = client.V1VolumeMount(
         mount_path=MOUNT_PATH_DIR,
         name='kaniko-data'
     )
-    volume_mount_empty_dir_init_container = client.V1VolumeMount(
+    # This volume will be used by init container to populare registry credentials.
+    init_empty_dir_volume_mount = client.V1VolumeMount(
         mount_path='/tmp/credentials',
         name='registry-credentials'
     )
-    volume_mount_empty_dir_container = client.V1VolumeMount(
+    # This volume will be used by kaniko container to get registry credentials.
+    kaniko_empty_dir_volume_mount = client.V1VolumeMount(
         mount_path='/kaniko/.docker',
         name='registry-credentials'
     )
 
-    registry_credentials = f'{{"auths":{{"https://index.docker.io/v1/":{{"auth":"{registry_auth}"}}}}}}'
-
+    # This container is used to populate registry credentials.
     init_container = client.V1Container(
         name='credentials',
         image='busybox',
-        volume_mounts=[
-            volume_mount_empty_dir_init_container
-        ],
-        # XXX: only compatible with Docker Hub at the moment.
+        volume_mounts=[init_empty_dir_volume_mount],
+        # XXX: Only compatible with Docker Hub at the moment.
         command=[
             '/bin/sh',
             '-c',
             f'echo \'{registry_credentials}\' > /tmp/credentials/config.json'
         ]
     )
+    # This container is used to build the final image.
     container = client.V1Container(
         name='kaniko',
         image='gcr.io/kaniko-project/executor:latest',
         volume_mounts=[
-            volume_mount,
-            volume_mount_empty_dir_container
+            data_volume_mount,
+            kaniko_empty_dir_volume_mount
         ],
         args=[
             f'--dockerfile={WORKSPACE_DIR}/flavours/{module_name}/Dockerfile',
             '' if deploy else '--no-push',
-            #  '--insecure',
-            #  '--skip-tls-verify',
-            ##############################
             f'--tarPath={path_to_tar_file}',
             f'--destination={image_name}{"" if ":" in image_name else ":latest"}',
             f'--context={WORKSPACE_DIR}',
             f'--build-arg=MODEL_DIR=model-{random_name}',
             f'--build-arg=MODEL_NAME={model_name}',
             f'--build-arg=MODEL_CLASS={module_name}',
-            f'--build-arg=KFSERVING_PORT={KFSERVING_PORT}',
-            f'--build-arg=PROXY_PORT={PROXY_PORT}',
-            f'--build-arg=MODULE_VERSION={module_version}',
         ]
     )
-    pv_claim = client.V1PersistentVolumeClaimVolumeSource(
+
+    data_pv_claim = client.V1PersistentVolumeClaimVolumeSource(
         claim_name='kaniko-data'
     )
-    empty_dir_volume_source = client.V1EmptyDirVolumeSource()
-    volume = client.V1Volume(
+    data_volume = client.V1Volume(
         name='kaniko-data',
-        persistent_volume_claim=pv_claim
+        persistent_volume_claim=data_pv_claim
     )
-    volume_empty_dir = client.V1Volume(
+    empty_dir_volume = client.V1Volume(
         name='registry-credentials',
-        empty_dir=empty_dir_volume_source
+        empty_dir=client.V1EmptyDirVolumeSource()
     )
     pod_spec = client.V1PodSpec(
         service_account_name='job-builder',
         restart_policy='Never',
         init_containers=[init_container],
         containers=[container],
-        volumes=[volume, volume_empty_dir]
+        volumes=[
+            data_volume,
+            empty_dir_volume
+        ]
     )
     template = client.V1PodTemplateSpec(
         metadata=client.V1ObjectMeta(name=job_name),
@@ -151,7 +147,6 @@ def format_url(route, *args):
 def run_kaniko(
     image_name,
     module_name,
-    module_version,
     model_name,
     path_to_tar_file,
     random_name,
@@ -165,7 +160,6 @@ def run_kaniko(
         job = create_job_object(
             image_name,
             module_name,
-            module_version,
             model_name,
             path_to_tar_file,
             random_name,
@@ -230,7 +224,6 @@ def build_image():
     model_name = image_data.get('model_name')
     # It should match the version that
     # has been used to generate the model.
-    module_version = image_data.get('module_version')
     deploy = image_data.get('deploy', False)
     deploy = True if deploy else ''
     registry_auth = image_data.get('registry_auth')
@@ -243,7 +236,6 @@ def build_image():
     error = run_kaniko(
         image_name,
         module_name,
-        module_version,
         model_name,
         path_to_tar_file,
         random_name,
