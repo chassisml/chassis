@@ -43,6 +43,7 @@ def create_job_object(
     path_to_tar_file,
     random_name,
     deploy,
+    registry_auth,
 ):
     job_name = f'{JOB_NAME}-{random_name}'
 
@@ -51,16 +52,53 @@ def create_job_object(
         mount_path=MOUNT_PATH_DIR,
         name='kaniko-data'
     )
+    volume_mount_empty_dir_init_container = client.V1VolumeMount(
+        mount_path='/tmp/credentials',
+        name='registry-credentials'
+    )
+    volume_mount_empty_dir_container = client.V1VolumeMount(
+        mount_path='/kaniko/.docker',
+        name='registry-credentials'
+    )
+
+    # XXX: only compatible with Docker Hub at the moment.
+    registry_credentials = f'{"auths":{"https://index.docker.io/v1/":{"auth":"{registry_auth}"}}}
+
+    init_container = client.V1Container(
+        name='credentials',
+        image='busybox',
+        env=[
+            client.V1EnvVar(name='AUTH', value=registry_credentials),
+        ],
+        volume_mounts=[
+            volume_mount,
+            volume_mount_empty_dir_init_container
+        ],
+        args=[
+            f'--tar_path={path_to_tar_file}',
+            f'--model_dir={WORKSPACE_DIR}/flavours/{module_name}/model-{random_name}',
+            f'--input_filename={input_filename}',
+            f'--metadata={json.dumps(metadata)}',
+            f'--deploy={deploy}',
+        ],
+        command=[
+            '/bin/sh',
+            '-c',
+            f'echo "{registry_credentials}" > /tmp/credentials/config.json'
+        ]
+    )
     container = client.V1Container(
         name='kaniko',
         image='gcr.io/kaniko-project/executor:latest',
-        volume_mounts=[volume_mount],
+        volume_mounts=[
+            volume_mount,
+            volume_mount_empty_dir_container
+        ],
         args=[
             f'--dockerfile={WORKSPACE_DIR}/flavours/{module_name}/Dockerfile',
             '' if deploy else '--no-push',
-            # XXX: only for demo purposes.
-            '--insecure',
-            '--skip-tls-verify',
+            #  '--insecure',
+            #  '--skip-tls-verify',
             ##############################
             f'--tarPath={path_to_tar_file}',
             f'--destination={image_name}{"" if ":" in image_name else ":latest"}',
@@ -76,15 +114,21 @@ def create_job_object(
     pv_claim = client.V1PersistentVolumeClaimVolumeSource(
         claim_name='kaniko-data'
     )
+    empty_dir_volume_source = client.V1EmptyDirVolumeSource()
     volume = client.V1Volume(
         name='kaniko-data',
         persistent_volume_claim=pv_claim
     )
+    volume_empty_dir = client.V1Volume(
+        name='registry-credentials',
+        empty_dir=empty_dir_volume_source
+    )
     pod_spec = client.V1PodSpec(
         service_account_name='job-builder',
         restart_policy='Never',
+        init_containers=[init_container],
         containers=[container],
-        volumes=[volume]
+        volumes=[volume, volume_empty_dir]
     )
     template = client.V1PodTemplateSpec(
         metadata=client.V1ObjectMeta(name=job_name),
@@ -123,6 +167,7 @@ def run_kaniko(
     path_to_tar_file,
     random_name,
     deploy,
+    registry_auth,
 ):
     config.load_incluster_config()
     batch_v1 = client.BatchV1Api()
@@ -136,6 +181,7 @@ def run_kaniko(
             path_to_tar_file,
             random_name,
             deploy,
+            registry_auth,
         )
         create_job(batch_v1, job)
     except Exception as err:
@@ -198,6 +244,7 @@ def build_image():
     module_version = image_data.get('module_version')
     deploy = image_data.get('deploy', False)
     deploy = True if deploy else ''
+    registry_auth = image_data.get('registry_auth')
 
     random_name = str(uuid.uuid4())
     model_unzipped_dir = unzip_model(model, module_name, random_name)
@@ -212,6 +259,7 @@ def build_image():
         path_to_tar_file,
         random_name,
         deploy,
+        registry_auth,
     )
 
     if error:

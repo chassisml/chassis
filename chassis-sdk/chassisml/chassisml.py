@@ -67,7 +67,7 @@ class ChassisML:
 
         return {'module_name': module_name, 'module_version': module_version}
 
-    def publish(self, api_key, module, image_data, deploy, input_example_path, metadata, image_type, base_url):
+    def publish(self, api_key, module, image_data, deploy, metadata, base_url):
         self.base_url = base_url if base_url else self.base_url
         self.deploy = deploy
 
@@ -75,7 +75,6 @@ class ChassisML:
 
         image_data = {**image_data, **module_data}
         image_data['deploy'] = deploy
-        image_data['image_type'] = image_type.value if image_type else ''
 
         tmp_zip_dir = self._zipdir(image_data.get('model_path'))
 
@@ -143,7 +142,7 @@ class ChassisML:
 # ChassisML instance that is used in the SDK.
 _defaultChassisML = ChassisML()
 
-def publish(api_key, module, image_data, deploy=False, input_example_path=None, metadata=None, image_type=None, base_url=None):
+def publish(api_key, module, image_data, deploy=False, metadata=None, base_url=None):
     """Uploads the tarball to ChassisML API to create a model.
 
     If `deploy` is False it just prints the draft Url once the tarball has been uploaded.
@@ -190,12 +189,10 @@ def publish(api_key, module, image_data, deploy=False, input_example_path=None, 
         module (object): Module used to build the model.
         image_data (json): Required data to build and deploy the model.
         deploy (bool): Whether the model should be deployed or fixed as draft.
-        input_example_path (str): Path to the input file that will be used as example during deployment. Only required if deploy==True.
         metadata (json): Required data when deploying the model. Only required if deploy==True.
-        image_type (str): It defines the type of image (in case of using images). It can be chassisML.Constants.{IMAGE_GREY ,IMAGE_COLOR}
         base_url (str): Default base_url is localhost:5000.
     """
-    return _defaultChassisML.publish(api_key, module, image_data, deploy, input_example_path, metadata, image_type, base_url)
+    return _defaultChassisML.publish(api_key, module, image_data, deploy, metadata, base_url)
 
 def get_job_status(job_id, api_key=None):
     """Returns the data once the model has been deployed.
