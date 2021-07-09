@@ -193,7 +193,7 @@ def get_job_status(job_id):
     try:
         job = batch_v1.read_namespaced_job(job_id, ENVIRONMENT)
     except Exception as e:
-        print(e)
+        print('>>>>>', e)
         return e
 
     status = job.status
