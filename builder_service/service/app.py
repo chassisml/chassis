@@ -9,6 +9,7 @@ import requests
 from loguru import logger
 from flask import Flask, request, send_from_directory
 from kubernetes import client, config
+from kubernetes.client.rest import ApiException
 
 MOUNT_PATH_DIR = '/data'
 WORKSPACE_DIR = f'{MOUNT_PATH_DIR}/workspace'
@@ -192,9 +193,9 @@ def get_job_status(job_id):
 
     try:
         job = batch_v1.read_namespaced_job(job_id, ENVIRONMENT)
-    except Exception as e:
-        logger.info(f'Job status. Exception={e}')
-        return e
+    except ApiException as e:
+        logger.error(f'Exception when getting job status: {e}')
+        return e.body
 
     status = job.status
 
