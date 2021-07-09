@@ -107,26 +107,7 @@ class ChassisML:
 
         data = res.json()
 
-        if not data['status']['succeeded']:
-            print('Not finished yet. Try again later')
-            return
-
-        result = data.get('result') or {}
-        container_url = result.get('container_url')
-
-        #  if not self.deploy:
-        #      print(f'Draft model: {container_url}')
-        #      inputs_outputs_help = '\nPlease, go to the Draft model url and fill in the missing values through the UI.\n' \
-        #      + '\nFor every input there must be one output of type json. The "Output Name" of every output must be ' \
-        #      + 'the same as the "Model Input Filename" of the referenced input but the extension ".json" must be added (even if it\'s already a json).\n' \
-        #      + 'E.g.: if the "Model Input Filename" of one input is "digit.jpg", ' \
-        #      + 'the "Output Name" of its corresponding output should be "digit.jpg.json".\n' \
-        #      + 'Job input names must match model input filenames.'
-        #      print(inputs_outputs_help)
-        #  else:
-        #      print(f'Deployed model: {container_url}')
-
-        return data or {}
+        return data
 
     def download_tar(self, job_id, output_filename, api_key):
         url = f'{urllib.parse.urljoin(self.base_url, routes["job"])}/{job_id}/download-tar'

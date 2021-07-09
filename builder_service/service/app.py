@@ -190,19 +190,15 @@ def get_job_status(job_id):
     config.load_incluster_config()
     batch_v1 = client.BatchV1Api()
 
-    job = batch_v1.read_namespaced_job(job_id, ENVIRONMENT)
+    try:
+        job = batch_v1.read_namespaced_job(job_id, ENVIRONMENT)
+    except Exception as e:
+        print(e)
+        return e
 
-    annotations = job.metadata.annotations or {}
-    result = annotations.get('result')
-    result = json.loads(result) if result else None
     status = job.status
 
-    job_data = {
-        'result': result,
-        'status': status.to_dict()
-    }
-
-    return job_data
+    return status.to_dict()
 
 def download_tar(job_id):
     uid = job_id.split(f'{JOB_NAME}-')[1]
