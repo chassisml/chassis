@@ -103,7 +103,6 @@ class ChassisML:
             self.headers = {'Authorization': f'ApiKey {api_key}'}
 
         res = requests.get(route, headers=self.headers)
-        res.raise_for_status()
 
         data = res.json()
 
