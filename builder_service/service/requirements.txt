@@ -5,3 +5,4 @@ loguru
 pytest
 pylint
 autopep8
+dotenv
