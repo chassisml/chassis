@@ -2,6 +2,13 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# This values are populated from the service .env file.
+PORT: ''
+MOUNT_PATH_DIR: ''
+K_ENVIRONMENT: ''
+K_DATA_VOLUME_NAME: ''
+K_SERVICE_ACCOUNT_NAME: ''
+
 replicaCount: 1
 
 image:
@@ -14,17 +21,6 @@ image:
 imagePullSecrets: []
 nameOverride: "chassis"
 fullnameOverride: "chassis"
-
-# volumes: []
-volumes:
-  - name: kaniko-data
-    persistentVolumeClaim:
-      claimName: kaniko-data
-# volumeMounts: []
-volumeMounts:
-  # This references the MOUNT_PATH_DIR of builder_service
-  - mountPath: /data
-    name: kaniko-data
 
 env:
   - name: foo
@@ -39,9 +35,7 @@ serviceAccount:
   create: true
   # Annotations to add to the service account
   annotations: {}
-  # The name of the service account to use.
-  name: job-builder
-  # If not set and create is true, a name is generated using the fullname template
+  # The name of the service account to use is used from above K_SERVICE_ACCOUNT_NAME value.
 
 podAnnotations: {}
 
@@ -58,7 +52,6 @@ securityContext: {}
 
 service:
   type: NodePort
-  port: 5000
 
 ingress:
   enabled: true

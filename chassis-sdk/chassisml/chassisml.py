@@ -8,8 +8,8 @@ import urllib.parse
 import zipfile
 import tempfile
 import shutil
-from enum import Enum
-from packaging import version
+
+###########################################
 
 MODEL_ZIP_NAME = 'model.zip'
 
@@ -18,13 +18,7 @@ routes = {
     'job': '/job',
 }
 
-requests_session = requests.Session()
-
-
-class Constants(Enum):
-    IMAGE_GREY = 'grey'
-    IMAGE_COLOR = 'color'
-
+###########################################
 
 class ChassisML:
     """The ChassisML object.
@@ -54,26 +48,10 @@ class ChassisML:
 
         return tmppath
 
-    def get_module_data(self, module):
-        # The value of each element points out the minimum required version.
-        module_name = None
-        module_version = None
-
-        try:
-            module_name = module.__name__
-            module_version = module.__version__
-        except AttributeError:
-            pass
-
-        return {'module_name': module_name, 'module_version': module_version}
-
-    def publish(self, api_key, module, image_data, deploy, metadata, base_url):
+    def publish(self, image_data, deploy, base_url):
         self.base_url = base_url if base_url else self.base_url
         self.deploy = deploy
 
-        module_data = self.get_module_data(module)
-
-        image_data = {**image_data, **module_data}
         image_data['deploy'] = deploy
 
         tmp_zip_dir = self._zipdir(image_data.get('model_path'))
@@ -83,11 +61,10 @@ class ChassisML:
             ('model', open(f'{tmp_zip_dir}/{MODEL_ZIP_NAME}', 'rb')),
         ]
 
-        self.headers = {'Authorization': f'ApiKey {api_key}'}
         route = urllib.parse.urljoin(self.base_url, routes['build'])
 
         print('Publishing container... ', end='', flush=True)
-        res = requests.post(route, files=files, headers=self.headers)
+        res = requests.post(route, files=files)
         res.raise_for_status()
         print('Ok!')
 
@@ -96,19 +73,16 @@ class ChassisML:
 
         return res.json()
 
-    def get_job_status(self, job_id, api_key):
+    def get_job_status(self, job_id):
         route = f'{urllib.parse.urljoin(self.base_url, routes["job"])}/{job_id}'
 
-        if api_key:
-            self.headers = {'Authorization': f'ApiKey {api_key}'}
-
-        res = requests.get(route, headers=self.headers)
+        res = requests.get(route)
 
         data = res.json()
 
         return data
 
-    def download_tar(self, job_id, output_filename, api_key):
+    def download_tar(self, job_id, output_filename):
         url = f'{urllib.parse.urljoin(self.base_url, routes["job"])}/{job_id}/download-tar'
         r = requests.get(url)
 
@@ -118,11 +92,14 @@ class ChassisML:
         else:
             print(f'Error download tar: {r.text}')
 
+###########################################
 
 # ChassisML instance that is used in the SDK.
 _defaultChassisML = ChassisML()
 
-def publish(api_key, module, image_data, deploy=False, metadata=None, base_url=None):
+###########################################
+
+def publish(image_data, deploy=False, base_url=None):
     """Uploads the tarball to ChassisML API to create a model.
 
     If `deploy` is False it just prints the draft Url once the tarball has been uploaded.
@@ -135,51 +112,20 @@ def publish(api_key, module, image_data, deploy=False, metadata=None, base_url=N
         'model_path': '../../builder_service/test/sklearn/example_model',
     }
     ```
-    Example of metadata when `deploy` is True:
-    ```
-    {
-        'inputs': [{'name': 'digit.jpg', 'description': 'description input', 'acceptedMediaTypes': 'image/jpeg', 'maximumSize': int(1.024e6)}],
-        'outputs': [{'name': 'digit.jpg.json', 'description': 'description output', 'mediaType': 'application/json', 'maximumSize': int(1.024e6)}],
-    }
-    ```
-    Example of complete values when `deploy` is True:
-    ```
-    {
-        'inputs': [{'name': 'digit.jpg', 'description': 'description input', 'acceptedMediaTypes': 'image/jpeg', 'maximumSize': int(1.024e6)}],
-        'outputs': [{'name': 'digit.jpg.json', 'description': 'description output', 'mediaType': 'application/json', 'maximumSize': int(1.024e6)}],
-        'description': 'Example of short description.',
-        'longDescription': 'Example of long description.',
-        'performanceSummary': 'Example of performance summary.',
-        'requirement': {
-          'cpuAmount': '1000m',
-          'gpuUnits': 0,
-          'memoryAmount': '512Mi'
-        },
-        'technicalDetails': 'Example of technical details.',
-        'timeout': {
-          'run': 30000,
-          'status': 30000
-        },
-        'tags': [{'name': 'Label or Classify'}, {'name': 'Language and Text'}, {'name': 'Image'}],
-        'versionHistory': 'Example of version history.'
-    }
-    ```
 
     Args:
-        module (object): Module used to build the model.
         image_data (json): Required data to build and deploy the model.
         deploy (bool): Whether the model should be deployed or fixed as draft.
-        metadata (json): Required data when deploying the model. Only required if deploy==True.
         base_url (str): Default base_url is localhost:5000.
     """
-    return _defaultChassisML.publish(api_key, module, image_data, deploy, metadata, base_url)
+    return _defaultChassisML.publish(image_data, deploy, base_url)
 
-def get_job_status(job_id, api_key=None):
+def get_job_status(job_id):
     """Returns the data once the model has been deployed.
     """
-    return _defaultChassisML.get_job_status(job_id, api_key)
+    return _defaultChassisML.get_job_status(job_id)
 
-def download_tar(job_id, output_filename, api_key=None):
+def download_tar(job_id, output_filename):
     """Returns the data once the model has been deployed.
     """
-    return _defaultChassisML.download_tar(job_id, output_filename, api_key)
+    return _defaultChassisML.download_tar(job_id, output_filename)

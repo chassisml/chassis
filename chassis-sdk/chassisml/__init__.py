@@ -6,4 +6,4 @@
 name = 'chassisml'
 __version__ = '0.0.1'
 
-from .chassisml import publish, get_job_status, download_tar, Constants
+from .chassisml import publish, get_job_status, download_tar

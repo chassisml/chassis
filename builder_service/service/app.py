@@ -3,37 +3,34 @@ import json
 import uuid
 import tempfile
 import zipfile
-import urllib.parse
 from shutil import rmtree, copytree
-import requests
+
 from loguru import logger
+from dotenv import load_dotenv
 from flask import Flask, request, send_from_directory
+
 from kubernetes import client, config
 from kubernetes.client.rest import ApiException
 
-MOUNT_PATH_DIR = '/data'
-WORKSPACE_DIR = f'{MOUNT_PATH_DIR}/workspace'
-#  WORKSPACE_DIR = f'{MOUNT_PATH_DIR}'
-ENVIRONMENT = os.getenv('ENVIRONMENT')
+###########################################
 
-MODZY_BASE_URL = 'https://master.dev.modzy.engineering'
-JOB_NAME = 'chassis-builder-job'
+load_dotenv()
 
-routes = {
-    'details': '/api/accounting/access-keys/{}',
-    'create_model': '/api/models',
-    'add_image': '/api/models/{}/versions/{}/container-image',
-    'add_data': '/api/models/{}',
-    'add_metadata': '/api/models/{}/versions/{}',
-    'load_model': '/api/models/{}/versions/{}/load-process',
-    'upload_input_example': '/api/models/{}/versions/{}/testInput',
-    'run_model': '/api/models/{}/versions/{}/run-process',
-    'deploy_model': '/api/models/{}/versions/{}',
-    'model_draft': '/launchpad/hardware-requirements/{}/{}',
-    'model_url': '/models/{}/{}',
-}
+MOUNT_PATH_DIR = os.getenv('MOUNT_PATH_DIR')
+WORKSPACE_DIR = os.getenv('WORKSPACE_DIR')
+DATA_DIR = f'{MOUNT_PATH_DIR}/{WORKSPACE_DIR}'
+
+ENVIRONMENT = os.getenv('K_ENVIRONMENT')
+
+K_DATA_VOLUME_NAME= os.getenv('K_DATA_VOLUME_NAME')
+K_EMPTY_DIR_NAME = os.getenv('K_EMPTY_DIR_NAME')
+K_INIT_EMPTY_DIR_PATH = os.getenv('K_INIT_EMPTY_DIR_PATH')
+K_KANIKO_EMPTY_DIR_PATH = os.getenv('K_KANIKO_EMPTY_DIR_PATH')
+K_SERVICE_ACCOUNT_NAME = os.getenv('K_SERVICE_ACCOUNT_NAME')
+K_JOB_NAME = os.getenv('K_JOB_NAME')
 
 ###########################################
+
 def create_job_object(
     image_name,
     module_name,
@@ -43,24 +40,24 @@ def create_job_object(
     deploy,
     registry_auth,
 ):
-    job_name = f'{JOB_NAME}-{random_name}'
+    job_name = f'{K_JOB_NAME}-{random_name}'
 
     # XXX: Only for Docker Hub.
     registry_credentials = f'{{"auths":{{"https://index.docker.io/v1/":{{"auth":"{registry_auth}"}}}}}}'
 
     data_volume_mount = client.V1VolumeMount(
         mount_path=MOUNT_PATH_DIR,
-        name='kaniko-data'
+        name=K_DATA_VOLUME_NAME
     )
     # This volume will be used by init container to populare registry credentials.
     init_empty_dir_volume_mount = client.V1VolumeMount(
-        mount_path='/tmp/credentials',
-        name='registry-credentials'
+        mount_path=K_INIT_EMPTY_DIR_PATH,
+        name=K_EMPTY_DIR_NAME
     )
     # This volume will be used by kaniko container to get registry credentials.
     kaniko_empty_dir_volume_mount = client.V1VolumeMount(
-        mount_path='/kaniko/.docker',
-        name='registry-credentials'
+        mount_path=K_KANIKO_EMPTY_DIR_PATH,
+        name=K_EMPTY_DIR_NAME
     )
 
     # This container is used to populate registry credentials.
@@ -72,7 +69,7 @@ def create_job_object(
         command=[
             '/bin/sh',
             '-c',
-            f'echo \'{registry_credentials}\' > /tmp/credentials/config.json'
+            f'echo \'{registry_credentials}\' > {K_INIT_EMPTY_DIR_PATH}/config.json'
         ]
     )
     # This container is used to build the final image.
@@ -84,11 +81,11 @@ def create_job_object(
             kaniko_empty_dir_volume_mount
         ],
         args=[
-            f'--dockerfile={WORKSPACE_DIR}/flavours/{module_name}/Dockerfile',
+            f'--dockerfile={DATA_DIR}/flavours/{module_name}/Dockerfile',
             '' if deploy else '--no-push',
             f'--tarPath={path_to_tar_file}',
             f'--destination={image_name}{"" if ":" in image_name else ":latest"}',
-            f'--context={WORKSPACE_DIR}',
+            f'--context={DATA_DIR}',
             f'--build-arg=MODEL_DIR=model-{random_name}',
             f'--build-arg=MODEL_NAME={model_name}',
             f'--build-arg=MODEL_CLASS={module_name}',
@@ -96,18 +93,18 @@ def create_job_object(
     )
 
     data_pv_claim = client.V1PersistentVolumeClaimVolumeSource(
-        claim_name='kaniko-data'
+        claim_name=K_DATA_VOLUME_NAME
     )
     data_volume = client.V1Volume(
-        name='kaniko-data',
+        name=K_DATA_VOLUME_NAME,
         persistent_volume_claim=data_pv_claim
     )
     empty_dir_volume = client.V1Volume(
-        name='registry-credentials',
+        name=K_EMPTY_DIR_NAME,
         empty_dir=client.V1EmptyDirVolumeSource()
     )
     pod_spec = client.V1PodSpec(
-        service_account_name='job-builder',
+        service_account_name=K_SERVICE_ACCOUNT_NAME,
         restart_policy='Never',
         init_containers=[init_container],
         containers=[container],
@@ -140,10 +137,6 @@ def create_job(api_instance, job):
         body=job,
         namespace=ENVIRONMENT)
     logger.info(f'Pod created. Status={str(api_response.status)}')
-###########################################
-
-def format_url(route, *args):
-    return urllib.parse.urljoin(MODZY_BASE_URL, route).format(*args)
 
 def run_kaniko(
     image_name,
@@ -176,7 +169,7 @@ def run_kaniko(
 def unzip_model(model, module_name, random_name):
     tmp_dir = tempfile.mkdtemp()
     path_to_zip_file = f'{tmp_dir}/{model.filename}'
-    zip_content_dst = f'{WORKSPACE_DIR}/flavours/{module_name}/model-{random_name}'
+    zip_content_dst = f'{DATA_DIR}/flavours/{module_name}/model-{random_name}'
 
     model.save(path_to_zip_file)
 
@@ -202,20 +195,18 @@ def get_job_status(job_id):
     return status.to_dict()
 
 def download_tar(job_id):
-    uid = job_id.split(f'{JOB_NAME}-')[1]
+    uid = job_id.split(f'{K_JOB_NAME}-')[1]
 
-    return send_from_directory(WORKSPACE_DIR, path=f'kaniko_image-{uid}.tar', as_attachment=False)
+    return send_from_directory(DATA_DIR, path=f'kaniko_image-{uid}.tar', as_attachment=False)
 
 def build_image():
     image_data = json.load(request.files.get('image_data'))
     model = request.files.get('model')
-    input_file = request.files.get('input_file')
 
     if not (image_data and model):
         return 'Both model and image_data are required', 500
 
     image_name = image_data.get('name')
-    module_name = image_data.get('module_name')
     # XXX
     module_name = 'mlflow'
     model_name = image_data.get('model_name')
@@ -228,7 +219,7 @@ def build_image():
     random_name = str(uuid.uuid4())
     model_unzipped_dir = unzip_model(model, module_name, random_name)
 
-    path_to_tar_file = f'{WORKSPACE_DIR}/kaniko_image-{random_name}.tar'
+    path_to_tar_file = f'{DATA_DIR}/kaniko_image-{random_name}.tar'
 
     error = run_kaniko(
         image_name,
@@ -243,12 +234,12 @@ def build_image():
     if error:
         return {'error': error, 'job_id': None}
 
-    return {'error': False, 'job_id': f'{JOB_NAME}-{random_name}'}
+    return {'error': False, 'job_id': f'{K_JOB_NAME}-{random_name}'}
 
 def copy_required_files_for_kaniko():
     try:
         for dir_to_copy in 'proxy flavours'.split():
-            dst = f'{WORKSPACE_DIR}/{dir_to_copy}'
+            dst = f'{DATA_DIR}/{dir_to_copy}'
 
             if os.path.exists(dst):
                 rmtree(dst)
@@ -257,15 +248,8 @@ def copy_required_files_for_kaniko():
     except OSError as e:
         print(f'Directory not copied. Error: {e}')
 
-def create_app(test_config=None):
+def create_app():
     flask_app = Flask(__name__)
-
-    if test_config is None:
-        # Load the instance config, if it exists, when not testing.
-        flask_app.config.from_pyfile('config.py', silent=True)
-    else:
-        # Load the test config if passed in.
-        flask_app.config.update(test_config)
 
     @flask_app.route('/')
     def hello():
@@ -285,6 +269,7 @@ def create_app(test_config=None):
 
     return flask_app
 
+###########################################
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
