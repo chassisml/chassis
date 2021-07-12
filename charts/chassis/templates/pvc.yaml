@@ -2,7 +2,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   # This name uniquely identifies the PVC. This is used in deployment.
-  name: kaniko-data
+  name: {{ .Values.K_DATA_VOLUME_NAME }}
 spec:
   # Read more about access modes here: http://kubernetes.io/docs/user-guide/persistent-volumes/#access-modes
   accessModes:

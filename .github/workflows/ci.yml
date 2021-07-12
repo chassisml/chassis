@@ -83,9 +83,20 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Prepare helm chart
+      - name: See output of helm charts
         run: |
-          helm template --debug charts/*
+          helm template --debug --set $(echo $(cat builder_service/service/.env | grep -v '^#') | tr ' ' ',') charts/*
+
+      - name: Override values from service .env
+        run: |
+          cat builder_service/service/.env \
+            | grep -v '^#' \
+            | grep -v '^$' \
+            | while read -r line; do \
+              field=$(echo $line | awk -F= '{ print $1  }'); \
+              value=$(echo $line | awk -F= '{ print $2  }'); \
+              sed -i "s,${field}:.*,${field}: ${value},g" charts/*/values.yaml; \
+            done
 
       - name: Publish Helm charts
         uses: stefanprodan/helm-gh-pages@master

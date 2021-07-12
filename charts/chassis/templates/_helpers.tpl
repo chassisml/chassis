@@ -55,8 +55,8 @@ Create the name of the service account to use
 */}}
 {{- define "chassis.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "chassis.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "chassis.fullname" .) .Values.K_SERVICE_ACCOUNT_NAME }}
 {{- else }}
-{{- default "default" .Values.serviceAccount.name }}
+{{- default "default" .Values.K_SERVICE_ACCOUNT_NAME }}
 {{- end }}
 {{- end }}
