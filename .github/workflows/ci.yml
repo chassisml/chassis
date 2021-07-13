@@ -97,6 +97,8 @@ jobs:
               value=$(echo $line | awk -F= '{ print $2  }'); \
               sed -i "s,${field}:.*,${field}: ${value},g" charts/*/values.yaml; \
             done
+            repo=ghcr.io/${{ github.repository }}-service:${{ github.sha }}
+            sed -i "s,SERVICE_REPOSITORY:.*,SERVICE_REPOSITORY: ${repo},g" charts/*/values.yaml
 
       - name: Publish Helm charts
         uses: stefanprodan/helm-gh-pages@master
