@@ -200,6 +200,8 @@ def download_tar(job_id):
     return send_from_directory(DATA_DIR, path=f'kaniko_image-{uid}.tar', as_attachment=False)
 
 def build_image():
+    logger.info('New request to build image')
+
     image_data = json.load(request.files.get('image_data'))
     model = request.files.get('model')
 
@@ -220,6 +222,8 @@ def build_image():
     model_unzipped_dir = unzip_model(model, module_name, random_name)
 
     path_to_tar_file = f'{DATA_DIR}/kaniko_image-{random_name}.tar'
+
+    logger.info('Request data: {image_name}, {module_name}, {model_name}, {path_to_tar_file}')
 
     error = run_kaniko(
         image_name,
