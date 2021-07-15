@@ -1,0 +1,124 @@
+syntax = "proto3";
+
+option java_package = "com.modzy.model.grpc";
+option java_multiple_files = true;
+
+service ModzyModel {
+  rpc Status(StatusRequest) returns (StatusResponse);
+  rpc Run(RunRequest) returns (RunResponse);
+  rpc Shutdown(ShutdownRequest) returns (ShutdownResponse);
+}
+
+
+message StatusRequest {
+  // Keep empty bc compatibility in future if we add something specific for this call
+}
+
+message ModelInfo {
+    string model_name    = 1;
+    string model_version = 2;
+    string model_author  = 3;
+
+    string model_type    = 4;
+    // model_type could be a enumeration, but this might not be ideal because if the field
+    // is missing, we don't want to default to a particular version and guess.
+    //  enum ModelType {
+    //    file = 0;
+    //    grpc = 1;
+    //  }
+
+    string source        = 5;
+    //    enum ModelSource {
+    //      CUSTOM  = 0;
+    //      BAH     = 1;
+    //      PARTNER = 2;
+    //    }
+    //    ModelSource source  = 5;
+}
+
+message ModelDescription {
+    string summary                     = 1;
+    string details                     = 2;
+    string technical                   = 3;
+    string performance                 = 4;
+}
+
+message ModelInput {
+  string filename                      = 1;
+  repeated string accepted_media_types = 2;
+  string max_size                      = 3;
+  string description                   = 4;
+}
+
+message ModelOutput {
+  string filename                      = 1;
+  string media_type = 2;
+  string max_size                      = 3;
+  string description                   = 4;
+}
+
+message ModelResources {
+  string required_ram           = 1;
+  float num_cpus                = 2;
+  int32 num_gpus                = 3;
+}
+
+message ModelTimeout {
+  string status                 = 1;
+  string run                    = 2;
+}
+
+message ModelFeatures {
+  bool adversarial_defense      = 1;
+  int32 batch_size              = 2;
+  bool retrainable              = 3;
+  string results_format           = 4;
+  string drift_format             = 5;
+  string explanation_format       = 6;
+}
+
+message StatusResponse {
+  int32 status_code              = 1;
+  string status                  = 2;
+  string message                 = 3;
+  ModelInfo model_info           = 4;
+  ModelDescription description   = 5;
+  repeated ModelInput inputs     = 6;
+  repeated ModelOutput outputs   = 7;
+  ModelResources resources       = 8;
+  ModelTimeout timeout           = 9;
+  ModelFeatures features         = 10;
+}
+
+message InputItem {
+  map<string, bytes> input      = 1;
+}
+
+message RunRequest {
+  repeated InputItem inputs     = 1;
+  bool detect_drift             = 2;
+  bool explain                  = 3;
+}
+
+message OutputItem {
+  map<string, bytes> output     = 1;
+  // If success is false there will be an "error" key in the outputMap with as much information as possible
+  bool success                  = 2;
+}
+
+message RunResponse {
+  int32 status_code             = 1;
+  string status                 = 2;
+  string message                = 3;
+  repeated OutputItem outputs   = 4;
+}
+
+message ShutdownRequest {
+  // Keep empty bc compatibility in future if we add something specific for this call
+}
+
+message ShutdownResponse {
+  int32 status_code             = 1;
+  string status                 = 2;
+  string message                = 3;
+}
