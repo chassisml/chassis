@@ -150,8 +150,6 @@ def run_kaniko(
     config.load_incluster_config()
     batch_v1 = client.BatchV1Api()
 
-    logger.info('After config and client')
-
     try:
         job = create_job_object(
             image_name,
@@ -162,9 +160,6 @@ def run_kaniko(
             deploy,
             registry_auth,
         )
-
-        logger.info(f'Job: {job}')
-
         create_job(batch_v1, job)
     except Exception as err:
         return str(err)
@@ -205,8 +200,6 @@ def download_tar(job_id):
     return send_from_directory(DATA_DIR, path=f'kaniko_image-{uid}.tar', as_attachment=False)
 
 def build_image():
-    logger.debug('New request to build image')
-
     image_data = json.load(request.files.get('image_data'))
     model = request.files.get('model')
 
@@ -228,7 +221,7 @@ def build_image():
 
     path_to_tar_file = f'{DATA_DIR}/kaniko_image-{random_name}.tar'
 
-    logger.info(f'Request data: {image_name}, {module_name}, {model_name}, {path_to_tar_file}')
+    logger.debug('Request data: {image_name}, {module_name}, {model_name}, {path_to_tar_file}')
 
     error = run_kaniko(
         image_name,
