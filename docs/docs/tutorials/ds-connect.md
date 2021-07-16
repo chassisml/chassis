@@ -1,8 +1,20 @@
 # How a Data Scientist connects to chassis and builds a model
 
-A Data Scientist just needs to use the python SDK to connect to chassis.
+In order to connect to `Chassis` service we are going to use the SDK. We will transform our model into MLFlow format and we will upload it by making a request. After that, the image that have been created will be uploaded to Docker Hub and we will be able to use it.
 
-## Setup
+## Install the SDK
+
+First step is to install the SDK using `pip`.
+
+```bash
+pip install chassisml
+```
+
+## Import required libraries
+
+
+
+## XXX
 
 First of all he needs to import the SDK.
 
