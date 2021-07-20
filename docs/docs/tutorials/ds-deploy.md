@@ -8,8 +8,8 @@ tar image and it is stored in your disk as `/tmp/downloaded_image.tar`.
 You just need to clone the KFServing repository and run the `quick_install.sh` script.
 
 ```bash
-$> git clone git@github.com:kubeflow/kfserving.git
-$> ./kfserving/hack/quick_install.sh
+git clone git@github.com:kubeflow/kfserving.git
+./kfserving/hack/quick_install.sh
 ```
 
 ## Required variables
@@ -28,7 +28,6 @@ repository called `carmilso/chassisml-sklearn-demo:latest`, just deploy
 the [file that defines the `InferenceService` for the protocol v1 of KFServing](./custom_v1.yaml)
 
 ```yaml
-$> cat ./custom_v1.yaml
 apiVersion: "serving.kubeflow.org/v1beta1"
 kind: "InferenceService"
 metadata:
@@ -55,9 +54,10 @@ spec:
 In this case, the variable `MODEL_NAME` should not be necessary since it's defined when creating the image.
 
 ```bash
-$> kubectl apply -f custom_v1.yaml
-inferenceservice.serving.kubeflow.org/chassisml-sklearn-demo created
+kubectl apply -f custom_v1.yaml
 ```
+
+This should output a success message.
 
 ## Define required variables to query the pod
 
@@ -77,7 +77,7 @@ export SERVICE_HOSTNAME=$(kubectl get inferenceservice ${MODEL_NAME} -o jsonpath
 Now you can just make a request to predict some data:
 
 ```bash
-$> curl -H "Host: ${SERVICE_HOSTNAME}" "http://${INGRESS_HOST}:${INGRESS_PORT}/v1/models/${MODEL_NAME}:predict" -d@inputsv1.json | jq
+curl -H "Host: ${SERVICE_HOSTNAME}" "http://${INGRESS_HOST}:${INGRESS_PORT}/v1/models/${MODEL_NAME}:predict" -d@inputsv1.json | jq
 ```
 
 The output should be similar to this:
@@ -167,7 +167,7 @@ the image using the protocol v2 and make the request using the [data for v2](int
 The model can also be deployed locally:
 
 ```bash
-$> docker run --rm -p 8080:8080 \
+docker run --rm -p 8080:8080 \
 -e INTERFACE=kfserving \
 -e HTTP_PORT=8080 \
 -e PROTOCOL=v2 \
@@ -177,5 +177,5 @@ carmilso/chassisml-sklearn-demo:latest
 So we can query it this way:
 
 ```bash
-$> curl localhost:8080/v2/models/digits/infer -d@/tmp/inputsv2.json
+curl localhost:8080/v2/models/digits/infer -d@/tmp/inputsv2.json
 ```
