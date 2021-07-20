@@ -115,7 +115,7 @@ conda_env = {
 Finally we just save the MLFlow model in the directory we prefer.
 
 ```python
-model_save_path = "mlflow_custom_pyfunc_svm"
+model_save_path = 'mlflow_custom_pyfunc_svm'
 
 mlflow.pyfunc.save_model(
     path=model_save_path,

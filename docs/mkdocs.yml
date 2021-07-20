@@ -5,5 +5,23 @@ nav:
         - tutorials/devops-deploy.md
         - tutorials/ds-connect.md
         - tutorials/ds-deploy.md
-    - About: about.md
-theme: material
+    - Help: help.md
+    - Get Involved: get-involved.md
+    - Release Notes: release-notes.md
+    - FAQs: faqs.md
+theme:
+    name: material
+    logo: images/chassis-symbol.png
+    favicon: images/chassis-symbol.jpg
+    features:
+        - navigation.expand
+markdown_extensions:
+    - attr_list
+    - pymdownx.highlight
+    - pymdownx.superfences
+    - pymdownx.inlinehilite
+    - admonition
+# XXX: fix to correct path.
+repo_url: https://github.com/mlopsworks/containerizer
+repo_name: mlopsworks/chassis
+edit_uri: edit/main/docs/docs/
