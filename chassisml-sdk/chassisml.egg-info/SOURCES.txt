@@ -1,0 +1,9 @@
+setup.py
+chassisml/__init__.py
+chassisml/chassisml.py
+chassisml.egg-info/PKG-INFO
+chassisml.egg-info/SOURCES.txt
+chassisml.egg-info/dependency_links.txt
+chassisml.egg-info/not-zip-safe
+chassisml.egg-info/requires.txt
+chassisml.egg-info/top_level.txt
