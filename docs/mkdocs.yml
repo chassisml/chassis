@@ -11,6 +11,9 @@ nav:
     - FAQs: faqs.md
 theme:
     name: material
+    palette:
+        primary: white
+        accent: blue
     logo: images/chassis-symbol.png
     favicon: images/chassis-symbol.jpg
     features:
