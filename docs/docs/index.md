@@ -35,7 +35,6 @@ It also provides a python SDK that makes it very easy to communicate with Chassi
 - Automatically upload the image to Docker Hub
 - Image ready to be deployed
 
-
 **Secure**
 
 - Using [Kaniko](https://github.com/GoogleContainerTools/kaniko/) to securely build the image
@@ -56,4 +55,4 @@ Follow one of our tutorials to easily get started and see how Chassis works:
 
 ## Contributors
 
-A full list of contributors, which includes individuals that have contributed entries, can be found [here](https://github.com/modzy/model-converter/graphs/contributors).
+A full list of contributors, which includes individuals that have contributed entries, can be found [here](https://github.com/modzy/chassis/graphs/contributors).

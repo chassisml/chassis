@@ -133,5 +133,3 @@ jobs:
           tags: |
             ghcr.io/${{ github.repository }}-service:${{ github.sha }}
             ghcr.io/${{ github.repository }}-service:latest
-            ghcr.io/mlopsworks/chassis-service:${{ github.sha }}
-            ghcr.io/mlopsworks/chassis-service:latest

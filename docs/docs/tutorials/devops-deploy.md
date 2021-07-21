@@ -3,8 +3,7 @@
 ## Add the Helm repository
 
 ```bash
-helm repo add chassis https://mlopsworks.github.io/containerizer
-# helm repo add chassis https://chassis.github.io/chassis
+helm repo add chassis https://modzy.github.io/chassis
 ```
 
 After that we just need to update the Helm repos to fetch `Chassis` data.

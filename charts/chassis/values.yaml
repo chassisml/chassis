@@ -13,7 +13,7 @@ SERVICE_REPOSITORY: ''
 replicaCount: 1
 
 image:
-  repository: ghcr.io/mlopsworks/chassis-service
+  repository: ghcr.io/modzy/chassis-service
   # tag: 0.0.1
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.

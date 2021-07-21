@@ -24,7 +24,6 @@ markdown_extensions:
     - pymdownx.superfences
     - pymdownx.inlinehilite
     - admonition
-# XXX: fix to correct path.
-repo_url: https://github.com/mlopsworks/containerizer
-repo_name: mlopsworks/chassis
+repo_url: https://github.com/modzy/chassis
+repo_name: modzy/chassis
 edit_uri: edit/main/docs/docs/
