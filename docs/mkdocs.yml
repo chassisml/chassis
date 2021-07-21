@@ -14,8 +14,8 @@ theme:
     palette:
         primary: white
         accent: blue
-    logo: images/chassis-symbol.jpg
-    favicon: images/chassis-symbol.jpg
+    logo: images/chassis-symbol.png
+    favicon: images/chassis-symbol.png
     features:
         - navigation.expand
 markdown_extensions:
