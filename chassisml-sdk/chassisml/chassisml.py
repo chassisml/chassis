@@ -102,14 +102,14 @@ _defaultChassisML = ChassisML()
 def publish(image_data, deploy=False, base_url=None):
     """Uploads the tarball to ChassisML API to create a model.
 
-    If `deploy` is False it just prints the draft Url once the tarball has been uploaded.
+    If `deploy` is True it will also upload the built image to the corresponding tag.
     Example of image_data:
     ```
     {
-        'name': 'test-sklearn',
-        'version': '0.0.1',
+        'name': 'XXXX/chassisml-sklearn-demo:latest',
         'model_name': 'digits',
-        'model_path': '../../builder_service/test/sklearn/example_model',
+        'model_path': './mlflow_custom_pyfunc_svm',
+        'registry_auth': 'XxXxXxXx'
     }
     ```
 

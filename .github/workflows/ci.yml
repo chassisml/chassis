@@ -62,7 +62,6 @@ jobs:
           pytest
 
   docs:
-    # if: false
     runs-on: ubuntu-latest
 
     steps:
@@ -85,11 +84,12 @@ jobs:
 
       - name: See output of helm charts
         run: |
-          helm template --debug --set $(echo $(cat builder_service/service/.env | grep -v '^#') | tr ' ' ',') charts/*
+          helm template --debug --set $(echo $(cat service/.env | grep -v '^#') | tr ' ' ',') charts/*
 
       - name: Override values from service .env
         run: |
-          cat builder_service/service/.env \
+          # Populate values from .env file to helm values.
+          cat service/.env \
             | grep -v '^#' \
             | grep -v '^$' \
             | while read -r line; do \
@@ -113,11 +113,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Copy flavours to volume directory
-        run: |
-          mkdir -p ./builder_service/service/volume/proxy/out
-          cp -r ./builder_service/flavours ./builder_service/service/volume
-
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
         with:
@@ -128,7 +123,7 @@ jobs:
       - name: Build and push service
         uses: docker/build-push-action@v2
         with:
-          context: ./builder_service/service
+          context: ./service
           push: true
           tags: |
             ghcr.io/${{ github.repository }}-service:${{ github.sha }}

@@ -1,11 +1,6 @@
 .*
 *~
 *.tar
-proxy/test.go
 venv
-builder_service/test
-builder_service/proxy/test.*
-builder_service/proxy/out
-builder_service/backend/kubernetes
 chassis-sdk/examples/model
 __pycache__

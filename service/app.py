@@ -240,13 +240,15 @@ def build_image():
 
 def copy_required_files_for_kaniko():
     try:
-        for dir_to_copy in 'proxy flavours'.split():
+        # These directories will be copied to a shared volume
+        # with Kaniko so that it will be able to access them.
+        for dir_to_copy in 'flavours'.split():
             dst = f'{DATA_DIR}/{dir_to_copy}'
 
             if os.path.exists(dst):
                 rmtree(dst)
 
-            copytree(f'./volume/{dir_to_copy}', dst)
+            copytree(f'./{dir_to_copy}', dst)
     except OSError as e:
         print(f'Directory not copied. Error: {e}')
 
