@@ -16,7 +16,7 @@ class MLFlowFlavour:
         self.model = mlflow.pyfunc.load_model(MODEL_DIR)
 
     def predict(self, input_data):
-        logger.debug(f'input_data shape: {input_data.shape}')
+        # logger.debug(f'input_data shape: {input_data.shape}')
 
         predictions = self.model.predict(input_data)
 
