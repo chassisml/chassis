@@ -12,8 +12,9 @@ nav:
 theme:
     name: material
     palette:
-        primary: white
+        primary: orange
         accent: blue
+        scheme: slate
     logo: images/chassis-symbol.png
     favicon: images/chassis-symbol.png
     features:

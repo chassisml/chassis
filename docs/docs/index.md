@@ -1,6 +1,10 @@
 # Containerizing your models easily
 
-![Chassis logo](images/chassis-logo.png){: style="width:500px" }
+![Chassis logo](images/chassis-logo.png){: style="width:400px" }
+
+<br />
+
+TODO: diagram
 
 Chassis makes it easy to create a deployable docker image from your trained ML model.
 
