@@ -57,7 +57,7 @@ Some non-goals of this project are:
 Follow one of our tutorials to easily get started and see how Chassis works:
 
 - [Install with Helm](tutorials/devops-deploy.md) into a Cluster
-- [Build and image](tutorials/ds-connect)
+- [Build a container image](tutorials/ds-connect) from an MLflow model
 - [Deploy to KFServing](tutorials/ds-deploy.md) the built image
 
 ## Demo
