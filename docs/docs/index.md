@@ -2,13 +2,12 @@
 
 ![Chassis logo](images/chassis-logo.png){: style="width:400px; margin-bottom:10px;" }
 
-* Build [MLflow](https://mlflow.org/) models directly into DevOps-ready container images
+* Build [MLflow](https://mlflow.org/) models directly into DevOps-ready container images for inference
 * Supports parallel builds in Kubernetes jobs, using [Kaniko](https://github.com/GoogleContainerTools/kaniko), no Docker socket required!
 * Generates [Open Model Interface](https://openmodel.ml) compatible images that are multi-purpose and portable, they work on multiple platforms: KFServing and Modzy
+* Try the test drive today, then deploy our Helm chart to your K8s cluster to use it for real
 
-Containerizing your models easily
-
-TODO: diagram
+## About Chassis
 
 Chassis makes it easy to create a deployable docker image from your trained ML model.
 
@@ -51,7 +50,7 @@ It also provides a python SDK that makes it very easy to communicate with Chassi
 
 Some non-goals of this project are:
 
-- Deploy the built image
+- Deploy the built image - this is up to the platform that you deploy the container into, like KFServing or Modzy
 
 ## Getting Started
 
@@ -60,6 +59,14 @@ Follow one of our tutorials to easily get started and see how Chassis works:
 - [Install with Helm](tutorials/devops-deploy.md) into a Cluster
 - [Build and image](tutorials/ds-connect)
 - [Deploy to KFServing](tutorials/ds-deploy.md) the built image
+
+## Demo
+
+TODO
+
+## Shameless plug
+
+TODO
 
 ## Contributors
 
