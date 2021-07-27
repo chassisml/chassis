@@ -5,3 +5,5 @@ venv
 chassis-sdk/examples/model
 __pycache__
 *.egg-info
+build
+dist
