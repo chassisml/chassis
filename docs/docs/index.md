@@ -1,8 +1,17 @@
-# Containerizing your models easily
+# Model Containerizer for K8s
 
 ![Chassis logo](images/chassis-logo.png){: style="width:400px" }
 
 <br />
+
+* Secure, multi-tenant ML container builder on Kubernetes
+* Build MLflow models directly into DevOps-ready container images
+* Run those images in multiple platforms: KFServing and Modzy
+
+Chassis 
+
+
+Containerizing your models easily
 
 TODO: diagram
 
