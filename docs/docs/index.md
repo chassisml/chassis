@@ -20,7 +20,7 @@ Deploy Chassis, send your model to it and start using the built image to predict
 
 ## Test Drive
 
-The fastest way to get started is to use the test drive functionality provided by [TestFaster](https://testfaster.ci). Click on the "Launch Test Drive" button below (opens a new window).
+The fastest way to get started is to use the test drive functionality provided by [Testfaster](https://testfaster.ci). Click on the "Launch Test Drive" button below (opens a new window).
 
 <a href="https://testfaster.ci/launch?embedded=true&repo=https://github.com/combinator-ml/terraform-k8s-chassis&file=examples/testfaster/.testfaster.yml" target="\_blank">:computer: Launch Test Drive :computer:</a>
 
