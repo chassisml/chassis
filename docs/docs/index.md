@@ -23,6 +23,33 @@ The fastest way to get started is to use the test drive functionality provided b
 
 <a href="https://testfaster.ci/launch?embedded=true&repo=https://github.com/combinator-ml/terraform-k8s-chassis&file=examples/testfaster/.testfaster.yml" target="\_blank">:computer: Launch Test Drive :computer:</a>
 
+## Talk & Demo
+
+<style>
+.video-wrapper {
+  position: relative;
+  display: block;
+  height: 0;
+  padding: 0;
+  overflow: hidden;
+  padding-bottom: 56.25%;
+  border: 1px solid gray;
+}
+.video-wrapper > iframe {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+</style>
+
+<div class="video-wrapper">
+  <iframe width="1280" height="720" src="https://www.youtube.com/embed/d_8OIfQOa3I" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+
 ## Goals
 
 Chassis is a Kubernetes service that can be deployed in your preferred cluster using Helm. It works by creating jobs that can be run in parallel to create Docker images that package ML models. It provides integration with most common deployment platforms so your model will be ready to be deployed in a simple way.
@@ -59,33 +86,6 @@ Follow one of our tutorials to easily get started and see how Chassis works:
 - [Install with Helm](tutorials/devops-deploy.md) into a Cluster
 - [Build a container image](tutorials/ds-connect) from an MLflow model
 - [Deploy to KFServing](tutorials/ds-deploy.md) the built image
-
-## Talk & Demo
-
-<style>
-.video-wrapper {
-  position: relative;
-  display: block;
-  height: 0;
-  padding: 0;
-  overflow: hidden;
-  padding-bottom: 56.25%;
-  border: 1px solid gray;
-}
-.video-wrapper > iframe {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border: 0;
-}
-</style>
-
-<div class="video-wrapper">
-  <iframe width="1280" height="720" src="https://www.youtube.com/embed/d_8OIfQOa3I" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-</div>
 
 ## Shameless plug
 
