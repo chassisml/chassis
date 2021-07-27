@@ -1,4 +1,4 @@
-# Deploy Built Model to KFServing
+# Deploy Model to KFServing
 
 !!! note
     If you just want to try Chassis, you can use the test drive, which will deploy Chassis and KFServing for you so you can use Chassis to containerize an MLflow model, push it to your Docker Hub account, and then publish it to a KFServing instance running inside the test drive:
