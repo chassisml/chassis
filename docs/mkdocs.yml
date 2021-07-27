@@ -1,6 +1,7 @@
 site_name: Chassis
 nav:
     - index.md
+    - design.md
     - Tutorials:
         - tutorials/devops-deploy.md
         - tutorials/ds-connect.md
