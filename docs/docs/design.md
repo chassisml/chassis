@@ -1,4 +1,4 @@
-## Design
+# Design & Architecture
 
 Chassis makes it easy to create a deployable docker image from your trained ML model.
 
