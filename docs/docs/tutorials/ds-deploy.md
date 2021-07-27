@@ -185,8 +185,8 @@ docker run --rm -p 8080:8080 \
 carmilso/chassisml-sklearn-demo:latest
 ```
 
-So we can query it this way:
+So we can query it this way. Take into account that you must download (`inputsv2.json`)[https://github.com/modzy/chassis/blob/main/service/flavours/mlflow/interfaces/kfserving/inputsv2.json] before making the request:
 
 ```bash
-curl localhost:8080/v2/models/digits/infer -d@/tmp/inputsv2.json
+curl localhost:8080/v2/models/digits/infer -d@inputsv2.json
 ```
