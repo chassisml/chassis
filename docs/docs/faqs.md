@@ -1,5 +1,5 @@
 # FAQs
 
-## Does boxkite support other models besides MLFlow?
+## Why the name Chassis?
 
-Not at the moment. MLFlow is a way that allows Chassis to manage all kind of original models. So you can load your SKLearn, PyTorch, TF... model and convert it to MLFlow before sending it to Chassis.
+If your model is the engine, we provide a chassis for your model to drive!
