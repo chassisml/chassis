@@ -1,15 +1,10 @@
 # Model Containerizer for K8s
 
-![Chassis logo](images/chassis-logo.png){: style="width:400px" }
-
-<br />
+![Chassis logo](images/chassis-logo.png){: style="width:400px; margin-bottom:10px;" }
 
 * Build [MLflow](https://mlflow.org/) models directly into DevOps-ready container images
-* Supports parallel builds in Kubernetes jobs, using [Kaniko](https://github.com/GoogleContainerTools/kaniko), so no Docker socket required!
-* Generates [Open Model Interface](https://openmodel.ml)-compatible images that are multi-purpose and portable, so they work on multiple platforms: KFServing and Modzy
-
-Chassis 
-
+* Supports parallel builds in Kubernetes jobs, using [Kaniko](https://github.com/GoogleContainerTools/kaniko), no Docker socket required!
+* Generates [Open Model Interface](https://openmodel.ml) compatible images that are multi-purpose and portable, they work on multiple platforms: KFServing and Modzy
 
 Containerizing your models easily
 
