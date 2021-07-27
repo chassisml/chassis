@@ -70,4 +70,4 @@ TODO
 
 ## Contributors
 
-A full list of contributors, which includes individuals that have contributed entries, can be found [here](https://github.com/modzy/chassis/graphs/contributors).
+A full list of contributors can be found [here](https://github.com/modzy/chassis/graphs/contributors).
