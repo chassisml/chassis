@@ -4,9 +4,9 @@
 
 <br />
 
-* Secure, multi-tenant ML container builder on Kubernetes
-* Build MLflow models directly into DevOps-ready container images
-* Run those images in multiple platforms: KFServing and Modzy
+* Build [MLflow](https://mlflow.org/) models directly into DevOps-ready container images
+* Supports parallel builds in Kubernetes jobs, using [Kaniko](https://github.com/GoogleContainerTools/kaniko), so no Docker socket required!
+* Generates [Open Model Interface](https://openmodel.ml)-compatible images that are multi-purpose and portable, so they work on multiple platforms: KFServing and Modzy
 
 Chassis 
 
