@@ -170,7 +170,7 @@ The output should be similar to this:
 ```
 
 In this case, the data was prepared for the protocol v1, but we can deploy
-the image using the protocol v2 and make the request using the [data for v2](intputsv2.json).
+the image using the protocol v2 and make the request using the [data for v2](https://github.com/modzy/chassis/blob/main/service/flavours/mlflow/interfaces/kfserving/inputsv2.json).
 
 ## Deploy the model locally
 
