@@ -8,6 +8,17 @@ At the moment, Chassis images are compatible with KFServing and Modzy gRPC. This
 
 Deploy Chassis, send your model to it and start using the built container image to run inference on your data.
 
+## Architecture
+
+This diagram shows the overall architecture of the Chassis system:
+
+![](images/architecture.png){ style="border:20px solid white" }
+
+This diagram zooms in on the generated container, showing the pluggable interface, configurable at runtime:
+
+![](images/container.png){ style="border:20px solid white" }
+
+
 ## Goals
 
 Chassis is a Kubernetes service that can be deployed in your preferred cluster using Helm. It works by creating jobs that can be run in parallel to create Docker images that package ML models. It provides integration with most common deployment platforms so your model will be ready to be deployed in a simple way.
