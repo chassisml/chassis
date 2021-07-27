@@ -44,7 +44,7 @@ The fastest way to get started is to use the test drive functionality provided b
 
 Follow one of our tutorials to easily get started and see how Chassis works:
 
-- [Install with Helm](tutorials/devops-deploy.md) into a Cluster
+- [Install with Helm](tutorials/devops-deploy.md) into a Kubernetes cluster
 - [Build a container image](tutorials/ds-connect) from an MLflow model
 - [Deploy to KFServing](tutorials/ds-deploy.md) the built image
 
