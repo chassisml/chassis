@@ -21,10 +21,14 @@ theme:
         - navigation.expand
 markdown_extensions:
     - attr_list
+    - pymdownx.details
     - pymdownx.highlight
     - pymdownx.superfences
     - pymdownx.inlinehilite
     - admonition
+    - pymdownx.emoji:
+        emoji_index: !!python/name:materialx.emoji.twemoji
+        emoji_generator: !!python/name:materialx.emoji.to_svg
 repo_url: https://github.com/modzy/chassis
 repo_name: modzy/chassis
 edit_uri: edit/main/docs/docs/
