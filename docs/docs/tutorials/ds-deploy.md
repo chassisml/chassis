@@ -72,7 +72,7 @@ This is needed in order to be able to communicate with the deployed image.
 
 The `SERVICE_NAME` must match the name defined in the `metadata.name` of the `InferenceService` created above.
 
-The `MODEL_NAME` must match the name of your model. It can be defined by the data scientist when (making the request against `Chassis` service)[https://chassis.ml/tutorials/ds-connect/] or overwritten in the `InferenceService` as defined above.
+The `MODEL_NAME` must match the name of your model. It can be defined by the data scientist when [making the request against `Chassis` service](https://chassis.ml/tutorials/ds-connect/) or overwritten in the `InferenceService` as defined above.
 
 ```bash
 export INGRESS_HOST=$(minikube ip)
@@ -84,7 +84,7 @@ export SERVICE_HOSTNAME=$(kubectl get inferenceservice ${SERVICE_NAME} -o jsonpa
 
 ## Query the model
 
-Now you can just make a request to predict some data. Take into account that you must download (`inputsv1.json`)[https://github.com/modzy/chassis/blob/main/service/flavours/mlflow/interfaces/kfserving/inputsv1.json] before making the request.
+Now you can just make a request to predict some data. Take into account that you must download [`inputsv1.json`](https://github.com/modzy/chassis/blob/main/service/flavours/mlflow/interfaces/kfserving/inputsv1.json) before making the request.
 
 ```bash
 curl -H "Host: ${SERVICE_HOSTNAME}" "http://${INGRESS_HOST}:${INGRESS_PORT}/v1/models/${MODEL_NAME}:predict" -d@inputsv1.json | jq
@@ -185,7 +185,7 @@ docker run --rm -p 8080:8080 \
 carmilso/chassisml-sklearn-demo:latest
 ```
 
-So we can query it this way. Take into account that you must download (`inputsv2.json`)[https://github.com/modzy/chassis/blob/main/service/flavours/mlflow/interfaces/kfserving/inputsv2.json] before making the request:
+So we can query it this way. Take into account that you must download [`inputsv2.json`](https://github.com/modzy/chassis/blob/main/service/flavours/mlflow/interfaces/kfserving/inputsv2.json) before making the request:
 
 ```bash
 curl localhost:8080/v2/models/digits/infer -d@inputsv2.json
