@@ -203,7 +203,7 @@ chassisml.get_job_status(job_id)
 
 And we should see something like this in case the job has not finished yet.
 
-```json
+```python
 {'active': 1,
  'completion_time': None,
  'conditions': None,
@@ -214,7 +214,7 @@ And we should see something like this in case the job has not finished yet.
 
 On the other hand, if the job has already finished and our image has been correctly built this could be the output.
 
-```json
+```python
 {'active': None,
  'completion_time': 'Fri, 09 Jul 2021 09:13:37 GMT',
  'conditions': [{'last_probe_time': 'Fri, 09 Jul 2021 09:13:37 GMT',
