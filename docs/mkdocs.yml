@@ -1,6 +1,7 @@
 site_name: Chassis
 nav:
     - index.md
+    - design.md
     - Tutorials:
         - tutorials/devops-deploy.md
         - tutorials/ds-connect.md
@@ -12,18 +13,23 @@ nav:
 theme:
     name: material
     palette:
-        primary: white
+        primary: orange
         accent: blue
+        scheme: slate
     logo: images/chassis-symbol.png
     favicon: images/chassis-symbol.png
     features:
         - navigation.expand
 markdown_extensions:
     - attr_list
+    - pymdownx.details
     - pymdownx.highlight
     - pymdownx.superfences
     - pymdownx.inlinehilite
     - admonition
+    - pymdownx.emoji:
+        emoji_index: !!python/name:materialx.emoji.twemoji
+        emoji_generator: !!python/name:materialx.emoji.to_svg
 repo_url: https://github.com/modzy/chassis
 repo_name: modzy/chassis
 edit_uri: edit/main/docs/docs/

@@ -1,4 +1,10 @@
-# How a Data Scientist connects to chassis and builds a model
+# Build a Model (Data Scientists)
+
+!!! note
+    If you just want to try Chassis, you can use the test drive, which will deploy it for you so that you can go straight to building a MLflow model into a Docker container and pushing it to your Docker Hub account:
+
+    <a href="https://testfaster.ci/launch?embedded=true&repo=https://github.com/combinator-ml/terraform-k8s-chassis&file=examples/testfaster/.testfaster.yml" target="_blank">:computer: Launch Test Drive :computer:</a>
+
 
 In order to connect to `Chassis` service we are going to use the SDK. We will transform our model into MLFlow format and we will upload it by making a request. After that, the image that have been created will be uploaded to Docker Hub and we will be able to use it.
 
@@ -197,7 +203,7 @@ chassisml.get_job_status(job_id)
 
 And we should see something like this in case the job has not finished yet.
 
-```json
+```python
 {'active': 1,
  'completion_time': None,
  'conditions': None,
@@ -208,7 +214,7 @@ And we should see something like this in case the job has not finished yet.
 
 On the other hand, if the job has already finished and our image has been correctly built this could be the output.
 
-```json
+```python
 {'active': None,
  'completion_time': 'Fri, 09 Jul 2021 09:13:37 GMT',
  'conditions': [{'last_probe_time': 'Fri, 09 Jul 2021 09:13:37 GMT',
