@@ -1,6 +1,6 @@
-import logging
 import os
 import traceback
+from loguru import logger
 from concurrent import futures
 from time import time as t
 from typing import Dict, List
@@ -35,21 +35,18 @@ from ...model_lib.src.model import ExampleModel
 
 MAX_WORKERS = 1
 
-logging.basicConfig(level=logging.INFO)
-LOGGER = logging.getLogger(__name__)
-
 
 def log_stack_trace():
     # TODO: we could potentially extract even more information from: stack_trace = e.__traceback__ if we notice
     #   that things are very hard to debug from the platform in the current state.
     stack_trace_formatted = traceback.format_exc()
-    LOGGER.critical(stack_trace_formatted)
+    logger.critical(stack_trace_formatted)
 
 
 class ModzyModel(ModzyModelServicer):
     def __init__(self):
         if not model_version_is_synchronized():
-            LOGGER.error(
+            logger.error(
                 "Model version appears to be out of sync. Please ensure that the asset bundle version in your"
                 "Dockerfile and the `__VERSION__` variable are up to date and in sync."
             )
@@ -107,7 +104,7 @@ class ModzyModel(ModzyModelServicer):
                 # If this is the first time calling the `Status` route, then attempt to load the model
                 self.model = ExampleModel()
                 message = "Model Initialized Successfully."
-                LOGGER.info(message)
+                logger.info(message)
                 status_response = StatusResponse(
                     status_code=200,
                     status="OK",
@@ -124,7 +121,7 @@ class ModzyModel(ModzyModelServicer):
             except Exception as e:
                 # If there is a problem in loading the model, catch it and report the error
                 message = "Model Failed to Initialize."
-                LOGGER.critical(f"{message} Error: {e}")
+                logger.critical(f"{message} Error: {e}")
                 log_stack_trace()
                 status_response = StatusResponse(
                     status_code=500,
@@ -141,7 +138,7 @@ class ModzyModel(ModzyModelServicer):
         else:
             # The model is treated as a singleton that cannot be reloaded. If the model has already been initialized,
             message = "Model Already Initialized."
-            LOGGER.warning(message)
+            logger.warning(message)
             status_response = StatusResponse(
                 status_code=200,
                 status="OK",
@@ -154,7 +151,7 @@ class ModzyModel(ModzyModelServicer):
                 timeout=self.timeout,
                 features=self.features,
             )
-        LOGGER.info(
+        logger.info(
             f"The model is {'not ' if self.model is None else ''}loaded.\n"
             f"Features: "
             f"Batch Size {self.batch_size}, "
@@ -163,7 +160,7 @@ class ModzyModel(ModzyModelServicer):
             f"Explainable = {self.explainable}, "
             f"Retrainable = {self.retrainable}"
         )
-        LOGGER.info(f"Completed call to Status Route in {t() - start_status_call}")
+        logger.info(f"Completed call to Status Route in {t() - start_status_call}")
         return status_response
 
     def Run(self, request, context):
@@ -188,7 +185,7 @@ class ModzyModel(ModzyModelServicer):
                         [input_item.input for input_item in request.inputs], request.detect_drift, request.explain
                     )
                     if current_batch_size != len(raw_outputs):
-                        LOGGER.critical(
+                        logger.critical(
                             f"The number of outputs from `handle_discrete_input_batch` ({len(raw_outputs)}) does not"
                             f" match the number of inputs ({current_batch_size}). Attempting to fall back."
                         )
@@ -203,12 +200,12 @@ class ModzyModel(ModzyModelServicer):
                         outputs.append(output_item)
                     batch_process = True
                 except NotImplementedError:
-                    LOGGER.info("No custom batch processing method found. Implement `handle_discrete_input_batch`.")
+                    logger.info("No custom batch processing method found. Implement `handle_discrete_input_batch`.")
                     batch_process = False
                 except InputOutputMismatchException:
                     pass
                 except Exception as e:
-                    LOGGER.critical(f"The batch processing method implemented encountered a fatal error: {e}")
+                    logger.critical(f"The batch processing method implemented encountered a fatal error: {e}")
                     log_stack_trace()
                     batch_process = False
 
@@ -234,7 +231,7 @@ class ModzyModel(ModzyModelServicer):
         response.outputs.extend(outputs)
         num_inputs = len(request.inputs)
         run_route_time = t() - start_run_call
-        LOGGER.info(
+        logger.info(
             f"Completed call to Run Route with {num_inputs} inputs in {run_route_time}. "
             f"Inputs per second: {num_inputs / run_route_time}"
         )
@@ -255,13 +252,13 @@ def create_output_item(message, data: Dict[str, bytes] = None):
     if data is None:
         # Deals with output items that encapsulate errors
         error_message = message
-        LOGGER.error(error_message)
+        logger.error(error_message)
 
         output_item.success = False
         data = error_message.encode()
         output_item.output["error"] = data
     else:
-        LOGGER.info(message)
+        logger.info(message)
 
         output_item.success = True
         for output_filename, file_contents in data.items():
@@ -288,7 +285,7 @@ def serve():
     server_port = get_server_port()
     grpc_server.add_insecure_port(f"[::]:{server_port}")  # TODO: is this insecure port really what we want?
     grpc_server.start()
-    LOGGER.info(f"gRPC Server running on port {server_port}")
+    logger.info(f"gRPC Server running on port {server_port}")
     grpc_server.wait_for_termination()
 
 
