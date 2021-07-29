@@ -1,7 +1,7 @@
 # Build a Model (Data Scientists)
 
 !!! note
-    If you just want to try Chassis, you can use the test drive, which will deploy it for you so that you can go straight to building a MLflow model into a Docker container and pushing it to your Docker Hub account:
+    If you just want to try Chassis, you can use the test drive, which will deploy it for you so that you can go straight to building a MLflow model into a Docker container and pushing it to your Docker Hub account in the `svc_demo.ipynb` sample notebook:
 
     <a href="https://testfaster.ci/launch?embedded=true&repo=https://github.com/combinator-ml/terraform-k8s-chassis&file=examples/testfaster/.testfaster.yml" target="_blank">:computer: Launch Test Drive :computer:</a>
 
