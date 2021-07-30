@@ -37,7 +37,7 @@ def create_job_object(
     model_name,
     path_to_tar_file,
     random_name,
-    modzy_metadata_path,
+    modzy_data,
     deploy,
     registry_auth,
 ):
@@ -88,7 +88,7 @@ def create_job_object(
             f'--destination={image_name}{"" if ":" in image_name else ":latest"}',
             f'--context={DATA_DIR}',
             f'--build-arg=MODEL_DIR=model-{random_name}',
-            f'--build-arg=MODZY_METADATA_PATH={modzy_metadata_path}',
+            f'--build-arg=MODZY_METADATA_PATH={modzy_data["modzy_metadata_path"]}',
             f'--build-arg=MODEL_NAME={model_name}',
             f'--build-arg=MODEL_CLASS={module_name}',
         ]
@@ -146,7 +146,7 @@ def run_kaniko(
     model_name,
     path_to_tar_file,
     random_name,
-    modzy_metadata_path,
+    modzy_data,
     deploy,
     registry_auth,
 ):
@@ -160,7 +160,7 @@ def run_kaniko(
             model_name,
             path_to_tar_file,
             random_name,
-            modzy_metadata_path,
+            modzy_data,
             deploy,
             registry_auth,
         )
@@ -239,6 +239,7 @@ def build_image():
     model_unzipped_dir = unzip_model(model, module_name, random_name)
 
     modzy_metadata_path = extract_modzy_metadata(modzy_metadata_data, module_name, random_name)
+    modzy_data['modzy_metadata_path'] = modzy_metadata_path
 
     path_to_tar_file = f'{DATA_DIR}/kaniko_image-{random_name}.tar'
 
@@ -250,7 +251,7 @@ def build_image():
         model_name,
         path_to_tar_file,
         random_name,
-        modzy_metadata_path,
+        modzy_data,
         deploy,
         registry_auth,
     )
