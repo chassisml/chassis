@@ -19,5 +19,6 @@ setup(
     packages=find_packages(),
     python_requires='>=3.6',
     install_requires=['requests'],
+    url='https://github.com/modzy/chassis/tree/main/chassisml-sdk',
     zip_safe=False,
 )
