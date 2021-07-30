@@ -1,3 +1,7 @@
-[data-md-color-scheme="slate"] {
+:root {
   --md-typeset-a-color:        #ffa724;
+
+  [data-md-color-scheme="slate"] {
+    --md-typeset-a-color:        #ffa724;
+  }
 }
