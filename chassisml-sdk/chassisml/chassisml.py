@@ -48,7 +48,7 @@ class ChassisML:
 
         return tmppath
 
-    def publish(self, image_data, deploy, base_url):
+    def publish(self, image_data, modzy_data, deploy, base_url):
         self.base_url = base_url if base_url else self.base_url
         self.deploy = deploy
 
@@ -58,8 +58,13 @@ class ChassisML:
 
         files = [
             ('image_data', json.dumps(image_data)),
+            ('modzy_data', json.dumps(modzy_data)),
             ('model', open(f'{tmp_zip_dir}/{MODEL_ZIP_NAME}', 'rb')),
         ]
+
+        metadata_path = modzy_data.get('metadata_path')
+        if metadata_path:
+            files.append(('modzy_metadata_data', open(metadata_path, 'rb')))
 
         route = urllib.parse.urljoin(self.base_url, routes['build'])
 
@@ -99,7 +104,7 @@ _defaultChassisML = ChassisML()
 
 ###########################################
 
-def publish(image_data, deploy=False, base_url=None):
+def publish(image_data, modzy_data=None, deploy=False, base_url=None):
     """Uploads the tarball to ChassisML API to create a model.
 
     If `deploy` is True it will also upload the built image to the corresponding tag.
@@ -112,13 +117,19 @@ def publish(image_data, deploy=False, base_url=None):
         'registry_auth': 'XxXxXxXx'
     }
     ```
+    Example of modzy_data:
+    ```
+    {
+        'metadata_path': './modzy/model.yaml'
+    }
+    ```
 
     Args:
         image_data (json): Required data to build and deploy the model.
         deploy (bool): Whether the model should be deployed or fixed as draft.
         base_url (str): Default base_url is localhost:5000.
     """
-    return _defaultChassisML.publish(image_data, deploy, base_url)
+    return _defaultChassisML.publish(image_data, modzy_data, deploy, base_url)
 
 def get_job_status(job_id):
     """Returns the data once the model has been deployed.

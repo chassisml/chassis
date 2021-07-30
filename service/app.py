@@ -37,6 +37,7 @@ def create_job_object(
     model_name,
     path_to_tar_file,
     random_name,
+    modzy_metadata_path,
     deploy,
     registry_auth,
 ):
@@ -87,6 +88,7 @@ def create_job_object(
             f'--destination={image_name}{"" if ":" in image_name else ":latest"}',
             f'--context={DATA_DIR}',
             f'--build-arg=MODEL_DIR=model-{random_name}',
+            f'--build-arg=MODZY_METADATA_PATH={modzy_metadata_path}',
             f'--build-arg=MODEL_NAME={model_name}',
             f'--build-arg=MODEL_CLASS={module_name}',
         ]
@@ -144,6 +146,7 @@ def run_kaniko(
     model_name,
     path_to_tar_file,
     random_name,
+    modzy_metadata_path,
     deploy,
     registry_auth,
 ):
@@ -157,6 +160,7 @@ def run_kaniko(
             model_name,
             path_to_tar_file,
             random_name,
+            modzy_metadata_path,
             deploy,
             registry_auth,
         )
@@ -180,6 +184,18 @@ def unzip_model(model, module_name, random_name):
 
     return zip_content_dst
 
+def extract_modzy_metadata(modzy_metadata_data, module_name, random_name):
+    if modzy_metadata_data:
+        metadata_path = f'flavours/{module_name}/model-{random_name}.yaml'
+        modzy_metadata_data.save(f'{DATA_DIR}/{metadata_path}')
+    else:
+        # Use the default one if user has not sent its own metadata file.
+        # This way, mlflow/Dockerfile will not throw an error because it
+        # will copy a file that does exist.
+        metadata_path = f'flavours/{module_name}/interfaces/modzy/asset_bundle/0.1.0/model.yaml'
+
+    return metadata_path
+
 def get_job_status(job_id):
     config.load_incluster_config()
     batch_v1 = client.BatchV1Api()
@@ -200,14 +216,17 @@ def download_tar(job_id):
     return send_from_directory(DATA_DIR, path=f'kaniko_image-{uid}.tar', as_attachment=False)
 
 def build_image():
-    image_data = json.load(request.files.get('image_data'))
-    model = request.files.get('model')
-
-    if not (image_data and model):
+    if not ('image_data' in request.files and 'model' in request.files):
         return 'Both model and image_data are required', 500
 
+    image_data = json.load(request.files.get('image_data'))
+    model = request.files.get('model')
+    modzy_metadata_data = request.files.get('modzy_metadata_data')
+    modzy_data = json.load(request.files.get('modzy_data'))
+
     image_name = image_data.get('name')
-    # XXX
+    # XXX: this is hardcoded here because before we were using
+    # other frameworks until we decided to fix it to mlflow.
     module_name = 'mlflow'
     model_name = image_data.get('model_name')
     # It should match the version that
@@ -219,6 +238,8 @@ def build_image():
     random_name = str(uuid.uuid4())
     model_unzipped_dir = unzip_model(model, module_name, random_name)
 
+    modzy_metadata_path = extract_modzy_metadata(modzy_metadata_data, module_name, random_name)
+
     path_to_tar_file = f'{DATA_DIR}/kaniko_image-{random_name}.tar'
 
     logger.debug('Request data: {image_name}, {module_name}, {model_name}, {path_to_tar_file}')
@@ -229,6 +250,7 @@ def build_image():
         model_name,
         path_to_tar_file,
         random_name,
+        modzy_metadata_path,
         deploy,
         registry_auth,
     )
