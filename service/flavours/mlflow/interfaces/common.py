@@ -1,4 +1,5 @@
 import os
+import numpy as np
 import mlflow.pyfunc
 from loguru import logger
 
@@ -16,7 +17,9 @@ class MLFlowFlavour:
         self.model = mlflow.pyfunc.load_model(MODEL_DIR)
 
     def predict(self, input_data):
-        # logger.debug(f'input_data shape: {input_data.shape}')
+        # Input data must be a numpy array.
+        if type(input_data).__module__ != np.__name__:
+            input_data = np.array(input_data)
 
         predictions = self.model.predict(input_data)
 

@@ -14,7 +14,7 @@ The required output structure for a successful inference run for a models is the
     }
 }
 
-The `data` key is required and stores a dictionary which represents the output for a specific input. The only top-level 
+The `data` key is required and stores a dictionary which represents the output for a specific input. The only top-level
 key within these dictionaries that is required is `result`, however, `explanation` and `drift` are additional keys that
 may be included if your particular model supports drift detection or explainability. All three of these keys
 (`result`, `explanation`, and `drift`) are required to have a particular format in order to provide platform support.
@@ -103,8 +103,11 @@ class ExampleModel:
 
     def handle_single_input(self, model_input: Dict[str, bytes], detect_drift: bool, explain: bool) -> Dict[str, bytes]:
         input_data = json.loads(model_input["input.json"])
-        input_data["detect_drift"] = detect_drift
-        input_data["explain"] = explain
+
+        if detect_drift:
+            input_data["detect_drift"] = detect_drift
+        if explain:
+            input_data["explain"] = explain
 
         output_item = self.model.predict(input_data)
 
