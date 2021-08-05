@@ -73,20 +73,20 @@ class ModzyModel(ModzyModelServicer):
                 ModelInput(
                     filename=input_[0],
                     accepted_media_types=["not provided"] if input_[1] == [None] else input_[1],
-                    max_size=input_[2],
+                    max_size=str(input_[2]),
                     description=input_[3],
                 )
                 for input_ in inputs
             ]
 
             self.outputs = [
-                ModelOutput(filename=output[0], media_type=output[1], max_size=output[2], description=output[3])
+                ModelOutput(filename=output[0], media_type=output[1], max_size=str(output[2]), description=output[3])
                 for output in outputs
             ]
 
             self.resources = ModelResources(required_ram=resources[0], num_cpus=resources[1], num_gpus=resources[2])
 
-            self.timeout = ModelTimeout(status=timeout[0], run=timeout[1])
+            self.timeout = ModelTimeout(status=str(timeout[0]), run=str(timeout[1]))
 
             self.features = ModelFeatures(
                 adversarial_defense=features[0],
