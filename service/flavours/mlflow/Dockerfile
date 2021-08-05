@@ -8,6 +8,8 @@ FROM continuumio/miniconda3:4.9.2-alpine AS build
 ARG MODEL_DIR
 # Should be: mlflow.
 ARG MODEL_CLASS
+# Interface.
+ARG INTERFACE
 # This is the model.yaml file.
 ARG MODZY_METADATA_PATH
 
@@ -35,6 +37,8 @@ ARG MODEL_DIR
 ARG MODEL_NAME
 # Should be: mlflow.
 ARG MODEL_CLASS
+# Interface.
+ARG INTERFACE
 # This is the model.yaml file.
 ARG MODZY_METADATA_PATH
 
@@ -44,6 +48,7 @@ COPY flavours/${MODEL_CLASS}/${MODEL_DIR} ./model/${MODEL_NAME}
 COPY flavours/${MODEL_CLASS}/entrypoint.sh /
 
 ENV MODEL_DIR ./model/${MODEL_NAME}
+ENV INTERFACE ${INTERFACE}
 
 COPY --from=build /venv /venv
 

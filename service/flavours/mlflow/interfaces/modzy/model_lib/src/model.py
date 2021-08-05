@@ -101,8 +101,8 @@ class ExampleModel:
         """
         self.model = MLFlowFlavour()
 
-    def handle_single_input(self, model_input: Dict[str, bytes], detect_drift: bool, explain: bool) -> Dict[str, bytes]:
-        input_data = json.loads(model_input["input.json"])
+    def handle_single_input(self, model_input: Dict[str, bytes], detect_drift: bool, explain: bool, input_filename: str) -> Dict[str, bytes]:
+        input_data = json.loads(model_input[input_filename])
 
         if detect_drift:
             input_data["detect_drift"] = detect_drift

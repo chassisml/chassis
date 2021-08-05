@@ -213,7 +213,7 @@ class ModzyModel(ModzyModelServicer):
                 for i, input_item in enumerate(request.inputs):
                     try:
                         raw_output: Dict[str, bytes] = self.model.handle_single_input(
-                            input_item.input, request.detect_drift, request.explain
+                            input_item.input, request.detect_drift, request.explain, self.inputs[0].filename
                         )
                         # TODO: It would probably be useful to have an example of explanation/drift metadata here
                         output_item = create_output_item(f"Processed item {i + 1} as single input.", raw_output)

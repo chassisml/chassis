@@ -117,6 +117,8 @@ outputs:
 # in order to run efficiently. Keep in mind that there may be many instances
 # of your model running at any given time so please be conservative with the
 # values you specify here.
+requirement:
+  requirementAccountId: 1
 resources:
   memory:
     # The amount of RAM required by your model, e.g. 512M or 1G
