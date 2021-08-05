@@ -169,6 +169,7 @@ def load_model(identifier, version):
     percentage = -1
     while percentage < 100:
         res = r_session.get(route)
+        res.raise_for_status()
 
         res_data = res.json()
         new_percentage = res_data.get('percentage')
