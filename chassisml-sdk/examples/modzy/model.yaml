@@ -8,16 +8,16 @@ source: bah
 # as three dot separated integers, for example '2.1.0'.
 version: 0.1.0
 # The human readable name of the model.
-name: digits
+name: chassis-digits-test
 # The author of the model.
 author: Carlos Millan Soler
 # Model detail information.
 description:
   # A one or two sentence summary of what this model does.
-  summary:
+  summary: This is an image built by chassis that exposes a sklearn model.
   # A longer description of the model. This value supports content
   # in Markdown format for including rich text, links, images, etc.
-  details:
+  details: It classifies digits.
   # Technical details. This value
   # supports content in Markdown format for including rich
   # text, links, images, etc.
@@ -84,18 +84,18 @@ metrics:
 inputs:
   # The value of this key will be the name of the file that is
   # supplied to your model for processing
-  input.txt:
+  input.json:
     # The expected media types of this file. For more information
     # on media types, see:
     # https://www.iana.org/assignments/media-types/media-types.xhtml
     acceptedMediaTypes:
-    -
+    - application/json
     # The maximum size that this file is expected to be.
-    maxSize:
+    maxSize: 1024000
     # A human readable description of what this file is expected to
     # be. This value supports content in Markdown format for including
     # rich text, links, images, etc.
-    description:
+    description: numpy array 2d
 
 # Please indicate the names and kinds of output(s) that your model
 # writes out.
@@ -104,19 +104,21 @@ outputs:
     # The expected media types of this file. For more information
     # on media types, see:
     # https://www.iana.org/assignments/media-types/media-types.xhtml
-    mediaType:
+    mediaType: application/json
     # The maximum size that this file is expected to be.
-    maxSize:
+    maxSize: 1024000
     # A human readable description of what this file is expected to
     # be. This value supports content in Markdown format for including
     # rich text, links, images, etc.
-    description: |
+    description: numpy 2d array
 
 
 # The resources section indicates what resources are required by your model
 # in order to run efficiently. Keep in mind that there may be many instances
 # of your model running at any given time so please be conservative with the
 # values you specify here.
+requirement:
+  requirementId: -3
 resources:
   memory:
     # The amount of RAM required by your model, e.g. 512M or 1G
@@ -135,10 +137,10 @@ resources:
 timeout:
   # Status timeout indicates the timeout threshhold for calls to your
   # model's `/status` route, e.g. 20s
-  status:
+  status: 60000
   # Run timeout indicates the timeout threshhold for files submitted
   # to your model for processing, e.g. 20s
-  run:
+  run: 60000
 
 # Please set the following flags to either true or false.
 internal:
