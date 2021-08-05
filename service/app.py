@@ -18,6 +18,8 @@ load_dotenv()
 
 MOUNT_PATH_DIR = os.getenv('MOUNT_PATH_DIR')
 WORKSPACE_DIR = os.getenv('WORKSPACE_DIR')
+MODZY_UPLOADER_REPOSITORY = os.getenv('MODZY_UPLOADER_REPOSITORY')
+
 DATA_DIR = f'{MOUNT_PATH_DIR}/{WORKSPACE_DIR}'
 
 ENVIRONMENT = os.getenv('K_ENVIRONMENT')
@@ -37,7 +39,8 @@ def create_job_object(
     model_name,
     path_to_tar_file,
     random_name,
-    deploy,
+    modzy_data,
+    publish,
     registry_auth,
 ):
     job_name = f'{K_JOB_NAME}-{random_name}'
@@ -73,7 +76,7 @@ def create_job_object(
         ]
     )
     # This container is used to build the final image.
-    container = client.V1Container(
+    init_container_kaniko = client.V1Container(
         name='kaniko',
         image='gcr.io/kaniko-project/executor:latest',
         volume_mounts=[
@@ -82,13 +85,32 @@ def create_job_object(
         ],
         args=[
             f'--dockerfile={DATA_DIR}/flavours/{module_name}/Dockerfile',
-            '' if deploy else '--no-push',
+            '' if publish else '--no-push',
             f'--tarPath={path_to_tar_file}',
             f'--destination={image_name}{"" if ":" in image_name else ":latest"}',
             f'--context={DATA_DIR}',
             f'--build-arg=MODEL_DIR=model-{random_name}',
+            f'--build-arg=MODZY_METADATA_PATH={modzy_data.get("modzy_metadata_path")}',
             f'--build-arg=MODEL_NAME={model_name}',
             f'--build-arg=MODEL_CLASS={module_name}',
+            # Modzy is the default interface.
+            '--build-arg=INTERFACE=modzy',
+        ]
+    )
+    modzy_uploader_container = client.V1Container(
+        name='modzy-uploader',
+        image=MODZY_UPLOADER_REPOSITORY,
+        volume_mounts=[data_volume_mount],
+        env=[
+            client.V1EnvVar(name='JOB_NAME', value=job_name),
+            client.V1EnvVar(name='ENVIRONMENT', value=ENVIRONMENT)
+        ],
+        args=[
+            f'--api_key={modzy_data.get("api_key")}',
+            f'--deploy={True if modzy_data.get("deploy") else ""}',
+            f'--sample_input_path={modzy_data.get("modzy_sample_input_path")}',
+            f'--metadata_path={DATA_DIR}/{modzy_data.get("modzy_metadata_path")}',
+            f'--image_tag={image_name}{"" if ":" in image_name else ":latest"}',
         ]
     )
 
@@ -106,8 +128,8 @@ def create_job_object(
     pod_spec = client.V1PodSpec(
         service_account_name=K_SERVICE_ACCOUNT_NAME,
         restart_policy='Never',
-        init_containers=[init_container],
-        containers=[container],
+        init_containers=[init_container, init_container_kaniko],
+        containers=[modzy_uploader_container],
         volumes=[
             data_volume,
             empty_dir_volume
@@ -144,7 +166,8 @@ def run_kaniko(
     model_name,
     path_to_tar_file,
     random_name,
-    deploy,
+    modzy_data,
+    publish,
     registry_auth,
 ):
     config.load_incluster_config()
@@ -157,7 +180,8 @@ def run_kaniko(
             model_name,
             path_to_tar_file,
             random_name,
-            deploy,
+            modzy_data,
+            publish,
             registry_auth,
         )
         create_job(batch_v1, job)
@@ -180,19 +204,48 @@ def unzip_model(model, module_name, random_name):
 
     return zip_content_dst
 
+def extract_modzy_metadata(modzy_metadata_data, module_name, random_name):
+    if modzy_metadata_data:
+        metadata_path = f'flavours/{module_name}/model-{random_name}.yaml'
+        modzy_metadata_data.save(f'{DATA_DIR}/{metadata_path}')
+    else:
+        # Use the default one if user has not sent its own metadata file.
+        # This way, mlflow/Dockerfile will not throw an error because it
+        # will copy a file that does exist.
+        metadata_path = f'flavours/{module_name}/interfaces/modzy/asset_bundle/0.1.0/model.yaml'
+
+    return metadata_path
+
+def extract_modzy_sample_input(modzy_sample_input_data, module_name, random_name):
+    if not modzy_sample_input_data:
+        return
+
+    sample_input_path = f'{DATA_DIR}/flavours/{module_name}/{random_name}-{modzy_sample_input_data.filename}'
+    modzy_sample_input_data.save(sample_input_path)
+
+    return sample_input_path
+
 def get_job_status(job_id):
     config.load_incluster_config()
     batch_v1 = client.BatchV1Api()
 
     try:
         job = batch_v1.read_namespaced_job(job_id, ENVIRONMENT)
+
+        annotations = job.metadata.annotations or {}
+        result = annotations.get('result')
+        result = json.loads(result) if result else None
+        status = job.status
+
+        job_data = {
+            'result': result,
+            'status': status.to_dict()
+        }
+
+        return job_data
     except ApiException as e:
         logger.error(f'Exception when getting job status: {e}')
         return e.body
-
-    status = job.status
-
-    return status.to_dict()
 
 def download_tar(job_id):
     uid = job_id.split(f'{K_JOB_NAME}-')[1]
@@ -200,28 +253,41 @@ def download_tar(job_id):
     return send_from_directory(DATA_DIR, path=f'kaniko_image-{uid}.tar', as_attachment=False)
 
 def build_image():
-    image_data = json.load(request.files.get('image_data'))
-    model = request.files.get('model')
-
-    if not (image_data and model):
+    if not ('image_data' in request.files and 'model' in request.files):
         return 'Both model and image_data are required', 500
 
+    image_data = json.load(request.files.get('image_data'))
+    model = request.files.get('model')
+    modzy_metadata_data = request.files.get('modzy_metadata_data')
+    modzy_sample_input_data = request.files.get('modzy_sample_input_data')
+    modzy_data = json.load(request.files.get('modzy_data') or {})
+
     image_name = image_data.get('name')
-    # XXX
+    # XXX: this is hardcoded here because before we were using
+    # other frameworks until we decided to fix it to mlflow.
     module_name = 'mlflow'
     model_name = image_data.get('model_name')
     # It should match the version that
     # has been used to generate the model.
-    deploy = image_data.get('deploy', False)
-    deploy = True if deploy else ''
+    publish = image_data.get('publish', False)
+    publish = True if publish else ''
     registry_auth = image_data.get('registry_auth')
 
     random_name = str(uuid.uuid4())
     model_unzipped_dir = unzip_model(model, module_name, random_name)
 
+    # User can build the image but not deploy it to Modzy. So no input_sample is mandatory.
+    # On the other hand, the model.yaml is needed to build the image so proceed with it.
+    if modzy_data:
+        modzy_sample_input_path = extract_modzy_sample_input(modzy_sample_input_data, module_name, random_name)
+        modzy_data['modzy_sample_input_path'] = modzy_sample_input_path
+
+    modzy_metadata_path = extract_modzy_metadata(modzy_metadata_data, module_name, random_name)
+    modzy_data['modzy_metadata_path'] = modzy_metadata_path
+
     path_to_tar_file = f'{DATA_DIR}/kaniko_image-{random_name}.tar'
 
-    logger.debug('Request data: {image_name}, {module_name}, {model_name}, {path_to_tar_file}')
+    logger.debug(f'Request data: {image_name}, {module_name}, {model_name}, {path_to_tar_file}')
 
     error = run_kaniko(
         image_name,
@@ -229,7 +295,8 @@ def build_image():
         model_name,
         path_to_tar_file,
         random_name,
-        deploy,
+        modzy_data,
+        publish,
         registry_auth,
     )
 

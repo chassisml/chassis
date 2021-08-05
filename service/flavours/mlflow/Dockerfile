@@ -8,6 +8,10 @@ FROM continuumio/miniconda3:4.9.2-alpine AS build
 ARG MODEL_DIR
 # Should be: mlflow.
 ARG MODEL_CLASS
+# Interface.
+ARG INTERFACE
+# This is the model.yaml file.
+ARG MODZY_METADATA_PATH
 
 WORKDIR /app
 
@@ -33,6 +37,10 @@ ARG MODEL_DIR
 ARG MODEL_NAME
 # Should be: mlflow.
 ARG MODEL_CLASS
+# Interface.
+ARG INTERFACE
+# This is the model.yaml file.
+ARG MODZY_METADATA_PATH
 
 WORKDIR /app
 
@@ -40,6 +48,7 @@ COPY flavours/${MODEL_CLASS}/${MODEL_DIR} ./model/${MODEL_NAME}
 COPY flavours/${MODEL_CLASS}/entrypoint.sh /
 
 ENV MODEL_DIR ./model/${MODEL_NAME}
+ENV INTERFACE ${INTERFACE}
 
 COPY --from=build /venv /venv
 
@@ -53,6 +62,9 @@ RUN source /venv/bin/activate && pip install -r requirements.txt
 
 COPY flavours/${MODEL_CLASS}/app.py .
 COPY flavours/${MODEL_CLASS}/interfaces ./interfaces
+
+# Overwrite the default one.
+COPY ${MODZY_METADATA_PATH} ./interfaces/modzy/asset_bundle/0.1.0/model.yaml
 
 ENTRYPOINT ["/entrypoint.sh"]
 
