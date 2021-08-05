@@ -46,32 +46,36 @@ class ChassisML:
 
         return tmppath
 
-    def publish(self, image_data, modzy_data, deploy, base_url):
-        self.base_url = base_url if base_url else self.base_url
-        self.deploy = deploy
+    def _add_mody_files_to_request(self, files, modzy_data):
+        for key, file_key in [('metadata_path', 'modzy_metadata_data'),
+                              ('sample_input_path', 'modzy_sample_input_data')]:
+            value = modzy_data.get(key)
 
-        image_data['deploy'] = deploy
+            if value:
+                files.append((file_key, open(value, 'rb')))
+
+    def publish(self, image_data, modzy_data, base_url):
+        self.base_url = base_url if base_url else self.base_url
 
         tmp_zip_dir = self._zipdir(image_data.get('model_path'))
 
         files = [
             ('image_data', json.dumps(image_data)),
-            ('modzy_data', json.dumps(modzy_data)),
+            ('modzy_data', json.dumps(modzy_data or {})),
             ('model', open(f'{tmp_zip_dir}/{MODEL_ZIP_NAME}', 'rb')),
         ]
 
-        metadata_path = modzy_data.get('metadata_path')
-        if metadata_path:
-            files.append(('modzy_metadata_data', open(metadata_path, 'rb')))
+        if modzy_data:
+            self._add_mody_files_to_request(files, modzy_data)
 
         route = urllib.parse.urljoin(self.base_url, routes['build'])
 
-        print('Publishing container... ', end='', flush=True)
+        print('Building image... ', end='', flush=True)
         res = requests.post(route, files=files)
         res.raise_for_status()
         print('Ok!')
 
-        # Remove the zip so it's no longer needed.
+        # Remove the zip since it's no longer needed.
         shutil.rmtree(tmp_zip_dir)
 
         return res.json()
@@ -102,32 +106,36 @@ _defaultChassisML = ChassisML()
 
 ###########################################
 
-def publish(image_data, modzy_data=None, deploy=False, base_url=None):
-    """Uploads the tarball to ChassisML API to create a model.
+def publish(image_data, modzy_data=None, base_url=None):
+    """Makes a request agains Chassis service to build the image.
 
-    If `deploy` is True it will also upload the built image to the corresponding tag.
     Example of image_data:
     ```
     {
-        'name': 'XXXX/chassisml-sklearn-demo:latest',
+        'name': '<username>/chassisml-sklearn-demo:latest',
         'model_name': 'digits',
         'model_path': './mlflow_custom_pyfunc_svm',
-        'registry_auth': 'XxXxXxXx'
+        'registry_auth': 'base64(<username>:<password>)',
+        'publish': False
     }
     ```
+
     Example of modzy_data:
     ```
     {
         'metadata_path': './modzy/model.yaml'
+        'sample_input_path': './modzy/sample_input.json',
+        'deploy': False,
+        'api_key': 'XxXxXxXx:XxXxXxXx',
     }
     ```
 
     Args:
         image_data (json): Required data to build and deploy the model.
-        deploy (bool): Whether the model should be deployed or fixed as draft.
+        modzy_data (json): In case we need to deploy the image to Modzy.
         base_url (str): Default base_url is localhost:5000.
     """
-    return _defaultChassisML.publish(image_data, modzy_data, deploy, base_url)
+    return _defaultChassisML.publish(image_data, modzy_data, base_url)
 
 def get_job_status(job_id):
     """Returns the data once the model has been deployed.
