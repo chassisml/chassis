@@ -77,7 +77,6 @@ def add_tags_and_description(identifier, metadata):
         tags_and_description['tags'] = tags
 
     res = r_session.patch(route, json=tags_and_description)
-    logger.info(f'res.content: {res.content}')
     res.raise_for_status()
 
     logger.info(f'add_tags_and_description took [{1000*(time.time()-start)} ms]')
@@ -295,7 +294,7 @@ def main():
     try:
         result = upload_model()
     except Exception as e:
-        logger.error(f'Error content: {str(e)}')
+        logger.error(f'Error: {str(e)}')
         result = {'error': str(e)}
 
     update_job_with_result(batch_v1, result)
