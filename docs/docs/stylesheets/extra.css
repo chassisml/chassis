@@ -1,0 +1,8 @@
+:root {
+  --md-typeset-a-color:        #ffa724;
+
+  [data-md-color-scheme=slate][data-md-color-primary=black], 
+  [data-md-color-scheme=slate][data-md-color-primary=white] {
+    --md-typeset-a-color:        #ffa724;
+  }
+}
