@@ -13,7 +13,7 @@ nav:
 theme:
     name: material
     palette:
-        primary: orange
+        primary: white
         accent: blue
         scheme: slate
     logo: images/chassis-symbol.png
@@ -33,3 +33,5 @@ markdown_extensions:
 repo_url: https://github.com/modzy/chassis
 repo_name: modzy/chassis
 edit_uri: edit/main/docs/docs/
+extra_css:
+  - stylesheets/extra.css
