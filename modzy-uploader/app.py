@@ -15,11 +15,11 @@ from kubernetes import client, config
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--api_key', type=str, required=True)
+parser.add_argument('--api_key', type=str, required=False)
 parser.add_argument('--deploy', type=bool, required=False)
-parser.add_argument('--image_tag', type=str, required=True)
-parser.add_argument('--sample_input_path', type=str, required=True)
-parser.add_argument('--metadata_path', type=str, required=True)
+parser.add_argument('--image_tag', type=str, required=False)
+parser.add_argument('--sample_input_path', type=str, required=False)
+parser.add_argument('--metadata_path', type=str, required=False)
 args = parser.parse_args()
 
 JOB_NAME = os.getenv('JOB_NAME')
