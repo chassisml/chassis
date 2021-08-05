@@ -33,8 +33,6 @@ class ChassisML:
 
     def __init__(self):
         self.base_url = 'http://localhost:5000'
-        self.headers = None
-        self.deploy = False
 
     def _zipdir(self, model_directory):
         tmppath = tempfile.mkdtemp()
