@@ -6,7 +6,7 @@
     <a href="https://testfaster.ci/launch?embedded=true&repo=https://github.com/combinator-ml/terraform-k8s-chassis&file=examples/testfaster/.testfaster.yml" target="_blank">:computer: Launch Test Drive :computer:</a>
 
 
-In order to connect to `Chassis` service we are going to use the SDK. We will transform our model into MLFlow format and we will upload it by making a request. After that, the image that have been created will be uploaded to Docker Hub and we will be able to use it.
+In order to connect to Chassis service we are going to use the SDK. We will transform our model into MLFlow format and we will upload it by making a request. After that, the image that have been created will be uploaded to Docker Hub and we will be able to use it.
 
 ## Install the SDK
 
@@ -18,7 +18,7 @@ pip install chassisml
 
 ## Build or import the model
 
-We can start from an existing model or create a new one. After that, we will need to transform it to MLFlow format so `Chassis` service will be able to manage it.
+We can start from an existing model or create a new one. After that, we will need to transform it to MLFlow format so Chassis service will be able to manage it.
 
 ### Import required libraries
 
@@ -132,13 +132,13 @@ mlflow.pyfunc.save_model(
 
 ## Build the image
 
-Now that we have our model in MLFlow format we need to make a request against the `Chassis` service to build the Docker image that exposes it.
+Now that we have our model in MLFlow format we need to make a request against the Chassis service to build the Docker image that exposes it.
 
 ### Define data
 
-There is some model and image related data that we need to define before we send our model to `Chassis`.
+There is some model and image related data that we need to define before we send our model to Chassis.
 
-In case we want `Chassis` to upload our image to Docker Hub we can pass the credentials in base64 format.
+In case we want Chassis to upload our image to Docker Hub we can pass the credentials in base64 format.
 
 ```bash
 echo -n "<user>:<password>" | base64
@@ -166,14 +166,16 @@ As we can see, we must define the following fields:
 
 ### Make the request
 
-Now we can make the request to let `Chassis` build our image by making a request.
+Now we can make the request to let Chassis build our image by making a request.
 
-We can decide if we want `Chassis` to upload the image to Docker Hub and we can also modify the address of the service.
+We can decide if we want Chassis to upload the image to Docker Hub and we can also modify the address of the service.
+
+Take into account that `base_url` should point to the address of the cluster where Chassis is running.
 
 ```python
 res = chassisml.publish(
     image_data=image_data,
-    deploy=True, # True if we want Chassis to upload the image
+    upload=True, # True if we want Chassis to upload the image
     base_url='http://localhost:5000'
 )
 

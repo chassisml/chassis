@@ -6,6 +6,7 @@ nav:
         - tutorials/devops-deploy.md
         - tutorials/ds-connect.md
         - tutorials/ds-deploy.md
+        - tutorials/ds-deploy-modzy.md
     - Help: help.md
     - Get Involved: get-involved.md
     - Release Notes: release-notes.md
