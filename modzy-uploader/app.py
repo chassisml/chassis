@@ -295,8 +295,9 @@ def main():
     try:
         result = upload_model()
     except Exception as e:
-        logger.error(f'Error: {str(e)}')
-        result = {'error': str(e)}
+        error_data = json.loads(e.response.content)
+        logger.error(f'Error: {error_data}')
+        result = {'error': error_data}
 
     update_job_with_result(batch_v1, result)
 
