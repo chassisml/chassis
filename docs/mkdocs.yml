@@ -1,38 +1,42 @@
 site_name: Chassis
 nav:
-    - index.md
-    - design.md
-    - Tutorials:
-        - tutorials/devops-deploy.md
-        - tutorials/ds-connect.md
-        - tutorials/ds-deploy.md
-        - tutorials/ds-deploy-modzy.md
-    - Help: help.md
-    - Get Involved: get-involved.md
-    - Release Notes: release-notes.md
-    - FAQs: faqs.md
+  - index.md
+  - design.md
+  - Tutorials:
+      - tutorials/devops-deploy.md
+      - tutorials/ds-connect.md
+      - tutorials/ds-deploy.md
+      - tutorials/ds-deploy-modzy.md
+  - Help: help.md
+  - Get Involved: get-involved.md
+  - Release Notes: release-notes.md
+  - FAQs: faqs.md
 theme:
-    name: material
-    palette:
-        primary: white
-        accent: blue
-        scheme: slate
-    logo: images/chassis-symbol.png
-    favicon: images/chassis-symbol.png
-    features:
-        - navigation.expand
+  name: material
+  palette:
+    primary: white
+    accent: blue
+    scheme: slate
+  logo: images/chassis-symbol.png
+  favicon: images/chassis-symbol.png
+  features:
+    - navigation.expand
 markdown_extensions:
-    - attr_list
-    - pymdownx.details
-    - pymdownx.highlight
-    - pymdownx.superfences
-    - pymdownx.inlinehilite
-    - admonition
-    - pymdownx.emoji:
-        emoji_index: !!python/name:materialx.emoji.twemoji
-        emoji_generator: !!python/name:materialx.emoji.to_svg
+  - attr_list
+  - pymdownx.details
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.inlinehilite
+  - admonition
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
 repo_url: https://github.com/modzy/chassis
 repo_name: modzy/chassis
 edit_uri: edit/main/docs/docs/
 extra_css:
   - stylesheets/extra.css
+extra:
+  analytics:
+    provider: google
+    property: G-4NVL0DTGZ4
