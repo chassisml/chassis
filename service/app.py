@@ -322,6 +322,10 @@ def copy_required_files_for_kaniko():
 def create_app():
     flask_app = Flask(__name__)
 
+    @flask_app.route('/health')
+    def hello2():
+        return 'Chassis Server Up and Running!'
+
     @flask_app.route('/')
     def hello():
         return 'Alive!'
