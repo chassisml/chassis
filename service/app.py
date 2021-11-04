@@ -12,16 +12,13 @@ from flask import Flask, request, send_from_directory
 from kubernetes import client, config
 from kubernetes.client.rest import ApiException
 
-print("LOCAL CHASSIS",flush=True)
 ###########################################
 
 load_dotenv()
 
 MOUNT_PATH_DIR = os.getenv('MOUNT_PATH_DIR')
 WORKSPACE_DIR = os.getenv('WORKSPACE_DIR')
-#MODZY_UPLOADER_REPOSITORY = os.getenv('MODZY_UPLOADER_REPOSITORY')
-#MODZY_UPLOADER_REPOSITORY = 'ghcr.io/modzy/chassis-modzy-uploader:a902b380210636c6648ad8e44260076407ac1538'
-MODZY_UPLOADER_REPOSITORY = 'local-modzy-uploader:latest'
+MODZY_UPLOADER_REPOSITORY = os.getenv('MODZY_UPLOADER_REPOSITORY')
 
 DATA_DIR = f'{MOUNT_PATH_DIR}/{WORKSPACE_DIR}'
 
@@ -46,7 +43,6 @@ def create_job_object(
     publish,
     registry_auth,
 ):
-
     job_name = f'{K_JOB_NAME}-{random_name}'
 
     # XXX: Only for Docker Hub.
@@ -104,7 +100,6 @@ def create_job_object(
     modzy_uploader_container = client.V1Container(
         name='modzy-uploader',
         image=MODZY_UPLOADER_REPOSITORY,
-        image_pull_policy='Never',
         volume_mounts=[data_volume_mount],
         env=[
             client.V1EnvVar(name='JOB_NAME', value=job_name),
@@ -326,6 +321,10 @@ def copy_required_files_for_kaniko():
 
 def create_app():
     flask_app = Flask(__name__)
+
+    @flask_app.route('/health')
+    def hello2():
+        return 'Chassis Server Up and Running!'
 
     @flask_app.route('/')
     def hello():
