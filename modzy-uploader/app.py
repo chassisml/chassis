@@ -108,6 +108,7 @@ def _format_metadata(metadata):
         if key in metadata:
             body[key] = metadata[key]
 
+    # submit timeout in ms
     body['timeout'] = {'run': int(humanfriendly.parse_timespan(metadata['timeout']['run'])*1000),
                     'status': int(humanfriendly.parse_timespan(metadata['timeout']['status'])*1000)
                     }
@@ -125,6 +126,7 @@ def _format_metadata(metadata):
     if inputs:
         inputs_array = []
         for input_key in inputs.keys():
+            # submit maxSize in bytes
             inputs_array.append({
                 'name': input_key,
                 'acceptedMediaTypes': ','.join(inputs[input_key].get('acceptedMediaTypes')),
@@ -136,6 +138,7 @@ def _format_metadata(metadata):
     if outputs:
         outputs_array = []
         for output_key in outputs.keys():
+            # submit maxSize in bytes
             outputs_array.append({
                 'name': output_key,
                 'mediaType': outputs[output_key].get('mediaType'),
