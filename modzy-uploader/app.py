@@ -11,7 +11,7 @@ from loguru import logger
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 from kubernetes import client, config
-
+import humanfriendly
 import argparse
 
 parser = argparse.ArgumentParser()
@@ -21,6 +21,8 @@ parser.add_argument('--image_tag', type=str, required=False)
 parser.add_argument('--sample_input_path', type=str, required=False)
 parser.add_argument('--metadata_path', type=str, required=False)
 args = parser.parse_args()
+
+print("LOCAL MODZY UPLOADER",flush=True)
 
 JOB_NAME = os.getenv('JOB_NAME')
 ENVIRONMENT = os.getenv('ENVIRONMENT')
@@ -104,9 +106,13 @@ def add_container_image(identifier, version, image_tag):
 def _format_metadata(metadata):
     body = {}
 
-    for key in 'inputValidationSchema timeout requirement statistics processing versionHistory'.split():
+    for key in 'inputValidationSchema requirement statistics processing versionHistory'.split():
         if key in metadata:
             body[key] = metadata[key]
+
+    body['timeout'] = {'run': int(humanfriendly.parse_timespan(metadata['timeout']['run'])*1000),
+                    'status': int(humanfriendly.parse_timespan(metadata['timeout']['status'])*1000)
+                    }
 
     long_description = metadata.get('description').get('details')
     if long_description:
@@ -124,7 +130,7 @@ def _format_metadata(metadata):
             inputs_array.append({
                 'name': input_key,
                 'acceptedMediaTypes': ','.join(inputs[input_key].get('acceptedMediaTypes')),
-                'maximumSize': inputs[input_key].get('maxSize'),
+                'maximumSize': humanfriendly.parse_size(inputs[input_key].get('maxSize')),
                 'description': inputs[input_key].get('description'),
             })
         body['inputs'] = inputs_array
@@ -135,7 +141,7 @@ def _format_metadata(metadata):
             outputs_array.append({
                 'name': output_key,
                 'mediaType': outputs[output_key].get('mediaType'),
-                'maximumSize': outputs[output_key].get('maxSize'),
+                'maximumSize': humanfriendly.parse_size(outputs[output_key].get('maxSize')),
                 'description': outputs[output_key].get('description'),
             })
         body['outputs'] = outputs_array
