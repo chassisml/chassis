@@ -1,0 +1,156 @@
+# TODO: think of a way to encode the version of the container spec (HTTP/gRPC)
+# The version of the model specification.
+specification: '0.4'
+# Model input type. Only "file" is supported at this time.
+type: file
+source: BAH
+# The version of the model. This should correspond to the version
+# of the model container image. Version numbers must be specified
+# as three dot separated integers, for example '2.1.0'.
+version:
+# The human readable name of the model.
+name:
+# The author of the model.
+author:
+# Model detail information.
+description:
+  # A one or two sentence summary of what this model does.
+  summary:
+  # A longer description of the model. This value supports content
+  # in Markdown format for including rich text, links, images, etc.
+  details:
+  # Technical details. This value
+  # supports content in Markdown format for including rich
+  # text, links, images, etc.
+  # Three recommended sections: Overview, Training, and Validation (Use Markdown to create the section headers)
+  # Overview: which model architecture was chosen and why
+  # Training: Where the data came from, preprocessing that was performed,
+  #   how long the model took to train on what hardware, model hyperparameters
+  # Validation: what data was used for validation
+  technical: |-
+    #OVERVIEW:
+
+    #TRAINING:
+
+    #VALIDATION:
+
+    #INPUT SPECIFICATION:
+    The input(s) to this model must adhere to the following specifications:
+    | Filename      | Maximum Size | Accepted Format(s) |
+    | --------      | ------------ | ------------------ |
+
+    Additional information describing input file(s) can go in a short paragraph here if necessary. Feel free to add an additional markdown table if many values need to be listed.
+
+    #OUTPUT DETAILS:
+    This model will output the following:
+    | Filename      | Maximum Size | Format |
+    | --------      | ------------ | ------ |
+
+    Additional information describing the output file(s) can go in a short paragraph here. Feel free to add an additional markdown table if many values need to be listed. If you want to use an additional table, please use the following headerless format:
+    | | | | |
+    |-|-|-|-|
+    | Entry 1 | Entry 2 | Entry 3 | Entry 4 |
+    | Entry 5 | Entry 6 | Entry 7 | Entry 8 |
+
+  # Metrics that describe the model's performance (if no relevant metrics provide explanation why)
+  # Specify which dataset these metrics were evaluated on
+  performance:
+
+# Use this format: "VERSION_NUMBER - Concise sentence describing what is new in this version of the model."
+# Example: "0.0.11 - Achieves precision of 98.15%, recall of 90.61%, and F1 score of 89.72% on CoNLL-2003 validation dataset."
+releaseNotes:
+
+# Tags and filters help users find this model.
+tags:
+-
+filters:
+- type:
+  label:
+- type:
+  label:
+
+# This section contains the data science metrics for your model
+# Each metric contains a human-readable label along with a
+# decimal value between 0 and 1.
+metrics:
+- label:
+  type:
+  value:
+  description:
+
+
+# Please indicate the names and kinds of input(s) that your model
+# expects. The names and types you specify here will be used to
+# validate inputs supplied by inference job requests.
+inputs:
+  # The value of this key will be the name of the file that is
+  # supplied to your model for processing
+  input.txt:
+    # The expected media types of this file. For more information
+    # on media types, see:
+    # https://www.iana.org/assignments/media-types/media-types.xhtml
+    acceptedMediaTypes:
+    -
+    # The maximum size that this file is expected to be.
+    maxSize:
+    # A human readable description of what this file is expected to
+    # be. This value supports content in Markdown format for including
+    # rich text, links, images, etc.
+    # TODO: we might want to include an additional key for inputMetadata:
+    description:
+
+# Please indicate the names and kinds of output(s) that your model
+# writes out.
+outputs:
+  results.json:
+    # The expected media types of this file. For more information
+    # on media types, see:
+    # https://www.iana.org/assignments/media-types/media-types.xhtml
+    mediaType:
+    # The maximum size that this file is expected to be.
+    maxSize:
+    # A human readable description of what this file is expected to
+    # be. This value supports content in Markdown format for including
+    # rich text, links, images, etc.
+    description: |
+
+
+# The resources section indicates what resources are required by your model
+# in order to run efficiently. Keep in mind that there may be many instances
+# of your model running at any given time so please be conservative with the
+# values you specify here.
+resources:
+  memory:
+    # The amount of RAM required by your model, e.g. 512M or 1G
+    size:
+  cpu:
+    # CPU count should be specified as the number of fractional CPUs that
+    # are needed. For example, 1 == one CPU core.
+    count:
+  gpu:
+    # GPU count must be an integer.
+    count:
+# Please specify a timeout value that indicates a time at which
+# requests to your model should be canceled. If you are using a
+# webserver with built in timeouts within your container such as
+# gunicorn make sure to adjust those timeouts accordingly.
+timeout:
+  # Status timeout indicates the timeout threshhold for calls to your
+  # model's `/status` route, e.g. 20s
+  status:
+  # Run timeout indicates the timeout threshhold for files submitted
+  # to your model for processing, e.g. 20s
+  run:
+
+# Please set the following flags to either true or false.
+internal:
+  recommended:
+  experimental:
+  available:
+
+features:
+  adversarialDefense:
+  driftDetection:
+  explainable:
+  maxBatchSize:
+  retrainable:
