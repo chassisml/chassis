@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 
 __VERSION__ = "0.1.0"
@@ -12,12 +11,6 @@ SRC = PACKAGE_ROOT / "src"
 
 TESTS = PACKAGE_ROOT / "tests"
 TEST_RESOURCES = TESTS / "resources"
-
-
-def get_results_format_specifications():
-    return os.listdir(TEST_RESOURCES / "results_format_specifications")
-
-
 TEST_CASES = ASSET_BUNDLE / __VERSION__ / "test_cases"
 
 MODEL_YAML = ASSET_BUNDLE / __VERSION__ / "model.yaml"

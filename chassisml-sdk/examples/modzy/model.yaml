@@ -91,7 +91,7 @@ inputs:
     acceptedMediaTypes:
     - application/json
     # The maximum size that this file is expected to be.
-    maxSize: 1024000
+    maxSize: 1M
     # A human readable description of what this file is expected to
     # be. This value supports content in Markdown format for including
     # rich text, links, images, etc.
@@ -106,7 +106,7 @@ outputs:
     # https://www.iana.org/assignments/media-types/media-types.xhtml
     mediaType: application/json
     # The maximum size that this file is expected to be.
-    maxSize: 1024000
+    maxSize: 1M
     # A human readable description of what this file is expected to
     # be. This value supports content in Markdown format for including
     # rich text, links, images, etc.
@@ -137,10 +137,10 @@ resources:
 timeout:
   # Status timeout indicates the timeout threshhold for calls to your
   # model's `/status` route, e.g. 20s
-  status: 60000
+  status: 60s
   # Run timeout indicates the timeout threshhold for files submitted
   # to your model for processing, e.g. 20s
-  run: 60000
+  run: 60s
 
 # Please set the following flags to either true or false.
 internal:
