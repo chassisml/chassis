@@ -22,8 +22,6 @@ parser.add_argument('--sample_input_path', type=str, required=False)
 parser.add_argument('--metadata_path', type=str, required=False)
 args = parser.parse_args()
 
-print("LOCAL MODZY UPLOADER",flush=True)
-
 JOB_NAME = os.getenv('JOB_NAME')
 ENVIRONMENT = os.getenv('ENVIRONMENT')
 MODZY_BASE_URL = 'https://integration.modzy.engineering'
