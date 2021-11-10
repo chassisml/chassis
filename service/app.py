@@ -43,39 +43,57 @@ def create_job_object(
     publish,
     registry_auth,
 ):
+    # This sets up all the objects needed to create a model image
+
     job_name = f'{K_JOB_NAME}-{random_name}'
 
-    # XXX: Only for Docker Hub.
+    # credential setup for Docker Hub.
+    # json for holding registry credentials that will access docker hub.
+    # reference: https://github.com/GoogleContainerTools/kaniko#pushing-to-docker-hub 
     registry_credentials = f'{{"auths":{{"https://index.docker.io/v1/":{{"auth":"{registry_auth}"}}}}}}'
 
+    # mount path leads to /data
+    # this is a mount point. NOT the volume itself.
+    # name aligns with a volume defined below.
     data_volume_mount = client.V1VolumeMount(
         mount_path=MOUNT_PATH_DIR,
         name=K_DATA_VOLUME_NAME
     )
-    # This volume will be used by init container to populare registry credentials.
+
+    # This volume will be used by init container to populate registry credentials.
+    # mount leads to /tmp/credentials
+    # this is a mount point. NOT the volume itself.
+    # name aligns with a volume defined below.
     init_empty_dir_volume_mount = client.V1VolumeMount(
         mount_path=K_INIT_EMPTY_DIR_PATH,
         name=K_EMPTY_DIR_NAME
     )
+    
     # This volume will be used by kaniko container to get registry credentials.
+    # mount path leads to /kaniko/.docker per kaniko reference documentation
+    # this is a mount point. NOT the volume itself.
+    # name aligns with a volume defined below.
     kaniko_empty_dir_volume_mount = client.V1VolumeMount(
         mount_path=K_KANIKO_EMPTY_DIR_PATH,
         name=K_EMPTY_DIR_NAME
     )
 
     # This container is used to populate registry credentials.
+    # it only runs the single command in shell to echo our credentials into their proper file
+    # per the reference documentation for Docker Hub
+    # TODO: add credentials for Cloud Providers
     init_container = client.V1Container(
         name='credentials',
         image='busybox',
         volume_mounts=[init_empty_dir_volume_mount],
-        # XXX: Only compatible with Docker Hub at the moment.
         command=[
             '/bin/sh',
             '-c',
             f'echo \'{registry_credentials}\' > {K_INIT_EMPTY_DIR_PATH}/config.json'
         ]
     )
-    # This container is used to build the final image.
+
+    # This is the kaniko container used to build the final image.
     init_container_kaniko = client.V1Container(
         name='kaniko',
         image='gcr.io/kaniko-project/executor:latest',
@@ -97,6 +115,8 @@ def create_job_object(
             '--build-arg=INTERFACE=modzy',
         ]
     )
+
+
     modzy_uploader_container = client.V1Container(
         name='modzy-uploader',
         image=MODZY_UPLOADER_REPOSITORY,
@@ -114,17 +134,24 @@ def create_job_object(
         ]
     )
 
+    # volume claim
     data_pv_claim = client.V1PersistentVolumeClaimVolumeSource(
         claim_name=K_DATA_VOLUME_NAME
     )
+    
+    # volume holding data
     data_volume = client.V1Volume(
         name=K_DATA_VOLUME_NAME,
         persistent_volume_claim=data_pv_claim
     )
+
+    # volume holding credentials 
     empty_dir_volume = client.V1Volume(
         name=K_EMPTY_DIR_NAME,
         empty_dir=client.V1EmptyDirVolumeSource()
     )
+    
+    # Pod spec for the image build process 
     pod_spec = client.V1PodSpec(
         service_account_name=K_SERVICE_ACCOUNT_NAME,
         restart_policy='Never',
@@ -135,10 +162,13 @@ def create_job_object(
             empty_dir_volume
         ]
     )
+
+    #setup and initiate model image build
     template = client.V1PodTemplateSpec(
         metadata=client.V1ObjectMeta(name=job_name),
         spec=pod_spec
     )
+    
     spec = client.V1JobSpec(
         backoff_limit=0,
         template=template
@@ -155,6 +185,7 @@ def create_job_object(
     return job
 
 def create_job(api_instance, job):
+    # this method kicks off the kaniko build job to create the new model image.
     api_response = api_instance.create_namespaced_job(
         body=job,
         namespace=ENVIRONMENT)
@@ -170,6 +201,8 @@ def run_kaniko(
     publish,
     registry_auth,
 ):
+    # This method creates and launches a job object that uses Kaniko to 
+    # create the desired image.
     config.load_incluster_config()
     batch_v1 = client.BatchV1Api()
 
@@ -226,6 +259,7 @@ def extract_modzy_sample_input(modzy_sample_input_data, module_name, random_name
     return sample_input_path
 
 def get_job_status(job_id):
+    # This method gets the status of the Kaniko job and the results if the job has completed.
     config.load_incluster_config()
     batch_v1 = client.BatchV1Api()
 
@@ -248,43 +282,60 @@ def get_job_status(job_id):
         return e.body
 
 def download_tar(job_id):
+
+    # This method gets to image kaniko built during the job named "jobid"
     uid = job_id.split(f'{K_JOB_NAME}-')[1]
 
     return send_from_directory(DATA_DIR, path=f'kaniko_image-{uid}.tar', as_attachment=False)
 
 def build_image():
+    # this method is run by the /build route. It generates a model image based upon a POST request
+    # request.files structure can be seen in chassisml-sdk
     if not ('image_data' in request.files and 'model' in request.files):
         return 'Both model and image_data are required', 500
 
-    image_data = json.load(request.files.get('image_data'))
-    model = request.files.get('model')
-    modzy_metadata_data = request.files.get('modzy_metadata_data')
-    modzy_sample_input_data = request.files.get('modzy_sample_input_data')
-    modzy_data = json.load(request.files.get('modzy_data') or {})
 
-    image_name = image_data.get('name')
-    # XXX: this is hardcoded here because before we were using
-    # other frameworks until we decided to fix it to mlflow.
-    module_name = 'mlflow'
+    # retrieve image_data and populate variables accordingly
+    image_data = json.load(request.files.get('image_data'))
     model_name = image_data.get('model_name')
-    # It should match the version that
-    # has been used to generate the model.
+    image_name = image_data.get('name')
     publish = image_data.get('publish', False)
     publish = True if publish else ''
     registry_auth = image_data.get('registry_auth')
 
+    # retrieve binary representations for all three variables 
+    model = request.files.get('model')
+    modzy_metadata_data = request.files.get('modzy_metadata_data')
+    modzy_sample_input_data = request.files.get('modzy_sample_input_data')
+    
+    #json string loaded into variable
+    modzy_data = json.load(request.files.get('modzy_data') or {})
+    
+    # This is a future proofing variable in case we encounter a model that cannot be converted into mlflow.
+    # It will remain hardcoded for now. 
+    module_name = 'mlflow'
+
+    
+    # This name is a random id used to ensure that all jobs are uniquely named and traceable.
     random_name = str(uuid.uuid4())
-    model_unzipped_dir = unzip_model(model, module_name, random_name)
+    
+    # TODO: Remove this unzip_model line and the function. The line doesn't appear to be used and neither does the function.
+    # commenting out as it isn't used anywhere  
+    # model_unzipped_dir = unzip_model(model, module_name, random_name)
 
     # User can build the image but not deploy it to Modzy. So no input_sample is mandatory.
     # On the other hand, the model.yaml is needed to build the image so proceed with it.
+
+    # save the sample input to the modzy_sample_input_path directory
     if modzy_data:
         modzy_sample_input_path = extract_modzy_sample_input(modzy_sample_input_data, module_name, random_name)
         modzy_data['modzy_sample_input_path'] = modzy_sample_input_path
 
+    # TODO: this probably should only be done if modzy_data is true.
     modzy_metadata_path = extract_modzy_metadata(modzy_metadata_data, module_name, random_name)
     modzy_data['modzy_metadata_path'] = modzy_metadata_path
 
+    # this path is the local location that kaniko will store the image it creates
     path_to_tar_file = f'{DATA_DIR}/kaniko_image-{random_name}.tar'
 
     logger.debug(f'Request data: {image_name}, {module_name}, {model_name}, {path_to_tar_file}')
