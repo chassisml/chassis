@@ -5,13 +5,14 @@ import kfserving
 import numpy as np
 import pandas as pd
 
+import base64
 from loguru import logger
 from typing import Dict
 from uuid import uuid4
 
-from ..common import MLFlowFlavour
+import mlflow
 
-
+MODEL_DIR = os.getenv('MODEL_DIR')
 class KFServing(kfserving.KFModel):
     def __init__(self, name: str, protocol: str):
         super().__init__(name)
@@ -21,7 +22,7 @@ class KFServing(kfserving.KFModel):
         self.model = None
 
     def load(self):
-        self.model = MLFlowFlavour()
+        self.model = mlflow.pyfunc.load_model(MODEL_DIR)
         self.ready = True
 
     def predict(self, request: Dict) -> Dict:
@@ -32,11 +33,13 @@ class KFServing(kfserving.KFModel):
 
     # https://github.com/kubeflow/kfserving/tree/master/docs/samples/v1beta1/sklearn/v1#run-a-prediction
     def _predictv1(self, request):
-        input_data = pd.DataFrame(request['instances'])
+        input_data = request['instances']
+        preds = []
+        for instance in input_data:
+            input_dict = {'input_data_bytes': base64.b64decode(instance)}
+            preds.append(self.model.predict(input_dict))
 
-        prediction_data = self.model.predict(input_data)
-
-        return { 'predictions': prediction_data }
+        return { 'predictions': preds }
 
     # https://github.com/kubeflow/kfserving/tree/master/docs/samples/v1beta1/sklearn/v2#testing-deployed-model
     def _predictv2(self, request):
@@ -48,10 +51,13 @@ class KFServing(kfserving.KFModel):
         }
 
         for inputs in request.get('inputs', []):
-            input_data = pd.DataFrame(inputs.get('data', []))
-            prediction_data = self.model.predict(input_data)
-            prediction_data_len = prediction_data.shape if isinstance(prediction_data, np.ndarray) \
-                                                        else len(prediction_data)
+            prediction_data = []
+            input_data = inputs.get('data', [])
+            for instance in input_data:
+                input_dict = {'input_data_bytes': base64.b64decode(instance)}
+                prediction_data.append(self.model.predict(input_dict))
+
+            prediction_data_len = len(prediction_data)
 
             prediction_output_data = {
                 'data': prediction_data,
