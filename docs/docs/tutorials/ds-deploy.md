@@ -81,7 +81,17 @@ export SERVICE_HOSTNAME=$(kubectl get inferenceservice ${SERVICE_NAME} -o jsonpa
 
 ## Query the model
 
-Now you can just make a request to predict some data. Take into account that you must download [`inputsv1.json`](https://github.com/modzy/chassis/blob/main/service/flavours/mlflow/interfaces/kfserving/inputsv1.json) before making the request.
+Please note that you must base64 encode each input instance. For example:
+
+```python
+import json
+import base64 as b64
+instances = [[1,2,3,4],[5,6,7,8]]
+input_dict = {'instances': [b64.b64encode(str(entry).encode()).decode() for entry in instances]}
+json.dump(input_dict,open('kserve_input.json','w'))
+```
+
+Now you can just make a request to predict some data. Take into account that you must download [`inputsv1.json`](https://github.com/modzy/chassis/blob/main/service/flavours/mlflow/interfaces/kfserving/inputsv1.json) before making the request. 
 
 ```bash
 curl -H "Host: ${SERVICE_HOSTNAME}" "http://${INGRESS_HOST}:${INGRESS_PORT}/v1/models/${MODEL_NAME}:predict" -d@inputsv1.json | jq
