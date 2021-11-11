@@ -1,7 +1,8 @@
+import os
 import json
 from typing import Dict, List
 
-from ....common import MLFlowFlavour
+import mlflow.pyfunc
 
 """
 The required output structure for a successful inference run for a models is the following JSON:
@@ -87,6 +88,7 @@ def get_failure_json_structure(error_message: str) -> Dict[str, bytes]:
 
     return {"error": json.dumps(error_json).encode()}
 
+MODEL_DIR = os.getenv('MODEL_DIR')
 
 class ExampleModel:
     # Note: Throwing unhandled exceptions that contain lots of information about the issue is expected and encouraged
@@ -99,17 +101,16 @@ class ExampleModel:
 
         This corresponds to the Status remote procedure call.
         """
-        self.model = MLFlowFlavour()
+        self.model = mlflow.pyfunc.load_model(MODEL_DIR)
 
     def handle_single_input(self, model_input: Dict[str, bytes], detect_drift: bool, explain: bool, input_filename: str) -> Dict[str, bytes]:
-        input_data = json.loads(model_input[input_filename])
+        
+        input_dict = {}
+        input_dict["input_data_bytes"] = model_input[input_filename]
+        input_dict["detect_drift"] = detect_drift
+        input_dict["explain"] = explain
 
-        if detect_drift:
-            input_data["detect_drift"] = detect_drift
-        if explain:
-            input_data["explain"] = explain
-
-        output_item = self.model.predict(input_data)
+        output_item = self.model.predict(input_dict)
 
         return {"results.json": json.dumps(output_item, separators=(",", ":")).encode()}
 

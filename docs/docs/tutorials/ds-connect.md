@@ -61,31 +61,34 @@ Once that we have our model we transform it to MLFlow format.
 ```python
 class CustomModel(mlflow.pyfunc.PythonModel):
     _model = load('./model.joblib')
-
+    
     def load_context(self, context):
         self.model = self._model
 
-    def predict(self, context, inputs):
-        processed_inputs = self.pre_process(inputs)
+    def predict(self, context, input_dict):
+        processed_inputs = self.pre_process(input_dict['input_data_bytes'])
         inference_results = self.model.predict(processed_inputs)
         return self.post_process(inference_results)
 
-    def pre_process(self, inputs):
+    def pre_process(self, input_bytes):
+        import json
+        import numpy as np
+        inputs = np.array(json.loads(input_bytes))
         return inputs / 2
 
     def post_process(self, inference_results):
         structured_results = []
         for inference_result in inference_results:
             inference_result = {
-                'classPredictions': [
-                    {'class': str(inference_result), 'score': str(1)}
+                "classPredictions": [
+                    {"class": str(inference_result), "score": str(1)}
                 ]
             }
             structured_output = {
-                'data': {
-                    'result': inference_result,
-                    'explanation': None,
-                    'drift': None,
+                "data": {
+                    "result": inference_result,
+                    "explanation": None,
+                    "drift": None,
                 }
             }
             structured_results.append(structured_output)
