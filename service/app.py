@@ -235,8 +235,6 @@ def unzip_model(model, module_name, random_name):
 
     rmtree(tmp_dir)
 
-    return zip_content_dst
-
 def extract_modzy_metadata(modzy_metadata_data, module_name, random_name):
     if modzy_metadata_data:
         metadata_path = f'flavours/{module_name}/model-{random_name}.yaml'
@@ -319,9 +317,8 @@ def build_image():
     # This name is a random id used to ensure that all jobs are uniquely named and traceable.
     random_name = str(uuid.uuid4())
     
-    # TODO: Remove this unzip_model line and the function. The line doesn't appear to be used and neither does the function.
-    # commenting out as it isn't used anywhere  
-    # model_unzipped_dir = unzip_model(model, module_name, random_name)
+    # Unzip model archive
+    unzip_model(model, module_name, random_name)
 
     # User can build the image but not deploy it to Modzy. So no input_sample is mandatory.
     # On the other hand, the model.yaml is needed to build the image so proceed with it.
