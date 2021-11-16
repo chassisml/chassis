@@ -53,7 +53,6 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 # Learn the digits on the train subset
 clf.fit(X_train, y_train)
-dump(clf, './model.joblib')
 ```
 
 ## Transform the model to MLFlow
@@ -62,12 +61,28 @@ Once that we have our model we transform it to MLFlow format.
 
 ```python
 class CustomModel(mlflow.pyfunc.PythonModel):
-    _model = load('./model.joblib')
     
     def load_context(self, context):
-        self.model = self._model
+        """
+        # This method is REQUIRED
+        # Load anything that needs to persist across inference runs here
+        """
+
+        # Note that the model and labels were loaded outside of this class in the previous cell
+        # They were simply assigned to instance variables here
+        # This is allowed
+        self.model = clf
 
     def predict(self, context, input_dict):
+        """
+        This method is REQUIRED.
+        When an inference job comes in, this will be executed.
+        input_dict['input_data_bytes'] will contain the input file in bytes format.
+        This method must those bytes, running inference, postprocess if needed, and return results.
+        In this example, we have broken out preprocessing and postproceessing into their own methods.
+        However, if you'd like, you can handle everything within this predict() method.
+        """
+        
         processed_inputs = self.pre_process(input_dict['input_data_bytes'])
         inference_results = self.model.predict(processed_inputs)
         return self.post_process(inference_results)
@@ -75,10 +90,14 @@ class CustomModel(mlflow.pyfunc.PythonModel):
     def pre_process(self, input_bytes):
         import json
         import numpy as np
+
+        # Load bytes to json, convert to NumPy array 
         inputs = np.array(json.loads(input_bytes))
         return inputs / 2
 
     def post_process(self, inference_results):
+        # postprocess model output into desired output format
+
         structured_results = []
         for inference_result in inference_results:
             inference_result = {
