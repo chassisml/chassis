@@ -30,7 +30,7 @@ It also provides a python SDK that makes it very easy to communicate with Chassi
 Follow one of our tutorials to easily get started and see how Chassis works:
 
 - [Install with Helm](https://modzy.github.io/chassis/tutorials/devops-deploy.html) into a Cluster
-- [Build and image](https://modzy.github.io/chassis/tutorials/ds-connect.html)
+- [Build an image](https://modzy.github.io/chassis/tutorials/ds-connect.html)
 - [Deploy to KFServing](https://modzy.github.io/chassis/tutorials/ds-deploy.html) the built image
 
 ## Contributors
