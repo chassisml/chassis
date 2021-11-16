@@ -82,7 +82,7 @@ class CustomModel(mlflow.pyfunc.PythonModel):
         In this example, we have broken out preprocessing and postproceessing into their own methods.
         However, if you'd like, you can handle everything within this predict() method.
         """
-        
+
         processed_inputs = self.pre_process(input_dict['input_data_bytes'])
         inference_results = self.model.predict(processed_inputs)
         return self.post_process(inference_results)
@@ -120,7 +120,7 @@ Notice that the SKLearn model that we created before is loaded into memory so th
 
 All other functions like `predict`, `pre_process` or `post_process` are completely up to you and the requirements of your model.
 
-This is the conda environment that we are going to define in this case for our model.
+This is the conda environment that we are going to define in this case for our model. Please note that `mlflow` is ALWAYS required.
 
 ```python
 conda_env = {
