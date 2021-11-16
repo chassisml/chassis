@@ -8,12 +8,14 @@
 
 In order to connect to Chassis service we are going to use the SDK. We will transform our model into MLFlow format and we will upload it by making a request. After that, the image that have been created will be uploaded to Docker Hub and we will be able to use it.
 
+Please note that in addition to the tutorial on this page, there are example Jupyter notebooks available [here](https://github.com/modzy/chassis/tree/main/chassisml-sdk/examples). Instructions to run those notebooks are provided in the README in that repo subdirectory.
+
 ## Install the SDK
 
-First step is to install the SDK using `pip`.
+First step is to install the SDK and additional packages required for this tutorial using `pip`.
 
 ```bash
-pip install chassisml
+pip install chassisml scikit-learn mlflow joblib requests
 ```
 
 ## Build or import the model
