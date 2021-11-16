@@ -5,6 +5,13 @@
 
     <a href="https://testfaster.ci/launch?embedded=true&repo=https://github.com/combinator-ml/terraform-k8s-chassis&file=examples/testfaster/.testfaster.yml" target="_blank">:computer: Launch Test Drive :computer:</a>
 
+## Install required dependencies
+
+* Install [Docker](https://docs.docker.com/get-docker/)
+* Install [Helm](https://helm.sh/docs/intro/install/)
+* Install [Minikube](https://minikube.sigs.k8s.io/docs/start/)
+* Install [Kubectl](https://kubernetes.io/docs/tasks/tools/)
+
 ## Add the Helm repository
 
 ```bash
