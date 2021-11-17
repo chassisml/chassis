@@ -15,6 +15,7 @@ In these notebooks, we'll show you how easy it is to use Chassis and the Chassis
 - Clone this repo: `git clone https://github.com/modzy/chassis`
 - Get to this subdirectory: `cd chassis/chassisml-sdk/examples`
 - Create demo conda environment from file: `conda env create -f conda.yaml`
+- Activate environment: `conda activate chassis-demo`
 - Make environment accessible to Jupyter: `python -m ipykernel install --user --name=chassis-demo`
 - Open Jupyter notebook: `jupyter notebook`
 - Open one of the notebooks in this subdirectory
