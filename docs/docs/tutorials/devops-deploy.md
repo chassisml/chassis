@@ -9,9 +9,9 @@
 
 * Install [Docker](https://docs.docker.com/get-docker/)
     * Try to run `docker ps`
-        * If you get a permissions error, follow instructions [here] (https://docs.docker.com/engine/install/linux-postinstall/)
-* Install [Helm](https://helm.sh/docs/intro/install/)
+        * If you get a permissions error, follow instructions [here](https://docs.docker.com/engine/install/linux-postinstall/)
 * Install [Kubectl](https://kubernetes.io/docs/tasks/tools/)
+* Install [Helm](https://helm.sh/docs/intro/install/)
 * Install [Minikube](https://minikube.sigs.k8s.io/docs/start/)
     * Start cluster: `minikube start`
 
