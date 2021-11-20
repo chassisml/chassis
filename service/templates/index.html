@@ -1,0 +1,43 @@
+<html>
+
+<head>
+<style>
+
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+}
+
+</style>
+</head>
+<body >
+
+    <h2 style='text-align: center'>Welcome to Chassis's Easy Deploy Web Server</h2>
+
+        <img  src='https://chassis.ml/images/chassis-logo.png' class="center" style="background-color: black;">
+    <p/><p/>  
+    <form method="POST" action="{{chassisURL}}">
+        <table border="1" class="center">
+        <tr><td>Please Provide Target Platform Information</td></tr>
+        <tr>
+            <td>Target Platform</td>
+            <td>  <input type="radio" id="modzy" name="target_platform" value="modzy" checked="checked"> 
+             <label for="modzy">Modzy</label><br>
+             <input type="radio" id="kserve" name="target_platform" value="kserve">
+             <label for="kserve">KServe</label><br> </td>
+        </tr>
+        <tr>
+        <td>Package Model</td>
+        <td>
+            <input type="submit" value="Submit">
+        </td>
+        </tr>
+        </table>
+    </form>
+    
+
+</body>
+
+</html>

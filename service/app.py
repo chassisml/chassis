@@ -7,7 +7,7 @@ from shutil import rmtree, copytree
 
 from loguru import logger
 from dotenv import load_dotenv
-from flask import Flask, request, send_from_directory
+from flask import Flask, request, send_from_directory, render_template
 
 from kubernetes import client, config
 from kubernetes.client.rest import ApiException
@@ -322,13 +322,26 @@ def copy_required_files_for_kaniko():
 def create_app():
     flask_app = Flask(__name__)
 
+    
+    @flask_app.route('/')
+    def hello():
+        return 'Alive!'
+
     @flask_app.route('/health')
     def hello2():
         return 'Chassis Server Up and Running!'
 
-    @flask_app.route('/')
-    def hello():
-        return 'Alive!'
+    @flask_app.route('/EasyDeploy')
+    def index():
+        #this URL needs to be localhost for dev work testing, and probably local host during deployment
+        #TODO:test url in prod
+        chassisURL = "http://localhost:5000/EasyDeploy/submitJob"
+        return render_template('index.html', chassisURL=chassisURL)
+    
+    @flask_app.route('/EasyDeploy/submitJob', methods=['POST'])
+    def WebSubmission():
+        
+        return 'Your job for '+str(request.form['target_platform'])+' has been submitted successfully!'
 
     @flask_app.route('/build', methods=['POST'])
     def build_image_api():
