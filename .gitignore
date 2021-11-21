@@ -7,3 +7,8 @@ __pycache__
 *.egg-info
 build
 dist
+chassisml-sdk/examples/model.joblib
+chassisml-sdk/examples/mlflow_custom_pyfunc_svm/conda.yaml
+chassisml-sdk/examples/mlflow_custom_pyfunc_svm/MLmodel
+chassisml-sdk/examples/mlflow_custom_pyfunc_svm/python_model.pkl
+chassisml-sdk/examples/mlflow_custom_pyfunc_svm/requirements.txt
