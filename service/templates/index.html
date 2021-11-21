@@ -12,6 +12,22 @@
 
 </style>
 </head>
+<!--
+    'metadata_path': './modzy/model.yaml',
+    'sample_input_path': './modzy/input_sample.json',
+    'deploy': True,
+    'api_key': modzy_api_key
+
+    image_data = {
+    'name': f'{username}/chassisml-sklearn-demo:latest',
+    'version': '0.0.1',
+    'model_name': 'digits',
+    'model_path': './mlflow_custom_pyfunc_svm',
+    'registry_auth': base64.b64encode(f"{username}:{password}".encode("utf-8")).decode("utf-8"),
+    'publish': True
+}
+
+-->
 <body >
 
     <h2 style='text-align: center'>Welcome to Chassis's Easy Deploy Web Server</h2>
@@ -20,16 +36,63 @@
     <p/><p/>  
     <form method="POST" action="{{chassisURL}}">
         <table border="1" class="center">
-        <tr><td>Please Provide Target Platform Information</td></tr>
+        <tr><td style="color:grey; background-color: black;">Please Provide Target Platform Information</td></tr>
         <tr>
-            <td>Target Platform</td>
+            <td >Target Platform</td>
             <td>  <input type="radio" id="modzy" name="target_platform" value="modzy" checked="checked"> 
              <label for="modzy">Modzy</label><br>
              <input type="radio" id="kserve" name="target_platform" value="kserve">
              <label for="kserve">KServe</label><br> </td>
         </tr>
+        <tr><td style="color:grey; background-color: black;">Enter Modzy Model Data</td></tr>
         <tr>
-        <td>Package Model</td>
+            <td><label for="yaml_path">Path to YAML file:</label></td>
+            <td><input type="text" id="yaml_path" name="yaml_path"></td>
+        </tr>
+        <tr>
+            <td><label for="sample_input_path">Path to Sample Input file:</label></td>
+            <td><input type="text" id="sample_input_path" name="sample_input_path"></td>
+        </tr>
+        <tr>
+            <td><label for="deploy">Should the container deploy to Modzy?:</label></td>
+            <td><input type="checkbox" id="deploy" name="deploy" checked="checked"></td>
+        </tr>
+        <tr>
+            <td><label for="modzy_api_key">Modzy API Key:</label></td>
+            <td><input type="password" id="modzy_api_key" name="modzy_api_key"></td>
+        </tr>
+        <tr>
+            <td><label for="modzy_url">URL to Modzy installation:</label></td>
+            <td><input type="text" id="modzy_url" name="modzy_url"></td>
+        </tr>
+        <tr><td style="color:grey; background-color: black;">Enter Model Data</td></tr>
+        <tr>
+            <td><label for="container_repo">URL For Container Repo:</label></td>
+            <td><input type="text" id="container_repo" name="container_repo" value="http://hub.docker.com/uname/image_name:image_tag"></td>
+        </tr>
+        <tr>
+            <td><label for="model_name">Model Name:</label></td>
+            <td><input type="text" id="model_name" name="model_name"></td>
+        </tr>
+        <tr>
+            <td><label for="container_version">Container Version:</label></td>
+            <td><input type="text" id="container_version" name="container_version" value="0.0.1"></td>
+        </tr>
+        <tr>
+            <td><label for="publish">Should the container be published to Docker hub?:</label></td>
+            <td><input type="checkbox" id="publish" name="publish" checked="checked"></td>
+        </tr>
+        
+        <tr>
+            <td><label for="docker_uname">Docker Username:</label></td>
+            <td><input type="password" id="docker_uname" name="docker_uname"></td>
+        </tr>
+        <tr>
+            <td><label for="docker_password">Docker Password:</label></td>
+            <td><input type="password" id="docker_password" name="docker_password"></td>
+        </tr>
+        <tr>
+        <td style="color:grey; background-color: black;">Package Model</td>
         <td>
             <input type="submit" value="Submit">
         </td>
