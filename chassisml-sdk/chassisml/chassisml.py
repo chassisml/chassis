@@ -1,17 +1,24 @@
 #!/usr/bin/env python
 # -*- coding utf-8 -*-
 
+import _io
 import os
+import time
 import json
 import requests
 import urllib.parse
-import zipfile
 import tempfile
 import shutil
+import mlflow
+import base64
+import numpy as np
+from chassisml import __version__
+from ._utils import zipdir,fix_dependencies,write_modzy_yaml,NumpyEncoder
 
 ###########################################
-
 MODEL_ZIP_NAME = 'model.zip'
+MODZY_YAML_NAME = 'model.yaml'
+CHASSIS_TMP_DIRNAME = 'chassis_tmp'
 
 routes = {
     'build': '/build',
@@ -20,74 +27,146 @@ routes = {
 
 ###########################################
 
-class ChassisML:
-    """The ChassisML object.
+class ChassisModel(mlflow.pyfunc.PythonModel):
+    """The Chassis Model object.
+
+    This class inherits from mlflow.pyfunc.PythonModel and adds Chassis functionality.
+
+    Attributes:
+        predict (function): MLflow pyfunc compatible predict function. 
+            Will wrap user-provided function which takes two arguments: model_input (bytes) and model_context (dict).
+        chassis_build_url (str): The build url for the Chassis API.
+    """
+
+    def __init__(self,model_context,process_fn,chassis_base_url):
+        def predict(context,model_input):
+            output = process_fn(model_input,model_context)
+            return json.dumps(output,separators=(",", ":"),cls=NumpyEncoder).encode()
+        self.predict = predict
+        self.chassis_build_url = urllib.parse.urljoin(chassis_base_url, routes['build'])
+
+    def test(self,test_input):
+        if isinstance(test_input,_io.BufferedReader):
+            result = self.predict(None,test_input.read())
+        elif isinstance(test_input,bytes):
+            result = self.predict(None,test_input)
+        elif isinstance(test_input,str):
+            if os.path.exists(test_input):
+                result = self.predict(None,open(test_input,'rb').read())
+            else:
+                result = self.predict(None,bytes(test_input,encoding='utf8'))
+        else:
+            print("Invalid input. Must be buffered reader, bytes, valid filepath, or text input.")
+            return False
+        return result
+
+    def save(self,path,conda_env=None,overwrite=False):
+        if overwrite and os.path.exists(path):
+            shutil.rmtree(path)
+        mlflow.pyfunc.save_model(path=path, python_model=self, conda_env=conda_env)
+        print("Chassis model saved.")
+
+    def publish(self,model_name,model_version,registry_user,registry_pass,
+                conda_env=None,fix_env=True,modzy_sample_input_path=None,
+                modzy_api_key=None):
+
+        if (modzy_sample_input_path or modzy_api_key) and not \
+            (modzy_sample_input_path and modzy_api_key):
+            raise ValueError('"modzy_sample_input_path", and "modzy_api_key" must both be provided to publish to Modzy.')
+
+        try:
+            model_directory = os.path.join(tempfile.mkdtemp(),CHASSIS_TMP_DIRNAME)
+            mlflow.pyfunc.save_model(path=model_directory, python_model=self, conda_env=conda_env, 
+                                    extra_pip_requirements = None if conda_env else ["chassisml=={}".format(__version__)])
+
+            if fix_env:
+                fix_dependencies(model_directory)
+
+            # Compress all files in model directory to send them as a zip.
+            tmppath = tempfile.mkdtemp()
+            zipdir(model_directory,tmppath,MODEL_ZIP_NAME)
+            
+            image_name = "-".join(model_name.lower().split())
+            image_data = {
+                'name': "{}/{}".format(registry_user,"{}:{}".format(image_name,model_version)),
+                'model_name': model_name,
+                'model_path': tmppath,
+                'registry_auth': base64.b64encode("{}:{}".format(registry_user,registry_pass).encode("utf-8")).decode("utf-8"),
+                'publish': True
+            }
+
+            if modzy_sample_input_path and modzy_api_key:
+                modzy_metadata_path = os.path.join(tmppath,MODZY_YAML_NAME)
+                modzy_data = {
+                    'metadata_path': modzy_metadata_path,
+                    'sample_input_path': modzy_sample_input_path,
+                    'deploy': True,
+                    'api_key': modzy_api_key
+                }
+                write_modzy_yaml(model_name,model_version,modzy_metadata_path)
+            else:
+                modzy_data = {}
+
+            files = [
+                ('image_data', json.dumps(image_data)),
+                ('modzy_data', json.dumps(modzy_data)),
+                ('model', open('{}/{}'.format(tmppath,MODEL_ZIP_NAME),'rb'))
+            ]
+
+            for key, file_key in [('metadata_path', 'modzy_metadata_data'),
+                            ('sample_input_path', 'modzy_sample_input_data')]:
+                value = modzy_data.get(key)
+                if value:
+                    files.append((file_key, open(value, 'rb')))
+
+            print('Starting build job... ', end='', flush=True)
+            res = requests.post(self.chassis_build_url, files=files)
+            res.raise_for_status()
+            print('Ok!')
+
+            shutil.rmtree(tmppath)
+            shutil.rmtree(model_directory)
+
+            return res.json()
+        
+        except Exception as e:
+            print(e)
+            if os.path.exists(tmppath):
+                shutil.rmtree(tmppath)
+            if os.path.exists(model_directory):
+                shutil.rmtree(model_directory)
+            return False
+
+###########################################
+
+class ChassisClient:
+    """The Chassis Client object.
 
     This class is used to interact with the Kaniko service.
 
     Attributes:
         base_url (str): The base url for the API.
-        tar_path (str): The path to the generated tar in the Kaniko service.
-        model_data (json): Object that contains all the container data.
     """
 
-    def __init__(self):
-        self.base_url = 'http://localhost:5000'
-
-    def _zipdir(self, model_directory):
-        tmppath = tempfile.mkdtemp()
-
-        # Compress all files in model directory to send them as a zip.
-        with zipfile.ZipFile(f'{tmppath}/{MODEL_ZIP_NAME}', 'w', zipfile.ZIP_DEFLATED) as ziph:
-            for root, dirs, files in os.walk(model_directory):
-                for file in files:
-                    file_path = os.path.join(root, file)
-                    ziph.write(file_path, file_path[len(model_directory):])
-
-        return tmppath
-
-    def _add_mody_files_to_request(self, files, modzy_data):
-        for key, file_key in [('metadata_path', 'modzy_metadata_data'),
-                              ('sample_input_path', 'modzy_sample_input_data')]:
-            value = modzy_data.get(key)
-
-            if value:
-                files.append((file_key, open(value, 'rb')))
-
-    def publish(self, image_data, modzy_data, base_url):
-        self.base_url = base_url if base_url else self.base_url
-
-        tmp_zip_dir = self._zipdir(image_data.get('model_path'))
-
-        files = [
-            ('image_data', json.dumps(image_data)),
-            ('modzy_data', json.dumps(modzy_data or {})),
-            ('model', open(f'{tmp_zip_dir}/{MODEL_ZIP_NAME}', 'rb')),
-        ]
-
-        if modzy_data:
-            self._add_mody_files_to_request(files, modzy_data)
-
-        route = urllib.parse.urljoin(self.base_url, routes['build'])
-
-        print('Building image... ', end='', flush=True)
-        res = requests.post(route, files=files)
-        res.raise_for_status()
-        print('Ok!')
-
-        # Remove the zip since it's no longer needed.
-        shutil.rmtree(tmp_zip_dir)
-
-        return res.json()
+    def __init__(self,base_url='http://localhost:5000'):
+        self.base_url = base_url
 
     def get_job_status(self, job_id):
         route = f'{urllib.parse.urljoin(self.base_url, routes["job"])}/{job_id}'
-
         res = requests.get(route)
-
         data = res.json()
-
         return data
+
+    def block_until_complete(self,job_id,timeout=1800,poll_interval=5):
+        endby = time.time() + timeout if (timeout is not None) else None
+        while True:
+            status = self.get_job_status(job_id)
+            if status['status']['succeeded'] or status['status']['failed']:
+                return status
+            if (endby is not None) and (time.time() > endby - poll_interval):
+                print('Timed out before completion.')
+                return False
+            time.sleep(poll_interval)
 
     def download_tar(self, job_id, output_filename):
         url = f'{urllib.parse.urljoin(self.base_url, routes["job"])}/{job_id}/download-tar'
@@ -99,51 +178,8 @@ class ChassisML:
         else:
             print(f'Error download tar: {r.text}')
 
-###########################################
+    def create_model(self,context,process_fn):
+        return ChassisModel(context,process_fn,self.base_url)
 
-
-# ChassisML instance that is used in the SDK.
-_defaultChassisML = ChassisML()
-
-###########################################
-
-def publish(image_data, modzy_data=None, base_url=None):
-    """Makes a request agains Chassis service to build the image.
-
-    Example of image_data:
-    ```
-    {
-        'name': '<username>/chassisml-sklearn-demo:latest',
-        'model_name': 'digits',
-        'model_path': './mlflow_custom_pyfunc_svm',
-        'registry_auth': 'base64(<username>:<password>)',
-        'publish': False
-    }
-    ```
-
-    Example of modzy_data:
-    ```
-    {
-        'metadata_path': './modzy/model.yaml'
-        'sample_input_path': './modzy/sample_input.json',
-        'deploy': False,
-        'api_key': 'XxXxXxXx:XxXxXxXx',
-    }
-    ```
-
-    Args:
-        image_data (json): Required data to build and deploy the model.
-        modzy_data (json): In case we need to deploy the image to Modzy.
-        base_url (str): Default base_url is localhost:5000.
-    """
-    return _defaultChassisML.publish(image_data, modzy_data, base_url)
-
-def get_job_status(job_id):
-    """Returns the data once the model has been deployed.
-    """
-    return _defaultChassisML.get_job_status(job_id)
-
-def download_tar(job_id, output_filename):
-    """Returns the data once the model has been deployed.
-    """
-    return _defaultChassisML.download_tar(job_id, output_filename)
+    def load_model(self,model_path):
+        return mlflow.pyfunc.load_model(model_path)
