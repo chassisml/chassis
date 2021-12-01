@@ -51,203 +51,107 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 # Learn the digits on the train subset
 clf.fit(X_train, y_train)
-dump(clf, './model.joblib')
 ```
 
-## Transform the model to MLFlow
+## Transform the model to Chassis format 
 
-Once that we have our model we transform it to MLFlow format.
+Once that we have our model we transform it to Chassis format.
+
+First we prepare the `context` dict, initializing anything here that should persist across inference runs. In this case, just the model:
 
 ```python
-class CustomModel(mlflow.pyfunc.PythonModel):
-    _model = load('./model.joblib')
-    
-    def load_context(self, context):
-        self.model = self._model
+context = {"model": clf}
+```
 
-    def predict(self, context, input_dict):
-        processed_inputs = self.pre_process(input_dict['input_data_bytes'])
-        inference_results = self.model.predict(processed_inputs)
-        return self.post_process(inference_results)
+Notice that the SKLearn model that we created before is loaded into memory so that it will be packaged inside the MLFlow model. 
 
-    def pre_process(self, input_bytes):
-        import json
-        import numpy as np
-        inputs = np.array(json.loads(input_bytes))
-        return inputs / 2
+Next, we prepare the process function, which must take input file bytes and the context dict we prepared as input. It is responsible for preprocessing the bytes, running inference, and returning formatted results. It can leverage anything in the context dict to do so:
 
-    def post_process(self, inference_results):
-        structured_results = []
-        for inference_result in inference_results:
-            inference_result = {
-                "classPredictions": [
-                    {"class": str(inference_result), "score": str(1)}
-                ]
+```python
+def process(input_bytes,context):
+    inputs = np.array(json.loads(input_bytes))/2
+    inference_results = context["model"].predict(inputs)
+    structured_results = []
+    for inference_result in inference_results:
+        structured_output = {
+            "data": {
+                "result": {"classPredictions": [{"class": str(inference_result), "score": str(1)}]}
             }
-            structured_output = {
-                "data": {
-                    "result": inference_result,
-                    "explanation": None,
-                    "drift": None,
-                }
-            }
-            structured_results.append(structured_output)
-        return structured_results
+        }
+        structured_results.append(structured_output)
+    return structured_results
 ```
 
-Notice that the SKLearn model that we created before is loaded into memory so that it will be packaged inside the MLFlow model. This way, in the `load_context` function we just need to point to the model that is already loaded in memory.
+The process function can call other functions if needed. 
 
-All other functions like `predict`, `pre_process` or `post_process` are completely up to you and the requirements of your model.
-
-This is the conda environment that we are going to define in this case for our model.
+Next, we initialize our Chassis client, which we'll use to communicate with the Chassis service. Here, we assume our instance of Chassis is running locally on port 5000:
 
 ```python
-conda_env = {
-    'channels': ['defaults', 'conda-forge', 'pytorch'],
-    'dependencies': [
-        'python=3.8.5',
-        'pytorch',
-        'torchvision',
-        'pip',
-        {
-            'pip': [
-                'mlflow',
-                'lime',
-                'sklearn'
-            ],
-        },
-    ],
-    'name': 'linear_env'
-}
+chassis_client = chassisml.ChassisClient("http://localhost:5000")
 ```
 
-Finally we just save the MLFlow model in the directory we prefer.
+Now let's create a Chassis model with our context dict and process function, and test it with a local input file:
 
 ```python
-model_save_path = 'mlflow_custom_pyfunc_svm'
+# create Chassis model
+chassis_model = chassis_client.create_model(context=context,process_fn=process)
 
-mlflow.pyfunc.save_model(
-    path=model_save_path,
-    python_model=CustomModel(),
-    conda_env=conda_env
-)
+# test Chassis model (can pass filepath, bufferedreader, bytes, or text here):
+sample_filepath = './examples/modzy/input_sample.json'
+results = chassis_model.test(sample_filepath)
+print(results)
 ```
 
-## Build the image
+## Build the image and publish to Modzy
 
-Now that we have our model in MLFlow format we need to make a request against the Chassis service to build the Docker image that exposes it.
-
-### Define data
-
-There is some model and image related data that we need to define before we send our model to Chassis.
-
-In case we want Chassis to upload our image to Docker Hub we can pass the credentials in base64 format.
-
-```bash
-echo -n "<user>:<password>" | base64
-```
-
-Which we are going to asume that outputs `XxXxXxXx`.
-
-This is an example of the data that we could use.
+Now that we have our model in Chassis format we need to make a request against the Chassis service to build the Docker image that exposes it. You can optionally define your desired conda environment and pass it to `publish()`, but if you don't the dependencies will be automatically inferred for you. We'll let Chassis handle inferring dependencies in this case. We just need to provide a model name and semantic version, dockerhub credentials, and we can optionally provide a sample input file and Modzy API key if we'd like to publish the model to Modzy:
 
 ```python
-image_data = {
-    'name': '<user>/chassisml-sklearn-demo:latest',
-    'model_name': 'digits',
-    'model_path': './mlflow_custom_pyfunc_svm',
-    'registry_auth': 'XxXxXxXx'
-}
+response = chassis_model.publish(model_name="Sklearn Digits",model_version="0.0.1",
+                     registry_user=dockerhub_user,registry_pass=dockerhub_pass,
+                     modzy_sample_input_path=sample_filepath,
+                     modzy_api_key=modzy_api_key)
+
+job_id = response.get('job_id')
+final_status = chassis_client.block_until_complete(job_id)
 ```
 
-As we can see, we must define the following fields:
-
-* `name`: tag of the image
-* `model_name`: name of the model we trained before
-* `model_path`: the directory where we have stored our MLFlow model
-* `registry_path`: credentials in case we want to upload the image
-
-### Make the request
-
-Now we can make the request to let Chassis build our image by making a request.
-
-We can decide if we want Chassis to upload the image to Docker Hub and we can also modify the address of the service.
-
-Take into account that `base_url` should point to the address of the cluster where Chassis is running.
-
-```python
-res = chassisml.publish(
-    image_data=image_data,
-    upload=True, # True if we want Chassis to upload the image
-    base_url='http://localhost:5000'
-)
-
-error = res.get('error')
-job_id = res.get('job_id')
-
-if error:
-    print('Error:', error)
-else:
-    print('Job ID:', job_id)
-```
-
-If everything has gone well we should see something similar to this.
-
-```bash
-Publishing container... Ok!
-Job ID: chassis-builder-job-a3864869-a509-4658-986b-25cb4ddd604d
-```
-
-### Check the job status
-
-As we have seen, we have been assigned to an uid that we can use to check the status of the job that is building our image.
-
-```python
-chassisml.get_job_status(job_id)
-```
-
-And we should see something like this in case the job has not finished yet.
-
-```python
-{'active': 1,
- 'completion_time': None,
- 'conditions': None,
- 'failed': None,
- 'start_time': 'Fri, 09 Jul 2021 09:01:43 GMT',
- 'succeeded': None}
-```
-
-On the other hand, if the job has already finished and our image has been correctly built this could be the output.
-
-```python
-{'active': None,
- 'completion_time': 'Fri, 09 Jul 2021 09:13:37 GMT',
- 'conditions': [{'last_probe_time': 'Fri, 09 Jul 2021 09:13:37 GMT',
-   'last_transition_time': 'Fri, 09 Jul 2021 09:13:37 GMT',
-   'message': None,
-   'reason': None,
-   'status': 'True',
-   'type': 'Complete'}],
- 'failed': None,
- 'start_time': 'Fri, 09 Jul 2021 09:01:43 GMT',
- 'succeeded': 1}
-```
+The `block_until_complete` call will terminate once the Chassis job completes.
 
 ## Pull the image
 
-Now that the process has completely finished we can pull and see our built image.
+Now that the process has completely finished we can pull and see our built image. The image name will be the `model_name` specified in the `publish()` call, but lowercase and with dashes instead of spaces. The image tag will be the `model_version`.
 
 ```bash
-docker pull <user>/chassisml-sklearn-demo:latest
+docker pull <user>/sklearn-digits:0.0.1
 ```
 
 ```bash
-docker images <user>/chassisml-sklearn-demo:latest
+docker images <user>/sklearn-digits:0.0.1
 ```
 
 If everything has gone as expected we will see something similar to this.
 
 ```bash
 REPOSITORY                        TAG       IMAGE ID       CREATED         SIZE
-<user>/chassisml-sklearn-demo     latest    0e5c5815f2ec   3 minutes ago   2.19GB
+<user>/sklearn-digits            latest    0e5c5815f2ec   3 minutes ago   2.19GB
+```
+
+## Run an inference job in Modzy
+
+If you provided the required arguments to `publish()` to publish the model to Modzy, you can use the Modzy SDK to submit an inference job to your newly-published model. 
+
+```python
+from modzy import ApiClient
+
+client = ApiClient(base_url='https://your.modzy.com/api', api_key=modzy_api_key)
+
+input_name = final_status['result']['inputs'][0]['name']
+model_id = final_status['result'].get("model").get("modelId")
+model_version = final_status['result'].get("version")
+
+inference_job = client.jobs.submit_file(model_id, model_version, {input_name: sample_filepath})
+inference_job_result = client.results.block_until_complete(inference_job, timeout=None)
+inference_job_results_json = inference_job_result.get_first_outputs()['results.json']
+print(inference_job_results_json)
 ```
