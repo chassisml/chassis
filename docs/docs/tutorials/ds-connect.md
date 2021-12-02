@@ -27,7 +27,6 @@ Since we are going to train our own model as an example, we need to import all t
 ```python
 import chassisml
 import sklearn
-import mlflow.pyfunc
 from joblib import dump, load
 ```
 
