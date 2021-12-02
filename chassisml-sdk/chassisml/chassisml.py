@@ -180,6 +180,3 @@ class ChassisClient:
 
     def create_model(self,context,process_fn):
         return ChassisModel(context,process_fn,self.base_url)
-
-    def load_model(self,model_path):
-        return mlflow.pyfunc.load_model(model_path)
