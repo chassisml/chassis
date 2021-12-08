@@ -38,7 +38,7 @@
     <p/><p/>  
     <form method="POST" action="{{chassisURL}}">
         <table border="1" class="center">
-        <tr><td style="color:grey; background-color: black;">Please Provide Target Platform Information</td></tr>
+        <tr><td style="color:grey; background-color: black;">Please Provide Deployment Target Information</td></tr>
         <tr>
             <td >Target Platform</td>
             <td>  <input type="radio" id="modzy" name="target_platform" value="modzy" checked="checked"> 
@@ -46,45 +46,36 @@
              <input type="radio" id="kserve" name="target_platform" value="kserve">
              <label for="kserve">KServe</label><br> </td>
         </tr>
-        <tr><td style="color:grey; background-color: black;">Enter Modzy Model Data</td></tr>
         <tr>
-            <td><label for="yaml_path">Path to YAML file:</label></td>
-            <td><input type="text" id="yaml_path" name="yaml_path"></td>
-        </tr>
-        <tr>
-            <td><label for="sample_input_path">Path to Sample Input file:</label></td>
-            <td><input type="text" id="sample_input_path" name="sample_input_path"></td>
+            <td><label for="publish">Should the container be published to Docker hub?:</label></td>
+            <td><input type="checkbox" id="publish" name="publish" checked="checked"></td>
         </tr>
         <tr>
             <td><label for="deploy">Should the container deploy to Modzy?:</label></td>
             <td><input type="checkbox" id="deploy" name="deploy" checked="checked"></td>
+        </tr>
+        
+        <tr><td style="color:grey; background-color: black;">Access Data</td></tr>
+        <tr>
+            <td><label for="modzy_url">URL to Modzy installation:</label></td>
+            <td><input type="text" id="modzy_url" name="modzy_url"></td>
+        </tr>
+        <tr>
+            <td><label for="s3_bucket">S3 Bucket Name:</label></td>
+            <td><input type="text" id="s3_bucket" name="s3_bucket" value="/S3/Bucket/Path/Model.file"></td>
         </tr>
         <tr>
             <td><label for="modzy_api_key">Modzy API Key:</label></td>
             <td><input type="password" id="modzy_api_key" name="modzy_api_key"></td>
         </tr>
         <tr>
-            <td><label for="modzy_url">URL to Modzy installation:</label></td>
-            <td><input type="text" id="modzy_url" name="modzy_url"></td>
-        </tr>
-        <tr><td style="color:grey; background-color: black;">Enter Model Data</td></tr>
-        <tr>
-            <td><label for="container_repo">URL For Container Repo:</label></td>
-            <td><input type="text" id="container_repo" name="container_repo" value="http://hub.docker.com/uname/image_name:image_tag"></td>
+            <td><label for="aws_access_key">AWS Access Key:</label></td>
+            <td><input type="password" id="aws_access_key" name="aws_access_key"></td>
         </tr>
         <tr>
-            <td><label for="model_name">Model Name:</label></td>
-            <td><input type="text" id="model_name" name="model_name"></td>
+            <td><label for="aws_secret_key">AWS Secret Key:</label></td>
+            <td><input type="password" id="aws_secret_key" name="aws_secret_key"></td>
         </tr>
-        <tr>
-            <td><label for="container_version">Container Version:</label></td>
-            <td><input type="text" id="container_version" name="container_version" value="0.0.1"></td>
-        </tr>
-        <tr>
-            <td><label for="publish">Should the container be published to Docker hub?:</label></td>
-            <td><input type="checkbox" id="publish" name="publish" checked="checked"></td>
-        </tr>
-        
         <tr>
             <td><label for="docker_uname">Docker Username:</label></td>
             <td><input type="password" id="docker_uname" name="docker_uname"></td>
@@ -93,10 +84,35 @@
             <td><label for="docker_password">Docker Password:</label></td>
             <td><input type="password" id="docker_password" name="docker_password"></td>
         </tr>
+
+        <tr><td style="color:grey; background-color: black;">Enter Model Data</td></tr>
+        <tr>
+            <td><label for="model_name">Model Filename:</label></td>
+            <td><input type="text" id="model_name" name="model_name"></td>
+        </tr>
+        <tr>
+            <td><label for="container_version">Container Version:</label></td>
+            <td><input type="text" id="container_version" name="container_version" value="0.0.1"></td>
+        </tr>
+
+        <tr>
+            <td><label for="yaml_path">Specification YAML filename:</label></td>
+            <td><input type="text" id="yaml_path" name="yaml_path" value="model.yaml"></td>
+        </tr>
+        <tr>
+            <td><label for="sample_input_path">Sample Input filename:</label></td>
+            <td><input type="text" id="sample_input_path" name="sample_input_path" value="input_sample.json"></td>
+        </tr>
+        
+        <!--tr>
+            <td><label for="container_repo">URL For Container Repo:</label></td>
+            <td><input type="text" id="container_repo" name="container_repo" value="http://hub.docker.com/uname/image_name:image_tag"></td>
+        </tr>-->
+       
         <tr>
         <td style="color:grey; background-color: black;">Package Model</td>
         <td>
-            <input type="submit" value="Submit">
+            <input type="submit" value="Wrap My Model">
         </td>
         </tr>
         </table>
