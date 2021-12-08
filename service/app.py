@@ -4,10 +4,15 @@ import uuid
 import tempfile
 import zipfile
 from shutil import rmtree, copytree
+import base64
+
 
 from loguru import logger
 from dotenv import load_dotenv
 from flask import Flask, request, send_from_directory, render_template
+from boto3.session import Session
+import boto3
+
 
 from kubernetes import client, config
 from kubernetes.client.rest import ApiException
@@ -319,6 +324,75 @@ def copy_required_files_for_kaniko():
     except OSError as e:
         print(f'Directory not copied. Error: {e}')
 
+def build_from_webUI():
+    docker_uname = request.form["docker_uname"]
+    docker_pword = request.form["docker_password"]
+    publish = request.form["publish"]
+    version = request.form["container_version"]
+    model_name = request.form["model_name"]
+
+    # Download model from S3
+    
+    # Create temp directory to hold model
+    tmp_dir = tempfile.mkdtemp()
+    path_to_zip_file = f'{tmp_dir}/mlflow_custom_pyfunc'
+    
+    # Download model to temp directory
+    session = Session(aws_access_key_id=request.form["aws_access_key"],
+                        aws_secret_access_key=request.form["aws_secret_key"])
+    s3 = session.resource('s3')
+    your_bucket = s3.Bucket('bucket_name')
+    your_bucket.download_file(path_to_zip_file, request.form["s3_bucket"])
+
+
+    image_data = {
+    'name': f'{request.form["docker_uname"]}/{model_name}:latest',
+    'version': version,
+    'model_name': model_name,
+    'model_path': './mlflow_custom_pyfunc', #this is only used for the zip file's directory structure.
+    'registry_auth': base64.b64encode(f"{docker_uname}:{docker_pword}".encode("utf-8")).decode("utf-8"),
+    'publish': publish
+    }
+
+    if request.form["deploy"]:
+        modzy_data = {
+        'metadata_path': './model.yaml',
+        'sample_input_path': './input_sample',
+        'deploy': True,
+        'api_key': request.form["modzy_api_key"]
+        }
+    
+    conda_env = {
+    "channels": ["defaults", "conda-forge", "pytorch"],
+    "dependencies": [
+        "python=3.8.5",
+        "pytorch",
+        "torchvision",
+        "pip",
+        {
+            "pip": [
+                "mlflow",
+                "lime",
+                "sklearn"
+            ],
+        },
+    ],
+    "name": str(request.form['model_name']) + "_env"
+    }
+
+    #change to path of 3 different files
+    files = [
+            ('image_data', json.dumps(image_data)),
+            ('modzy_data', json.dumps(modzy_data or {})),
+            ('model', open(f'{path_to_zip_file}', 'rb')),
+            ('modzy_metadata_data',open(f'{path_to_zip_file}', 'rb')),
+            ('modzy_sample_input_data',open(f'{path_to_zip_file}', 'rb'))
+        ]
+    
+
+
+    return
+
 def create_app():
     flask_app = Flask(__name__)
 
@@ -340,7 +414,7 @@ def create_app():
     
     @flask_app.route('/EasyDeploy/submitJob', methods=['POST'])
     def WebSubmission():
-        
+        build_from_webUI()
         return 'Your job for '+str(request.form['target_platform'])+' has been submitted successfully!'
 
     @flask_app.route('/build', methods=['POST'])
