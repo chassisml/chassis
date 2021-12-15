@@ -8,12 +8,14 @@
 
 In order to connect to Chassis service we are going to use the SDK. We will transform our model into MLFlow format and we will upload it by making a request. After that, the image that have been created will be uploaded to Docker Hub and we will be able to use it.
 
+Please note that in addition to the tutorial on this page, there are example Jupyter notebooks available in the Chassis repo [here](https://github.com/modzy/chassis/tree/main/chassisml-sdk/examples). Instructions to run those notebooks are provided in the README in that repo subdirectory.
+
 ## Install the SDK
 
-First step is to install the SDK using `pip`.
+First step is to install the SDK and additional packages required for this tutorial using `pip`.
 
 ```bash
-pip install chassisml
+pip install chassisml scikit-learn mlflow joblib requests
 ```
 
 ## Build or import the model
@@ -51,7 +53,6 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 # Learn the digits on the train subset
 clf.fit(X_train, y_train)
-dump(clf, './model.joblib')
 ```
 
 ## Transform the model to MLFlow
@@ -60,12 +61,28 @@ Once that we have our model we transform it to MLFlow format.
 
 ```python
 class CustomModel(mlflow.pyfunc.PythonModel):
-    _model = load('./model.joblib')
     
     def load_context(self, context):
-        self.model = self._model
+        """
+        # This method is REQUIRED
+        # Load anything that needs to persist across inference runs here
+        """
+
+        # Note that the model and labels were loaded outside of this class in the previous cell
+        # They were simply assigned to instance variables here
+        # This is allowed
+        self.model = clf
 
     def predict(self, context, input_dict):
+        """
+        This method is REQUIRED.
+        When an inference job comes in, this will be executed.
+        input_dict['input_data_bytes'] will contain the input file in bytes format.
+        This method must those bytes, running inference, postprocess if needed, and return results.
+        In this example, we have broken out preprocessing and postproceessing into their own methods.
+        However, if you'd like, you can handle everything within this predict() method.
+        """
+
         processed_inputs = self.pre_process(input_dict['input_data_bytes'])
         inference_results = self.model.predict(processed_inputs)
         return self.post_process(inference_results)
@@ -73,10 +90,14 @@ class CustomModel(mlflow.pyfunc.PythonModel):
     def pre_process(self, input_bytes):
         import json
         import numpy as np
+
+        # Load bytes to json, convert to NumPy array 
         inputs = np.array(json.loads(input_bytes))
         return inputs / 2
 
     def post_process(self, inference_results):
+        # postprocess model output into desired output format
+
         structured_results = []
         for inference_result in inference_results:
             inference_result = {
@@ -99,7 +120,7 @@ Notice that the SKLearn model that we created before is loaded into memory so th
 
 All other functions like `predict`, `pre_process` or `post_process` are completely up to you and the requirements of your model.
 
-This is the conda environment that we are going to define in this case for our model.
+This is the conda environment that we are going to define in this case for our model. Please note that `mlflow` is ALWAYS required.
 
 ```python
 conda_env = {
