@@ -44,10 +44,10 @@ The fastest way to get started is to use the test drive functionality provided b
 
 Follow one of our tutorials to easily get started and see how Chassis works:
 
-- [Tech Support](https://www2.modzy.com/modzy-discord-chassis) Our tech support is graciously hosted on Modzy's Discord server in the "Open Source" channels
-- [Install with Helm](tutorials/devops-deploy.md) into a Kubernetes cluster
-- [Build a container image](tutorials/ds-connect) from an MLflow model
-- [Deploy to KFServing](tutorials/ds-deploy.md) the built image
+* [Tech Support](https://www2.modzy.com/modzy-discord-chassis) Our tech support is graciously hosted on Modzy's Discord server in the "Open Source" channels
+* [Install with Helm](tutorials/devops-deploy.md) into a Kubernetes cluster
+* [Build a container image](tutorials/ds-connect) from an MLflow model
+* [Deploy to KFServing](tutorials/ds-deploy.md) the built image
 
 ## Shameless plug
 
