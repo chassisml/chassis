@@ -59,21 +59,22 @@ class ChassisML:
 
         tmp_zip_dir = self._zipdir(image_data.get('model_path'))
 
-        files = [
-            ('image_data', json.dumps(image_data)),
-            ('modzy_data', json.dumps(modzy_data or {})),
-            ('model', open(f'{tmp_zip_dir}/{MODEL_ZIP_NAME}', 'rb')),
-        ]
+        with open(f'{tmp_zip_dir}/{MODEL_ZIP_NAME}', 'rb') as f:
+            files = [
+                ('image_data', json.dumps(image_data)),
+                ('modzy_data', json.dumps(modzy_data or {})),
+                ('model', f),
+            ]
 
-        if modzy_data:
-            self._add_mody_files_to_request(files, modzy_data)
+            if modzy_data:
+                self._add_mody_files_to_request(files, modzy_data)
 
-        route = urllib.parse.urljoin(self.base_url, routes['build'])
+            route = urllib.parse.urljoin(self.base_url, routes['build'])
 
-        print('Building image... ', end='', flush=True)
-        res = requests.post(route, files=files)
-        res.raise_for_status()
-        print('Ok!')
+            print('Building image... ', end='', flush=True)
+            res = requests.post(route, files=files)
+            res.raise_for_status()
+            print('Ok!')
 
         # Remove the zip since it's no longer needed.
         shutil.rmtree(tmp_zip_dir)
