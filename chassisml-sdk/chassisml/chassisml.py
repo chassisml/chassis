@@ -76,8 +76,8 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
 
         try:
             model_directory = os.path.join(tempfile.mkdtemp(),CHASSIS_TMP_DIRNAME)
-            mlflow.pyfunc.save_model(path=model_directory, python_model=self, conda_env=conda_env)#, 
-            #                        extra_pip_requirements = None if conda_env else ["chassisml=={}".format(__version__)])
+            mlflow.pyfunc.save_model(path=model_directory, python_model=self, conda_env=conda_env, 
+                                    extra_pip_requirements = None if conda_env else ["chassisml=={}".format(__version__)])
 
             if fix_env:
                 fix_dependencies(model_directory)
@@ -107,21 +107,22 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
             else:
                 modzy_data = {}
 
-            files = [
-                ('image_data', json.dumps(image_data)),
-                ('modzy_data', json.dumps(modzy_data)),
-                ('model', open('{}/{}'.format(tmppath,MODEL_ZIP_NAME),'rb'))
-            ]
+            with open('{}/{}'.format(tmppath,MODEL_ZIP_NAME),'rb') as f:
+                files = [
+                    ('image_data', json.dumps(image_data)),
+                    ('modzy_data', json.dumps(modzy_data)),
+                    ('model', f)
+                ]
 
-            for key, file_key in [('metadata_path', 'modzy_metadata_data'),
-                            ('sample_input_path', 'modzy_sample_input_data')]:
-                value = modzy_data.get(key)
-                if value:
-                    files.append((file_key, open(value, 'rb')))
+                for key, file_key in [('metadata_path', 'modzy_metadata_data'),
+                                ('sample_input_path', 'modzy_sample_input_data')]:
+                    value = modzy_data.get(key)
+                    if value:
+                        files.append((file_key, open(value, 'rb')))
 
-            print('Starting build job... ', end='', flush=True)
-            res = requests.post(self.chassis_build_url, files=files)
-            res.raise_for_status()
+                print('Starting build job... ', end='', flush=True)
+                res = requests.post(self.chassis_build_url, files=files)
+                res.raise_for_status()
             print('Ok!')
 
             shutil.rmtree(tmppath)

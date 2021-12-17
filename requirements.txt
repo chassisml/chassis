@@ -6,3 +6,4 @@ pytest
 pylint
 flake8
 mkdocs
+python-dotenv
