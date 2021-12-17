@@ -39,7 +39,7 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
     """
 
     def __init__(self,model_context,process_fn,chassis_base_url):
-        def predict(context,model_input):
+        def predict(_,model_input):
             output = process_fn(model_input,model_context)
             return json.dumps(output,separators=(",", ":"),cls=NumpyEncoder).encode()
         self.predict = predict
@@ -76,8 +76,8 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
 
         try:
             model_directory = os.path.join(tempfile.mkdtemp(),CHASSIS_TMP_DIRNAME)
-            mlflow.pyfunc.save_model(path=model_directory, python_model=self, conda_env=conda_env, 
-                                    extra_pip_requirements = None if conda_env else ["chassisml=={}".format(__version__)])
+            mlflow.pyfunc.save_model(path=model_directory, python_model=self, conda_env=conda_env)#, 
+            #                        extra_pip_requirements = None if conda_env else ["chassisml=={}".format(__version__)])
 
             if fix_env:
                 fix_dependencies(model_directory)
