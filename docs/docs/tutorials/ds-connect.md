@@ -97,10 +97,14 @@ Now let's create a Chassis model with our context dict and process function, and
 # create Chassis model
 chassis_model = chassis_client.create_model(context=context,process_fn=process)
 
-# test Chassis model (can pass filepath, bufferedreader, bytes, or text here):
+# test Chassis model locally (can pass filepath, bufferedreader, bytes, or text here):
 sample_filepath = './examples/modzy/input_sample.json'
 results = chassis_model.test(sample_filepath)
 print(results)
+
+# test environment and model within Chassis service, must pass filepath here:
+test_env_result = chassis_model.test_env(sample_filepath)
+print(test_env_result)
 ```
 
 ## Build the image and publish to Modzy
