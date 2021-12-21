@@ -91,7 +91,7 @@ Next, we initialize our Chassis client, which we'll use to communicate with the 
 chassis_client = chassisml.ChassisClient("http://localhost:5000")
 ```
 
-Now let's create a Chassis model with our context dict and process function, and test it with a local input file:
+Now let's create a Chassis model with our context dict and process function, test it locally with a local input file, and then also test the creation of the environment and the execution of the model with a sample input file within that created environment (this will occur within the Chassis service):
 
 ```python
 # create Chassis model
