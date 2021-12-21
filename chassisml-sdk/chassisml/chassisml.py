@@ -23,6 +23,7 @@ CHASSIS_TMP_DIRNAME = 'chassis_tmp'
 routes = {
     'build': '/build',
     'job': '/job',
+    'test': '/test'
 }
 
 ###########################################
@@ -59,6 +60,35 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
             print("Invalid input. Must be buffered reader, bytes, valid filepath, or text input.")
             return False
         return result
+
+    def test_env(self,test_input_path,conda_env=None,fix_env=True):
+        model_directory = os.path.join(tempfile.mkdtemp(),CHASSIS_TMP_DIRNAME)
+        mlflow.pyfunc.save_model(path=model_directory, python_model=self, conda_env=conda_env, 
+                                extra_pip_requirements = None if conda_env else ["chassisml=={}".format(__version__)])
+
+        if fix_env:
+            fix_dependencies(model_directory)
+
+        # Compress all files in model directory to send them as a zip.
+        tmppath = tempfile.mkdtemp()
+        zipdir(model_directory,tmppath,MODEL_ZIP_NAME)
+        
+        with open('{}/{}'.format(tmppath,MODEL_ZIP_NAME),'rb') as model_f, \
+                open(test_input_path,'rb') as test_input_f:
+            files = [
+                ('sample_input', test_input_f),
+                ('model', model_f)
+            ]
+
+            print('Starting test job... ', end='', flush=True)
+            res = requests.post(self.chassis_test_url, files=files)
+            res.raise_for_status()
+        print('Ok!')
+
+        shutil.rmtree(tmppath)
+        shutil.rmtree(model_directory)
+
+        return res.json()
 
     def save(self,path,conda_env=None,overwrite=False):
         if overwrite and os.path.exists(path):

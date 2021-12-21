@@ -91,16 +91,20 @@ Next, we initialize our Chassis client, which we'll use to communicate with the 
 chassis_client = chassisml.ChassisClient("http://localhost:5000")
 ```
 
-Now let's create a Chassis model with our context dict and process function, and test it with a local input file:
+Now let's create a Chassis model with our context dict and process function, test it locally with a local input file, and then also test the creation of the environment and the execution of the model with a sample input file within that created environment (this will occur within the Chassis service):
 
 ```python
 # create Chassis model
 chassis_model = chassis_client.create_model(context=context,process_fn=process)
 
-# test Chassis model (can pass filepath, bufferedreader, bytes, or text here):
+# test Chassis model locally (can pass filepath, bufferedreader, bytes, or text here):
 sample_filepath = './examples/modzy/input_sample.json'
 results = chassis_model.test(sample_filepath)
 print(results)
+
+# test environment and model within Chassis service, must pass filepath here:
+test_env_result = chassis_model.test_env(sample_filepath)
+print(test_env_result)
 ```
 
 ## Build the image and publish to Modzy
