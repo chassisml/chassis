@@ -236,6 +236,8 @@ def unzip_model(model, module_name, random_name):
         zip_ref.extractall(zip_content_dst)
 
     rmtree(tmp_dir)
+    
+    return zip_content_dst
 
 def extract_modzy_metadata(modzy_metadata_data, module_name, random_name):
     if modzy_metadata_data:
