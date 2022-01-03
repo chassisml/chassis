@@ -45,6 +45,7 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
             return json.dumps(output,separators=(",", ":"),cls=NumpyEncoder).encode()
         self.predict = predict
         self.chassis_build_url = urllib.parse.urljoin(chassis_base_url, routes['build'])
+        self.chassis_test_url = urllib.parse.urljoin(chassis_base_url, routes['test'])
 
     def test(self,test_input):
         if isinstance(test_input,_io.BufferedReader):
