@@ -3,6 +3,8 @@ import json
 import uuid
 import tempfile
 import zipfile
+import time
+import subprocess
 from shutil import rmtree, copytree
 
 from loguru import logger
@@ -367,6 +369,61 @@ def copy_required_files_for_kaniko():
     except OSError as e:
         print(f'Directory not copied. Error: {e}')
 
+def test_model():
+    # This method is run by the /test route. It creates the provided conda environment
+    # it then tests the provided model in that conda environment with provided test input file
+    if not ('sample_input' in request.files and 'model' in request.files):
+        return 'Both sample input and model are required', 500
+
+    output_dict = {}
+
+    # retrieve binary representations for both variables 
+    model = request.files.get('model')
+    sample_input = request.files.get('sample_input')
+
+    # This is a future proofing variable in case we encounter a model that cannot be converted into mlflow.
+    # It will remain hardcoded for now. 
+    module_name = 'mlflow'
+
+    # This name is a random id used to ensure that all jobs are uniquely named and traceable.
+    random_name = str(uuid.uuid4())
+
+    # Unzip model archive
+    unzipped_path = unzip_model(model, module_name, random_name)
+
+    # get sample input path
+    sample_input_path = extract_modzy_sample_input(sample_input, module_name, random_name)
+
+    # create conda env, return error if fails
+    try: 
+        tmp_env_name = str(time.time())
+        rm_env_cmd = "conda env remove --name {}".format(tmp_env_name)
+        yaml_path = os.path.join(unzipped_path,"conda.yaml")
+        create_env_cmd = "conda env create -f {} -n {}".format(yaml_path,tmp_env_name)
+        subprocess.run(create_env_cmd, capture_output=True, shell=True, executable='/bin/bash', check=True)
+    except subprocess.CalledProcessError as e:
+        subprocess.run(rm_env_cmd, capture_output=True, shell=True, executable='/bin/bash')
+        output_dict["env_error"] = e.stderr.decode()
+        return output_dict
+
+    # test model in env with sample input file, return error if fails
+    try:
+        test_model_cmd = """
+        source activate {};
+        python test_chassis_model.py {} {}
+        """.format(tmp_env_name,unzipped_path,sample_input_path)
+        test_ret = subprocess.run(test_model_cmd, capture_output=True, shell=True, executable='/bin/bash', check=True)
+        output_dict["model_output"] = test_ret.stdout.decode()
+    except subprocess.CalledProcessError as e:
+        subprocess.run(rm_env_cmd, capture_output=True, shell=True, executable='/bin/bash')
+        error_output = e.stderr.decode()
+        output_dict["model_error"] = error_output[error_output.find('in process'):]
+        return output_dict
+
+    # if we make it here, test was successful, remove env and return output
+    subprocess.run(rm_env_cmd, capture_output=True, shell=True, executable='/bin/bash')
+    return output_dict
+
 def create_app():
     flask_app = Flask(__name__)
 
@@ -389,6 +446,10 @@ def create_app():
     @flask_app.route('/job/<job_id>/download-tar')
     def download_job_tar_api(job_id):
         return download_tar(job_id)
+    
+    @flask_app.route('/test', methods=['POST'])
+    def test_model_api():
+        return test_model()
 
     return flask_app
 

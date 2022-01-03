@@ -36,8 +36,7 @@ class KFServing(kfserving.KFModel):
         input_data = request['instances']
         preds = []
         for instance in input_data:
-            input_dict = {'input_data_bytes': base64.b64decode(instance)}
-            preds.append(self.model.predict(input_dict))
+            preds.append(self.model.predict(base64.b64decode(instance)).decode())
 
         return { 'predictions': preds }
 
@@ -54,8 +53,7 @@ class KFServing(kfserving.KFModel):
             prediction_data = []
             input_data = inputs.get('data', [])
             for instance in input_data:
-                input_dict = {'input_data_bytes': base64.b64decode(instance)}
-                prediction_data.append(self.model.predict(input_dict))
+                prediction_data.append(self.model.predict(base64.b64decode(instance)).decode())
 
             prediction_data_len = len(prediction_data)
 

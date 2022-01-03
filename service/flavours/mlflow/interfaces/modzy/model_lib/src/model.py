@@ -104,15 +104,10 @@ class ExampleModel:
         self.model = mlflow.pyfunc.load_model(MODEL_DIR)
 
     def handle_single_input(self, model_input: Dict[str, bytes], detect_drift: bool, explain: bool, input_filename: str) -> Dict[str, bytes]:
-        
-        input_dict = {}
-        input_dict["input_data_bytes"] = model_input[input_filename]
-        input_dict["detect_drift"] = detect_drift
-        input_dict["explain"] = explain
 
-        output_item = self.model.predict(input_dict)
+        output_bytes = self.model.predict(model_input[input_filename])
 
-        return {"results.json": json.dumps(output_item, separators=(",", ":")).encode()}
+        return {"results.json": output_bytes}
 
     def handle_input_batch(self, model_inputs: List[Dict[str, bytes]], detect_drift, explain) -> List[Dict[str, bytes]]:
         """
