@@ -19,17 +19,9 @@ load_dotenv()
 CHASSIS_DEV = True
 WINDOWS = True if os.name == 'nt' else False
 
-if CHASSIS_DEV:
-    # if you are doing development
-    # we need to setup the repo for 3rd party uploads
-    MODZY_UPLOADER_REPOSITORY = 'ghcr.io/modzy/chassis-modzy-uploader'
-    # TODO: determine if we need to update these paths on windows or Mac
-    MOUNT_PATH_DIR = os.getenv('MOUNT_PATH_DIR')
-    WORKSPACE_DIR = os.getenv('WORKSPACE_DIR')
-    # TODO: check for development volumes
-else:
-    MODZY_UPLOADER_REPOSITORY = os.getenv('MODZY_UPLOADER_REPOSITORY')
-
+MODZY_UPLOADER_REPOSITORY = 'ghcr.io/modzy/chassis-modzy-uploader'
+MOUNT_PATH_DIR = os.getenv('MOUNT_PATH_DIR')
+WORKSPACE_DIR = os.getenv('WORKSPACE_DIR')
 DATA_DIR = f'{MOUNT_PATH_DIR}/{WORKSPACE_DIR}'
 
 ENVIRONMENT = os.getenv('K_ENVIRONMENT')
@@ -38,7 +30,7 @@ K_DATA_VOLUME_NAME = os.getenv('K_DATA_VOLUME_NAME')
 K_EMPTY_DIR_NAME = os.getenv('K_EMPTY_DIR_NAME')
 K_INIT_EMPTY_DIR_PATH = os.getenv('K_INIT_EMPTY_DIR_PATH')
 K_KANIKO_EMPTY_DIR_PATH = os.getenv('K_KANIKO_EMPTY_DIR_PATH')
-K_SERVICE_ACCOUNT_NAME = os.getenv('K_SERVICE_ACCOUNT_NAME')
+K_SERVICE_ACCOUNT_NAME = "local-job-builder" if CHASSIS_DEV else os.getenv('K_SERVICE_ACCOUNT_NAME')
 K_JOB_NAME = os.getenv('K_JOB_NAME')
 
 
@@ -89,6 +81,7 @@ def create_dev_environment():
 
             api_response = base_api.create_persistent_volume(body=local_pvolume)
             print(api_response)
+
     except Exception as err:
         print(err)
 
@@ -119,6 +112,69 @@ def create_dev_environment():
         print(err)
 
     # The dev volume and claim are now accessible in the local Kubernetes cluster.
+
+    # Check to see if the service account exists. If not create it.
+    try:
+        api_response = base_api.list_namespaced_service_account(ENVIRONMENT)
+        filtered_sa = [sa for sa in api_response.items if sa.metadata.name == "local-job-builder"]
+        if len(filtered_sa) == 0:
+            api_response = base_api.create_namespaced_service_account(ENVIRONMENT,
+                                                                      client.V1ServiceAccount(
+                                                                          api_version="v1",
+                                                                          metadata=client.V1ObjectMeta(
+                                                                              name="local-job-builder")
+                                                                      )
+                                                                      )
+            print(api_response)
+    except Exception as err:
+        print(err)
+
+    # check to see of role exists and if not create it
+    role_api = client.RbacAuthorizationV1Api()
+    try:
+        api_response = role_api.list_namespaced_role(ENVIRONMENT)
+        filtered_role = [role for role in api_response.items if role.metadata.name == "local-job-builder-role"]
+        if len(filtered_role) == 0:
+            local_role_meta = client.V1ObjectMeta(name="local-job-builder-role")
+            local_role_rules = [client.V1PolicyRule(api_groups=[""],
+                                                    resources=["pods"],
+                                                    verbs=["get", "create", "list"]),
+                                client.V1PolicyRule(api_groups=["batch", "extensions"],
+                                                    resources=["jobs", "pods"],
+                                                    verbs=["get", "create", "patch"])
+                                ]
+            role_api.create_namespaced_role(ENVIRONMENT,
+                                            client.V1Role(api_version="rbac.authorization.k8s.io/v1",
+                                                          kind="Role",
+                                                          metadata=local_role_meta,
+                                                          rules=local_role_rules))
+    except Exception as err:
+        # something happened with role creation
+        print(err)
+
+    # check to see if the service account is bound to the role. If not, bind them
+    try:
+        api_response = role_api.list_namespaced_role_binding(ENVIRONMENT)
+        filtered_role_binding = [role_binding for role_binding in api_response.items if
+                                 role_binding.metadata.name == "local-job-builder-role-binding"]
+        if len(filtered_role_binding) == 0:
+            local_role_binding_meta = client.V1ObjectMeta(name="local-job-builder-role-binding", namespace=ENVIRONMENT)
+            local_role_binding_subjects = [client.V1Subject(kind="ServiceAccount",
+                                                            name="local-job-builder")
+                                           ]
+            local_role_binding_ref = client.V1RoleRef(api_group="rbac.authorization.k8s.io",
+                                                      kind="Role",
+                                                      name="local-job-builder-role")
+            role_api.create_namespaced_role_binding(ENVIRONMENT,
+                                                    client.V1RoleBinding(api_version="rbac.authorization.k8s.io/v1",
+                                                                         kind="RoleBinding",
+                                                                         metadata=local_role_binding_meta,
+                                                                         subjects=local_role_binding_subjects,
+                                                                         role_ref=local_role_binding_ref))
+    except Exception as err:
+        # something happened with role binding creation
+        print(err)
+
     # testing has only been done against Windows 10 running the kubernetes cluster in docker desktop
     return
 
@@ -139,7 +195,7 @@ def create_job_object(
 
     # credential setup for Docker Hub.
     # json for holding registry credentials that will access docker hub.
-    # reference: https://github.com/GoogleContainerTools/kaniko#pushing-to-docker-hub 
+    # reference: https://github.com/GoogleContainerTools/kaniko#pushing-to-docker-hub
     registry_credentials = f'{{"auths":{{"https://index.docker.io/v1/":{{"auth":"{registry_auth}"}}}}}}'
 
     # mount path leads to /data
@@ -187,23 +243,6 @@ def create_job_object(
     )
 
     # This is the kaniko container used to build the final image.
-    # the arguments are different depending on whether you are doing local dev or running in production
-    # the dockerfile is in a subdirectory of the service so we use the current working directory to access it.
-    # service_dir = ("/" + os.getcwd().replace("\\", "/").replace(":", "")).lower()
-    service_dir = DATA_DIR
-    comment = """[
-            f'--dockerfile={service_dir}/flavours/{module_name}/Dockerfile',
-            '' if publish else '--no-push',
-            f'--tarPath={path_to_tar_file}',
-            f'--destination={image_name}{"" if ":" in image_name else ":latest"}',
-            f'--context={service_dir}',
-            f'--build-arg=MODEL_DIR=model-{random_name}',
-            f'--build-arg=MODZY_METADATA_PATH={modzy_data.get("modzy_metadata_path")}',
-            f'--build-arg=MODEL_NAME={model_name}',
-            f'--build-arg=MODEL_CLASS={module_name}',
-            # Modzy is the default interface.
-            '--build-arg=INTERFACE=modzy',
-        ] if CHASSIS_DEV else """
 
     kaniko_args = [
         f'--dockerfile={DATA_DIR}/flavours/{module_name}/Dockerfile',
@@ -263,13 +302,13 @@ def create_job_object(
         persistent_volume_claim=data_pv_claim
     )
 
-    # volume holding credentials 
+    # volume holding credentials
     empty_dir_volume = client.V1Volume(
         name=K_EMPTY_DIR_NAME,
         empty_dir=client.V1EmptyDirVolumeSource()
     )
 
-    # Pod spec for the image build process 
+    # Pod spec for the image build process
     pod_spec = client.V1PodSpec(
         service_account_name=K_SERVICE_ACCOUNT_NAME,
         restart_policy='Never',
@@ -321,7 +360,7 @@ def run_kaniko(
         publish,
         registry_auth,
 ):
-    # This method creates and launches a job object that uses Kaniko to 
+    # This method creates and launches a job object that uses Kaniko to
     # create the desired image.
     if CHASSIS_DEV:
         # if you are doing local dev you need to point at the local kubernetes cluster with your config file
@@ -394,7 +433,14 @@ def extract_modzy_sample_input(modzy_sample_input_data, module_name, random_name
 
 def get_job_status(job_id):
     # This method gets the status of the Kaniko job and the results if the job has completed.
-    config.load_incluster_config()
+    if CHASSIS_DEV:
+        # if you are doing local dev you need to point at the local kubernetes cluster with your config file
+        kubefile = os.getenv("CHASSIS_KUBECONFIG")
+        config.load_kube_config(kubefile)
+    else:
+        # if the service is running inside a cluster during production then the config can be inherited
+        config.load_incluster_config()
+
     batch_v1 = client.BatchV1Api()
 
     try:
@@ -437,16 +483,16 @@ def build_image():
     publish = True if publish else ''
     registry_auth = image_data.get('registry_auth')
 
-    # retrieve binary representations for all three variables 
+    # retrieve binary representations for all three variables
     model = request.files.get('model')
     modzy_metadata_data = request.files.get('modzy_metadata_data')
     modzy_sample_input_data = request.files.get('modzy_sample_input_data')
 
     # json string loaded into variable
-    modzy_data = json.load(request.files.get('modzy_data') or {})
+    modzy_data = json.load(request.files.get('modzy_data') or  {})
 
     # This is a future proofing variable in case we encounter a model that cannot be converted into mlflow.
-    # It will remain hardcoded for now. 
+    # It will remain hardcoded for now.
     module_name = 'mlflow'
 
     # This name is a random id used to ensure that all jobs are uniquely named and traceable.
@@ -537,7 +583,9 @@ if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
 
     copy_required_files_for_kaniko()
-    create_dev_environment()
+
+    if CHASSIS_DEV:
+        create_dev_environment()
 
     app = create_app()
     app.run(debug=False, host='0.0.0.0', port=port)
