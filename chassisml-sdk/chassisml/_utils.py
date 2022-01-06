@@ -65,9 +65,11 @@ def fix_dependencies(model_directory):
         conda_w.write(conda)
         pip_w.write(pip)
 
-def write_modzy_yaml(model_name,model_version,output_path):
+def write_modzy_yaml(model_name,model_version,output_path,batch_size=None):
     yaml_data = DEFAULT_MODZY_YAML_DATA
     yaml_data['name'] = model_name
     yaml_data['version'] = model_version
+    if batch_size:
+        yaml_data['features']['maxBatchSize'] = batch_size
     with open(output_path,'w',encoding = "utf-8") as f:
         f.write(yaml.dump(yaml_data))
