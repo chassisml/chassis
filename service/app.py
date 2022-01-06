@@ -16,7 +16,7 @@ from kubernetes.client.rest import ApiException
 
 load_dotenv()
 
-CHASSIS_DEV = True
+CHASSIS_DEV = False
 WINDOWS = True if os.name == 'nt' else False
 
 MODZY_UPLOADER_REPOSITORY = 'ghcr.io/modzy/chassis-modzy-uploader'
