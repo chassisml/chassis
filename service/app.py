@@ -4,7 +4,9 @@ import uuid
 import tempfile
 import zipfile
 import time
+import platform
 import subprocess
+from pathlib import Path
 from shutil import rmtree, copytree
 
 from loguru import logger
@@ -21,8 +23,12 @@ load_dotenv()
 CHASSIS_DEV = False
 WINDOWS = True if os.name == 'nt' else False
 
+HOME_DIR = str(Path.home())
 MODZY_UPLOADER_REPOSITORY = 'ghcr.io/modzy/chassis-modzy-uploader'
-MOUNT_PATH_DIR = os.getenv('MOUNT_PATH_DIR')
+if CHASSIS_DEV:
+    MOUNT_PATH_DIR = os.path.join(HOME_DIR,".chassis_data/")
+else:
+    MOUNT_PATH_DIR = os.getenv('MOUNT_PATH_DIR')
 WORKSPACE_DIR = os.getenv('WORKSPACE_DIR')
 DATA_DIR = f'{MOUNT_PATH_DIR}/{WORKSPACE_DIR}'
 
@@ -54,7 +60,10 @@ def create_dev_environment():
             # if the volume doesn't exist, create it. note these paths are specific for Docker Desktop On Windows
             # TODO: document a Linux or Mac version
 
-            local_path = f'/run/desktop/mnt/host/c/{MOUNT_PATH_DIR}'
+            if platform.system() == "Windows":
+                local_path = f'/run/desktop/mnt/host/c/{MOUNT_PATH_DIR}'
+            else:
+                local_path = MOUNT_PATH_DIR
 
             local_node_selector_terms = client.V1NodeSelectorTerm(
                 match_expressions=[client.V1NodeSelectorRequirement(
