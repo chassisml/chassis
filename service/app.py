@@ -20,7 +20,8 @@ load_dotenv()
 
 MOUNT_PATH_DIR = os.getenv('MOUNT_PATH_DIR')
 WORKSPACE_DIR = os.getenv('WORKSPACE_DIR')
-MODZY_UPLOADER_REPOSITORY = os.getenv('MODZY_UPLOADER_REPOSITORY')
+#MODZY_UPLOADER_REPOSITORY = os.getenv('MODZY_UPLOADER_REPOSITORY')
+MODZY_UPLOADER_REPOSITORY = "local-modzy-uploader"
 
 DATA_DIR = f'{MOUNT_PATH_DIR}/{WORKSPACE_DIR}'
 
@@ -122,6 +123,7 @@ def create_job_object(
     modzy_uploader_container = client.V1Container(
         name='modzy-uploader',
         image=MODZY_UPLOADER_REPOSITORY,
+        image_pull_policy="Never",
         volume_mounts=[data_volume_mount],
         env=[
             client.V1EnvVar(name='JOB_NAME', value=job_name),
