@@ -585,8 +585,11 @@ def test_model():
         rm_env_cmd = "conda env remove --name {}".format(tmp_env_name)
         yaml_path = os.path.join(unzipped_path,"conda.yaml")
         create_env_cmd = "conda env create -f {} -n {}".format(yaml_path,tmp_env_name)
-        subprocess.run(create_env_cmd, capture_output=True, shell=True, executable='/bin/bash', check=True)
+        subprocess.run(create_env_cmd, capture_output=True, shell=True, executable='%windir%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -ExecutionPolicy ByPass -NoExit -Command "& \'C:\\Users\\ClaytonDavis\\miniconda3\\shell\\condabin\\conda-hook.ps1\' ; conda activate \'C:\\Users\\ClaytonDavis\\miniconda3\' "'
+                       #'/bin/bash'
+         , check=True)
     except subprocess.CalledProcessError as e:
+        print(e)
         subprocess.run(rm_env_cmd, capture_output=True, shell=True, executable='/bin/bash')
         output_dict["env_error"] = e.stderr.decode()
         return output_dict
