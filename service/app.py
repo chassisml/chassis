@@ -4,7 +4,6 @@ import uuid
 import tempfile
 import zipfile
 import time
-import platform
 import subprocess
 from pathlib import Path
 from shutil import rmtree, copytree
@@ -60,7 +59,7 @@ def create_dev_environment():
             # if the volume doesn't exist, create it. note these paths are specific for Docker Desktop On Windows
             # TODO: document a Linux or Mac version
 
-            if platform.system() == "Windows":
+            if WINDOWS:
                 local_path = f'/run/desktop/mnt/host/c/{MOUNT_PATH_DIR}'
             else:
                 local_path = MOUNT_PATH_DIR
