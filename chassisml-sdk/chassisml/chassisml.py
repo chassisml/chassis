@@ -197,17 +197,22 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
                     ('modzy_data', json.dumps(modzy_data)),
                     ('model', f)
                 ]
-
+                file_pointers = []
                 for key, file_key in [('metadata_path', 'modzy_metadata_data'),
                                 ('sample_input_path', 'modzy_sample_input_data')]:
                     value = modzy_data.get(key)
                     if value:
-                        files.append((file_key, open(value, 'rb')))
+                        fp = open(value, 'rb')
+                        file_pointers.append(fp)  
+                        files.append((file_key, fp))
 
                 print('Starting build job... ', end='', flush=True)
                 res = requests.post(self.chassis_build_url, files=files)
                 res.raise_for_status()
             print('Ok!')
+
+            for fp in file_pointers:
+                fp.close()
 
             shutil.rmtree(tmppath)
             shutil.rmtree(model_directory)
