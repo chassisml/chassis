@@ -48,57 +48,51 @@ def log_stack_trace():
 
 class ModzyModel(ModzyModelServicer):
     def __init__(self):
-        if not model_version_is_synchronized():
-            LOGGER.error(
-                "Model version appears to be out of sync. Please ensure that the asset bundle version in your"
-                "Dockerfile and the `__VERSION__` variable are up to date and in sync."
+
+        self.model = None
+        (info, description, inputs, outputs, resources, timeout, features) = parse_complete_model_yaml()
+
+        self.adversarial_defense = features[0]
+        self.batch_size = features[1]
+        self.drift_detection = features[4] is not None
+        self.explainable = features[5] is not None
+        self.retrainable = features[2]
+
+        self.info = ModelInfo(
+            model_name=info[0], model_version=info[1], model_author=info[2], model_type=info[3], source=info[4]
+        )
+
+        self.description = ModelDescription(
+            summary=description[0], details=description[1], technical=description[2], performance=description[3]
+        )
+
+        self.inputs = [
+            ModelInput(
+                filename=input_[0],
+                accepted_media_types=["not provided"] if input_[1] == [None] else input_[1],
+                max_size=input_[2],
+                description=input_[3],
             )
-            raise ModelVersionNotSynchronizedException
-        else:
-            self.model = None
-            (info, description, inputs, outputs, resources, timeout, features) = parse_complete_model_yaml()
+            for input_ in inputs
+        ]
 
-            self.adversarial_defense = features[0]
-            self.batch_size = features[1]
-            self.drift_detection = features[4] is not None
-            self.explainable = features[5] is not None
-            self.retrainable = features[2]
+        self.outputs = [
+            ModelOutput(filename=output[0], media_type=output[1], max_size=output[2], description=output[3])
+            for output in outputs
+        ]
 
-            self.info = ModelInfo(
-                model_name=info[0], model_version=info[1], model_author=info[2], model_type=info[3], source=info[4]
-            )
+        self.resources = ModelResources(required_ram=resources[0], num_cpus=resources[1], num_gpus=resources[2])
 
-            self.description = ModelDescription(
-                summary=description[0], details=description[1], technical=description[2], performance=description[3]
-            )
+        self.timeout = ModelTimeout(status=timeout[0], run=timeout[1])
 
-            self.inputs = [
-                ModelInput(
-                    filename=input_[0],
-                    accepted_media_types=["not provided"] if input_[1] == [None] else input_[1],
-                    max_size=input_[2],
-                    description=input_[3],
-                )
-                for input_ in inputs
-            ]
-
-            self.outputs = [
-                ModelOutput(filename=output[0], media_type=output[1], max_size=output[2], description=output[3])
-                for output in outputs
-            ]
-
-            self.resources = ModelResources(required_ram=resources[0], num_cpus=resources[1], num_gpus=resources[2])
-
-            self.timeout = ModelTimeout(status=timeout[0], run=timeout[1])
-
-            self.features = ModelFeatures(
-                adversarial_defense=features[0],
-                batch_size=features[1],
-                retrainable=features[2],
-                results_format=features[3],
-                drift_format=features[4],
-                explanation_format=features[5],
-            )
+        self.features = ModelFeatures(
+            adversarial_defense=features[0],
+            batch_size=features[1],
+            retrainable=features[2],
+            results_format=features[3],
+            drift_format=features[4],
+            explanation_format=features[5],
+        )
 
     def Status(self, request, context):
         start_status_call = t()

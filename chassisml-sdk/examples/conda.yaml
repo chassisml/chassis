@@ -5,7 +5,8 @@ dependencies:
   - pip
   - python=3.8.5
   - pip:
-    - chassisml==0.1.0
+    - modzy-sdk==0.6.0
+    - chassisml==1.0.2
     - cloudpickle==2.0.0
     - ipykernel==6.6.0
     - mlflow==1.22.0
