@@ -39,13 +39,43 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
         chassis_build_url (str): The build url for the Chassis API.
     """
 
-    def __init__(self,model_context,process_fn,chassis_base_url):
-        def predict(_,model_input):
-            output = process_fn(model_input,model_context)
-            return json.dumps(output,separators=(",", ":"),cls=NumpyEncoder).encode()
-        self.predict = predict
+    def __init__(self,model_context,process_fn,batch_process_fn,batch_size,chassis_base_url):
+
+        if process_fn and batch_process_fn:
+            if not batch_size:
+                raise ValueError("Both batch_process_fn and batch_size must be provided for batch support.")
+            self.predict = self._gen_predict_method(process_fn,model_context)
+            self.batch_predict = self._gen_predict_method(batch_process_fn,model_context,batch=True)
+            self.batch_input = True
+            self.batch_size = batch_size
+        elif process_fn and not batch_process_fn:
+            self.predict = self._gen_predict_method(process_fn,model_context)
+            self.batch_input = False
+            self.batch_size = None
+        elif batch_process_fn and not process_fn:
+            if not batch_size:
+                raise ValueError("Both batch_process_fn and batch_size must be provided for batch support.")
+            self.predict = self._gen_predict_method(batch_process_fn,model_context,batch_to_single=True)
+            self.batch_predict = self._gen_predict_method(batch_process_fn,model_context,batch=True)
+            self.batch_input = True
+            self.batch_size = batch_size
+        else:
+            raise ValueError("At least one of process_fn or batch_process_fn must be provided.")
+
         self.chassis_build_url = urllib.parse.urljoin(chassis_base_url, routes['build'])
         self.chassis_test_url = urllib.parse.urljoin(chassis_base_url, routes['test'])
+
+    def _gen_predict_method(self,process_fn,model_context,batch=False,batch_to_single=False):
+        def predict(_,model_input):
+            if batch_to_single:
+                output = process_fn([model_input],model_context)[0]
+            else:
+                output = process_fn(model_input,model_context)
+            if batch:
+                return [json.dumps(out,separators=(",", ":"),cls=NumpyEncoder).encode() for out in output]
+            else:
+                return json.dumps(output,separators=(",", ":"),cls=NumpyEncoder).encode()
+        return predict
 
     def test(self,test_input):
         if isinstance(test_input,_io.BufferedReader):
@@ -61,6 +91,29 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
             print("Invalid input. Must be buffered reader, bytes, valid filepath, or text input.")
             return False
         return result
+
+    def test_batch(self,test_input):
+        if not self.batch_input:
+            raise ValueError("Batch inference not implemented.")
+
+        if hasattr(self,'batch_predict'):
+            batch_method = self.batch_predict
+        else:
+            batch_method = self.predict
+
+        if isinstance(test_input,_io.BufferedReader):
+            results = batch_method(None,[test_input.read() for _ in range(self.batch_size)])
+        elif isinstance(test_input,bytes):
+            results = batch_method(None,[test_input for _ in range(self.batch_size)])
+        elif isinstance(test_input,str):
+            if os.path.exists(test_input):
+                results = batch_method(None,[open(test_input,'rb').read() for _ in range(self.batch_size)])
+            else:
+                results = batch_method(None,[bytes(test_input,encoding='utf8') for _ in range(self.batch_size)])
+        else:
+            print("Invalid input. Must be buffered reader, bytes, valid filepath, or text input.")
+            return False
+        return results
 
     def test_env(self,test_input_path,conda_env=None,fix_env=True):
         model_directory = os.path.join(tempfile.mkdtemp(),CHASSIS_TMP_DIRNAME)
@@ -134,7 +187,7 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
                     'deploy': True,
                     'api_key': modzy_api_key
                 }
-                write_modzy_yaml(model_name,model_version,modzy_metadata_path)
+                write_modzy_yaml(model_name,model_version,modzy_metadata_path,batch_size=self.batch_size)
             else:
                 modzy_data = {}
 
@@ -210,5 +263,11 @@ class ChassisClient:
         else:
             print(f'Error download tar: {r.text}')
 
-    def create_model(self,context,process_fn):
-        return ChassisModel(context,process_fn,self.base_url)
+    def create_model(self,context,process_fn=None,batch_process_fn=None,batch_size=None):
+        if not (process_fn or batch_process_fn):
+            raise ValueError("At least one of process_fn or batch_process_fn must be provided.")
+
+        if (batch_process_fn and not batch_size) or (batch_size and not batch_process_fn):
+            raise ValueError("Both batch_process_fn and batch_size must be provided for batch support.")
+
+        return ChassisModel(context,process_fn,batch_process_fn,batch_size,self.base_url)
