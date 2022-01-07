@@ -94,7 +94,7 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
 
     def test_batch(self,test_input):
         if not self.batch_input:
-            raise ValueError("Batch inference not implemented.")
+            raise NotImplementedError("Batch inference not implemented.")
 
         if hasattr(self,'batch_predict'):
             batch_method = self.batch_predict
