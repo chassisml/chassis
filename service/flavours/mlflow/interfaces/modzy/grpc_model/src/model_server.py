@@ -179,7 +179,7 @@ class ModzyModel(ModzyModelServicer):
             if current_batch_size > 1:
                 try:
                     raw_outputs: List[Dict[str, bytes]] = self.model.handle_input_batch(
-                        [input_item.input for input_item in request.inputs], request.detect_drift, request.explain
+                        [input_item.input for input_item in request.inputs], request.detect_drift, request.explain, self.inputs[0].filename
                     )
                     if current_batch_size != len(raw_outputs):
                         LOGGER.critical(
@@ -210,7 +210,7 @@ class ModzyModel(ModzyModelServicer):
                 for i, input_item in enumerate(request.inputs):
                     try:
                         raw_output: Dict[str, bytes] = self.model.handle_single_input(
-                            input_item.input, request.detect_drift, request.explain,self.inputs[0].filename
+                            input_item.input, request.detect_drift, request.explain, self.inputs[0].filename
                         )
                         # TODO: It would probably be useful to have an example of explanation/drift metadata here
                         output_item = create_output_item(f"Processed item {i + 1} as single input.", raw_output)

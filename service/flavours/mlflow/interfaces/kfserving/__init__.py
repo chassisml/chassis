@@ -23,6 +23,13 @@ class KFServing(kfserving.KFModel):
 
     def load(self):
         self.model = mlflow.pyfunc.load_model(MODEL_DIR)
+
+        if hasattr(self.model._model_impl.python_model,"batch_input"):
+            self.batch_input = self.model._model_impl.python_model.batch_input
+            self.batch_size = self.model._model_impl.python_model.batch_size
+        else:
+            self.batch_input = False
+
         self.ready = True
 
     def predict(self, request: Dict) -> Dict:
@@ -34,9 +41,18 @@ class KFServing(kfserving.KFModel):
     # https://github.com/kubeflow/kfserving/tree/master/docs/samples/v1beta1/sklearn/v1#run-a-prediction
     def _predictv1(self, request):
         input_data = request['instances']
-        preds = []
-        for instance in input_data:
-            preds.append(self.model.predict(base64.b64decode(instance)).decode())
+
+        if self.batch_input:
+            batch_outputs = []
+            instances = [base64.b64decode(instance) for instance in input_data]
+            batches = split_list(instances,self.batch_size)
+            for batch in batches:
+                batch_outputs.append(self.model._model_impl.python_model.batch_predict(None,batch))
+            preds = [item.decode()for batch in batch_outputs for item in batch]
+        else:
+            preds = []
+            for instance in input_data:
+                preds.append(self.model.predict(base64.b64decode(instance)).decode())
 
         return { 'predictions': preds }
 
@@ -50,10 +66,19 @@ class KFServing(kfserving.KFModel):
         }
 
         for inputs in request.get('inputs', []):
-            prediction_data = []
             input_data = inputs.get('data', [])
-            for instance in input_data:
-                prediction_data.append(self.model.predict(base64.b64decode(instance)).decode())
+
+            if self.batch_input:
+                batch_outputs = []
+                instances = [base64.b64decode(instance) for instance in input_data]
+                batches = split_list(instances,self.batch_size)
+                for batch in batches:
+                    batch_outputs.append(self.model._model_impl.python_model.batch_predict(None,batch))
+                prediction_data = [item.decode() for batch in batch_outputs for item in batch]
+            else:
+                prediction_data = []
+                for instance in input_data:
+                    prediction_data.append(self.model.predict(base64.b64decode(instance)).decode())
 
             prediction_data_len = len(prediction_data)
 
@@ -91,3 +116,7 @@ def start_server():
     kfserving.KFServer(
         http_port=envs.get('HTTP_PORT'),
     ).start([model])
+
+def split_list(lst, chunk_size):
+    for i in range(0, len(lst), chunk_size):
+        yield lst[i:i + chunk_size]
