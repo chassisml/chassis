@@ -19,15 +19,16 @@ from kubernetes.client.rest import ApiException
 
 load_dotenv()
 
-CHASSIS_DEV = False
+CHASSIS_DEV = True
 WINDOWS = True if os.name == 'nt' else False
 
 HOME_DIR = str(Path.home())
 MODZY_UPLOADER_REPOSITORY = 'ghcr.io/modzy/chassis-modzy-uploader'
 if CHASSIS_DEV:
-    MOUNT_PATH_DIR = os.path.join(HOME_DIR,".chassis_data/")
+    MOUNT_PATH_DIR = "/"+ str(os.path.join(HOME_DIR,".chassis_data"))[3:].replace("\\", "/") if WINDOWS else os.path.join(HOME_DIR,".chassis_data")
 else:
-    MOUNT_PATH_DIR = os.getenv('MOUNT_PATH_DIR')
+    MOUNT_PATH_DIR =  os.getenv('MOUNT_PATH_DIR')
+
 WORKSPACE_DIR = os.getenv('WORKSPACE_DIR')
 DATA_DIR = f'{MOUNT_PATH_DIR}/{WORKSPACE_DIR}'
 
@@ -60,7 +61,7 @@ def create_dev_environment():
             # TODO: document a Linux or Mac version
 
             if WINDOWS:
-                local_path = f'/run/desktop/mnt/host/c/{MOUNT_PATH_DIR}'
+                local_path = f'/run/desktop/mnt/host/c{MOUNT_PATH_DIR}'
             else:
                 local_path = MOUNT_PATH_DIR
 
