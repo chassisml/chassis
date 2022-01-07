@@ -6,7 +6,7 @@ dependencies:
   - python=3.8.5
   - pip:
     - modzy-sdk==0.6.0
-    - chassisml==1.0.2
+    - chassisml==1.1.0
     - cloudpickle==2.0.0
     - ipykernel==6.6.0
     - mlflow==1.22.0
@@ -19,3 +19,4 @@ dependencies:
     - torch==1.10.0
     - torchvision==0.11.1
     - urllib3==1.26.7
+    - notebook

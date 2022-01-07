@@ -103,13 +103,18 @@ class ExampleModel:
         """
         self.model = mlflow.pyfunc.load_model(MODEL_DIR)
 
+        if hasattr(self.model._model_impl.python_model,"batch_input"):
+            self.batch_input = self.model._model_impl.python_model.batch_input
+        else:
+            self.batch_input = False
+
     def handle_single_input(self, model_input: Dict[str, bytes], detect_drift: bool, explain: bool, input_filename: str) -> Dict[str, bytes]:
 
         output_bytes = self.model.predict(model_input[input_filename])
 
         return {"results.json": output_bytes}
 
-    def handle_input_batch(self, model_inputs: List[Dict[str, bytes]], detect_drift, explain) -> List[Dict[str, bytes]]:
+    def handle_input_batch(self, model_inputs: List[Dict[str, bytes]], detect_drift: bool, explain: bool, input_filename: str) -> List[Dict[str, bytes]]:
         """
         This is an optional method that will be attempted to be called when more than one inputs to the model
         are ready to be processed. This enables a user to provide a more efficient means of handling inputs in batch
@@ -129,12 +134,11 @@ class ExampleModel:
         }
 
         """
-        raise NotImplementedError
-
-        # Example of a naive implementation of this method for testing purposes
-        # outputs = []
-        # for model_input in model_inputs:
-        #     model_output = self.handle_discrete_input(model_input)
-        #     outputs.append(model_output)
-        #
-        # return outputs
+        
+        if self.batch_input:
+            inputs = [model_input[input_filename] for model_input in model_inputs]
+            outputs = self.model._model_impl.python_model.batch_predict(None,inputs)
+            return [{"results.json": output} for output in outputs]
+        else:
+            raise NotImplementedError
+            
