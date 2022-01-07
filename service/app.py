@@ -19,7 +19,7 @@ from kubernetes.client.rest import ApiException
 
 load_dotenv()
 
-CHASSIS_DEV = True
+CHASSIS_DEV = False
 WINDOWS = True if os.name == 'nt' else False
 
 HOME_DIR = str(Path.home())
