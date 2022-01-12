@@ -78,6 +78,16 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
         return predict
 
     def test(self,test_input):
+        '''
+        Runs a sample inference test on a single input on chassis model locally
+
+        Args:
+            test_input ([str, bytes, BufferedReader]): Single sample input data to test model
+        
+        Returns:
+            bytes: raw model predictions returned by `process_fn` method
+
+        '''
         if isinstance(test_input,_io.BufferedReader):
             result = self.predict(None,test_input.read())
         elif isinstance(test_input,bytes):
@@ -93,6 +103,16 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
         return result
 
     def test_batch(self,test_input):
+        '''
+        Runs a sample inference test on a batch input (if implemented) on chassis model locally
+
+        Args:
+            test_input ([str, bytes, BufferedReader]): Batch of sample input data to test model
+        
+        Returns:
+            bytes: raw model predictions returned by `batch_process_fn` method
+
+        '''
         if not self.batch_input:
             raise NotImplementedError("Batch inference not implemented.")
 
@@ -116,6 +136,17 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
         return results
 
     def test_env(self,test_input_path,conda_env=None,fix_env=True):
+        '''
+        Runs a sample inference test in new conda environment created on the chassis service side. In other words, a "dry run" of a true chassis job to ensure model code runs within the chassis service.
+        
+        Args:
+            test_input_path (str): Filepath to sample input data
+            conda_env (Optional[str]): Either filepath to conda.yaml file or dictionary with environment requirements. If not provided, chassis will infer dependency requirements from local environment
+            fix_env (Optional[bool]): Modifies conda or pip-installable packages into list of dependencies to be installed during the container build
+        
+        Returns:
+            dict: raw model predictions returned by `process_fn` or `batch_process_fn` run from within chassis service
+        '''
         model_directory = os.path.join(tempfile.mkdtemp(),CHASSIS_TMP_DIRNAME)
         mlflow.pyfunc.save_model(path=model_directory, python_model=self, conda_env=conda_env, 
                                 extra_pip_requirements = None if conda_env else ["chassisml=={}".format(__version__)])
@@ -145,6 +176,14 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
         return res.json()
 
     def save(self,path,conda_env=None,overwrite=False):
+        '''
+        Saves a copy of ChassisModel to local filepath
+
+        Args:
+            path (str): Filepath to save chassis model as local MLflow model
+            conda_env (Optional[str, dict]): Either filepath to conda.yaml file or dictionary with environment requirements. If not provided, chassis will infer dependency requirements from local environment
+            overwrite (Optional[bool]): If True, overwrites existing contents of `path` parameter
+        '''
         if overwrite and os.path.exists(path):
             shutil.rmtree(path)
         mlflow.pyfunc.save_model(path=path, python_model=self, conda_env=conda_env)
@@ -153,6 +192,23 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
     def publish(self,model_name,model_version,registry_user,registry_pass,
                 conda_env=None,fix_env=True,modzy_sample_input_path=None,
                 modzy_api_key=None):
+        '''
+        Executes chassis job, which containerizes model, pushes container image to Docker registry, and optionally deploys model to Modzy
+
+        Args:
+            model_name (str): Model name that serves as model's name in Modzy and docker registry repository name
+            model_version (str): Version of model
+            registry_user (str): Docker registry username
+            registry_pass (str): Docker registry password
+            conda_env (Optional[str, dict]): Either filepath to conda.yaml file or dictionary with environment requirements. If not provided, chassis will infer dependency requirements from local environment
+            fix_env (Optional[bool]): Modifies conda or pip-installable packages into list of dependencies to be installed during the container build
+            modzy_sample_input_path (Optional[str]): Filepath to sample input data. Required to deploy model to Modzy
+            modzy_api_key (Optional[str]): Valid Modzy API Key
+
+        Returns:
+            dict: Response to Chassis /build endpoint
+
+        '''
 
         if (modzy_sample_input_path or modzy_api_key) and not \
             (modzy_sample_input_path and modzy_api_key):
@@ -242,12 +298,18 @@ class ChassisClient:
         self.base_url = base_url
 
     def get_job_status(self, job_id):
+        '''
+        Checks the status of a chassis job
+        '''
         route = f'{urllib.parse.urljoin(self.base_url, routes["job"])}/{job_id}'
         res = requests.get(route)
         data = res.json()
         return data
 
     def block_until_complete(self,job_id,timeout=1800,poll_interval=5):
+        '''
+        Blocks until Chassis job is complete or timeout is reached. Polls Chassis job API until a result is marked finished.
+        '''
         endby = time.time() + timeout if (timeout is not None) else None
         while True:
             status = self.get_job_status(job_id)
@@ -259,6 +321,9 @@ class ChassisClient:
             time.sleep(poll_interval)
 
     def download_tar(self, job_id, output_filename):
+        '''
+        Downloads container image as tar archive
+        '''
         url = f'{urllib.parse.urljoin(self.base_url, routes["job"])}/{job_id}/download-tar'
         r = requests.get(url)
 
@@ -269,6 +334,9 @@ class ChassisClient:
             print(f'Error download tar: {r.text}')
 
     def create_model(self,context,process_fn=None,batch_process_fn=None,batch_size=None):
+        '''
+        Builds chassis model locally
+        '''
         if not (process_fn or batch_process_fn):
             raise ValueError("At least one of process_fn or batch_process_fn must be provided.")
 
