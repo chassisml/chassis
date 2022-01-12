@@ -1,0 +1,14 @@
+:root {
+  --md-typeset-a-color:        #ffa724;
+
+  [data-md-color-scheme=slate][data-md-color-primary=black],  */
+  [data-md-color-scheme=slate][data-md-color-primary=white] {
+    --md-typeset-a-color:        #ffa724;
+  }
+}
+
+/* .md-typeset code {
+  color: #ffffff;
+  box-shadow: 0.29412em 0 0 rgba(0, 0, 0, 0.5), -0.29412em 0 0 rgba(0, 0, 0, 0.5);
+  background-color: #2e303e;
+} */

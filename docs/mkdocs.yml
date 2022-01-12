@@ -2,7 +2,9 @@ site_name: Chassis
 nav:
   - index.md
   - design.md
-  - Python SDK: chassisml-sdk-reference.md
+  - Documentation:
+      - Chassisml Service:  service-docs.md
+      - Python SDK: chassisml-sdk-reference.md
   - Tutorials:
       - tutorials/devops-deploy.md
       - tutorials/ds-connect.md
@@ -32,6 +34,9 @@ plugins:
             - sys.path.append('../')
           selection:
             new_path_syntax: true
+            docstring_style: "google" 
+          rendering:
+            show_category_heading: no
 markdown_extensions:
   - attr_list
   - pymdownx.details
