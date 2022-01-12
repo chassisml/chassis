@@ -31,7 +31,7 @@ routes = {
 class ChassisModel(mlflow.pyfunc.PythonModel):
     """The Chassis Model object.
 
-    This class inherits from mlflow.pyfunc.PythonModel and adds Chassis functionality.
+    This class inherits from `mlflow.pyfunc.PythonModel` and adds Chassis functionality.
 
     Attributes:
         predict (function): MLflow pyfunc compatible predict function. 
@@ -82,7 +82,7 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
         Runs a sample inference test on a single input on chassis model locally
 
         Args:
-            test_input ([str, bytes, BufferedReader]): Single sample input data to test model
+            test_input (Union[str, bytes, BufferedReader]): Single sample input data to test model
         
         Returns:
             bytes: raw model predictions returned by `process_fn` method
@@ -107,7 +107,7 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
         Runs a sample inference test on a batch input (if implemented) on chassis model locally
 
         Args:
-            test_input ([str, bytes, BufferedReader]): Batch of sample input data to test model
+            test_input (Union[str, bytes, BufferedReader]): Batch of sample input data to test model
         
         Returns:
             bytes: raw model predictions returned by `batch_process_fn` method
@@ -141,8 +141,8 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
         
         Args:
             test_input_path (str): Filepath to sample input data
-            conda_env (Optional[str]): Either filepath to conda.yaml file or dictionary with environment requirements. If not provided, chassis will infer dependency requirements from local environment
-            fix_env (Optional[bool]): Modifies conda or pip-installable packages into list of dependencies to be installed during the container build
+            conda_env (str): Either filepath to conda.yaml file or dictionary with environment requirements. If not provided, chassis will infer dependency requirements from local environment
+            fix_env (bool): Modifies conda or pip-installable packages into list of dependencies to be installed during the container build
         
         Returns:
             dict: raw model predictions returned by `process_fn` or `batch_process_fn` run from within chassis service
@@ -181,8 +181,8 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
 
         Args:
             path (str): Filepath to save chassis model as local MLflow model
-            conda_env (Optional[str, dict]): Either filepath to conda.yaml file or dictionary with environment requirements. If not provided, chassis will infer dependency requirements from local environment
-            overwrite (Optional[bool]): If True, overwrites existing contents of `path` parameter
+            conda_env (Union[str, dict]): Either filepath to conda.yaml file or dictionary with environment requirements. If not provided, chassis will infer dependency requirements from local environment
+            overwrite (bool): If True, overwrites existing contents of `path` parameter
         '''
         if overwrite and os.path.exists(path):
             shutil.rmtree(path)
@@ -200,10 +200,10 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
             model_version (str): Version of model
             registry_user (str): Docker registry username
             registry_pass (str): Docker registry password
-            conda_env (Optional[str, dict]): Either filepath to conda.yaml file or dictionary with environment requirements. If not provided, chassis will infer dependency requirements from local environment
-            fix_env (Optional[bool]): Modifies conda or pip-installable packages into list of dependencies to be installed during the container build
-            modzy_sample_input_path (Optional[str]): Filepath to sample input data. Required to deploy model to Modzy
-            modzy_api_key (Optional[str]): Valid Modzy API Key
+            conda_env (Union[str, dict]): Either filepath to conda.yaml file or dictionary with environment requirements. If not provided, chassis will infer dependency requirements from local environment
+            fix_env (bool): Modifies conda or pip-installable packages into list of dependencies to be installed during the container build
+            modzy_sample_input_path (str): Filepath to sample input data. Required to deploy model to Modzy
+            modzy_api_key (str): Valid Modzy API Key
 
         Returns:
             dict: Response to Chassis /build endpoint
@@ -300,6 +300,13 @@ class ChassisClient:
     def get_job_status(self, job_id):
         '''
         Checks the status of a chassis job
+
+        Args:
+            job_id (str): Chassis job identifier generated from `ChassisModel.publish` method
+        
+        Returns:
+            dict: JSON Chassis job status
+
         '''
         route = f'{urllib.parse.urljoin(self.base_url, routes["job"])}/{job_id}'
         res = requests.get(route)
@@ -309,6 +316,15 @@ class ChassisClient:
     def block_until_complete(self,job_id,timeout=1800,poll_interval=5):
         '''
         Blocks until Chassis job is complete or timeout is reached. Polls Chassis job API until a result is marked finished.
+
+        Args:
+            job_id (str): Chassis job identifier generated from `ChassisModel.publish` method
+            timeout (int): Timeout threshold in seconds
+            poll_intervall (int): Amount of time to wait in between API polls to check status of job
+
+        Returns:
+            dict: final job status returned by `ChassisClient.block_until_complete` method
+
         '''
         endby = time.time() + timeout if (timeout is not None) else None
         while True:
@@ -323,6 +339,10 @@ class ChassisClient:
     def download_tar(self, job_id, output_filename):
         '''
         Downloads container image as tar archive
+
+        Args:
+            job_id (str): Chassis job identifier generated from `ChassisModel.publish` method
+            output_filename (str): Local output filepath to save container image
         '''
         url = f'{urllib.parse.urljoin(self.base_url, routes["job"])}/{job_id}/download-tar'
         r = requests.get(url)
@@ -336,6 +356,16 @@ class ChassisClient:
     def create_model(self,context,process_fn=None,batch_process_fn=None,batch_size=None):
         '''
         Builds chassis model locally
+
+        Args:
+            context (dict): Dictionary that will contain the trained model object and any other inference-specific dependencies that will persist while model container is running. Should include all objects that only need to be loaded one time (e.g., loaded model, labels file(s), data transformation objects, etc.) that can be accessed during inference.
+            process_fn (function): Python function that must accept a single piece of input data in raw bytes form and `context` dictionary as input parameters. This method is responsible for handling all data preprocessing, executing inference, and returning the processed predictions. Defining additional functions is acceptable as long as they are called within the `process` method
+            batch_process_fn (function): Python function that must accept a batch of input data in raw bytes form and `context` dictionary as input parameters. This method is responsible for handling all data preprocessing, executing inference, and returning the processed predictions. Defining additional functions is acceptable as long as they are called within the `process` method
+            batch_size (int): Maximum batch size if `batch_process_fn` is defined
+
+        Returns:
+            ChassisModel: Chassis Model object that can be tested locally and published to a Docker Registry
+
         '''
         if not (process_fn or batch_process_fn):
             raise ValueError("At least one of process_fn or batch_process_fn must be provided.")

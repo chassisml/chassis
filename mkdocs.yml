@@ -2,12 +2,12 @@ site_name: Chassis
 nav:
   - index.md
   - design.md
+  - Python SDK: chassisml-sdk-reference.md
   - Tutorials:
       - tutorials/devops-deploy.md
       - tutorials/ds-connect.md
       - tutorials/ds-deploy.md
       - tutorials/ds-deploy-modzy.md
-  - Python SDK: chassisml-sdk-reference.md
   - Help: help.md
   - Get Involved: get-involved.md
   - Release Notes: release-notes.md
@@ -29,7 +29,7 @@ plugins:
         python:
           setup_commands:
             - import sys 
-            - sys.path.append('./')
+            - sys.path.append('../')
           selection:
             new_path_syntax: true
 markdown_extensions:
