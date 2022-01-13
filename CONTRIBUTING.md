@@ -49,7 +49,7 @@ Below you'll find our contributing requirements and a step-by-step guide for dev
 If you need help with anything here, [Tech Support](https://www2.modzy.com/modzy-discord-chassis)  is graciously hosted on Modzy's discord server. The maintainers are active on that server and happy to assist contributors.
 # Contributing Requirements
 
-## Everbody
+## Everybody
 
 - Search previous [issues](https://github.com/modzy/chassis/issues) before making new ones to avoid duplicates.
 - If you are reporting a new bug, create an issue including:
