@@ -28,11 +28,6 @@ ENV CONDA_ENV chassis-env
 
 # Create conda environment.
 RUN conda env create --name $CONDA_ENV --file ./conda.yaml
-# Install conda-pack.
-RUN conda install -c conda-forge conda-pack
-# Use conda-pack to create a standalone environment in /venv.
-RUN conda-pack -n $CONDA_ENV -o /tmp/env.tar && \
-  mkdir /venv && tar xf /tmp/env.tar -C /venv
 
 ARG MODEL_NAME
 
@@ -46,11 +41,10 @@ ENV INTERFACE ${INTERFACE}
 
 SHELL ["/bin/bash", "-c"]
 
-# Run conda-unpack to re-create symlinks and set everything up.
-RUN source /venv/bin/activate && conda-unpack
-
 COPY flavours/${MODEL_CLASS}/requirements.txt .
-RUN source /venv/bin/activate && pip install -r requirements.txt
+RUN /bin/bash -c "source activate chassis-env \
+    && pip install --no-cache-dir -r requirements.txt \
+    && conda deactivate"
 
 COPY flavours/${MODEL_CLASS}/app.py .
 COPY flavours/${MODEL_CLASS}/interfaces ./interfaces
@@ -58,6 +52,5 @@ COPY flavours/${MODEL_CLASS}/interfaces ./interfaces
 # Overwrite the default one.
 COPY ${MODZY_METADATA_PATH} ./interfaces/modzy/asset_bundle/0.1.0/model.yaml
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "chassis-env", "python", "app.py"]
 
-CMD ["python", "app.py"]
