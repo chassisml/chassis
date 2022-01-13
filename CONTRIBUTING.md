@@ -79,7 +79,7 @@ If you need help with anything here, [Tech Support](https://www2.modzy.com/modzy
 
 #### 1. Clone the repository:
 
-`$ git clone https://github.com/modzy/sdk-python.git`
+`$ git clone https://github.com/modzy/chassis.git`
 
 #### 2. Setup a virtual environment from the local git directory:
 
