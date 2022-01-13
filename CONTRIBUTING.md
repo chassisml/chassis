@@ -45,11 +45,12 @@ Contributions are welcome and they are greatly appreciated! Every little bit hel
 We manage contributions by having contributors file issues that are then worked against. You don't have to work on the issue you file. If you have found a bug or have a feature request, we want to know!
 
 Below you'll find our contributing requirements and a step-by-step guide for developers to get up and running.
-#Before We Begin...
+# Before We Begin...
 If you need help with anything here, [Tech Support](https://www2.modzy.com/modzy-discord-chassis)  is graciously hosted on Modzy's discord server. The maintainers are active on that server and happy to assist contributors.
-#Contributing Requirements
+# Contributing Requirements
 
-##Everbody
+## Everbody
+
 - Search previous [issues](https://github.com/modzy/chassis/issues) before making new ones to avoid duplicates.
 - If you are reporting a new bug, create an issue including:
   1. Your operating system name and version.
@@ -73,8 +74,8 @@ If you need help with anything here, [Tech Support](https://www2.modzy.com/modzy
   1. Add a descriptive commit message that clearly explain the Chassis code changes. 
   2. Create a descriptive pull request that references the original issue.
 
+### Forking the Repo
 
-###Forking the Repo
 
 #### 1. Clone the repository:
 
@@ -116,7 +117,7 @@ Chassis has two (2) parts to it.
 
 In deployment scenarios, the service runs on a Kubernetes cluster. This reality means that code contributions need to be tested against a Kubernetes cluster environment. To alleviate the need for contributors to have full access to a production Kubernetes cluster, Chassis's code has been factored to allow for a "Dev Mod" which is compatible with Docker Desktop's built in Kubernetes Cluster. 
 
-####To Setup for Chassis Development with Docker Desktop
+#### To Setup for Chassis Development with Docker Desktop
 
 - Install [Docker Desktop](https://www.docker.com/products/docker-desktop): It is available across Windows, Mac, and Linux.
 - Enable the built in Kubernetes Cluster from Docker Desktop's Setting. Example [here](https://birthday.play-with-docker.com/kubernetes-docker-desktop/)
@@ -177,7 +178,7 @@ Example:
 
 <br>
 
-###Setting Up to Debug Chassis Locally
+### Setting Up to Debug Chassis Locally
 Chassis requires a few environment variables to run. most are prepackaged in the .env file; however, the local cluster config file needs to be set by the contributor.
 
 - CHASSIS_KUBECONFIG - usually found at `~/.kube/config` or `C:\Users\<uname>\.kube\config`
@@ -283,6 +284,6 @@ resolves #42
 <br>
 
 
-#Where to go from here
+# Where to go from here
 
 If you are looking to get involved with Chassis please take a look at our [open issues](https://github.com/modzy/chassis/issues) and dive right in, or reach out to us on the [Discord server](https://www2.modzy.com/modzy-discord-chassis) with any questions on where to start.
