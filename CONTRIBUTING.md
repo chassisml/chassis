@@ -85,7 +85,7 @@ If you need help with anything here, [Tech Support](https://www2.modzy.com/modzy
 
 | Environment | OS  | Command                                                                                            |
 |-------------|-----|----------------------------------------------------------------------------------------------------|
-| Conda       | Any | `$ conda create --name VIRTUAL_ENVIRON_NAME --file requirements_dev.txt -c conda-forge python=3.9` |
+| Conda       | Any | `$ conda create --name VIRTUAL_ENVIRON_NAME --file requirements.txt -c conda-forge python=3.9` |
 | Not Conda   | Any | `$ python3 -m venv /path/to/VIRTUAL_ENVIRON_NAME`                                                  |
 
 #### 3. Activate the virtual environment:
@@ -98,7 +98,7 @@ If you need help with anything here, [Tech Support](https://www2.modzy.com/modzy
 
 #### 4. Install dependencies (if not using conda):
 
-`$ pip3 install -r requirements_dev.txt`
+`$ pip3 install -r requirements.txt`
 
 #### 5. Create a branch for your awesome new feature:
 
