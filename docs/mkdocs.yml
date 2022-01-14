@@ -3,7 +3,7 @@ nav:
   - index.md
   - design.md
   - Documentation:
-      - Chassisml Service:  service-docs.md
+      - Chassisml API Reference: service-reference.md
       - Python SDK: chassisml-sdk-reference.md
   - Tutorials:
       - tutorials/devops-deploy.md
@@ -17,9 +17,9 @@ nav:
 theme:
   name: material
   palette:
-    primary: white
+    primary: black
     accent: blue
-    scheme: slate
+    scheme: default
   logo: images/chassis-symbol.png
   favicon: images/chassis-symbol.png
   features:
