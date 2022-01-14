@@ -256,19 +256,16 @@ We welcome your help in making Chassis better. In order to help insure the commu
 <br>
 
 ### 1) Commit Format 
-When commiting to a git branch an informative commit is requested. No format is required, but something like this is strongly recommended.
+When commiting to a git branch an informative commit is requested. No format is required, but the following is recommended:
 ```
-Updated [SDK | Service | Documentation | Other]:
-Quick note on what was done
-
-Commit Overview:
-details on changes and their impacts for users as well as devs
-
-Commit Known Issues:
-details on issues not addressed by commit, but that need attention in the future.
-
-Commit include:
-list of files impacted.
+feat: new feature
+fix: bug fix
+docs: documentation changes
+style: formatting only, no change in functionality
+refactor: code restructure without changing external functionality
+test: adding or refactoring tests
+chore: such as adding a .gitignore file
+dev: catch-all for all other development
 ```
 
 <br>
@@ -278,7 +275,16 @@ When filing a Pull Request, be descriptive as to what your PR addresses. Additio
 
 Example:
 ```
-This PR addresses the error message that you receive when you try to execute the SDK's xyz method by passing it an alphanumeric value.
+Updated [SDK | Service | Documentation | Other]:
+quick note on what was done
+
+PR Overview:
+details on changes and their impacts for users as well as devs
+
+PR Known Issues:
+details on issues not addressed by pull request, but that need attention in the future
+
+Issue resolved:
 resolves #42
 ```
 <br>
