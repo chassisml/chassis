@@ -113,6 +113,9 @@ def _format_metadata(metadata):
                     'status': int(humanfriendly.parse_timespan(metadata['timeout']['status'])*1000)
                     }
 
+    gpu = metadata.get('resources',{}).get('gpu',{}).get('count')
+    if gpu:
+        body['requirement'] = {'requirementId': -6}               
     long_description = metadata.get('description').get('details')
     if long_description:
         body['longDescription'] = long_description
