@@ -1,6 +1,6 @@
 # Model Containerizer for K8s
 
-![Chassis logo](images/chassis-logo.png){: style="width:200px; margin-bottom:10px;" }
+![Chassis logo](images/chassis-positive.png){: style="width:200px; margin-bottom:10px;" }
 
 * Build [MLflow](https://mlflow.org/) models directly into DevOps-ready container images for inference
 * Supports parallel builds in Kubernetes jobs, using [Kaniko](https://github.com/GoogleContainerTools/kaniko), no Docker socket required!
