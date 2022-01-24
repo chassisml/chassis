@@ -160,7 +160,7 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
             fix_env (bool): Modifies conda or pip-installable packages into list of dependencies to be installed during the container build
         
         Returns:
-            dict: raw model predictions returned by `process_fn` or `batch_process_fn` run from within chassis service
+            Dict: raw model predictions returned by `process_fn` or `batch_process_fn` run from within chassis service
 
         Examples:
         ```python
@@ -208,7 +208,7 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
             overwrite (bool): If True, overwrites existing contents of `path` parameter
 
         Returns:
-            None
+            None: This method does not return an object
         
         Examples:
         ```python
@@ -234,11 +234,12 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
             registry_pass (str): Docker registry password
             conda_env (Union[str, dict]): Either filepath to conda.yaml file or dictionary with environment requirements. If not provided, chassis will infer dependency requirements from local environment
             fix_env (bool): Modifies conda or pip-installable packages into list of dependencies to be installed during the container build
+            gpu (bool): If True, builds container image that runs on GPU hardware
             modzy_sample_input_path (str): Filepath to sample input data. Required to deploy model to Modzy
             modzy_api_key (str): Valid Modzy API Key
 
         Returns:
-            dict: Response to Chassis /build endpoint
+            Dict: Response to Chassis `/build` endpoint
 
         Examples:
         ```python
@@ -356,7 +357,7 @@ class ChassisClient:
             job_id (str): Chassis job identifier generated from `ChassisModel.publish` method
         
         Returns:
-            dict: JSON Chassis job status
+            Dict: JSON Chassis job status
 
         Examples:
         ```python
@@ -395,7 +396,7 @@ class ChassisClient:
             poll_intervall (int): Amount of time to wait in between API polls to check status of job
 
         Returns:
-            dict: final job status returned by `ChassisClient.block_until_complete` method
+            Dict: final job status returned by `ChassisClient.block_until_complete` method
 
         Examples:
         ```python
@@ -438,7 +439,7 @@ class ChassisClient:
             output_filename (str): Local output filepath to save container image
 
         Returns:
-            None
+            None: This method does not return an object
         
         Examples:
         ```python

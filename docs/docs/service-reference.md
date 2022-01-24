@@ -30,6 +30,13 @@ Welcome to the Chassisml API Reference documentation homepage. The API is design
 
 ::: service.app
     :docstring:
+    selection:
+        members:
+            - create_job_object
+            - get_job_status
+            - download_tar
+            - build_image
+            - test_model
     rendering:
         show_source: true
         show_category_heading: true
