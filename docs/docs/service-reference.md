@@ -21,11 +21,11 @@ Welcome to the Chassisml API Reference documentation homepage. The API is design
 
 **`/job/{job_id}/download-tar`** *(GET)*
 
-* Retrieves docker image tar archive from within Kaniko and downloads to local filepath
+* Retrieves docker image tar archive from a volume attached to the Kubernetes cluster hosting chassis and downloads it to a local filepath
 
 **`/test`** *(POST)*
 
-* Runs test on `ChassisModel` to ensure the provided model code can run on the chassis service side within the provided conda environment
+* Creates a conda environment as specified by the user's model artifacts and runs the `ChassisModel` to ensure the model code can run within the provided conda environment
 
 
 ::: service.app
