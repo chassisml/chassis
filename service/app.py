@@ -211,7 +211,10 @@ def create_job_object(
         random_name (str): random id generated during build process that is used to ensure that all jobs are uniquely named and traceable
         modzy_data (str): modzy_metadata_path returned from `extract_modzy_metadata` method
         publish (bool): determines if image will be published to Docker registry
-        registry_auth (dict): Docker registry authorization credentials    
+        registry_auth (dict): Docker registry authorization credentials  
+
+    Returns:
+          
     '''
     # 
 

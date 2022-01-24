@@ -39,8 +39,8 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
         chassis_build_url (str): The build url for the Chassis API.
     """
 
-    def __init__(self,model_context,process_fn,batch_process_fn,batch_size,chassis_base_url):
-
+    def __init__(self,model_context,process_fn,batch_process_fn,batch_size,chassis_base_url):      
+        
         if process_fn and batch_process_fn:
             if not batch_size:
                 raise ValueError("Both batch_process_fn and batch_size must be provided for batch support.")
@@ -206,6 +206,9 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
             conda_env (Union[str, dict]): Either filepath to conda.yaml file or dictionary with environment requirements. If not provided, chassis will infer dependency requirements from local environment
             overwrite (bool): If True, overwrites existing contents of `path` parameter
 
+        Returns:
+            None
+        
         Examples:
         ```python
         chassis_model = chassis_client.create_model(context=context,process_fn=process)
@@ -432,6 +435,9 @@ class ChassisClient:
             job_id (str): Chassis job identifier generated from `ChassisModel.publish` method
             output_filename (str): Local output filepath to save container image
 
+        Returns:
+            None
+        
         Examples:
         ```python
         # Publish model to Docker registry
