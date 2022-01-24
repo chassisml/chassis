@@ -24,6 +24,7 @@ WINDOWS = True if os.name == 'nt' else False
 
 HOME_DIR = str(Path.home())
 MODZY_UPLOADER_REPOSITORY = 'ghcr.io/modzy/chassis-modzy-uploader'
+
 if CHASSIS_DEV:
     MOUNT_PATH_DIR = "/"+ str(os.path.join(HOME_DIR,".chassis_data"))[3:].replace("\\", "/") if WINDOWS else os.path.join(HOME_DIR,".chassis_data")
 else:
@@ -41,6 +42,7 @@ K_KANIKO_EMPTY_DIR_PATH = os.getenv('K_KANIKO_EMPTY_DIR_PATH')
 K_SERVICE_ACCOUNT_NAME = "local-job-builder" if CHASSIS_DEV else os.getenv('K_SERVICE_ACCOUNT_NAME')
 K_JOB_NAME = os.getenv('K_JOB_NAME')
 
+GPU_BASE_IMAGE = 'nvidia/cuda:11.5.0-runtime-ubuntu20.04'
 
 ###########################################
 def create_dev_environment():
@@ -199,6 +201,7 @@ def create_job_object(
         modzy_data,
         publish,
         registry_auth,
+        gpu=False
 ):
     '''
     This utility method sets up all the required objects needed to create a model image and is run within the `run_kaniko` method.
@@ -272,7 +275,7 @@ def create_job_object(
     # This is the kaniko container used to build the final image.
 
     kaniko_args = [
-        f'--dockerfile={DATA_DIR}/flavours/{module_name}/Dockerfile',
+        f'--dockerfile={DATA_DIR}/flavours/{module_name}/Dockerfile{".gpu" if gpu else ""}',
         '' if publish else '--no-push',
         f'--tarPath={path_to_tar_file}',
         f'--destination={image_name}{"" if ":" in image_name else ":latest"}',
@@ -391,6 +394,7 @@ def run_kaniko(
         modzy_data,
         publish,
         registry_auth,
+        gpu=False
 ):
     '''
     This utility method creates and launches a job object that uses Kaniko to create the desired image during the `/build` process.
@@ -417,6 +421,7 @@ def run_kaniko(
             modzy_data,
             publish,
             registry_auth,
+            gpu
         )
         create_job(batch_v1, job)
     except Exception as err:
@@ -564,6 +569,7 @@ def build_image():
     image_data = json.load(request.files.get('image_data'))
     model_name = image_data.get('model_name')
     image_name = image_data.get('name')
+    gpu = image_data.get('gpu')
     publish = image_data.get('publish', False)
     publish = True if publish else ''
     registry_auth = image_data.get('registry_auth')
@@ -612,6 +618,7 @@ def build_image():
         modzy_data,
         publish,
         registry_auth,
+        gpu
     )
 
     if error:

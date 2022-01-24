@@ -11,6 +11,7 @@ import tempfile
 import shutil
 import mlflow
 import base64
+import string
 import numpy as np
 from chassisml import __version__
 from ._utils import zipdir,fix_dependencies,write_modzy_yaml,NumpyEncoder
@@ -221,7 +222,7 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
         print("Chassis model saved.")
 
     def publish(self,model_name,model_version,registry_user,registry_pass,
-                conda_env=None,fix_env=True,modzy_sample_input_path=None,
+                conda_env=None,fix_env=True,gpu=False,modzy_sample_input_path=None,
                 modzy_api_key=None):
         '''
         Executes chassis job, which containerizes model, pushes container image to Docker registry, and optionally deploys model to Modzy
@@ -275,13 +276,14 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
             tmppath = tempfile.mkdtemp()
             zipdir(model_directory,tmppath,MODEL_ZIP_NAME)
             
-            image_name = "-".join(model_name.lower().split())
+            image_name = "-".join(model_name.translate(str.maketrans('', '', string.punctuation)).lower().split())
             image_data = {
                 'name': "{}/{}".format(registry_user,"{}:{}".format(image_name,model_version)),
                 'model_name': model_name,
                 'model_path': tmppath,
                 'registry_auth': base64.b64encode("{}:{}".format(registry_user,registry_pass).encode("utf-8")).decode("utf-8"),
-                'publish': True
+                'publish': True,
+                'gpu': gpu
             }
 
             if modzy_sample_input_path and modzy_api_key:
@@ -292,7 +294,7 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
                     'deploy': True,
                     'api_key': modzy_api_key
                 }
-                write_modzy_yaml(model_name,model_version,modzy_metadata_path,batch_size=self.batch_size)
+                write_modzy_yaml(model_name,model_version,modzy_metadata_path,batch_size=self.batch_size,gpu=gpu)
             else:
                 modzy_data = {}
 

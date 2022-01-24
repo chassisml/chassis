@@ -2,7 +2,7 @@
 
 ![Chassis logo](images/chassis-positive.png){: style="width:200px; margin-bottom:10px;" }
 
-* Build [MLflow](https://mlflow.org/) models directly into DevOps-ready container images for inference
+* Build models directly into DevOps-ready container images for inference (using [MLflow](https://mlflow.org) under the hood)
 * Supports parallel builds in Kubernetes jobs, using [Kaniko](https://github.com/GoogleContainerTools/kaniko), no Docker socket required!
 * Generates [Open Model Interface](https://openmodel.ml) compatible images that are multi-purpose and portable, they work on multiple platforms: KFServing and Modzy
 * Try the test drive today, then deploy our Helm chart to your K8s cluster to use it for real
@@ -46,7 +46,7 @@ Follow one of our tutorials to easily get started and see how Chassis works:
 
 * [Tech Support](https://www2.modzy.com/modzy-discord-chassis) Our tech support is graciously hosted on Modzy's Discord server in the "Open Source" channels
 * [Install with Helm](tutorials/devops-deploy.md) into a Kubernetes cluster
-* [Build a container image](tutorials/ds-connect) from an MLflow model
+* [Build a container image](tutorials/ds-connect) from your model
 * [Deploy to KFServing](tutorials/ds-deploy.md) the built image
 
 ## Shameless plug
