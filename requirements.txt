@@ -6,4 +6,8 @@ pytest
 pylint
 flake8
 mkdocs
+mkdocs-autorefs
+mkdocs-material
+mkdocs-material-extensions
+mkdocstrings
 python-dotenv
