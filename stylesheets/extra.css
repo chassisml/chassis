@@ -1,5 +1,6 @@
 :root {
   --md-primary-fg-color:       #11284F;
-  --md-typeset-a-color:        #ffa724;
-  --md-text-link-color:        #0092DF;
+  --md-typeset-a-color:        #0092DF;
+  --md-typset-mark-color:      #0092DF;
+  --md-typeset-kbd-color:      #0092DF;
 }
