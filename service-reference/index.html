@@ -1,0 +1,1475 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../images/chassis-symbol.png">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.6">
+    
+    
+      
+        <title>Chassisml API Reference - Chassis</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.cd566b2a.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.e6a45f82.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+
+  <script>function gtag(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],gtag("js",new Date),gtag("config","G-4NVL0DTGZ4"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&gtag("event","search",{search_term:this.value})}),"undefined"!=typeof location$&&location$.subscribe(function(e){gtag("config","G-4NVL0DTGZ4",{page_path:e.pathname})})})</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-4NVL0DTGZ4"></script>
+
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="" data-md-color-accent="blue">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#chassisml-api-reference" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Chassis" class="md-header__button md-logo" aria-label="Chassis" data-md-component="logo">
+      
+  <img src="../images/chassis-symbol.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Chassis
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Chassisml API Reference
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/modzy/chassis/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    modzy/chassis
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Chassis" class="md-nav__button md-logo" aria-label="Chassis" data-md-component="logo">
+      
+  <img src="../images/chassis-symbol.png" alt="logo">
+
+    </a>
+    Chassis
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/modzy/chassis/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    modzy/chassis
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Model Containerizer for K8s
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../design/" class="md-nav__link">
+        Design & Architecture
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          Documentation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Documentation" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Documentation
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Chassisml API Reference
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Chassisml API Reference
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#endpoints" class="md-nav__link">
+    Endpoints
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#service.app-functions" class="md-nav__link">
+    Functions
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#service.app.build_image" class="md-nav__link">
+    build_image()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#service.app.create_job_object" class="md-nav__link">
+    create_job_object()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#service.app.download_tar" class="md-nav__link">
+    download_tar()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#service.app.get_job_status" class="md-nav__link">
+    get_job_status()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#service.app.test_model" class="md-nav__link">
+    test_model()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../chassisml-sdk-reference/" class="md-nav__link">
+        Python SDK
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" data-md-state="indeterminate" type="checkbox" id="__nav_4" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          Tutorials
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Tutorials" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Tutorials
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/devops-deploy/" class="md-nav__link">
+        Deploy Chassis (DevOps)
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/ds-connect/" class="md-nav__link">
+        Build a Model (Data Scientists)
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/ds-deploy/" class="md-nav__link">
+        Deploy Model to KFServing
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/ds-deploy-modzy/" class="md-nav__link">
+        Deploy Model to Modzy
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../help/" class="md-nav__link">
+        Help
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../get-involved/" class="md-nav__link">
+        Get Involved
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release-notes/" class="md-nav__link">
+        Release Notes
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../faqs/" class="md-nav__link">
+        FAQs
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#endpoints" class="md-nav__link">
+    Endpoints
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#service.app-functions" class="md-nav__link">
+    Functions
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#service.app.build_image" class="md-nav__link">
+    build_image()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#service.app.create_job_object" class="md-nav__link">
+    create_job_object()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#service.app.download_tar" class="md-nav__link">
+    download_tar()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#service.app.get_job_status" class="md-nav__link">
+    get_job_status()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#service.app.test_model" class="md-nav__link">
+    test_model()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+<a href="https://github.com/modzy/chassis/edit/main/docs/docs/service-reference.md" title="Edit this page" class="md-content__button md-icon">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+</a>
+
+
+<h1 id="chassisml-api-reference">Chassisml API Reference</h1>
+<p>Welcome to the Chassisml API Reference documentation homepage. The API is designed using the principles of REST services using standard HTTP verbs and status codes, implemented with <a href="https://flask.palletsprojects.com/en/2.0.x/">Flask</a>. On this page, you will find documentation for:</p>
+<ul>
+<li>Available REST endpoints in API Service</li>
+<li>Methods implemented within the each endpoint</li>
+</ul>
+<h2 id="endpoints">Endpoints</h2>
+<p><strong><code>/health</code></strong> <em>(GET)</em></p>
+<ul>
+<li>Confirms Chassis service is up and running </li>
+</ul>
+<p><strong><code>/build</code></strong> <em>(POST)</em></p>
+<ul>
+<li>Kicks off the container image build process</li>
+</ul>
+<p><strong><code>/job/{job_id}</code></strong> <em>(GET)</em></p>
+<ul>
+<li>Retrieves the status of a chassis <code>/build</code> job</li>
+</ul>
+<p><strong><code>/job/{job_id}/download-tar</code></strong> <em>(GET)</em></p>
+<ul>
+<li>Retrieves docker image tar archive from a volume attached to the Kubernetes cluster hosting chassis and downloads it to a local filepath</li>
+</ul>
+<p><strong><code>/test</code></strong> <em>(POST)</em></p>
+<ul>
+<li>Creates a conda environment as specified by the user's model artifacts and runs the <code>ChassisModel</code> to ensure the model code can run within the provided conda environment</li>
+</ul>
+
+
+  <div class="doc doc-object doc-module">
+
+
+    <div class="doc doc-contents first">
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+<h2 id="service.app-functions">Functions</h2>
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h3 id="service.app.build_image" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">build_image</span><span class="p">()</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>This method is run by the <code>/build</code> endpoint. 
+It generates a model image based upon a POST request. The <code>request.files</code> structure can be seen in the Python SDK docs.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>None</code></td>
+        <td><code>None</code></td>
+        <td><p>This method does not take any parameters</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Dict</code></td>
+      <td><p>information about whether or not the image build resulted in an error</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>service/app.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">build_image</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This method is run by the `/build` endpoint. </span>
+<span class="sd">    It generates a model image based upon a POST request. The `request.files` structure can be seen in the Python SDK docs.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        None (None): This method does not take any parameters</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Dict: information about whether or not the image build resulted in an error</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="s1">&#39;image_data&#39;</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">files</span> <span class="ow">and</span> <span class="s1">&#39;model&#39;</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">files</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;Both model and image_data are required&#39;</span><span class="p">,</span> <span class="mi">500</span>
+
+    <span class="c1"># retrieve image_data and populate variables accordingly</span>
+    <span class="n">image_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;image_data&#39;</span><span class="p">))</span>
+    <span class="n">model_name</span> <span class="o">=</span> <span class="n">image_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;model_name&#39;</span><span class="p">)</span>
+    <span class="n">image_name</span> <span class="o">=</span> <span class="n">image_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span>
+    <span class="n">gpu</span> <span class="o">=</span> <span class="n">image_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;gpu&#39;</span><span class="p">)</span>
+    <span class="n">publish</span> <span class="o">=</span> <span class="n">image_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;publish&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">publish</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">publish</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+    <span class="n">registry_auth</span> <span class="o">=</span> <span class="n">image_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;registry_auth&#39;</span><span class="p">)</span>
+
+    <span class="c1"># retrieve binary representations for all three variables</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;model&#39;</span><span class="p">)</span>
+    <span class="n">modzy_metadata_data</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;modzy_metadata_data&#39;</span><span class="p">)</span>
+    <span class="n">modzy_sample_input_data</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;modzy_sample_input_data&#39;</span><span class="p">)</span>
+
+    <span class="c1"># json string loaded into variable</span>
+    <span class="n">modzy_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;modzy_data&#39;</span><span class="p">)</span> <span class="ow">or</span>  <span class="p">{})</span>
+
+    <span class="c1"># This is a future proofing variable in case we encounter a model that cannot be converted into mlflow.</span>
+    <span class="c1"># It will remain hardcoded for now.</span>
+    <span class="n">module_name</span> <span class="o">=</span> <span class="s1">&#39;mlflow&#39;</span>
+
+    <span class="c1"># This name is a random id used to ensure that all jobs are uniquely named and traceable.</span>
+    <span class="n">random_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
+
+    <span class="c1"># Unzip model archive</span>
+    <span class="n">unzip_model</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">module_name</span><span class="p">,</span> <span class="n">random_name</span><span class="p">)</span>
+
+    <span class="c1"># User can build the image but not deploy it to Modzy. So no input_sample is mandatory.</span>
+    <span class="c1"># On the other hand, the model.yaml is needed to build the image so proceed with it.</span>
+
+    <span class="c1"># save the sample input to the modzy_sample_input_path directory</span>
+    <span class="k">if</span> <span class="n">modzy_data</span><span class="p">:</span>
+        <span class="n">modzy_sample_input_path</span> <span class="o">=</span> <span class="n">extract_modzy_sample_input</span><span class="p">(</span><span class="n">modzy_sample_input_data</span><span class="p">,</span> <span class="n">module_name</span><span class="p">,</span> <span class="n">random_name</span><span class="p">)</span>
+        <span class="n">modzy_data</span><span class="p">[</span><span class="s1">&#39;modzy_sample_input_path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">modzy_sample_input_path</span>
+
+    <span class="c1"># TODO: this probably should only be done if modzy_data is true.</span>
+    <span class="n">modzy_metadata_path</span> <span class="o">=</span> <span class="n">extract_modzy_metadata</span><span class="p">(</span><span class="n">modzy_metadata_data</span><span class="p">,</span> <span class="n">module_name</span><span class="p">,</span> <span class="n">random_name</span><span class="p">)</span>
+    <span class="n">modzy_data</span><span class="p">[</span><span class="s1">&#39;modzy_metadata_path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">modzy_metadata_path</span>
+
+    <span class="c1"># this path is the local location that kaniko will store the image it creates</span>
+    <span class="n">path_to_tar_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">DATA_DIR</span><span class="si">}</span><span class="s1">/kaniko_image-</span><span class="si">{</span><span class="n">random_name</span><span class="si">}</span><span class="s1">.tar&#39;</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Request data: </span><span class="si">{</span><span class="n">image_name</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="n">module_name</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="n">path_to_tar_file</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="n">error</span> <span class="o">=</span> <span class="n">run_kaniko</span><span class="p">(</span>
+        <span class="n">image_name</span><span class="p">,</span>
+        <span class="n">module_name</span><span class="p">,</span>
+        <span class="n">model_name</span><span class="p">,</span>
+        <span class="n">path_to_tar_file</span><span class="p">,</span>
+        <span class="n">random_name</span><span class="p">,</span>
+        <span class="n">modzy_data</span><span class="p">,</span>
+        <span class="n">publish</span><span class="p">,</span>
+        <span class="n">registry_auth</span><span class="p">,</span>
+        <span class="n">gpu</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">error</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="n">error</span><span class="p">,</span> <span class="s1">&#39;job_id&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;job_id&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">K_JOB_NAME</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">random_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">}</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h3 id="service.app.create_job_object" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">create_job_object</span><span class="p">(</span><span class="n">image_name</span><span class="p">,</span> <span class="n">module_name</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">path_to_tar_file</span><span class="p">,</span> <span class="n">random_name</span><span class="p">,</span> <span class="n">modzy_data</span><span class="p">,</span> <span class="n">publish</span><span class="p">,</span> <span class="n">registry_auth</span><span class="p">,</span> <span class="n">gpu</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>This utility method sets up all the required objects needed to create a model image and is run within the <code>run_kaniko</code> method.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>image_name</code></td>
+        <td><code>str</code></td>
+        <td><p>container image name</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>module_name</code></td>
+        <td><code>str</code></td>
+        <td><p>reference module to locate location within service input is saved</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>model_name</code></td>
+        <td><code>str</code></td>
+        <td><p>name of model to package</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>path_to_tar_file</code></td>
+        <td><code>str</code></td>
+        <td><p>filepath destination to save docker image tar file</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>random_name</code></td>
+        <td><code>str</code></td>
+        <td><p>random id generated during build process that is used to ensure that all jobs are uniquely named and traceable</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>modzy_data</code></td>
+        <td><code>str</code></td>
+        <td><p>modzy_metadata_path returned from <code>extract_modzy_metadata</code> method</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>publish</code></td>
+        <td><code>bool</code></td>
+        <td><p>determines if image will be published to Docker registry</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>registry_auth</code></td>
+        <td><code>dict</code></td>
+        <td><p>Docker registry authorization credentials  </p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>gpu</code></td>
+        <td><code>bool</code></td>
+        <td><p>If <code>True</code>, will build container image that runs on GPU </p></td>
+        <td><code>False</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Job</code></td>
+      <td><p>Chassis job object</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>service/app.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">create_job_object</span><span class="p">(</span>
+        <span class="n">image_name</span><span class="p">,</span>
+        <span class="n">module_name</span><span class="p">,</span>
+        <span class="n">model_name</span><span class="p">,</span>
+        <span class="n">path_to_tar_file</span><span class="p">,</span>
+        <span class="n">random_name</span><span class="p">,</span>
+        <span class="n">modzy_data</span><span class="p">,</span>
+        <span class="n">publish</span><span class="p">,</span>
+        <span class="n">registry_auth</span><span class="p">,</span>
+        <span class="n">gpu</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This utility method sets up all the required objects needed to create a model image and is run within the `run_kaniko` method.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        image_name (str): container image name</span>
+<span class="sd">        module_name (str): reference module to locate location within service input is saved</span>
+<span class="sd">        model_name (str): name of model to package</span>
+<span class="sd">        path_to_tar_file (str): filepath destination to save docker image tar file</span>
+<span class="sd">        random_name (str): random id generated during build process that is used to ensure that all jobs are uniquely named and traceable</span>
+<span class="sd">        modzy_data (str): modzy_metadata_path returned from `extract_modzy_metadata` method</span>
+<span class="sd">        publish (bool): determines if image will be published to Docker registry</span>
+<span class="sd">        registry_auth (dict): Docker registry authorization credentials  </span>
+<span class="sd">        gpu (bool): If `True`, will build container image that runs on GPU </span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Job: Chassis job object</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># </span>
+
+    <span class="n">job_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">K_JOB_NAME</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">random_name</span><span class="si">}</span><span class="s1">&#39;</span>
+
+    <span class="c1"># credential setup for Docker Hub.</span>
+    <span class="c1"># json for holding registry credentials that will access docker hub.</span>
+    <span class="c1"># reference: https://github.com/GoogleContainerTools/kaniko#pushing-to-docker-hub</span>
+    <span class="n">registry_credentials</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="se">{{</span><span class="s1">&quot;auths&quot;:</span><span class="se">{{</span><span class="s1">&quot;https://index.docker.io/v1/&quot;:</span><span class="se">{{</span><span class="s1">&quot;auth&quot;:&quot;</span><span class="si">{</span><span class="n">registry_auth</span><span class="si">}</span><span class="s1">&quot;</span><span class="se">}}}}}}</span><span class="s1">&#39;</span>
+
+    <span class="c1"># mount path leads to /data</span>
+    <span class="c1"># this is a mount point. NOT the volume itself.</span>
+    <span class="c1"># name aligns with a volume defined below.</span>
+    <span class="n">data_volume_mount</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">V1VolumeMount</span><span class="p">(</span>
+        <span class="n">mount_path</span><span class="o">=</span><span class="n">MOUNT_PATH_DIR</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;local-volume-code&quot;</span>
+    <span class="p">)</span> <span class="k">if</span> <span class="n">CHASSIS_DEV</span> <span class="k">else</span> <span class="n">client</span><span class="o">.</span><span class="n">V1VolumeMount</span><span class="p">(</span>
+        <span class="n">mount_path</span><span class="o">=</span><span class="n">MOUNT_PATH_DIR</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">K_DATA_VOLUME_NAME</span>
+    <span class="p">)</span>
+
+    <span class="c1"># This volume will be used by init container to populate registry credentials.</span>
+    <span class="c1"># mount leads to /tmp/credentials</span>
+    <span class="c1"># this is a mount point. NOT the volume itself.</span>
+    <span class="c1"># name aligns with a volume defined below.</span>
+    <span class="n">init_empty_dir_volume_mount</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">V1VolumeMount</span><span class="p">(</span>
+        <span class="n">mount_path</span><span class="o">=</span><span class="n">K_INIT_EMPTY_DIR_PATH</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">K_EMPTY_DIR_NAME</span>
+    <span class="p">)</span>
+
+    <span class="c1"># This volume will be used by kaniko container to get registry credentials.</span>
+    <span class="c1"># mount path leads to /kaniko/.docker per kaniko reference documentation</span>
+    <span class="c1"># this is a mount point. NOT the volume itself.</span>
+    <span class="c1"># name aligns with a volume defined below.</span>
+    <span class="n">kaniko_empty_dir_volume_mount</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">V1VolumeMount</span><span class="p">(</span>
+        <span class="n">mount_path</span><span class="o">=</span><span class="n">K_KANIKO_EMPTY_DIR_PATH</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">K_EMPTY_DIR_NAME</span>
+    <span class="p">)</span>
+
+    <span class="c1"># This container is used to populate registry credentials.</span>
+    <span class="c1"># it only runs the single command in shell to echo our credentials into their proper file</span>
+    <span class="c1"># per the reference documentation for Docker Hub</span>
+    <span class="c1"># TODO: add credentials for Cloud Providers</span>
+    <span class="n">init_container</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">V1Container</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;credentials&#39;</span><span class="p">,</span>
+        <span class="n">image</span><span class="o">=</span><span class="s1">&#39;busybox&#39;</span><span class="p">,</span>
+        <span class="n">volume_mounts</span><span class="o">=</span><span class="p">[</span><span class="n">init_empty_dir_volume_mount</span><span class="p">],</span>
+        <span class="n">command</span><span class="o">=</span><span class="p">[</span>
+            <span class="s1">&#39;/bin/sh&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;-c&#39;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">&#39;echo </span><span class="se">\&#39;</span><span class="si">{</span><span class="n">registry_credentials</span><span class="si">}</span><span class="se">\&#39;</span><span class="s1"> &gt; </span><span class="si">{</span><span class="n">K_INIT_EMPTY_DIR_PATH</span><span class="si">}</span><span class="s1">/config.json&#39;</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="c1"># This is the kaniko container used to build the final image.</span>
+
+    <span class="n">kaniko_args</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="sa">f</span><span class="s1">&#39;--dockerfile=</span><span class="si">{</span><span class="n">DATA_DIR</span><span class="si">}</span><span class="s1">/flavours/</span><span class="si">{</span><span class="n">module_name</span><span class="si">}</span><span class="s1">/Dockerfile</span><span class="si">{</span><span class="s2">&quot;.gpu&quot;</span> <span class="k">if</span> <span class="n">gpu</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="n">publish</span> <span class="k">else</span> <span class="s1">&#39;--no-push&#39;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s1">&#39;--tarPath=</span><span class="si">{</span><span class="n">path_to_tar_file</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s1">&#39;--destination=</span><span class="si">{</span><span class="n">image_name</span><span class="si">}{</span><span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">image_name</span> <span class="k">else</span> <span class="s2">&quot;:latest&quot;</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s1">&#39;--context=</span><span class="si">{</span><span class="n">DATA_DIR</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s1">&#39;--build-arg=MODEL_DIR=model-</span><span class="si">{</span><span class="n">random_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s1">&#39;--build-arg=MODZY_METADATA_PATH=</span><span class="si">{</span><span class="n">modzy_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;modzy_metadata_path&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s1">&#39;--build-arg=MODEL_NAME=</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s1">&#39;--build-arg=MODEL_CLASS=</span><span class="si">{</span><span class="n">module_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="c1"># Modzy is the default interface.</span>
+        <span class="s1">&#39;--build-arg=INTERFACE=modzy&#39;</span><span class="p">,</span>
+    <span class="p">]</span>
+
+    <span class="n">init_container_kaniko</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">V1Container</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;kaniko&#39;</span><span class="p">,</span>
+        <span class="n">image</span><span class="o">=</span><span class="s1">&#39;gcr.io/kaniko-project/executor:latest&#39;</span><span class="p">,</span>
+        <span class="n">volume_mounts</span><span class="o">=</span><span class="p">[</span>
+            <span class="n">data_volume_mount</span><span class="p">,</span>
+            <span class="n">kaniko_empty_dir_volume_mount</span>
+        <span class="p">],</span>
+        <span class="n">args</span><span class="o">=</span><span class="n">kaniko_args</span>
+    <span class="p">)</span>
+
+    <span class="n">modzy_uploader_container</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">V1Container</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;modzy-uploader&#39;</span><span class="p">,</span>
+        <span class="n">image</span><span class="o">=</span><span class="n">MODZY_UPLOADER_REPOSITORY</span><span class="p">,</span>
+        <span class="n">volume_mounts</span><span class="o">=</span><span class="p">[</span><span class="n">data_volume_mount</span><span class="p">],</span>
+        <span class="n">env</span><span class="o">=</span><span class="p">[</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">V1EnvVar</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;JOB_NAME&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">job_name</span><span class="p">),</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">V1EnvVar</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;ENVIRONMENT&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">ENVIRONMENT</span><span class="p">)</span>
+        <span class="p">],</span>
+        <span class="n">args</span><span class="o">=</span><span class="p">[</span>
+            <span class="sa">f</span><span class="s1">&#39;--api_key=</span><span class="si">{</span><span class="n">modzy_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;api_key&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">&#39;--deploy=</span><span class="si">{</span><span class="kc">True</span> <span class="k">if</span> <span class="n">modzy_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;deploy&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">&#39;--sample_input_path=</span><span class="si">{</span><span class="n">modzy_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;modzy_sample_input_path&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">&#39;--metadata_path=</span><span class="si">{</span><span class="n">DATA_DIR</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">modzy_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;modzy_metadata_path&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">&#39;--image_tag=</span><span class="si">{</span><span class="n">image_name</span><span class="si">}{</span><span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">image_name</span> <span class="k">else</span> <span class="s2">&quot;:latest&quot;</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="c1"># volume claim</span>
+    <span class="n">data_pv_claim</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">V1PersistentVolumeClaimVolumeSource</span><span class="p">(</span>
+        <span class="n">claim_name</span><span class="o">=</span><span class="s2">&quot;dir-claim-chassis&quot;</span>
+    <span class="p">)</span> <span class="k">if</span> <span class="n">CHASSIS_DEV</span> <span class="k">else</span> <span class="n">client</span><span class="o">.</span><span class="n">V1PersistentVolumeClaimVolumeSource</span><span class="p">(</span>
+        <span class="n">claim_name</span><span class="o">=</span><span class="n">K_DATA_VOLUME_NAME</span>
+    <span class="p">)</span>
+
+    <span class="c1"># volume holding data</span>
+
+    <span class="n">data_volume</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">V1Volume</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;local-volume-code&quot;</span><span class="p">,</span>
+        <span class="n">persistent_volume_claim</span><span class="o">=</span><span class="n">data_pv_claim</span>
+    <span class="p">)</span> <span class="k">if</span> <span class="n">CHASSIS_DEV</span> <span class="k">else</span> <span class="n">client</span><span class="o">.</span><span class="n">V1Volume</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">K_DATA_VOLUME_NAME</span><span class="p">,</span>
+        <span class="n">persistent_volume_claim</span><span class="o">=</span><span class="n">data_pv_claim</span>
+    <span class="p">)</span>
+
+    <span class="c1"># volume holding credentials</span>
+    <span class="n">empty_dir_volume</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">V1Volume</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">K_EMPTY_DIR_NAME</span><span class="p">,</span>
+        <span class="n">empty_dir</span><span class="o">=</span><span class="n">client</span><span class="o">.</span><span class="n">V1EmptyDirVolumeSource</span><span class="p">()</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Pod spec for the image build process</span>
+    <span class="n">pod_spec</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">V1PodSpec</span><span class="p">(</span>
+        <span class="n">service_account_name</span><span class="o">=</span><span class="n">K_SERVICE_ACCOUNT_NAME</span><span class="p">,</span>
+        <span class="n">restart_policy</span><span class="o">=</span><span class="s1">&#39;Never&#39;</span><span class="p">,</span>
+        <span class="n">init_containers</span><span class="o">=</span><span class="p">[</span><span class="n">init_container</span><span class="p">,</span> <span class="n">init_container_kaniko</span><span class="p">],</span>
+        <span class="n">containers</span><span class="o">=</span><span class="p">[</span><span class="n">modzy_uploader_container</span><span class="p">],</span>
+        <span class="n">volumes</span><span class="o">=</span><span class="p">[</span>
+            <span class="n">data_volume</span><span class="p">,</span>
+            <span class="n">empty_dir_volume</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="c1"># setup and initiate model image build</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">V1PodTemplateSpec</span><span class="p">(</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="n">client</span><span class="o">.</span><span class="n">V1ObjectMeta</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">job_name</span><span class="p">),</span>
+        <span class="n">spec</span><span class="o">=</span><span class="n">pod_spec</span>
+    <span class="p">)</span>
+
+    <span class="n">spec</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">V1JobSpec</span><span class="p">(</span>
+        <span class="n">backoff_limit</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">template</span><span class="o">=</span><span class="n">template</span>
+    <span class="p">)</span>
+    <span class="n">job</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">V1Job</span><span class="p">(</span>
+        <span class="n">api_version</span><span class="o">=</span><span class="s1">&#39;batch/v1&#39;</span><span class="p">,</span>
+        <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;Job&#39;</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="n">client</span><span class="o">.</span><span class="n">V1ObjectMeta</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">job_name</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">spec</span><span class="o">=</span><span class="n">spec</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">job</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h3 id="service.app.download_tar" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">download_tar</span><span class="p">(</span><span class="n">job_id</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>This method is run by the <code>/job/{job_id}/download-tar</code> endpoint. 
+It downloads the container image from kaniko, built during the chassis job with the name <code>job_id</code></p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>job_id</code></td>
+        <td><code>str</code></td>
+        <td><p>valid Chassis job identifier, generated by <code>create_job</code> method </p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Dict</code></td>
+      <td><p>response from <code>download_tar</code> endpoint</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>service/app.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">download_tar</span><span class="p">(</span><span class="n">job_id</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This method is run by the `/job/{job_id}/download-tar` endpoint. </span>
+<span class="sd">    It downloads the container image from kaniko, built during the chassis job with the name `job_id`</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        job_id (str): valid Chassis job identifier, generated by `create_job` method </span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Dict: response from `download_tar` endpoint</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">uid</span> <span class="o">=</span> <span class="n">job_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">K_JOB_NAME</span><span class="si">}</span><span class="s1">-&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">send_from_directory</span><span class="p">(</span><span class="n">DATA_DIR</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;kaniko_image-</span><span class="si">{</span><span class="n">uid</span><span class="si">}</span><span class="s1">.tar&#39;</span><span class="p">,</span> <span class="n">as_attachment</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h3 id="service.app.get_job_status" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">get_job_status</span><span class="p">(</span><span class="n">job_id</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>This method is run by the <code>/job/{job_id}</code> endpoint.
+Based on a GET request, it retrieves the status of the Kaniko job and the results if the job has completed.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>job_id</code></td>
+        <td><code>str</code></td>
+        <td><p>valid Chassis job identifier, generated by <code>create_job</code> method</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Dict</code></td>
+      <td><p>Dictionary containing corresponding job data of job <code>job_id</code> </p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>service/app.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_job_status</span><span class="p">(</span><span class="n">job_id</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This method is run by the `/job/{job_id}` endpoint.</span>
+<span class="sd">    Based on a GET request, it retrieves the status of the Kaniko job and the results if the job has completed.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        job_id (str): valid Chassis job identifier, generated by `create_job` method</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Dict: Dictionary containing corresponding job data of job `job_id` </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">CHASSIS_DEV</span><span class="p">:</span>
+        <span class="c1"># if you are doing local dev you need to point at the local kubernetes cluster with your config file</span>
+        <span class="n">kubefile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;CHASSIS_KUBECONFIG&quot;</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">load_kube_config</span><span class="p">(</span><span class="n">kubefile</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># if the service is running inside a cluster during production then the config can be inherited</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">load_incluster_config</span><span class="p">()</span>
+
+    <span class="n">batch_v1</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">BatchV1Api</span><span class="p">()</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">job</span> <span class="o">=</span> <span class="n">batch_v1</span><span class="o">.</span><span class="n">read_namespaced_job</span><span class="p">(</span><span class="n">job_id</span><span class="p">,</span> <span class="n">ENVIRONMENT</span><span class="p">)</span>
+
+        <span class="n">annotations</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">annotations</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">annotations</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;result&#39;</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="k">if</span> <span class="n">result</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">status</span>
+
+        <span class="n">job_data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="n">result</span><span class="p">,</span>
+            <span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="n">status</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">job_data</span>
+    <span class="k">except</span> <span class="n">ApiException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Exception when getting job status: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">e</span><span class="o">.</span><span class="n">body</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h3 id="service.app.test_model" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">test_model</span><span class="p">()</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>This method is run by the <code>/test</code> endpoint. It creates a new conda environment from the provided <code>conda.yaml</code> file and then tests the provided model in that conda environment with provided test input file.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>None</code></td>
+        <td><code>None</code></td>
+        <td><p>This method does not take any parameters</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Dict</code></td>
+      <td><p>model response to <code>/test</code> endpoint. Should contain either successful predictions or error message</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>service/app.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">test_model</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This method is run by the `/test` endpoint. It creates a new conda environment from the provided `conda.yaml` file and then tests the provided model in that conda environment with provided test input file.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        None (None): This method does not take any parameters</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Dict: model response to `/test` endpoint. Should contain either successful predictions or error message</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="s1">&#39;sample_input&#39;</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">files</span> <span class="ow">and</span> <span class="s1">&#39;model&#39;</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">files</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;Both sample input and model are required&#39;</span><span class="p">,</span> <span class="mi">500</span>
+
+    <span class="n">output_dict</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># retrieve binary representations for both variables</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;model&#39;</span><span class="p">)</span>
+    <span class="n">sample_input</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;sample_input&#39;</span><span class="p">)</span>
+
+    <span class="c1"># This is a future proofing variable in case we encounter a model that cannot be converted into mlflow.</span>
+    <span class="c1"># It will remain hardcoded for now.</span>
+    <span class="n">module_name</span> <span class="o">=</span> <span class="s1">&#39;mlflow&#39;</span>
+
+    <span class="c1"># This name is a random id used to ensure that all jobs are uniquely named and traceable.</span>
+    <span class="n">random_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
+
+    <span class="c1"># Unzip model archive</span>
+    <span class="n">unzipped_path</span> <span class="o">=</span> <span class="n">unzip_model</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">module_name</span><span class="p">,</span> <span class="n">random_name</span><span class="p">)</span>
+
+    <span class="c1"># get sample input path</span>
+    <span class="n">sample_input_path</span> <span class="o">=</span> <span class="n">extract_modzy_sample_input</span><span class="p">(</span><span class="n">sample_input</span><span class="p">,</span> <span class="n">module_name</span><span class="p">,</span> <span class="n">random_name</span><span class="p">)</span>
+
+    <span class="c1"># create conda env, return error if fails</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">tmp_env_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+        <span class="n">rm_env_cmd</span> <span class="o">=</span> <span class="s2">&quot;conda env remove --name </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tmp_env_name</span><span class="p">)</span>
+        <span class="n">yaml_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">unzipped_path</span><span class="p">,</span><span class="s2">&quot;conda.yaml&quot;</span><span class="p">)</span>
+        <span class="n">create_env_cmd</span> <span class="o">=</span> <span class="s2">&quot;conda env create -f </span><span class="si">{}</span><span class="s2"> -n </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">yaml_path</span><span class="p">,</span><span class="n">tmp_env_name</span><span class="p">)</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">create_env_cmd</span><span class="p">,</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">executable</span><span class="o">=</span><span class="s1">&#39;/bin/bash&#39;</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">rm_env_cmd</span><span class="p">,</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">executable</span><span class="o">=</span><span class="s1">&#39;/bin/bash&#39;</span><span class="p">)</span>
+        <span class="n">output_dict</span><span class="p">[</span><span class="s2">&quot;env_error&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">output_dict</span>
+
+    <span class="c1"># test model in env with sample input file, return error if fails</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">test_model_cmd</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        source activate </span><span class="si">{}</span><span class="s2">;</span>
+<span class="s2">        python test_chassis_model.py </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"></span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tmp_env_name</span><span class="p">,</span><span class="n">unzipped_path</span><span class="p">,</span><span class="n">sample_input_path</span><span class="p">)</span>
+        <span class="n">test_ret</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">test_model_cmd</span><span class="p">,</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">executable</span><span class="o">=</span><span class="s1">&#39;/bin/bash&#39;</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">output_dict</span><span class="p">[</span><span class="s2">&quot;model_output&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">test_ret</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+    <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">rm_env_cmd</span><span class="p">,</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">executable</span><span class="o">=</span><span class="s1">&#39;/bin/bash&#39;</span><span class="p">)</span>
+        <span class="n">error_output</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+        <span class="n">output_dict</span><span class="p">[</span><span class="s2">&quot;model_error&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">error_output</span><span class="p">[</span><span class="n">error_output</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;in process&#39;</span><span class="p">):]</span>
+        <span class="k">return</span> <span class="n">output_dict</span>
+
+    <span class="c1"># if we make it here, test was successful, remove env and return output</span>
+    <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">rm_env_cmd</span><span class="p">,</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">executable</span><span class="o">=</span><span class="s1">&#39;/bin/bash&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">output_dict</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../design/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Design &amp; Architecture" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Design & Architecture
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../chassisml-sdk-reference/" class="md-footer__link md-footer__link--next" aria-label="Next: Python SDK" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Python SDK
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.expand"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.22074ed6.min.js"}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.1514a9a0.min.js"></script>
+      
+    
+  </body>
+</html>

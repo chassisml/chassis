@@ -1,0 +1,2694 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../images/chassis-symbol.png">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.6">
+    
+    
+      
+        <title>Python SDK - Chassis</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.cd566b2a.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.e6a45f82.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+
+  <script>function gtag(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],gtag("js",new Date),gtag("config","G-4NVL0DTGZ4"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&gtag("event","search",{search_term:this.value})}),"undefined"!=typeof location$&&location$.subscribe(function(e){gtag("config","G-4NVL0DTGZ4",{page_path:e.pathname})})})</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-4NVL0DTGZ4"></script>
+
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="" data-md-color-accent="blue">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#chassisml-python-sdk" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Chassis" class="md-header__button md-logo" aria-label="Chassis" data-md-component="logo">
+      
+  <img src="../images/chassis-symbol.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Chassis
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Python SDK
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/modzy/chassis/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    modzy/chassis
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Chassis" class="md-nav__button md-logo" aria-label="Chassis" data-md-component="logo">
+      
+  <img src="../images/chassis-symbol.png" alt="logo">
+
+    </a>
+    Chassis
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/modzy/chassis/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    modzy/chassis
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Model Containerizer for K8s
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../design/" class="md-nav__link">
+        Design & Architecture
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          Documentation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Documentation" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Documentation
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../service-reference/" class="md-nav__link">
+        Chassisml API Reference
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Python SDK
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Python SDK
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#introduction" class="md-nav__link">
+    Introduction
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    Usage
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#chassisml-sdk.chassisml.chassisml.ChassisClient" class="md-nav__link">
+    ChassisClient
+  </a>
+  
+    <nav class="md-nav" aria-label="ChassisClient">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#chassisml-sdk.chassisml.chassisml.ChassisClient.block_until_complete" class="md-nav__link">
+    block_until_complete()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chassisml-sdk.chassisml.chassisml.ChassisClient.create_model" class="md-nav__link">
+    create_model()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chassisml-sdk.chassisml.chassisml.ChassisClient.download_tar" class="md-nav__link">
+    download_tar()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chassisml-sdk.chassisml.chassisml.ChassisClient.get_job_status" class="md-nav__link">
+    get_job_status()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#chassisml-sdk.chassisml.chassisml.ChassisModel" class="md-nav__link">
+    ChassisModel
+  </a>
+  
+    <nav class="md-nav" aria-label="ChassisModel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#chassisml-sdk.chassisml.chassisml.ChassisModel.publish" class="md-nav__link">
+    publish()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chassisml-sdk.chassisml.chassisml.ChassisModel.save" class="md-nav__link">
+    save()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chassisml-sdk.chassisml.chassisml.ChassisModel.test" class="md-nav__link">
+    test()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chassisml-sdk.chassisml.chassisml.ChassisModel.test_batch" class="md-nav__link">
+    test_batch()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chassisml-sdk.chassisml.chassisml.ChassisModel.test_env" class="md-nav__link">
+    test_env()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" data-md-state="indeterminate" type="checkbox" id="__nav_4" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          Tutorials
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Tutorials" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Tutorials
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/devops-deploy/" class="md-nav__link">
+        Deploy Chassis (DevOps)
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/ds-connect/" class="md-nav__link">
+        Build a Model (Data Scientists)
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/ds-deploy/" class="md-nav__link">
+        Deploy Model to KFServing
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/ds-deploy-modzy/" class="md-nav__link">
+        Deploy Model to Modzy
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../help/" class="md-nav__link">
+        Help
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../get-involved/" class="md-nav__link">
+        Get Involved
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release-notes/" class="md-nav__link">
+        Release Notes
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../faqs/" class="md-nav__link">
+        FAQs
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#introduction" class="md-nav__link">
+    Introduction
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    Usage
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#chassisml-sdk.chassisml.chassisml.ChassisClient" class="md-nav__link">
+    ChassisClient
+  </a>
+  
+    <nav class="md-nav" aria-label="ChassisClient">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#chassisml-sdk.chassisml.chassisml.ChassisClient.block_until_complete" class="md-nav__link">
+    block_until_complete()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chassisml-sdk.chassisml.chassisml.ChassisClient.create_model" class="md-nav__link">
+    create_model()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chassisml-sdk.chassisml.chassisml.ChassisClient.download_tar" class="md-nav__link">
+    download_tar()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chassisml-sdk.chassisml.chassisml.ChassisClient.get_job_status" class="md-nav__link">
+    get_job_status()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#chassisml-sdk.chassisml.chassisml.ChassisModel" class="md-nav__link">
+    ChassisModel
+  </a>
+  
+    <nav class="md-nav" aria-label="ChassisModel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#chassisml-sdk.chassisml.chassisml.ChassisModel.publish" class="md-nav__link">
+    publish()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chassisml-sdk.chassisml.chassisml.ChassisModel.save" class="md-nav__link">
+    save()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chassisml-sdk.chassisml.chassisml.ChassisModel.test" class="md-nav__link">
+    test()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chassisml-sdk.chassisml.chassisml.ChassisModel.test_batch" class="md-nav__link">
+    test_batch()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chassisml-sdk.chassisml.chassisml.ChassisModel.test_env" class="md-nav__link">
+    test_env()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+<a href="https://github.com/modzy/chassis/edit/main/docs/docs/chassisml-sdk-reference.md" title="Edit this page" class="md-content__button md-icon">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+</a>
+
+
+<h1 id="chassisml-python-sdk">Chassisml Python SDK</h1>
+<h2 id="introduction">Introduction</h2>
+<p>The Chassisml Python SDK offers convenience functions that interact with the Chassisml service to automate the containerization and deployment of models to your preferred model serving platform. It is organized into two classes: </p>
+<ul>
+<li><code>ChassisClient</code>: interacts with the Chassis routes that build a user's container from their model artifacts</li>
+<li><code>ChasissModel</code>: creates a chassis compliant model out of a few lines of Python code from user supplied model artifacts </li>
+</ul>
+<p>First, install the Chassisml SDK to get started:</p>
+<p><code>pip install chassisml</code></p>
+<p>To import the library into your editor:</p>
+<p><code>import chassisml</code></p>
+<h2 id="usage">Usage</h2>
+
+
+  <div class="doc doc-object doc-module">
+
+
+    <div class="doc doc-contents first">
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h2 id="chassisml-sdk.chassisml.chassisml.ChassisClient" class="doc doc-heading">
+        <code>
+ChassisClient        </code>
+
+
+
+</h2>
+
+    <div class="doc doc-contents ">
+
+      <p>The Chassis Client object.</p>
+<p>This class is used to interact with the Kaniko service.</p>
+
+<p><strong>Attributes:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>base_url</code></td>
+        <td><code>str</code></td>
+        <td><p>The base url for the API.</p></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>chassisml-sdk/chassisml/chassisml.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">ChassisClient</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;The Chassis Client object.</span>
+
+<span class="sd">    This class is used to interact with the Kaniko service.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        base_url (str): The base url for the API.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">base_url</span><span class="o">=</span><span class="s1">&#39;http://localhost:5000&#39;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_url</span> <span class="o">=</span> <span class="n">base_url</span>
+
+    <span class="k">def</span> <span class="nf">get_job_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_id</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Checks the status of a chassis job</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            job_id (str): Chassis job identifier generated from `ChassisModel.publish` method</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Dict: JSON Chassis job status</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">        ```python</span>
+<span class="sd">        # Create Chassisml model</span>
+<span class="sd">        chassis_model = chassis_client.create_model(context=context,process_fn=process)</span>
+
+<span class="sd">        # Define Dockerhub credentials</span>
+<span class="sd">        dockerhub_user = &quot;user&quot;</span>
+<span class="sd">        dockerhub_pass = &quot;password&quot;</span>
+
+<span class="sd">        # Publish model to Docker registry</span>
+<span class="sd">        response = chassis_model.publish(</span>
+<span class="sd">            model_name=&quot;Chassisml Regression Model&quot;,</span>
+<span class="sd">            model_version=&quot;0.0.1&quot;,</span>
+<span class="sd">            registry_user=dockerhub_user,</span>
+<span class="sd">            registry_pass=dockerhub_pass,</span>
+<span class="sd">        ) </span>
+
+<span class="sd">        job_id = response.get(&#39;job_id&#39;)</span>
+<span class="sd">        job_status = chassis_client.get_job_status(job_id)</span>
+<span class="sd">        ```</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">route</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urljoin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="p">,</span> <span class="n">routes</span><span class="p">[</span><span class="s2">&quot;job&quot;</span><span class="p">])</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">job_id</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">route</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">data</span>
+
+    <span class="k">def</span> <span class="nf">block_until_complete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">job_id</span><span class="p">,</span><span class="n">timeout</span><span class="o">=</span><span class="mi">1800</span><span class="p">,</span><span class="n">poll_interval</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Blocks until Chassis job is complete or timeout is reached. Polls Chassis job API until a result is marked finished.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            job_id (str): Chassis job identifier generated from `ChassisModel.publish` method</span>
+<span class="sd">            timeout (int): Timeout threshold in seconds</span>
+<span class="sd">            poll_intervall (int): Amount of time to wait in between API polls to check status of job</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Dict: final job status returned by `ChassisClient.block_until_complete` method</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">        ```python</span>
+<span class="sd">        # Create Chassisml model</span>
+<span class="sd">        chassis_model = chassis_client.create_model(context=context,process_fn=process)</span>
+
+<span class="sd">        # Define Dockerhub credentials</span>
+<span class="sd">        dockerhub_user = &quot;user&quot;</span>
+<span class="sd">        dockerhub_pass = &quot;password&quot;</span>
+
+<span class="sd">        # Publish model to Docker registry</span>
+<span class="sd">        response = chassis_model.publish(</span>
+<span class="sd">            model_name=&quot;Chassisml Regression Model&quot;,</span>
+<span class="sd">            model_version=&quot;0.0.1&quot;,</span>
+<span class="sd">            registry_user=dockerhub_user,</span>
+<span class="sd">            registry_pass=dockerhub_pass,</span>
+<span class="sd">        ) </span>
+
+<span class="sd">        job_id = response.get(&#39;job_id&#39;)</span>
+<span class="sd">        final_status = chassis_client.block_until_complete(job_id)</span>
+<span class="sd">        ```        </span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">endby</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">+</span> <span class="n">timeout</span> <span class="k">if</span> <span class="p">(</span><span class="n">timeout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_job_status</span><span class="p">(</span><span class="n">job_id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">status</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">][</span><span class="s1">&#39;succeeded&#39;</span><span class="p">]</span> <span class="ow">or</span> <span class="n">status</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">][</span><span class="s1">&#39;failed&#39;</span><span class="p">]:</span>
+                <span class="k">return</span> <span class="n">status</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">endby</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">endby</span> <span class="o">-</span> <span class="n">poll_interval</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Timed out before completion.&#39;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">poll_interval</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">download_tar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">output_filename</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Downloads container image as tar archive</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            job_id (str): Chassis job identifier generated from `ChassisModel.publish` method</span>
+<span class="sd">            output_filename (str): Local output filepath to save container image</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None: This method does not return an object</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">        ```python</span>
+<span class="sd">        # Publish model to Docker registry</span>
+<span class="sd">        response = chassis_model.publish(</span>
+<span class="sd">            model_name=&quot;Chassisml Regression Model&quot;,</span>
+<span class="sd">            model_version=&quot;0.0.1&quot;,</span>
+<span class="sd">            registry_user=dockerhub_user,</span>
+<span class="sd">            registry_pass=dockerhub_pass,</span>
+<span class="sd">        ) </span>
+
+<span class="sd">        job_id = response.get(&#39;job_id)</span>
+<span class="sd">        chassis_client.download_tar(job_id, &quot;./chassis-model.tar&quot;)</span>
+<span class="sd">        ```</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urljoin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="p">,</span> <span class="n">routes</span><span class="p">[</span><span class="s2">&quot;job&quot;</span><span class="p">])</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">job_id</span><span class="si">}</span><span class="s1">/download-tar&#39;</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_filename</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Error download tar: </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">create_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">context</span><span class="p">,</span><span class="n">process_fn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">batch_process_fn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">batch_size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Builds chassis model locally</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            context (dict): Dictionary that will contain the trained model object and any other inference-specific dependencies that will persist while model container is running. Should include all objects that only need to be loaded one time (e.g., loaded model, labels file(s), data transformation objects, etc.) that can be accessed during inference.</span>
+<span class="sd">            process_fn (function): Python function that must accept a single piece of input data in raw bytes form and `context` dictionary as input parameters. This method is responsible for handling all data preprocessing, executing inference, and returning the processed predictions. Defining additional functions is acceptable as long as they are called within the `process` method</span>
+<span class="sd">            batch_process_fn (function): Python function that must accept a batch of input data in raw bytes form and `context` dictionary as input parameters. This method is responsible for handling all data preprocessing, executing inference, and returning the processed predictions. Defining additional functions is acceptable as long as they are called within the `process` method</span>
+<span class="sd">            batch_size (int): Maximum batch size if `batch_process_fn` is defined</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ChassisModel: Chassis Model object that can be tested locally and published to a Docker Registry</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">        The following snippet was taken from this [example](https://docs.modzy.com/docs/chassis-ml).</span>
+<span class="sd">        ```python</span>
+<span class="sd">        # Import and normalize data</span>
+<span class="sd">        X_digits, y_digits = datasets.load_digits(return_X_y=True)</span>
+<span class="sd">        X_digits = X_digits / X_digits.max()</span>
+
+<span class="sd">        n_samples = len(X_digits)</span>
+
+<span class="sd">        # Split data into training and test sets</span>
+<span class="sd">        X_train = X_digits[: int(0.9 * n_samples)]</span>
+<span class="sd">        y_train = y_digits[: int(0.9 * n_samples)]</span>
+<span class="sd">        X_test = X_digits[int(0.9 * n_samples) :]</span>
+<span class="sd">        y_test = y_digits[int(0.9 * n_samples) :]</span>
+
+<span class="sd">        # Train Model</span>
+<span class="sd">        logistic = LogisticRegression(max_iter=1000)</span>
+<span class="sd">        print(</span>
+<span class="sd">            &quot;LogisticRegression mean accuracy score: %f&quot;</span>
+<span class="sd">            % logistic.fit(X_train, y_train).score(X_test, y_test)</span>
+<span class="sd">        )</span>
+
+<span class="sd">        # Save small sample input to use for testing later</span>
+<span class="sd">        sample = X_test[:5].tolist()</span>
+<span class="sd">        with open(&quot;digits_sample.json&quot;, &#39;w&#39;) as out:</span>
+<span class="sd">            json.dump(sample, out)        </span>
+
+<span class="sd">        # 1. Define Context Dictionary</span>
+<span class="sd">        context = {&quot;model&quot;: logistic}</span>
+
+<span class="sd">        # 2. Define Process function</span>
+<span class="sd">        def process(input_bytes,context):</span>
+<span class="sd">            inputs = np.array(json.loads(input_bytes))</span>
+<span class="sd">            inference_results = context[&quot;model&quot;].predict(inputs)</span>
+<span class="sd">            structured_results = []</span>
+<span class="sd">            for inference_result in inference_results:</span>
+<span class="sd">                structured_output = {</span>
+<span class="sd">                    &quot;data&quot;: {</span>
+<span class="sd">                        &quot;result&quot;: {&quot;classPredictions&quot;: [{&quot;class&quot;: str(inference_result), &quot;score&quot;: str(1)}]}</span>
+<span class="sd">                    }</span>
+<span class="sd">                }</span>
+<span class="sd">                structured_results.append(structured_output)</span>
+<span class="sd">            return structured_results      </span>
+
+<span class="sd">        # create Chassis model</span>
+<span class="sd">        chassis_model = chassis_client.create_model(context=context,process_fn=process)              </span>
+<span class="sd">        ```</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">process_fn</span> <span class="ow">or</span> <span class="n">batch_process_fn</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;At least one of process_fn or batch_process_fn must be provided.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">batch_process_fn</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">batch_size</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">batch_size</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">batch_process_fn</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Both batch_process_fn and batch_size must be provided for batch support.&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ChassisModel</span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="n">process_fn</span><span class="p">,</span><span class="n">batch_process_fn</span><span class="p">,</span><span class="n">batch_size</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="chassisml-sdk.chassisml.chassisml.ChassisClient.block_until_complete" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">block_until_complete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">1800</span><span class="p">,</span> <span class="n">poll_interval</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Blocks until Chassis job is complete or timeout is reached. Polls Chassis job API until a result is marked finished.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>job_id</code></td>
+        <td><code>str</code></td>
+        <td><p>Chassis job identifier generated from <code>ChassisModel.publish</code> method</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>timeout</code></td>
+        <td><code>int</code></td>
+        <td><p>Timeout threshold in seconds</p></td>
+        <td><code>1800</code></td>
+      </tr>
+      <tr>
+        <td><code>poll_intervall</code></td>
+        <td><code>int</code></td>
+        <td><p>Amount of time to wait in between API polls to check status of job</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Dict</code></td>
+      <td><p>final job status returned by <code>ChassisClient.block_until_complete</code> method</p></td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>Examples:</strong></p>
+    
+      <div class="highlight"><pre><span></span><code><span class="c1"># Create Chassisml model</span>
+<span class="n">chassis_model</span> <span class="o">=</span> <span class="n">chassis_client</span><span class="o">.</span><span class="n">create_model</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span><span class="n">process_fn</span><span class="o">=</span><span class="n">process</span><span class="p">)</span>
+
+<span class="c1"># Define Dockerhub credentials</span>
+<span class="n">dockerhub_user</span> <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
+<span class="n">dockerhub_pass</span> <span class="o">=</span> <span class="s2">&quot;password&quot;</span>
+
+<span class="c1"># Publish model to Docker registry</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">chassis_model</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
+    <span class="n">model_name</span><span class="o">=</span><span class="s2">&quot;Chassisml Regression Model&quot;</span><span class="p">,</span>
+    <span class="n">model_version</span><span class="o">=</span><span class="s2">&quot;0.0.1&quot;</span><span class="p">,</span>
+    <span class="n">registry_user</span><span class="o">=</span><span class="n">dockerhub_user</span><span class="p">,</span>
+    <span class="n">registry_pass</span><span class="o">=</span><span class="n">dockerhub_pass</span><span class="p">,</span>
+<span class="p">)</span> 
+
+<span class="n">job_id</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;job_id&#39;</span><span class="p">)</span>
+<span class="n">final_status</span> <span class="o">=</span> <span class="n">chassis_client</span><span class="o">.</span><span class="n">block_until_complete</span><span class="p">(</span><span class="n">job_id</span><span class="p">)</span>
+</code></pre></div>
+
+        <details class="quote">
+          <summary>Source code in <code>chassisml-sdk/chassisml/chassisml.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">block_until_complete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">job_id</span><span class="p">,</span><span class="n">timeout</span><span class="o">=</span><span class="mi">1800</span><span class="p">,</span><span class="n">poll_interval</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Blocks until Chassis job is complete or timeout is reached. Polls Chassis job API until a result is marked finished.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        job_id (str): Chassis job identifier generated from `ChassisModel.publish` method</span>
+<span class="sd">        timeout (int): Timeout threshold in seconds</span>
+<span class="sd">        poll_intervall (int): Amount of time to wait in between API polls to check status of job</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Dict: final job status returned by `ChassisClient.block_until_complete` method</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">    ```python</span>
+<span class="sd">    # Create Chassisml model</span>
+<span class="sd">    chassis_model = chassis_client.create_model(context=context,process_fn=process)</span>
+
+<span class="sd">    # Define Dockerhub credentials</span>
+<span class="sd">    dockerhub_user = &quot;user&quot;</span>
+<span class="sd">    dockerhub_pass = &quot;password&quot;</span>
+
+<span class="sd">    # Publish model to Docker registry</span>
+<span class="sd">    response = chassis_model.publish(</span>
+<span class="sd">        model_name=&quot;Chassisml Regression Model&quot;,</span>
+<span class="sd">        model_version=&quot;0.0.1&quot;,</span>
+<span class="sd">        registry_user=dockerhub_user,</span>
+<span class="sd">        registry_pass=dockerhub_pass,</span>
+<span class="sd">    ) </span>
+
+<span class="sd">    job_id = response.get(&#39;job_id&#39;)</span>
+<span class="sd">    final_status = chassis_client.block_until_complete(job_id)</span>
+<span class="sd">    ```        </span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">endby</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">+</span> <span class="n">timeout</span> <span class="k">if</span> <span class="p">(</span><span class="n">timeout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_job_status</span><span class="p">(</span><span class="n">job_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">status</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">][</span><span class="s1">&#39;succeeded&#39;</span><span class="p">]</span> <span class="ow">or</span> <span class="n">status</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">][</span><span class="s1">&#39;failed&#39;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">status</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">endby</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">endby</span> <span class="o">-</span> <span class="n">poll_interval</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Timed out before completion.&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">poll_interval</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="chassisml-sdk.chassisml.chassisml.ChassisClient.create_model" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">create_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">process_fn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">batch_process_fn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Builds chassis model locally</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>context</code></td>
+        <td><code>dict</code></td>
+        <td><p>Dictionary that will contain the trained model object and any other inference-specific dependencies that will persist while model container is running. Should include all objects that only need to be loaded one time (e.g., loaded model, labels file(s), data transformation objects, etc.) that can be accessed during inference.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>process_fn</code></td>
+        <td><code>function</code></td>
+        <td><p>Python function that must accept a single piece of input data in raw bytes form and <code>context</code> dictionary as input parameters. This method is responsible for handling all data preprocessing, executing inference, and returning the processed predictions. Defining additional functions is acceptable as long as they are called within the <code>process</code> method</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>batch_process_fn</code></td>
+        <td><code>function</code></td>
+        <td><p>Python function that must accept a batch of input data in raw bytes form and <code>context</code> dictionary as input parameters. This method is responsible for handling all data preprocessing, executing inference, and returning the processed predictions. Defining additional functions is acceptable as long as they are called within the <code>process</code> method</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>batch_size</code></td>
+        <td><code>int</code></td>
+        <td><p>Maximum batch size if <code>batch_process_fn</code> is defined</p></td>
+        <td><code>None</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>ChassisModel</code></td>
+      <td><p>Chassis Model object that can be tested locally and published to a Docker Registry</p></td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>Examples:</strong></p>
+    
+      <p>The following snippet was taken from this <a href="https://docs.modzy.com/docs/chassis-ml">example</a>.
+<div class="highlight"><pre><span></span><code><span class="c1"># Import and normalize data</span>
+<span class="n">X_digits</span><span class="p">,</span> <span class="n">y_digits</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">load_digits</span><span class="p">(</span><span class="n">return_X_y</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">X_digits</span> <span class="o">=</span> <span class="n">X_digits</span> <span class="o">/</span> <span class="n">X_digits</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+<span class="n">n_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">X_digits</span><span class="p">)</span>
+
+<span class="c1"># Split data into training and test sets</span>
+<span class="n">X_train</span> <span class="o">=</span> <span class="n">X_digits</span><span class="p">[:</span> <span class="nb">int</span><span class="p">(</span><span class="mf">0.9</span> <span class="o">*</span> <span class="n">n_samples</span><span class="p">)]</span>
+<span class="n">y_train</span> <span class="o">=</span> <span class="n">y_digits</span><span class="p">[:</span> <span class="nb">int</span><span class="p">(</span><span class="mf">0.9</span> <span class="o">*</span> <span class="n">n_samples</span><span class="p">)]</span>
+<span class="n">X_test</span> <span class="o">=</span> <span class="n">X_digits</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="mf">0.9</span> <span class="o">*</span> <span class="n">n_samples</span><span class="p">)</span> <span class="p">:]</span>
+<span class="n">y_test</span> <span class="o">=</span> <span class="n">y_digits</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="mf">0.9</span> <span class="o">*</span> <span class="n">n_samples</span><span class="p">)</span> <span class="p">:]</span>
+
+<span class="c1"># Train Model</span>
+<span class="n">logistic</span> <span class="o">=</span> <span class="n">LogisticRegression</span><span class="p">(</span><span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="s2">&quot;LogisticRegression mean accuracy score: </span><span class="si">%f</span><span class="s2">&quot;</span>
+    <span class="o">%</span> <span class="n">logistic</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="c1"># Save small sample input to use for testing later</span>
+<span class="n">sample</span> <span class="o">=</span> <span class="n">X_test</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;digits_sample.json&quot;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">out</span><span class="p">:</span>
+    <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>        
+
+<span class="c1"># 1. Define Context Dictionary</span>
+<span class="n">context</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="n">logistic</span><span class="p">}</span>
+
+<span class="c1"># 2. Define Process function</span>
+<span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="n">input_bytes</span><span class="p">,</span><span class="n">context</span><span class="p">):</span>
+    <span class="n">inputs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">input_bytes</span><span class="p">))</span>
+    <span class="n">inference_results</span> <span class="o">=</span> <span class="n">context</span><span class="p">[</span><span class="s2">&quot;model&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+    <span class="n">structured_results</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">inference_result</span> <span class="ow">in</span> <span class="n">inference_results</span><span class="p">:</span>
+        <span class="n">structured_output</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;classPredictions&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">inference_result</span><span class="p">),</span> <span class="s2">&quot;score&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="mi">1</span><span class="p">)}]}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="n">structured_results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">structured_output</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">structured_results</span>      
+
+<span class="c1"># create Chassis model</span>
+<span class="n">chassis_model</span> <span class="o">=</span> <span class="n">chassis_client</span><span class="o">.</span><span class="n">create_model</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span><span class="n">process_fn</span><span class="o">=</span><span class="n">process</span><span class="p">)</span>              
+</code></pre></div></p>
+
+        <details class="quote">
+          <summary>Source code in <code>chassisml-sdk/chassisml/chassisml.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">create_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">context</span><span class="p">,</span><span class="n">process_fn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">batch_process_fn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">batch_size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Builds chassis model locally</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        context (dict): Dictionary that will contain the trained model object and any other inference-specific dependencies that will persist while model container is running. Should include all objects that only need to be loaded one time (e.g., loaded model, labels file(s), data transformation objects, etc.) that can be accessed during inference.</span>
+<span class="sd">        process_fn (function): Python function that must accept a single piece of input data in raw bytes form and `context` dictionary as input parameters. This method is responsible for handling all data preprocessing, executing inference, and returning the processed predictions. Defining additional functions is acceptable as long as they are called within the `process` method</span>
+<span class="sd">        batch_process_fn (function): Python function that must accept a batch of input data in raw bytes form and `context` dictionary as input parameters. This method is responsible for handling all data preprocessing, executing inference, and returning the processed predictions. Defining additional functions is acceptable as long as they are called within the `process` method</span>
+<span class="sd">        batch_size (int): Maximum batch size if `batch_process_fn` is defined</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        ChassisModel: Chassis Model object that can be tested locally and published to a Docker Registry</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">    The following snippet was taken from this [example](https://docs.modzy.com/docs/chassis-ml).</span>
+<span class="sd">    ```python</span>
+<span class="sd">    # Import and normalize data</span>
+<span class="sd">    X_digits, y_digits = datasets.load_digits(return_X_y=True)</span>
+<span class="sd">    X_digits = X_digits / X_digits.max()</span>
+
+<span class="sd">    n_samples = len(X_digits)</span>
+
+<span class="sd">    # Split data into training and test sets</span>
+<span class="sd">    X_train = X_digits[: int(0.9 * n_samples)]</span>
+<span class="sd">    y_train = y_digits[: int(0.9 * n_samples)]</span>
+<span class="sd">    X_test = X_digits[int(0.9 * n_samples) :]</span>
+<span class="sd">    y_test = y_digits[int(0.9 * n_samples) :]</span>
+
+<span class="sd">    # Train Model</span>
+<span class="sd">    logistic = LogisticRegression(max_iter=1000)</span>
+<span class="sd">    print(</span>
+<span class="sd">        &quot;LogisticRegression mean accuracy score: %f&quot;</span>
+<span class="sd">        % logistic.fit(X_train, y_train).score(X_test, y_test)</span>
+<span class="sd">    )</span>
+
+<span class="sd">    # Save small sample input to use for testing later</span>
+<span class="sd">    sample = X_test[:5].tolist()</span>
+<span class="sd">    with open(&quot;digits_sample.json&quot;, &#39;w&#39;) as out:</span>
+<span class="sd">        json.dump(sample, out)        </span>
+
+<span class="sd">    # 1. Define Context Dictionary</span>
+<span class="sd">    context = {&quot;model&quot;: logistic}</span>
+
+<span class="sd">    # 2. Define Process function</span>
+<span class="sd">    def process(input_bytes,context):</span>
+<span class="sd">        inputs = np.array(json.loads(input_bytes))</span>
+<span class="sd">        inference_results = context[&quot;model&quot;].predict(inputs)</span>
+<span class="sd">        structured_results = []</span>
+<span class="sd">        for inference_result in inference_results:</span>
+<span class="sd">            structured_output = {</span>
+<span class="sd">                &quot;data&quot;: {</span>
+<span class="sd">                    &quot;result&quot;: {&quot;classPredictions&quot;: [{&quot;class&quot;: str(inference_result), &quot;score&quot;: str(1)}]}</span>
+<span class="sd">                }</span>
+<span class="sd">            }</span>
+<span class="sd">            structured_results.append(structured_output)</span>
+<span class="sd">        return structured_results      </span>
+
+<span class="sd">    # create Chassis model</span>
+<span class="sd">    chassis_model = chassis_client.create_model(context=context,process_fn=process)              </span>
+<span class="sd">    ```</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">process_fn</span> <span class="ow">or</span> <span class="n">batch_process_fn</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;At least one of process_fn or batch_process_fn must be provided.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">batch_process_fn</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">batch_size</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">batch_size</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">batch_process_fn</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Both batch_process_fn and batch_size must be provided for batch support.&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ChassisModel</span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="n">process_fn</span><span class="p">,</span><span class="n">batch_process_fn</span><span class="p">,</span><span class="n">batch_size</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="chassisml-sdk.chassisml.chassisml.ChassisClient.download_tar" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">download_tar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">output_filename</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Downloads container image as tar archive</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>job_id</code></td>
+        <td><code>str</code></td>
+        <td><p>Chassis job identifier generated from <code>ChassisModel.publish</code> method</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>output_filename</code></td>
+        <td><code>str</code></td>
+        <td><p>Local output filepath to save container image</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>None</code></td>
+      <td><p>This method does not return an object</p></td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>Examples:</strong></p>
+    
+      <div class="highlight"><pre><span></span><code><span class="c1"># Publish model to Docker registry</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">chassis_model</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
+    <span class="n">model_name</span><span class="o">=</span><span class="s2">&quot;Chassisml Regression Model&quot;</span><span class="p">,</span>
+    <span class="n">model_version</span><span class="o">=</span><span class="s2">&quot;0.0.1&quot;</span><span class="p">,</span>
+    <span class="n">registry_user</span><span class="o">=</span><span class="n">dockerhub_user</span><span class="p">,</span>
+    <span class="n">registry_pass</span><span class="o">=</span><span class="n">dockerhub_pass</span><span class="p">,</span>
+<span class="p">)</span> 
+
+<span class="n">job_id</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;job_id)</span>
+<span class="n">chassis_client</span><span class="o">.</span><span class="n">download_tar</span><span class="p">(</span><span class="n">job_id</span><span class="p">,</span> <span class="s2">&quot;./chassis-model.tar&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+        <details class="quote">
+          <summary>Source code in <code>chassisml-sdk/chassisml/chassisml.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">download_tar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">output_filename</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Downloads container image as tar archive</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        job_id (str): Chassis job identifier generated from `ChassisModel.publish` method</span>
+<span class="sd">        output_filename (str): Local output filepath to save container image</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None: This method does not return an object</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">    ```python</span>
+<span class="sd">    # Publish model to Docker registry</span>
+<span class="sd">    response = chassis_model.publish(</span>
+<span class="sd">        model_name=&quot;Chassisml Regression Model&quot;,</span>
+<span class="sd">        model_version=&quot;0.0.1&quot;,</span>
+<span class="sd">        registry_user=dockerhub_user,</span>
+<span class="sd">        registry_pass=dockerhub_pass,</span>
+<span class="sd">    ) </span>
+
+<span class="sd">    job_id = response.get(&#39;job_id)</span>
+<span class="sd">    chassis_client.download_tar(job_id, &quot;./chassis-model.tar&quot;)</span>
+<span class="sd">    ```</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urljoin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="p">,</span> <span class="n">routes</span><span class="p">[</span><span class="s2">&quot;job&quot;</span><span class="p">])</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">job_id</span><span class="si">}</span><span class="s1">/download-tar&#39;</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_filename</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Error download tar: </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="chassisml-sdk.chassisml.chassisml.ChassisClient.get_job_status" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">get_job_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_id</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Checks the status of a chassis job</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>job_id</code></td>
+        <td><code>str</code></td>
+        <td><p>Chassis job identifier generated from <code>ChassisModel.publish</code> method</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Dict</code></td>
+      <td><p>JSON Chassis job status</p></td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>Examples:</strong></p>
+    
+      <div class="highlight"><pre><span></span><code><span class="c1"># Create Chassisml model</span>
+<span class="n">chassis_model</span> <span class="o">=</span> <span class="n">chassis_client</span><span class="o">.</span><span class="n">create_model</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span><span class="n">process_fn</span><span class="o">=</span><span class="n">process</span><span class="p">)</span>
+
+<span class="c1"># Define Dockerhub credentials</span>
+<span class="n">dockerhub_user</span> <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
+<span class="n">dockerhub_pass</span> <span class="o">=</span> <span class="s2">&quot;password&quot;</span>
+
+<span class="c1"># Publish model to Docker registry</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">chassis_model</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
+    <span class="n">model_name</span><span class="o">=</span><span class="s2">&quot;Chassisml Regression Model&quot;</span><span class="p">,</span>
+    <span class="n">model_version</span><span class="o">=</span><span class="s2">&quot;0.0.1&quot;</span><span class="p">,</span>
+    <span class="n">registry_user</span><span class="o">=</span><span class="n">dockerhub_user</span><span class="p">,</span>
+    <span class="n">registry_pass</span><span class="o">=</span><span class="n">dockerhub_pass</span><span class="p">,</span>
+<span class="p">)</span> 
+
+<span class="n">job_id</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;job_id&#39;</span><span class="p">)</span>
+<span class="n">job_status</span> <span class="o">=</span> <span class="n">chassis_client</span><span class="o">.</span><span class="n">get_job_status</span><span class="p">(</span><span class="n">job_id</span><span class="p">)</span>
+</code></pre></div>
+
+        <details class="quote">
+          <summary>Source code in <code>chassisml-sdk/chassisml/chassisml.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_job_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_id</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Checks the status of a chassis job</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        job_id (str): Chassis job identifier generated from `ChassisModel.publish` method</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Dict: JSON Chassis job status</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">    ```python</span>
+<span class="sd">    # Create Chassisml model</span>
+<span class="sd">    chassis_model = chassis_client.create_model(context=context,process_fn=process)</span>
+
+<span class="sd">    # Define Dockerhub credentials</span>
+<span class="sd">    dockerhub_user = &quot;user&quot;</span>
+<span class="sd">    dockerhub_pass = &quot;password&quot;</span>
+
+<span class="sd">    # Publish model to Docker registry</span>
+<span class="sd">    response = chassis_model.publish(</span>
+<span class="sd">        model_name=&quot;Chassisml Regression Model&quot;,</span>
+<span class="sd">        model_version=&quot;0.0.1&quot;,</span>
+<span class="sd">        registry_user=dockerhub_user,</span>
+<span class="sd">        registry_pass=dockerhub_pass,</span>
+<span class="sd">    ) </span>
+
+<span class="sd">    job_id = response.get(&#39;job_id&#39;)</span>
+<span class="sd">    job_status = chassis_client.get_job_status(job_id)</span>
+<span class="sd">    ```</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">route</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urljoin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="p">,</span> <span class="n">routes</span><span class="p">[</span><span class="s2">&quot;job&quot;</span><span class="p">])</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">job_id</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">route</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">data</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h2 id="chassisml-sdk.chassisml.chassisml.ChassisModel" class="doc doc-heading">
+        <code>
+ChassisModel            (<span title="mlflow.pyfunc.model.PythonModel">PythonModel</span>)
+        </code>
+
+
+
+</h2>
+
+    <div class="doc doc-contents ">
+
+      <p>The Chassis Model object.</p>
+<p>This class inherits from <code>mlflow.pyfunc.PythonModel</code> and adds Chassis functionality.</p>
+
+<p><strong>Attributes:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>predict</code></td>
+        <td><code>function</code></td>
+        <td><p>MLflow pyfunc compatible predict function. 
+Will wrap user-provided function which takes two arguments: model_input (bytes) and model_context (dict).</p></td>
+      </tr>
+      <tr>
+        <td><code>chassis_build_url</code></td>
+        <td><code>str</code></td>
+        <td><p>The build url for the Chassis API.</p></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>chassisml-sdk/chassisml/chassisml.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">ChassisModel</span><span class="p">(</span><span class="n">mlflow</span><span class="o">.</span><span class="n">pyfunc</span><span class="o">.</span><span class="n">PythonModel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The Chassis Model object.</span>
+
+<span class="sd">    This class inherits from `mlflow.pyfunc.PythonModel` and adds Chassis functionality.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        predict (function): MLflow pyfunc compatible predict function. </span>
+<span class="sd">            Will wrap user-provided function which takes two arguments: model_input (bytes) and model_context (dict).</span>
+<span class="sd">        chassis_build_url (str): The build url for the Chassis API.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">model_context</span><span class="p">,</span><span class="n">process_fn</span><span class="p">,</span><span class="n">batch_process_fn</span><span class="p">,</span><span class="n">batch_size</span><span class="p">,</span><span class="n">chassis_base_url</span><span class="p">):</span>      
+
+        <span class="k">if</span> <span class="n">process_fn</span> <span class="ow">and</span> <span class="n">batch_process_fn</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">batch_size</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Both batch_process_fn and batch_size must be provided for batch support.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">predict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gen_predict_method</span><span class="p">(</span><span class="n">process_fn</span><span class="p">,</span><span class="n">model_context</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">batch_predict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gen_predict_method</span><span class="p">(</span><span class="n">batch_process_fn</span><span class="p">,</span><span class="n">model_context</span><span class="p">,</span><span class="n">batch</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">batch_input</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
+        <span class="k">elif</span> <span class="n">process_fn</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">batch_process_fn</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">predict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gen_predict_method</span><span class="p">(</span><span class="n">process_fn</span><span class="p">,</span><span class="n">model_context</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">batch_input</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">elif</span> <span class="n">batch_process_fn</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">process_fn</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">batch_size</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Both batch_process_fn and batch_size must be provided for batch support.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">predict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gen_predict_method</span><span class="p">(</span><span class="n">batch_process_fn</span><span class="p">,</span><span class="n">model_context</span><span class="p">,</span><span class="n">batch_to_single</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">batch_predict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gen_predict_method</span><span class="p">(</span><span class="n">batch_process_fn</span><span class="p">,</span><span class="n">model_context</span><span class="p">,</span><span class="n">batch</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">batch_input</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;At least one of process_fn or batch_process_fn must be provided.&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">chassis_build_url</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urljoin</span><span class="p">(</span><span class="n">chassis_base_url</span><span class="p">,</span> <span class="n">routes</span><span class="p">[</span><span class="s1">&#39;build&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chassis_test_url</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urljoin</span><span class="p">(</span><span class="n">chassis_base_url</span><span class="p">,</span> <span class="n">routes</span><span class="p">[</span><span class="s1">&#39;test&#39;</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">_gen_predict_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">process_fn</span><span class="p">,</span><span class="n">model_context</span><span class="p">,</span><span class="n">batch</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">batch_to_single</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="n">_</span><span class="p">,</span><span class="n">model_input</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">batch_to_single</span><span class="p">:</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="n">process_fn</span><span class="p">([</span><span class="n">model_input</span><span class="p">],</span><span class="n">model_context</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="n">process_fn</span><span class="p">(</span><span class="n">model_input</span><span class="p">,</span><span class="n">model_context</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">batch</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="n">separators</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">),</span><span class="bp">cls</span><span class="o">=</span><span class="n">NumpyEncoder</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span> <span class="k">for</span> <span class="n">out</span> <span class="ow">in</span> <span class="n">output</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">output</span><span class="p">,</span><span class="n">separators</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">),</span><span class="bp">cls</span><span class="o">=</span><span class="n">NumpyEncoder</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">predict</span>
+
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">test_input</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Runs a sample inference test on a single input on chassis model locally</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            test_input (Union[str, bytes, BufferedReader]): Single sample input data to test model</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bytes: raw model predictions returned by `process_fn` method</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">        ```python</span>
+<span class="sd">        chassis_model = chassis_client.create_model(context=context,process_fn=process)</span>
+<span class="sd">        sample_filepath = &#39;./sample_data.json&#39;</span>
+<span class="sd">        results = chassis_model.test(sample_filepath)</span>
+<span class="sd">        ```</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">test_input</span><span class="p">,</span><span class="n">_io</span><span class="o">.</span><span class="n">BufferedReader</span><span class="p">):</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span><span class="n">test_input</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">test_input</span><span class="p">,</span><span class="nb">bytes</span><span class="p">):</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span><span class="n">test_input</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">test_input</span><span class="p">,</span><span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">test_input</span><span class="p">):</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span><span class="nb">open</span><span class="p">(</span><span class="n">test_input</span><span class="p">,</span><span class="s1">&#39;rb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span><span class="nb">bytes</span><span class="p">(</span><span class="n">test_input</span><span class="p">,</span><span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf8&#39;</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Invalid input. Must be buffered reader, bytes, valid filepath, or text input.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="nf">test_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">test_input</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Takes a single input file, creates a batch of size `batch_size` defined in `ChassisModel.create_model`, and runs a batch job against chassis model locally if `batch_process_fn` is defined.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            test_input (Union[str, bytes, BufferedReader]): Batch of sample input data to test model</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bytes: raw model predictions returned by `batch_process_fn` method</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">        ```python</span>
+<span class="sd">        chassis_model = chassis_client.create_model(context=context,process_fn=process)</span>
+<span class="sd">        sample_input = sample_filepath = &#39;./sample_data.json&#39;</span>
+<span class="sd">        results = chassis_model.test_batch(sample_filepath)</span>
+<span class="sd">        ```        </span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_input</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Batch inference not implemented.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;batch_predict&#39;</span><span class="p">):</span>
+            <span class="n">batch_method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_predict</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">batch_method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">test_input</span><span class="p">,</span><span class="n">_io</span><span class="o">.</span><span class="n">BufferedReader</span><span class="p">):</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="n">batch_method</span><span class="p">(</span><span class="kc">None</span><span class="p">,[</span><span class="n">test_input</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)])</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">test_input</span><span class="p">,</span><span class="nb">bytes</span><span class="p">):</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="n">batch_method</span><span class="p">(</span><span class="kc">None</span><span class="p">,[</span><span class="n">test_input</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)])</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">test_input</span><span class="p">,</span><span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">test_input</span><span class="p">):</span>
+                <span class="n">results</span> <span class="o">=</span> <span class="n">batch_method</span><span class="p">(</span><span class="kc">None</span><span class="p">,[</span><span class="nb">open</span><span class="p">(</span><span class="n">test_input</span><span class="p">,</span><span class="s1">&#39;rb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">results</span> <span class="o">=</span> <span class="n">batch_method</span><span class="p">(</span><span class="kc">None</span><span class="p">,[</span><span class="nb">bytes</span><span class="p">(</span><span class="n">test_input</span><span class="p">,</span><span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf8&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Invalid input. Must be buffered reader, bytes, valid filepath, or text input.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="n">results</span>
+
+    <span class="k">def</span> <span class="nf">test_env</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">test_input_path</span><span class="p">,</span><span class="n">conda_env</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">fix_env</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Runs a sample inference test in new conda environment created on the chassis service side. In other words, a &quot;dry run&quot; of a true chassis job to ensure model code runs within the chassis service.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            test_input_path (str): Filepath to sample input data</span>
+<span class="sd">            conda_env (str): Either filepath to conda.yaml file or dictionary with environment requirements. If not provided, chassis will infer dependency requirements from local environment</span>
+<span class="sd">            fix_env (bool): Modifies conda or pip-installable packages into list of dependencies to be installed during the container build</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Dict: raw model predictions returned by `process_fn` or `batch_process_fn` run from within chassis service</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">        ```python</span>
+<span class="sd">        chassis_model = chassis_client.create_model(context=context,process_fn=process)</span>
+<span class="sd">        sample_filepath = &#39;./sample_data.json&#39;</span>
+<span class="sd">        results = chassis_model.test_env(sample_filepath)</span>
+<span class="sd">        ```        </span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">model_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">(),</span><span class="n">CHASSIS_TMP_DIRNAME</span><span class="p">)</span>
+        <span class="n">mlflow</span><span class="o">.</span><span class="n">pyfunc</span><span class="o">.</span><span class="n">save_model</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">model_directory</span><span class="p">,</span> <span class="n">python_model</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">conda_env</span><span class="o">=</span><span class="n">conda_env</span><span class="p">,</span> 
+                                <span class="n">extra_pip_requirements</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">conda_env</span> <span class="k">else</span> <span class="p">[</span><span class="s2">&quot;chassisml==</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">__version__</span><span class="p">)])</span>
+
+        <span class="k">if</span> <span class="n">fix_env</span><span class="p">:</span>
+            <span class="n">fix_dependencies</span><span class="p">(</span><span class="n">model_directory</span><span class="p">)</span>
+
+        <span class="c1"># Compress all files in model directory to send them as a zip.</span>
+        <span class="n">tmppath</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span>
+        <span class="n">zipdir</span><span class="p">(</span><span class="n">model_directory</span><span class="p">,</span><span class="n">tmppath</span><span class="p">,</span><span class="n">MODEL_ZIP_NAME</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tmppath</span><span class="p">,</span><span class="n">MODEL_ZIP_NAME</span><span class="p">),</span><span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">model_f</span><span class="p">,</span> \
+                <span class="nb">open</span><span class="p">(</span><span class="n">test_input_path</span><span class="p">,</span><span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">test_input_f</span><span class="p">:</span>
+            <span class="n">files</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">(</span><span class="s1">&#39;sample_input&#39;</span><span class="p">,</span> <span class="n">test_input_f</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;model&#39;</span><span class="p">,</span> <span class="n">model_f</span><span class="p">)</span>
+            <span class="p">]</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Starting test job... &#39;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chassis_test_url</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="n">files</span><span class="p">)</span>
+            <span class="n">res</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Ok!&#39;</span><span class="p">)</span>
+
+        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">tmppath</span><span class="p">)</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">model_directory</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">path</span><span class="p">,</span><span class="n">conda_env</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Saves a copy of ChassisModel to local filepath</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path (str): Filepath to save chassis model as local MLflow model</span>
+<span class="sd">            conda_env (Union[str, dict]): Either filepath to conda.yaml file or dictionary with environment requirements. If not provided, chassis will infer dependency requirements from local environment</span>
+<span class="sd">            overwrite (bool): If True, overwrites existing contents of `path` parameter</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None: This method does not return an object</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">        ```python</span>
+<span class="sd">        chassis_model = chassis_client.create_model(context=context,process_fn=process)</span>
+<span class="sd">        chassis_model.save(&quot;local_model_directory&quot;)</span>
+<span class="sd">        ```</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">overwrite</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">mlflow</span><span class="o">.</span><span class="n">pyfunc</span><span class="o">.</span><span class="n">save_model</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">python_model</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">conda_env</span><span class="o">=</span><span class="n">conda_env</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Chassis model saved.&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">model_name</span><span class="p">,</span><span class="n">model_version</span><span class="p">,</span><span class="n">registry_user</span><span class="p">,</span><span class="n">registry_pass</span><span class="p">,</span>
+                <span class="n">conda_env</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">fix_env</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">gpu</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">modzy_sample_input_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">modzy_api_key</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Executes chassis job, which containerizes model, pushes container image to Docker registry, and optionally deploys model to Modzy</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            model_name (str): Model name that serves as model&#39;s name in Modzy and docker registry repository name. **Note**: this string cannot include punctuation</span>
+<span class="sd">            model_version (str): Version of model</span>
+<span class="sd">            registry_user (str): Docker registry username</span>
+<span class="sd">            registry_pass (str): Docker registry password</span>
+<span class="sd">            conda_env (Union[str, dict]): Either filepath to conda.yaml file or dictionary with environment requirements. If not provided, chassis will infer dependency requirements from local environment</span>
+<span class="sd">            fix_env (bool): Modifies conda or pip-installable packages into list of dependencies to be installed during the container build</span>
+<span class="sd">            gpu (bool): If True, builds container image that runs on GPU hardware</span>
+<span class="sd">            modzy_sample_input_path (str): Filepath to sample input data. Required to deploy model to Modzy</span>
+<span class="sd">            modzy_api_key (str): Valid Modzy API Key</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Dict: Response to Chassis `/build` endpoint</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">        ```python</span>
+<span class="sd">        # Create Chassisml model</span>
+<span class="sd">        chassis_model = chassis_client.create_model(context=context,process_fn=process)</span>
+
+<span class="sd">        # Define Dockerhub credentials</span>
+<span class="sd">        dockerhub_user = &quot;user&quot;</span>
+<span class="sd">        dockerhub_pass = &quot;password&quot;</span>
+
+<span class="sd">        # Publish model to Docker registry</span>
+<span class="sd">        response = chassis_model.publish(</span>
+<span class="sd">            model_name=&quot;Chassisml Regression Model&quot;,</span>
+<span class="sd">            model_version=&quot;0.0.1&quot;,</span>
+<span class="sd">            registry_user=dockerhub_user,</span>
+<span class="sd">            registry_pass=dockerhub_pass,</span>
+<span class="sd">        )        </span>
+<span class="sd">        ```            </span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">modzy_sample_input_path</span> <span class="ow">or</span> <span class="n">modzy_api_key</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> \
+            <span class="p">(</span><span class="n">modzy_sample_input_path</span> <span class="ow">and</span> <span class="n">modzy_api_key</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;&quot;modzy_sample_input_path&quot;, and &quot;modzy_api_key&quot; must both be provided to publish to Modzy.&#39;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">model_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">(),</span><span class="n">CHASSIS_TMP_DIRNAME</span><span class="p">)</span>
+            <span class="n">mlflow</span><span class="o">.</span><span class="n">pyfunc</span><span class="o">.</span><span class="n">save_model</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">model_directory</span><span class="p">,</span> <span class="n">python_model</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">conda_env</span><span class="o">=</span><span class="n">conda_env</span><span class="p">,</span> 
+                                    <span class="n">extra_pip_requirements</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">conda_env</span> <span class="k">else</span> <span class="p">[</span><span class="s2">&quot;chassisml==</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">__version__</span><span class="p">)])</span>
+
+            <span class="k">if</span> <span class="n">fix_env</span><span class="p">:</span>
+                <span class="n">fix_dependencies</span><span class="p">(</span><span class="n">model_directory</span><span class="p">)</span>
+
+            <span class="c1"># Compress all files in model directory to send them as a zip.</span>
+            <span class="n">tmppath</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span>
+            <span class="n">zipdir</span><span class="p">(</span><span class="n">model_directory</span><span class="p">,</span><span class="n">tmppath</span><span class="p">,</span><span class="n">MODEL_ZIP_NAME</span><span class="p">)</span>
+
+            <span class="n">image_name</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model_name</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">maketrans</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">string</span><span class="o">.</span><span class="n">punctuation</span><span class="p">))</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+            <span class="n">image_data</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">registry_user</span><span class="p">,</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">:</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">image_name</span><span class="p">,</span><span class="n">model_version</span><span class="p">)),</span>
+                <span class="s1">&#39;model_name&#39;</span><span class="p">:</span> <span class="n">model_name</span><span class="p">,</span>
+                <span class="s1">&#39;model_path&#39;</span><span class="p">:</span> <span class="n">tmppath</span><span class="p">,</span>
+                <span class="s1">&#39;registry_auth&#39;</span><span class="p">:</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">:</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">registry_user</span><span class="p">,</span><span class="n">registry_pass</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">),</span>
+                <span class="s1">&#39;publish&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s1">&#39;gpu&#39;</span><span class="p">:</span> <span class="n">gpu</span>
+            <span class="p">}</span>
+
+            <span class="k">if</span> <span class="n">modzy_sample_input_path</span> <span class="ow">and</span> <span class="n">modzy_api_key</span><span class="p">:</span>
+                <span class="n">modzy_metadata_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmppath</span><span class="p">,</span><span class="n">MODZY_YAML_NAME</span><span class="p">)</span>
+                <span class="n">modzy_data</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s1">&#39;metadata_path&#39;</span><span class="p">:</span> <span class="n">modzy_metadata_path</span><span class="p">,</span>
+                    <span class="s1">&#39;sample_input_path&#39;</span><span class="p">:</span> <span class="n">modzy_sample_input_path</span><span class="p">,</span>
+                    <span class="s1">&#39;deploy&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                    <span class="s1">&#39;api_key&#39;</span><span class="p">:</span> <span class="n">modzy_api_key</span>
+                <span class="p">}</span>
+                <span class="n">write_modzy_yaml</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span><span class="n">model_version</span><span class="p">,</span><span class="n">modzy_metadata_path</span><span class="p">,</span><span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span><span class="n">gpu</span><span class="o">=</span><span class="n">gpu</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">modzy_data</span> <span class="o">=</span> <span class="p">{}</span>
+
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tmppath</span><span class="p">,</span><span class="n">MODEL_ZIP_NAME</span><span class="p">),</span><span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">files</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="p">(</span><span class="s1">&#39;image_data&#39;</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">image_data</span><span class="p">)),</span>
+                    <span class="p">(</span><span class="s1">&#39;modzy_data&#39;</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">modzy_data</span><span class="p">)),</span>
+                    <span class="p">(</span><span class="s1">&#39;model&#39;</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+                <span class="p">]</span>
+                <span class="n">file_pointers</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">file_key</span> <span class="ow">in</span> <span class="p">[(</span><span class="s1">&#39;metadata_path&#39;</span><span class="p">,</span> <span class="s1">&#39;modzy_metadata_data&#39;</span><span class="p">),</span>
+                                <span class="p">(</span><span class="s1">&#39;sample_input_path&#39;</span><span class="p">,</span> <span class="s1">&#39;modzy_sample_input_data&#39;</span><span class="p">)]:</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">modzy_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+                        <span class="n">fp</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
+                        <span class="n">file_pointers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>  
+                        <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">file_key</span><span class="p">,</span> <span class="n">fp</span><span class="p">))</span>
+
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Starting build job... &#39;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chassis_build_url</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="n">files</span><span class="p">)</span>
+                <span class="n">res</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Ok!&#39;</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">fp</span> <span class="ow">in</span> <span class="n">file_pointers</span><span class="p">:</span>
+                <span class="n">fp</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">tmppath</span><span class="p">)</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">model_directory</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">tmppath</span><span class="p">):</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">tmppath</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">model_directory</span><span class="p">):</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">model_directory</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+</code></pre></div>
+        </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="chassisml-sdk.chassisml.chassisml.ChassisModel.publish" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">model_version</span><span class="p">,</span> <span class="n">registry_user</span><span class="p">,</span> <span class="n">registry_pass</span><span class="p">,</span> <span class="n">conda_env</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fix_env</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">gpu</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">modzy_sample_input_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">modzy_api_key</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Executes chassis job, which containerizes model, pushes container image to Docker registry, and optionally deploys model to Modzy</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>model_name</code></td>
+        <td><code>str</code></td>
+        <td><p>Model name that serves as model's name in Modzy and docker registry repository name. <strong>Note</strong>: this string cannot include punctuation</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>model_version</code></td>
+        <td><code>str</code></td>
+        <td><p>Version of model</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>registry_user</code></td>
+        <td><code>str</code></td>
+        <td><p>Docker registry username</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>registry_pass</code></td>
+        <td><code>str</code></td>
+        <td><p>Docker registry password</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>conda_env</code></td>
+        <td><code>Union[str, dict]</code></td>
+        <td><p>Either filepath to conda.yaml file or dictionary with environment requirements. If not provided, chassis will infer dependency requirements from local environment</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>fix_env</code></td>
+        <td><code>bool</code></td>
+        <td><p>Modifies conda or pip-installable packages into list of dependencies to be installed during the container build</p></td>
+        <td><code>True</code></td>
+      </tr>
+      <tr>
+        <td><code>gpu</code></td>
+        <td><code>bool</code></td>
+        <td><p>If True, builds container image that runs on GPU hardware</p></td>
+        <td><code>False</code></td>
+      </tr>
+      <tr>
+        <td><code>modzy_sample_input_path</code></td>
+        <td><code>str</code></td>
+        <td><p>Filepath to sample input data. Required to deploy model to Modzy</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>modzy_api_key</code></td>
+        <td><code>str</code></td>
+        <td><p>Valid Modzy API Key</p></td>
+        <td><code>None</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Dict</code></td>
+      <td><p>Response to Chassis <code>/build</code> endpoint</p></td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>Examples:</strong></p>
+    
+      <div class="highlight"><pre><span></span><code><span class="c1"># Create Chassisml model</span>
+<span class="n">chassis_model</span> <span class="o">=</span> <span class="n">chassis_client</span><span class="o">.</span><span class="n">create_model</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span><span class="n">process_fn</span><span class="o">=</span><span class="n">process</span><span class="p">)</span>
+
+<span class="c1"># Define Dockerhub credentials</span>
+<span class="n">dockerhub_user</span> <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
+<span class="n">dockerhub_pass</span> <span class="o">=</span> <span class="s2">&quot;password&quot;</span>
+
+<span class="c1"># Publish model to Docker registry</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">chassis_model</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
+    <span class="n">model_name</span><span class="o">=</span><span class="s2">&quot;Chassisml Regression Model&quot;</span><span class="p">,</span>
+    <span class="n">model_version</span><span class="o">=</span><span class="s2">&quot;0.0.1&quot;</span><span class="p">,</span>
+    <span class="n">registry_user</span><span class="o">=</span><span class="n">dockerhub_user</span><span class="p">,</span>
+    <span class="n">registry_pass</span><span class="o">=</span><span class="n">dockerhub_pass</span><span class="p">,</span>
+<span class="p">)</span>        
+</code></pre></div>
+
+        <details class="quote">
+          <summary>Source code in <code>chassisml-sdk/chassisml/chassisml.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">model_name</span><span class="p">,</span><span class="n">model_version</span><span class="p">,</span><span class="n">registry_user</span><span class="p">,</span><span class="n">registry_pass</span><span class="p">,</span>
+            <span class="n">conda_env</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">fix_env</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">gpu</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">modzy_sample_input_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">modzy_api_key</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Executes chassis job, which containerizes model, pushes container image to Docker registry, and optionally deploys model to Modzy</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        model_name (str): Model name that serves as model&#39;s name in Modzy and docker registry repository name. **Note**: this string cannot include punctuation</span>
+<span class="sd">        model_version (str): Version of model</span>
+<span class="sd">        registry_user (str): Docker registry username</span>
+<span class="sd">        registry_pass (str): Docker registry password</span>
+<span class="sd">        conda_env (Union[str, dict]): Either filepath to conda.yaml file or dictionary with environment requirements. If not provided, chassis will infer dependency requirements from local environment</span>
+<span class="sd">        fix_env (bool): Modifies conda or pip-installable packages into list of dependencies to be installed during the container build</span>
+<span class="sd">        gpu (bool): If True, builds container image that runs on GPU hardware</span>
+<span class="sd">        modzy_sample_input_path (str): Filepath to sample input data. Required to deploy model to Modzy</span>
+<span class="sd">        modzy_api_key (str): Valid Modzy API Key</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Dict: Response to Chassis `/build` endpoint</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">    ```python</span>
+<span class="sd">    # Create Chassisml model</span>
+<span class="sd">    chassis_model = chassis_client.create_model(context=context,process_fn=process)</span>
+
+<span class="sd">    # Define Dockerhub credentials</span>
+<span class="sd">    dockerhub_user = &quot;user&quot;</span>
+<span class="sd">    dockerhub_pass = &quot;password&quot;</span>
+
+<span class="sd">    # Publish model to Docker registry</span>
+<span class="sd">    response = chassis_model.publish(</span>
+<span class="sd">        model_name=&quot;Chassisml Regression Model&quot;,</span>
+<span class="sd">        model_version=&quot;0.0.1&quot;,</span>
+<span class="sd">        registry_user=dockerhub_user,</span>
+<span class="sd">        registry_pass=dockerhub_pass,</span>
+<span class="sd">    )        </span>
+<span class="sd">    ```            </span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">modzy_sample_input_path</span> <span class="ow">or</span> <span class="n">modzy_api_key</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> \
+        <span class="p">(</span><span class="n">modzy_sample_input_path</span> <span class="ow">and</span> <span class="n">modzy_api_key</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;&quot;modzy_sample_input_path&quot;, and &quot;modzy_api_key&quot; must both be provided to publish to Modzy.&#39;</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">model_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">(),</span><span class="n">CHASSIS_TMP_DIRNAME</span><span class="p">)</span>
+        <span class="n">mlflow</span><span class="o">.</span><span class="n">pyfunc</span><span class="o">.</span><span class="n">save_model</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">model_directory</span><span class="p">,</span> <span class="n">python_model</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">conda_env</span><span class="o">=</span><span class="n">conda_env</span><span class="p">,</span> 
+                                <span class="n">extra_pip_requirements</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">conda_env</span> <span class="k">else</span> <span class="p">[</span><span class="s2">&quot;chassisml==</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">__version__</span><span class="p">)])</span>
+
+        <span class="k">if</span> <span class="n">fix_env</span><span class="p">:</span>
+            <span class="n">fix_dependencies</span><span class="p">(</span><span class="n">model_directory</span><span class="p">)</span>
+
+        <span class="c1"># Compress all files in model directory to send them as a zip.</span>
+        <span class="n">tmppath</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span>
+        <span class="n">zipdir</span><span class="p">(</span><span class="n">model_directory</span><span class="p">,</span><span class="n">tmppath</span><span class="p">,</span><span class="n">MODEL_ZIP_NAME</span><span class="p">)</span>
+
+        <span class="n">image_name</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model_name</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">maketrans</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">string</span><span class="o">.</span><span class="n">punctuation</span><span class="p">))</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+        <span class="n">image_data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">registry_user</span><span class="p">,</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">:</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">image_name</span><span class="p">,</span><span class="n">model_version</span><span class="p">)),</span>
+            <span class="s1">&#39;model_name&#39;</span><span class="p">:</span> <span class="n">model_name</span><span class="p">,</span>
+            <span class="s1">&#39;model_path&#39;</span><span class="p">:</span> <span class="n">tmppath</span><span class="p">,</span>
+            <span class="s1">&#39;registry_auth&#39;</span><span class="p">:</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">:</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">registry_user</span><span class="p">,</span><span class="n">registry_pass</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">),</span>
+            <span class="s1">&#39;publish&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s1">&#39;gpu&#39;</span><span class="p">:</span> <span class="n">gpu</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">modzy_sample_input_path</span> <span class="ow">and</span> <span class="n">modzy_api_key</span><span class="p">:</span>
+            <span class="n">modzy_metadata_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmppath</span><span class="p">,</span><span class="n">MODZY_YAML_NAME</span><span class="p">)</span>
+            <span class="n">modzy_data</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;metadata_path&#39;</span><span class="p">:</span> <span class="n">modzy_metadata_path</span><span class="p">,</span>
+                <span class="s1">&#39;sample_input_path&#39;</span><span class="p">:</span> <span class="n">modzy_sample_input_path</span><span class="p">,</span>
+                <span class="s1">&#39;deploy&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s1">&#39;api_key&#39;</span><span class="p">:</span> <span class="n">modzy_api_key</span>
+            <span class="p">}</span>
+            <span class="n">write_modzy_yaml</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span><span class="n">model_version</span><span class="p">,</span><span class="n">modzy_metadata_path</span><span class="p">,</span><span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span><span class="n">gpu</span><span class="o">=</span><span class="n">gpu</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">modzy_data</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tmppath</span><span class="p">,</span><span class="n">MODEL_ZIP_NAME</span><span class="p">),</span><span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">files</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">(</span><span class="s1">&#39;image_data&#39;</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">image_data</span><span class="p">)),</span>
+                <span class="p">(</span><span class="s1">&#39;modzy_data&#39;</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">modzy_data</span><span class="p">)),</span>
+                <span class="p">(</span><span class="s1">&#39;model&#39;</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+            <span class="p">]</span>
+            <span class="n">file_pointers</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">file_key</span> <span class="ow">in</span> <span class="p">[(</span><span class="s1">&#39;metadata_path&#39;</span><span class="p">,</span> <span class="s1">&#39;modzy_metadata_data&#39;</span><span class="p">),</span>
+                            <span class="p">(</span><span class="s1">&#39;sample_input_path&#39;</span><span class="p">,</span> <span class="s1">&#39;modzy_sample_input_data&#39;</span><span class="p">)]:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">modzy_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+                    <span class="n">fp</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
+                    <span class="n">file_pointers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>  
+                    <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">file_key</span><span class="p">,</span> <span class="n">fp</span><span class="p">))</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Starting build job... &#39;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chassis_build_url</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="n">files</span><span class="p">)</span>
+            <span class="n">res</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Ok!&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">fp</span> <span class="ow">in</span> <span class="n">file_pointers</span><span class="p">:</span>
+            <span class="n">fp</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">tmppath</span><span class="p">)</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">model_directory</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">tmppath</span><span class="p">):</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">tmppath</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">model_directory</span><span class="p">):</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">model_directory</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="chassisml-sdk.chassisml.chassisml.ChassisModel.save" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">conda_env</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Saves a copy of ChassisModel to local filepath</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>path</code></td>
+        <td><code>str</code></td>
+        <td><p>Filepath to save chassis model as local MLflow model</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>conda_env</code></td>
+        <td><code>Union[str, dict]</code></td>
+        <td><p>Either filepath to conda.yaml file or dictionary with environment requirements. If not provided, chassis will infer dependency requirements from local environment</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>overwrite</code></td>
+        <td><code>bool</code></td>
+        <td><p>If True, overwrites existing contents of <code>path</code> parameter</p></td>
+        <td><code>False</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>None</code></td>
+      <td><p>This method does not return an object</p></td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>Examples:</strong></p>
+    
+      <div class="highlight"><pre><span></span><code><span class="n">chassis_model</span> <span class="o">=</span> <span class="n">chassis_client</span><span class="o">.</span><span class="n">create_model</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span><span class="n">process_fn</span><span class="o">=</span><span class="n">process</span><span class="p">)</span>
+<span class="n">chassis_model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;local_model_directory&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+        <details class="quote">
+          <summary>Source code in <code>chassisml-sdk/chassisml/chassisml.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">path</span><span class="p">,</span><span class="n">conda_env</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Saves a copy of ChassisModel to local filepath</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        path (str): Filepath to save chassis model as local MLflow model</span>
+<span class="sd">        conda_env (Union[str, dict]): Either filepath to conda.yaml file or dictionary with environment requirements. If not provided, chassis will infer dependency requirements from local environment</span>
+<span class="sd">        overwrite (bool): If True, overwrites existing contents of `path` parameter</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None: This method does not return an object</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">    ```python</span>
+<span class="sd">    chassis_model = chassis_client.create_model(context=context,process_fn=process)</span>
+<span class="sd">    chassis_model.save(&quot;local_model_directory&quot;)</span>
+<span class="sd">    ```</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">overwrite</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="n">mlflow</span><span class="o">.</span><span class="n">pyfunc</span><span class="o">.</span><span class="n">save_model</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">python_model</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">conda_env</span><span class="o">=</span><span class="n">conda_env</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Chassis model saved.&quot;</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="chassisml-sdk.chassisml.chassisml.ChassisModel.test" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_input</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Runs a sample inference test on a single input on chassis model locally</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>test_input</code></td>
+        <td><code>Union[str, bytes, BufferedReader]</code></td>
+        <td><p>Single sample input data to test model</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>bytes</code></td>
+      <td><p>raw model predictions returned by <code>process_fn</code> method</p></td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>Examples:</strong></p>
+    
+      <div class="highlight"><pre><span></span><code><span class="n">chassis_model</span> <span class="o">=</span> <span class="n">chassis_client</span><span class="o">.</span><span class="n">create_model</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span><span class="n">process_fn</span><span class="o">=</span><span class="n">process</span><span class="p">)</span>
+<span class="n">sample_filepath</span> <span class="o">=</span> <span class="s1">&#39;./sample_data.json&#39;</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">chassis_model</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">sample_filepath</span><span class="p">)</span>
+</code></pre></div>
+
+        <details class="quote">
+          <summary>Source code in <code>chassisml-sdk/chassisml/chassisml.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">test_input</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Runs a sample inference test on a single input on chassis model locally</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        test_input (Union[str, bytes, BufferedReader]): Single sample input data to test model</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bytes: raw model predictions returned by `process_fn` method</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">    ```python</span>
+<span class="sd">    chassis_model = chassis_client.create_model(context=context,process_fn=process)</span>
+<span class="sd">    sample_filepath = &#39;./sample_data.json&#39;</span>
+<span class="sd">    results = chassis_model.test(sample_filepath)</span>
+<span class="sd">    ```</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">test_input</span><span class="p">,</span><span class="n">_io</span><span class="o">.</span><span class="n">BufferedReader</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span><span class="n">test_input</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">test_input</span><span class="p">,</span><span class="nb">bytes</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span><span class="n">test_input</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">test_input</span><span class="p">,</span><span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">test_input</span><span class="p">):</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span><span class="nb">open</span><span class="p">(</span><span class="n">test_input</span><span class="p">,</span><span class="s1">&#39;rb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span><span class="nb">bytes</span><span class="p">(</span><span class="n">test_input</span><span class="p">,</span><span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf8&#39;</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Invalid input. Must be buffered reader, bytes, valid filepath, or text input.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="n">result</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="chassisml-sdk.chassisml.chassisml.ChassisModel.test_batch" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">test_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_input</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Takes a single input file, creates a batch of size <code>batch_size</code> defined in <code>ChassisModel.create_model</code>, and runs a batch job against chassis model locally if <code>batch_process_fn</code> is defined.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>test_input</code></td>
+        <td><code>Union[str, bytes, BufferedReader]</code></td>
+        <td><p>Batch of sample input data to test model</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>bytes</code></td>
+      <td><p>raw model predictions returned by <code>batch_process_fn</code> method</p></td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>Examples:</strong></p>
+    
+      <div class="highlight"><pre><span></span><code><span class="n">chassis_model</span> <span class="o">=</span> <span class="n">chassis_client</span><span class="o">.</span><span class="n">create_model</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span><span class="n">process_fn</span><span class="o">=</span><span class="n">process</span><span class="p">)</span>
+<span class="n">sample_input</span> <span class="o">=</span> <span class="n">sample_filepath</span> <span class="o">=</span> <span class="s1">&#39;./sample_data.json&#39;</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">chassis_model</span><span class="o">.</span><span class="n">test_batch</span><span class="p">(</span><span class="n">sample_filepath</span><span class="p">)</span>
+</code></pre></div>
+
+        <details class="quote">
+          <summary>Source code in <code>chassisml-sdk/chassisml/chassisml.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">test_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">test_input</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Takes a single input file, creates a batch of size `batch_size` defined in `ChassisModel.create_model`, and runs a batch job against chassis model locally if `batch_process_fn` is defined.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        test_input (Union[str, bytes, BufferedReader]): Batch of sample input data to test model</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bytes: raw model predictions returned by `batch_process_fn` method</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">    ```python</span>
+<span class="sd">    chassis_model = chassis_client.create_model(context=context,process_fn=process)</span>
+<span class="sd">    sample_input = sample_filepath = &#39;./sample_data.json&#39;</span>
+<span class="sd">    results = chassis_model.test_batch(sample_filepath)</span>
+<span class="sd">    ```        </span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_input</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Batch inference not implemented.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;batch_predict&#39;</span><span class="p">):</span>
+        <span class="n">batch_method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_predict</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">batch_method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">test_input</span><span class="p">,</span><span class="n">_io</span><span class="o">.</span><span class="n">BufferedReader</span><span class="p">):</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">batch_method</span><span class="p">(</span><span class="kc">None</span><span class="p">,[</span><span class="n">test_input</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)])</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">test_input</span><span class="p">,</span><span class="nb">bytes</span><span class="p">):</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">batch_method</span><span class="p">(</span><span class="kc">None</span><span class="p">,[</span><span class="n">test_input</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)])</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">test_input</span><span class="p">,</span><span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">test_input</span><span class="p">):</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="n">batch_method</span><span class="p">(</span><span class="kc">None</span><span class="p">,[</span><span class="nb">open</span><span class="p">(</span><span class="n">test_input</span><span class="p">,</span><span class="s1">&#39;rb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="n">batch_method</span><span class="p">(</span><span class="kc">None</span><span class="p">,[</span><span class="nb">bytes</span><span class="p">(</span><span class="n">test_input</span><span class="p">,</span><span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf8&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Invalid input. Must be buffered reader, bytes, valid filepath, or text input.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="n">results</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="chassisml-sdk.chassisml.chassisml.ChassisModel.test_env" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">test_env</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_input_path</span><span class="p">,</span> <span class="n">conda_env</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fix_env</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Runs a sample inference test in new conda environment created on the chassis service side. In other words, a "dry run" of a true chassis job to ensure model code runs within the chassis service.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>test_input_path</code></td>
+        <td><code>str</code></td>
+        <td><p>Filepath to sample input data</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>conda_env</code></td>
+        <td><code>str</code></td>
+        <td><p>Either filepath to conda.yaml file or dictionary with environment requirements. If not provided, chassis will infer dependency requirements from local environment</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>fix_env</code></td>
+        <td><code>bool</code></td>
+        <td><p>Modifies conda or pip-installable packages into list of dependencies to be installed during the container build</p></td>
+        <td><code>True</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Dict</code></td>
+      <td><p>raw model predictions returned by <code>process_fn</code> or <code>batch_process_fn</code> run from within chassis service</p></td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>Examples:</strong></p>
+    
+      <div class="highlight"><pre><span></span><code><span class="n">chassis_model</span> <span class="o">=</span> <span class="n">chassis_client</span><span class="o">.</span><span class="n">create_model</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span><span class="n">process_fn</span><span class="o">=</span><span class="n">process</span><span class="p">)</span>
+<span class="n">sample_filepath</span> <span class="o">=</span> <span class="s1">&#39;./sample_data.json&#39;</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">chassis_model</span><span class="o">.</span><span class="n">test_env</span><span class="p">(</span><span class="n">sample_filepath</span><span class="p">)</span>
+</code></pre></div>
+
+        <details class="quote">
+          <summary>Source code in <code>chassisml-sdk/chassisml/chassisml.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">test_env</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">test_input_path</span><span class="p">,</span><span class="n">conda_env</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">fix_env</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Runs a sample inference test in new conda environment created on the chassis service side. In other words, a &quot;dry run&quot; of a true chassis job to ensure model code runs within the chassis service.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        test_input_path (str): Filepath to sample input data</span>
+<span class="sd">        conda_env (str): Either filepath to conda.yaml file or dictionary with environment requirements. If not provided, chassis will infer dependency requirements from local environment</span>
+<span class="sd">        fix_env (bool): Modifies conda or pip-installable packages into list of dependencies to be installed during the container build</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Dict: raw model predictions returned by `process_fn` or `batch_process_fn` run from within chassis service</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">    ```python</span>
+<span class="sd">    chassis_model = chassis_client.create_model(context=context,process_fn=process)</span>
+<span class="sd">    sample_filepath = &#39;./sample_data.json&#39;</span>
+<span class="sd">    results = chassis_model.test_env(sample_filepath)</span>
+<span class="sd">    ```        </span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">model_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">(),</span><span class="n">CHASSIS_TMP_DIRNAME</span><span class="p">)</span>
+    <span class="n">mlflow</span><span class="o">.</span><span class="n">pyfunc</span><span class="o">.</span><span class="n">save_model</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">model_directory</span><span class="p">,</span> <span class="n">python_model</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">conda_env</span><span class="o">=</span><span class="n">conda_env</span><span class="p">,</span> 
+                            <span class="n">extra_pip_requirements</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">conda_env</span> <span class="k">else</span> <span class="p">[</span><span class="s2">&quot;chassisml==</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">__version__</span><span class="p">)])</span>
+
+    <span class="k">if</span> <span class="n">fix_env</span><span class="p">:</span>
+        <span class="n">fix_dependencies</span><span class="p">(</span><span class="n">model_directory</span><span class="p">)</span>
+
+    <span class="c1"># Compress all files in model directory to send them as a zip.</span>
+    <span class="n">tmppath</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span>
+    <span class="n">zipdir</span><span class="p">(</span><span class="n">model_directory</span><span class="p">,</span><span class="n">tmppath</span><span class="p">,</span><span class="n">MODEL_ZIP_NAME</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tmppath</span><span class="p">,</span><span class="n">MODEL_ZIP_NAME</span><span class="p">),</span><span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">model_f</span><span class="p">,</span> \
+            <span class="nb">open</span><span class="p">(</span><span class="n">test_input_path</span><span class="p">,</span><span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">test_input_f</span><span class="p">:</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="s1">&#39;sample_input&#39;</span><span class="p">,</span> <span class="n">test_input_f</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;model&#39;</span><span class="p">,</span> <span class="n">model_f</span><span class="p">)</span>
+        <span class="p">]</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Starting test job... &#39;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chassis_test_url</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="n">files</span><span class="p">)</span>
+        <span class="n">res</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Ok!&#39;</span><span class="p">)</span>
+
+    <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">tmppath</span><span class="p">)</span>
+    <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">model_directory</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../service-reference/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Chassisml API Reference" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Chassisml API Reference
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../tutorials/devops-deploy/" class="md-footer__link md-footer__link--next" aria-label="Next: Deploy Chassis (DevOps)" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Deploy Chassis (DevOps)
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.expand"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.22074ed6.min.js"}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.1514a9a0.min.js"></script>
+      
+    
+  </body>
+</html>
