@@ -1,3 +1,4 @@
+chassisml
 flask==2.0.2
 requests==2.27.1
 kubernetes==21.7.0

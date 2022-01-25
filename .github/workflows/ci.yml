@@ -95,7 +95,7 @@ jobs:
 
       - run: |
           cd docs/
-          mkdocs gh-deploy --force
+          mkdocs build
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
