@@ -56,3 +56,4 @@ extra:
   analytics:
     provider: google
     property: G-4NVL0DTGZ4
+use_directory_controls: false
