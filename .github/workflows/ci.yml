@@ -103,7 +103,7 @@ jobs:
         if: ${{ github.ref == 'refs/heads/main' }}
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs/site         
+          publish_dir: /home/runner/work/chassis/chassis/docs/site         
           
 
   helm:
