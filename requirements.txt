@@ -1,7 +1,7 @@
 flask
 requests
 kubernetes==12.0.1
-loguru
+loguru>=0.6.0
 pytest
 pylint
 flake8
