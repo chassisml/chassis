@@ -280,7 +280,7 @@ def serve():
         ],
     )
     add_ModzyModelServicer_to_server(model_service, grpc_server)
-
+ # testing
     server_port = get_server_port()
     grpc_server.add_insecure_port(f"[::]:{server_port}")  # TODO: is this insecure port really what we want?
     grpc_server.start()
