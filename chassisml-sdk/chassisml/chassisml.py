@@ -13,8 +13,9 @@ import mlflow
 import base64
 import string
 import numpy as np
+import warnings
 from chassisml import __version__
-from ._utils import zipdir,fix_dependencies,write_modzy_yaml,NumpyEncoder
+from ._utils import zipdir,fix_dependencies,write_modzy_yaml,NumpyEncoder,fix_dependencies_arm_gpu
 
 ###########################################
 MODEL_ZIP_NAME = 'model.zip'
@@ -145,15 +146,20 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
 
         return res.json()
 
-    def save(self,path,conda_env=None,overwrite=False):
+    def save(self,path,conda_env=None,overwrite=False,fix_env=True,gpu=False,arm=False):
         if overwrite and os.path.exists(path):
             shutil.rmtree(path)
         mlflow.pyfunc.save_model(path=path, python_model=self, conda_env=conda_env)
+        if fix_env:
+            fix_dependencies(path)
+        if arm and gpu:
+            fix_dependencies_arm_gpu(path)
+
         print("Chassis model saved.")
 
     def publish(self,model_name,model_version,registry_user,registry_pass,
-                conda_env=None,fix_env=True,gpu=False,modzy_sample_input_path=None,
-                modzy_api_key=None):
+                conda_env=None,fix_env=True,gpu=False,arm=False,
+                modzy_sample_input_path=None,modzy_api_key=None):
 
         if (modzy_sample_input_path or modzy_api_key) and not \
             (modzy_sample_input_path and modzy_api_key):
@@ -166,6 +172,10 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
 
             if fix_env:
                 fix_dependencies(model_directory)
+            
+            if arm and gpu:
+                warnings.warn("ARM+GPU support (tested on Nvidia Jetson) is experimental, KServe not supported and builds may take a while or fail depending on your required dependencies.")
+                fix_dependencies_arm_gpu(model_directory)
 
             # Compress all files in model directory to send them as a zip.
             tmppath = tempfile.mkdtemp()
@@ -178,7 +188,8 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
                 'model_path': tmppath,
                 'registry_auth': base64.b64encode("{}:{}".format(registry_user,registry_pass).encode("utf-8")).decode("utf-8"),
                 'publish': True,
-                'gpu': gpu
+                'gpu': gpu,
+                'arm': arm
             }
 
             if modzy_sample_input_path and modzy_api_key:
@@ -249,7 +260,7 @@ class ChassisClient:
         data = res.json()
         return data
 
-    def block_until_complete(self,job_id,timeout=1800,poll_interval=5):
+    def block_until_complete(self,job_id,timeout=None,poll_interval=5):
         endby = time.time() + timeout if (timeout is not None) else None
         while True:
             status = self.get_job_status(job_id)
@@ -278,3 +289,4 @@ class ChassisClient:
             raise ValueError("Both batch_process_fn and batch_size must be provided for batch support.")
 
         return ChassisModel(context,process_fn,batch_process_fn,batch_size,self.base_url)
+
