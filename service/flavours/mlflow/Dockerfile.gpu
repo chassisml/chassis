@@ -2,7 +2,7 @@
 # - flavours
 #   - mlflow
 
-FROM nvidia/cuda:11.0-runtime-ubuntu18.04 as build
+FROM nvidia/cuda:11.0-runtime-ubuntu18.04
 
 # Install miniconda
 RUN apt-get update && apt-get install -y curl
