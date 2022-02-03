@@ -285,7 +285,9 @@ def serve():
 
     SERVICE_NAMES = [x.full_name for x in DESCRIPTOR.services_by_name['ModzyModel'].methods]
     SERVICE_NAMES.append(reflection.SERVICE_NAME)
-    reflection.enable_server_reflection(tuple(SERVICE_NAMES), grpc_server)
+    SERVICE_NAMES_2 = (DESCRIPTOR.services_by_name['ModzyModel'].full_name, reflection.SERVICE_NAME)
+    #reflection.enable_server_reflection(tuple(SERVICE_NAMES), grpc_server)
+    reflection.enable_server_reflection(SERVICE_NAMES_2, grpc_server)
 
     server_port = get_server_port()
     grpc_server.add_insecure_port(f"[::]:{server_port}")  # TODO: is this insecure port really what we want?
