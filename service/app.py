@@ -209,7 +209,7 @@ def create_job_object(
         publish,
         registry_auth,
         gpu=False,
-        arm=False
+        arm64=False
 ):
     '''
     This utility method sets up all the required objects needed to create a model image and is run within the `run_kaniko` method.
@@ -224,6 +224,7 @@ def create_job_object(
         publish (bool): determines if image will be published to Docker registry
         registry_auth (dict): Docker registry authorization credentials  
         gpu (bool): If `True`, will build container image that runs on GPU 
+        arm64 (bool): If `True`, will build container image that runs on ARM64 architecture
 
     Returns:
         Job: Chassis job object
@@ -284,11 +285,11 @@ def create_job_object(
 
     # This is the kaniko container used to build the final image.
 
-    if gpu and not arm:
+    if gpu and not arm64:
         dockerfile = "Dockerfile.gpu"
-    elif arm and not gpu:
+    elif arm64 and not gpu:
         dockerfile = "Dockerfile.arm"
-    elif arm and gpu:
+    elif arm64 and gpu:
         dockerfile = "Dockerfile.arm.gpu"
     else:
         dockerfile = "Dockerfile"
@@ -416,7 +417,7 @@ def run_kaniko(
         publish,
         registry_auth,
         gpu=False,
-        arm=False
+        arm64=False
 ):
     '''
     This utility method creates and launches a job object that uses Kaniko to create the desired image during the `/build` process.
@@ -444,7 +445,7 @@ def run_kaniko(
             publish,
             registry_auth,
             gpu,
-            arm
+            arm64
         )
         create_job(batch_v1, job)
     except Exception as err:
@@ -605,7 +606,7 @@ def build_image():
     model_name = image_data.get('model_name')
     image_name = image_data.get('name')
     gpu = image_data.get('gpu')
-    arm = image_data.get('arm')
+    arm64 = image_data.get('arm64')
     publish = image_data.get('publish', False)
     publish = True if publish else ''
     registry_auth = image_data.get('registry_auth')
@@ -655,7 +656,7 @@ def build_image():
         publish,
         registry_auth,
         gpu,
-        arm
+        arm64
     )
 
     if error:
