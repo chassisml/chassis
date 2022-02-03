@@ -1,5 +1,5 @@
 flask==2.0.1
-loguru==0.5.3
+loguru>=0.6.0
 kfserving==0.5.0.1
 
 # Modzy Requirements
