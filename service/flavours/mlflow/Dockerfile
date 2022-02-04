@@ -47,7 +47,7 @@ ARG MODZY_METADATA_PATH
 LABEL ml.openmodel.interfaces=["${INTERFACE}"]
 LABEL ml.openml.model_name="${MODEL_NAME}"
 LABEL ml.openmodel.protocols=[["v2"]]
-LABEL ml.openmodel.port="5000"
+LABEL ml.openmodel.port="45000"
 
 
 WORKDIR /app
