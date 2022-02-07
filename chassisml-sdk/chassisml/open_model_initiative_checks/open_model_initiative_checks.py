@@ -40,6 +40,7 @@ class OMI_check():
                  container_port=45000,
                  host_port=5001,
                  url="localhost"):
+
         try:
             self.client = docker.APIClient(base_url=base_url)
             self.image_id = image_id
@@ -136,7 +137,7 @@ class OMI_check():
 
     def validate_image(self):
         '''
-             Validates that an image has the required OCI annotations. Also assigned container port from annotation.
+             Validates that an image has the OMI required OCI annotations. Also assigns container port from annotation.
 
         Args:
             None: N/A
