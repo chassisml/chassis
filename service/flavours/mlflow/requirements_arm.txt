@@ -1,0 +1,10 @@
+flask
+loguru
+kfserving==0.5.0.1
+
+# Modzy Requirements
+grpcio-tools
+grpcio
+protobuf
+pyyaml
+six

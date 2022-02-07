@@ -42,8 +42,6 @@ K_KANIKO_EMPTY_DIR_PATH = os.getenv('K_KANIKO_EMPTY_DIR_PATH')
 K_SERVICE_ACCOUNT_NAME = "local-job-builder" if CHASSIS_DEV else os.getenv('K_SERVICE_ACCOUNT_NAME')
 K_JOB_NAME = os.getenv('K_JOB_NAME')
 
-GPU_BASE_IMAGE = 'nvidia/cuda:11.5.0-runtime-ubuntu20.04'
-
 ###########################################
 def create_dev_environment():
     '''
@@ -210,7 +208,8 @@ def create_job_object(
         modzy_data,
         publish,
         registry_auth,
-        gpu=False
+        gpu=False,
+        arm64=False
 ):
     '''
     This utility method sets up all the required objects needed to create a model image and is run within the `run_kaniko` method.
@@ -225,6 +224,7 @@ def create_job_object(
         publish (bool): determines if image will be published to Docker registry
         registry_auth (dict): Docker registry authorization credentials  
         gpu (bool): If `True`, will build container image that runs on GPU 
+        arm64 (bool): If `True`, will build container image that runs on ARM64 architecture
 
     Returns:
         Job: Chassis job object
@@ -285,8 +285,17 @@ def create_job_object(
 
     # This is the kaniko container used to build the final image.
 
+    if gpu and not arm64:
+        dockerfile = "Dockerfile.gpu"
+    elif arm64 and not gpu:
+        dockerfile = "Dockerfile.arm"
+    elif arm64 and gpu:
+        dockerfile = "Dockerfile.arm.gpu"
+    else:
+        dockerfile = "Dockerfile"
+
     kaniko_args = [
-        f'--dockerfile={DATA_DIR}/flavours/{module_name}/Dockerfile{".gpu" if gpu else ""}',
+        f'--dockerfile={DATA_DIR}/flavours/{module_name}/{dockerfile}',
         '' if publish else '--no-push',
         f'--tarPath={path_to_tar_file}',
         f'--destination={image_name}{"" if ":" in image_name else ":latest"}',
@@ -296,9 +305,9 @@ def create_job_object(
         f'--build-arg=MODEL_NAME={model_name}',
         f'--build-arg=MODEL_CLASS={module_name}',
         # Modzy is the default interface.
-        '--build-arg=INTERFACE=modzy',
+        '--build-arg=INTERFACE=modzy'   
     ]
-
+        
     init_container_kaniko = client.V1Container(
         name='kaniko',
         image='gcr.io/kaniko-project/executor:latest',
@@ -407,7 +416,8 @@ def run_kaniko(
         modzy_data,
         publish,
         registry_auth,
-        gpu=False
+        gpu=False,
+        arm64=False
 ):
     '''
     This utility method creates and launches a job object that uses Kaniko to create the desired image during the `/build` process.
@@ -434,7 +444,8 @@ def run_kaniko(
             modzy_data,
             publish,
             registry_auth,
-            gpu
+            gpu,
+            arm64
         )
         create_job(batch_v1, job)
     except Exception as err:
@@ -595,6 +606,7 @@ def build_image():
     model_name = image_data.get('model_name')
     image_name = image_data.get('name')
     gpu = image_data.get('gpu')
+    arm64 = image_data.get('arm64')
     publish = image_data.get('publish', False)
     publish = True if publish else ''
     registry_auth = image_data.get('registry_auth')
@@ -643,7 +655,8 @@ def build_image():
         modzy_data,
         publish,
         registry_auth,
-        gpu
+        gpu,
+        arm64
     )
 
     if error:
