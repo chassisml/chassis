@@ -6,23 +6,35 @@ from grpc_requests import Client
 
 
 class OMI_check():
-    """
-    The OMI_check class provides Chassisml capabilities to validate that images are meeting the OMI specification.
+    """This Class checks an image to see if it is compliant with the OMI Spec www.openmodel.ml/spec
+        It is assumed that
+         1. the image is locally resident on the user's host machine
+         2. Docker is locally installed on the user's host machine
+         3. the account running the methods in this class has docker access permissions.
 
+    Attributes:
+        version (str): the version of this class
+        omi_required_annotations (list[str]): a list of the OMI required strings.
+        omi_required_gRPC_methods (list[str]): a list of the OMI required gRPC methods.
+        image_id(str): the id of the image to be tested for OMI compliance. e.g. dockerusername/modelname:tag
+        container(docker container): Docker container created from image_id with the Docker API
+        container_port(int): port on the container that the model listens on. defaults to 45000, but overridden by  ml.openmodel.port annotation
+        host_port(int): port on docker running host that will be forwarded to the container_port. defaults to 5001, but can be overridden in constructer.
+        url(str): url of running class container. defaults to localhost.
     """
+
     version = "0.0.1"
     omi_required_annotations = ["ml.openmodel.interfaces",
                                 "ml.openmodel.protocols",
                                 "ml.openmodel.port",
                                 "ml.openml.model_name"]
     omi_required_gRPC_methods = ["Run", "Status", "Shutdown"]
-
-    # Image ID for the image we will evaluate for OMI compliance
     image_id = None
     container = None
     container_port = None   # must be numeric
     host_port = None        # must be numeric
     url = None
+
     def __init__(self, base_url='npipe:////./pipe/docker_engine',
                  image_id=None,
                  container_port=45000,
@@ -40,6 +52,18 @@ class OMI_check():
             print("Error: no Docker client available at the base url")
 
     def start_container(self, timeout=20):
+        '''
+                Creates and starts a container for gRPC server testing.
+
+                Args:
+                    timeout (int): number of seconds to wait for gRPC server to spin up
+
+                Returns:
+                    str:    Success message if the container is successfully created and started AND the gRPC server spins up within timeout seconds.
+                            Failure message if any success criteria is missing.
+
+                '''
+
         return_value = "Failure: container didn't start"
 
         try:
@@ -73,6 +97,18 @@ class OMI_check():
         return return_value
 
     def clean_up(self):
+        '''
+            Creates and starts a container for gRPC server testing.
+
+            Args:
+            None: N/A
+
+            Returns:
+            str:    Success message if the container is successfully stopped and removed.
+                    Failure message if any success criteria is missing.
+
+            '''
+
         return_value = "Failure: OMI clean up failed."\
                        "\n Check to make sure containers have been removed from your system." \
                        "\n If they are on your system still, they will be named OMI_Compliance_Check_Container." \
@@ -99,6 +135,17 @@ class OMI_check():
         return return_value
 
     def validate_image(self):
+        '''
+             Validates that an image has the required OCI annotations. Also assigned container port from annotation.
+
+        Args:
+            None: N/A
+
+        Returns:
+            str:    Success message if the container has all OMI required annotations.
+                    Failure message if any success criteria is missing.
+
+        '''
         return_value = "Failure: Image lacks OMI required OCI annotations"
 
         try:
@@ -111,6 +158,9 @@ class OMI_check():
             for label in self.omi_required_annotations:
                 if label not in labels:
                     raise ValueError("Image " + self.image_id + " missing required annotation" + label)
+
+            self.container_port = int(labels["ml.openmodel.port"])
+
             return_value = "Success: Image contains all OMI required OCI annotations"
 
         except Exception as e:
@@ -120,7 +170,18 @@ class OMI_check():
         return return_value
 
     def validate_gRPC(self):
-        return_value = "Failure: OMI required gRPC routes not present."
+        '''
+        Validates that an image has the required gRPC methods through reflection.
+
+        Args:
+            None: N/A
+
+        Returns:
+            str:    Success message if the container has all OMI required gRPC calls AND they are available through reflection.
+                    Failure message if any success criteria is missing.
+
+                '''
+        return_value = "Failure: OMI required gRPC methods not present."
 
         try:
             endpoint = self.url+":"+str(self.host_port)
