@@ -46,8 +46,9 @@ K_KANIKO_EMPTY_DIR_PATH = os.getenv('K_KANIKO_EMPTY_DIR_PATH')
 K_SERVICE_ACCOUNT_NAME = "local-job-builder" if CHASSIS_DEV else os.getenv('K_SERVICE_ACCOUNT_NAME')
 K_JOB_NAME = os.getenv('K_JOB_NAME')
 
+MODE = os.getenv('MODE')
+S3_MODE = True if MODE == "S3" else False
 CONTEXT_BUCKET = os.getenv('CONTEXT_BUCKET')
-S3_MODE = os.getenv('S3_MODE') == "true"
 AWS_REGION = os.getenv('AWS_REGION')
 
 s3_client = boto3.client('s3')
