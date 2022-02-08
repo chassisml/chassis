@@ -13,6 +13,9 @@ from requests.packages.urllib3.util.retry import Retry
 from kubernetes import client, config
 import humanfriendly
 import argparse
+import boto3
+import tempfile
+import tarfile
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--api_key', type=str, required=False)
@@ -20,12 +23,14 @@ parser.add_argument('--deploy', type=bool, required=False)
 parser.add_argument('--image_tag', type=str, required=False)
 parser.add_argument('--sample_input_path', type=str, required=False)
 parser.add_argument('--metadata_path', type=str, required=False)
+parser.add_argument('--modzy_uri', type=str, required=False)
 args = parser.parse_args()
 
 JOB_NAME = os.getenv('JOB_NAME')
 ENVIRONMENT = os.getenv('ENVIRONMENT')
 MODZY_BASE_URL = 'https://integration.modzy.engineering'
 
+s3_client = boto3.client('s3')
 r_session = requests.Session()
 
 routes = {
@@ -39,6 +44,18 @@ routes = {
     'deploy_model': '/api/models/{}/versions/{}',
     'model_url': '/models/{}/{}',
 }
+
+def download_modzy_data(modzy_uri):
+    tmp_dir = tempfile.mkdtemp()
+    bucket, key = modzy_uri.split('/',2)[-1].split('/',1)
+    output_tarpath = f'{tmp_dir}/modzy-data.tar.gz'
+
+    s3_client.download_file(bucket, key, output_tarpath)
+    my_tar = tarfile.open(output_tarpath)
+    my_tar.extractall(tmp_dir)
+    my_tar.close()  
+
+    return tmp_dir
 
 def format_url(route, *args):
     return urllib.parse.urljoin(MODZY_BASE_URL, route).format(*args)
@@ -247,10 +264,16 @@ def deploy_model(identifier, version):
 
     logger.info(f'deploy_model took [{1000*(time.time()-start)} ms]')
 
-def upload_model():
-    input_sample_path = args.sample_input_path
+def upload_model(modzy_dir=None):
 
-    with open(args.metadata_path, 'r') as f:
+    if modzy_dir:
+        input_sample_path = f'{modzy_dir}/input'
+        yaml_path = f'{modzy_dir}/model.yaml'
+    else:
+        input_sample_path = args.sample_input_path
+        yaml_path = args.metadata_path
+
+    with open(yaml_path, 'r') as f:
         metadata = yaml.safe_load(f)
 
     model_data = create_model(metadata)
@@ -303,7 +326,8 @@ def main():
     update_headers()
 
     try:
-        result = upload_model()
+        modzy_dir = download_modzy_data(args.modzy_uri) if args.modzy_uri else None
+        result = upload_model(modzy_dir)
     except Exception as e:
         error_data = json.loads(e.response.content)
         logger.error(f'Error: {error_data}')
