@@ -1,3 +1,4 @@
+import io
 import os
 import json
 import uuid
@@ -6,7 +7,7 @@ import zipfile
 import time
 import subprocess
 from pathlib import Path
-from shutil import rmtree, copytree
+from shutil import rmtree, copytree, copyfile
 
 from loguru import logger
 from dotenv import load_dotenv
@@ -14,6 +15,9 @@ from flask import Flask, request, send_from_directory
 
 from kubernetes import client, config
 from kubernetes.client.rest import ApiException
+
+import boto3
+import tarfile
 
 ###########################################
 
@@ -41,6 +45,13 @@ K_INIT_EMPTY_DIR_PATH = os.getenv('K_INIT_EMPTY_DIR_PATH')
 K_KANIKO_EMPTY_DIR_PATH = os.getenv('K_KANIKO_EMPTY_DIR_PATH')
 K_SERVICE_ACCOUNT_NAME = "local-job-builder" if CHASSIS_DEV else os.getenv('K_SERVICE_ACCOUNT_NAME')
 K_JOB_NAME = os.getenv('K_JOB_NAME')
+
+CONTEXT_BUCKET = os.getenv('CONTEXT_BUCKET')
+print(os.getenv('S3_MODE'),flush=True)
+S3_MODE = os.getenv('S3_MODE') == "true"
+AWS_REGION = os.getenv('AWS_REGION')
+
+s3_client = boto3.client('s3')
 
 ###########################################
 def create_dev_environment():
@@ -198,6 +209,15 @@ def create_dev_environment():
     # testing has only been done against Windows 10 running the kubernetes cluster in docker desktop
     return
 
+def choose_dockerfile(gpu,arm64):
+    if gpu and not arm64:
+        return "Dockerfile.gpu"
+    elif arm64 and not gpu:
+        return "Dockerfile.arm"
+    elif arm64 and gpu:
+        return "Dockerfile.arm.gpu"
+    else:
+        return "Dockerfile"
 
 def create_job_object(
         image_name,
@@ -209,7 +229,9 @@ def create_job_object(
         publish,
         registry_auth,
         gpu=False,
-        arm64=False
+        arm64=False,
+        context_uri=None,
+        modzy_uri=None
 ):
     '''
     This utility method sets up all the required objects needed to create a model image and is run within the `run_kaniko` method.
@@ -225,6 +247,8 @@ def create_job_object(
         registry_auth (dict): Docker registry authorization credentials  
         gpu (bool): If `True`, will build container image that runs on GPU 
         arm64 (bool): If `True`, will build container image that runs on ARM64 architecture
+        context_uri (str): Location of build context in S3 (S3 mode only)
+        modzy_uri (str): Location of modzy data in S3 (S3 mode only)
 
     Returns:
         Job: Chassis job object
@@ -242,13 +266,14 @@ def create_job_object(
     # mount path leads to /data
     # this is a mount point. NOT the volume itself.
     # name aligns with a volume defined below.
-    data_volume_mount = client.V1VolumeMount(
-        mount_path=MOUNT_PATH_DIR,
-        name="local-volume-code"
-    ) if CHASSIS_DEV else client.V1VolumeMount(
-        mount_path=MOUNT_PATH_DIR,
-        name=K_DATA_VOLUME_NAME
-    )
+    if not S3_MODE:
+        data_volume_mount = client.V1VolumeMount(
+            mount_path=MOUNT_PATH_DIR,
+            name="local-volume-code"
+        ) if CHASSIS_DEV else client.V1VolumeMount(
+            mount_path=MOUNT_PATH_DIR,
+            name=K_DATA_VOLUME_NAME
+        )
 
     # This volume will be used by init container to populate registry credentials.
     # mount leads to /tmp/credentials
@@ -268,6 +293,39 @@ def create_job_object(
         name=K_EMPTY_DIR_NAME
     )
 
+    # volume holding credentials
+    empty_dir_volume = client.V1Volume(
+        name=K_EMPTY_DIR_NAME,
+        empty_dir=client.V1EmptyDirVolumeSource()
+    )
+
+    if S3_MODE:
+        # This volume will be used by kaniko container to save image tar.
+        # this is a mount point. NOT the volume itself.
+        # name aligns with a volume defined below.
+        kaniko_tar_volume_mount = client.V1VolumeMount(
+            mount_path="/tar",
+            name="image-tar"
+        )
+
+        # This volume will be used by push container to read image tar.
+        # this is a mount point. NOT the volume itself.
+        # name aligns with a volume defined below.
+        push_tar_volume_mount = client.V1VolumeMount(
+            mount_path="/tar",
+            name="image-tar"
+        )
+
+        # This container will push the image tar to S3
+        init_container_push = client.V1Container(
+            name='push-tar',
+            image='amazon/aws-cli:latest',
+            command=["aws","s3","cp",path_to_tar_file,f"s3://{CONTEXT_BUCKET}{path_to_tar_file}"],
+            volume_mounts=[
+                push_tar_volume_mount
+            ],
+        )
+
     # This container is used to populate registry credentials.
     # it only runs the single command in shell to echo our credentials into their proper file
     # per the reference documentation for Docker Hub
@@ -284,22 +342,10 @@ def create_job_object(
     )
 
     # This is the kaniko container used to build the final image.
-
-    if gpu and not arm64:
-        dockerfile = "Dockerfile.gpu"
-    elif arm64 and not gpu:
-        dockerfile = "Dockerfile.arm"
-    elif arm64 and gpu:
-        dockerfile = "Dockerfile.arm.gpu"
-    else:
-        dockerfile = "Dockerfile"
-
     kaniko_args = [
-        f'--dockerfile={DATA_DIR}/flavours/{module_name}/{dockerfile}',
         '' if publish else '--no-push',
         f'--tarPath={path_to_tar_file}',
         f'--destination={image_name}{"" if ":" in image_name else ":latest"}',
-        f'--context={DATA_DIR}',
         f'--build-arg=MODEL_DIR=model-{random_name}',
         f'--build-arg=MODZY_METADATA_PATH={modzy_data.get("modzy_metadata_path")}',
         f'--build-arg=MODEL_NAME={model_name}',
@@ -307,67 +353,86 @@ def create_job_object(
         # Modzy is the default interface.
         '--build-arg=INTERFACE=modzy'   
     ]
-        
+
+    kaniko_volume_mounts = [kaniko_empty_dir_volume_mount]
+    if S3_MODE:
+        kaniko_args.append(f'--context={context_uri}')
+        kaniko_volume_mounts.append(kaniko_tar_volume_mount)
+    else:
+        dockerfile = choose_dockerfile(gpu,arm64)
+        kaniko_args.extend([f'--dockerfile={DATA_DIR}/flavours/{module_name}/{dockerfile}',f'--context={DATA_DIR}'])
+        kaniko_volume_mounts.append(data_volume_mount)
+
     init_container_kaniko = client.V1Container(
         name='kaniko',
         image='gcr.io/kaniko-project/executor:latest',
-        volume_mounts=[
-            data_volume_mount,
-            kaniko_empty_dir_volume_mount
-        ],
+        volume_mounts=kaniko_volume_mounts,
+        env=[client.V1EnvVar(name='AWS_REGION', value=AWS_REGION)],
         args=kaniko_args
     )
 
+    modzy_uploader_args = [
+            f'--api_key={modzy_data.get("api_key")}',
+            f'--deploy={True if modzy_data.get("deploy") else ""}',
+            f'--sample_input_path={modzy_data.get("modzy_sample_input_path")}',
+            f'--image_tag={image_name}{"" if ":" in image_name else ":latest"}',
+        ]
+    modzy_uploader_volume_mounts = []
+    volumes = [empty_dir_volume]
+
+    if not S3_MODE:
+        # volume claim
+        data_pv_claim = client.V1PersistentVolumeClaimVolumeSource(
+            claim_name="dir-claim-chassis"
+        ) if CHASSIS_DEV else client.V1PersistentVolumeClaimVolumeSource(
+            claim_name=K_DATA_VOLUME_NAME
+        )
+
+        # volume holding data
+        data_volume = client.V1Volume(
+            name="local-volume-code",
+            persistent_volume_claim=data_pv_claim
+        ) if CHASSIS_DEV else client.V1Volume(
+            name=K_DATA_VOLUME_NAME,
+            persistent_volume_claim=data_pv_claim
+        )
+
+        modzy_uploader_args.extend([f'--sample_input_path={modzy_data.get("modzy_sample_input_path")}',
+            f'--metadata_path={DATA_DIR}/{modzy_data.get("modzy_metadata_path")}'])
+        modzy_uploader_volume_mounts.append(data_volume_mount)
+        volumes.append(data_volume)
+
+    else:
+        # volume holding tar
+        empty_tar_volume = client.V1Volume(
+            name="image-tar",
+            empty_dir=client.V1EmptyDirVolumeSource()
+        )
+        volumes.append(empty_tar_volume)
+
+        modzy_uploader_args.append(f'--modzy_uri={modzy_uri}')
+        
     modzy_uploader_container = client.V1Container(
         name='modzy-uploader',
         image=MODZY_UPLOADER_REPOSITORY,
-        volume_mounts=[data_volume_mount],
+        volume_mounts=modzy_uploader_volume_mounts,
         env=[
             client.V1EnvVar(name='JOB_NAME', value=job_name),
             client.V1EnvVar(name='ENVIRONMENT', value=ENVIRONMENT)
         ],
-        args=[
-            f'--api_key={modzy_data.get("api_key")}',
-            f'--deploy={True if modzy_data.get("deploy") else ""}',
-            f'--sample_input_path={modzy_data.get("modzy_sample_input_path")}',
-            f'--metadata_path={DATA_DIR}/{modzy_data.get("modzy_metadata_path")}',
-            f'--image_tag={image_name}{"" if ":" in image_name else ":latest"}',
-        ]
-    )
-
-    # volume claim
-    data_pv_claim = client.V1PersistentVolumeClaimVolumeSource(
-        claim_name="dir-claim-chassis"
-    ) if CHASSIS_DEV else client.V1PersistentVolumeClaimVolumeSource(
-        claim_name=K_DATA_VOLUME_NAME
-    )
-
-    # volume holding data
-
-    data_volume = client.V1Volume(
-        name="local-volume-code",
-        persistent_volume_claim=data_pv_claim
-    ) if CHASSIS_DEV else client.V1Volume(
-        name=K_DATA_VOLUME_NAME,
-        persistent_volume_claim=data_pv_claim
-    )
-
-    # volume holding credentials
-    empty_dir_volume = client.V1Volume(
-        name=K_EMPTY_DIR_NAME,
-        empty_dir=client.V1EmptyDirVolumeSource()
+        args=modzy_uploader_args
     )
 
     # Pod spec for the image build process
+    init_containers = [init_container, init_container_kaniko]
+    if S3_MODE:
+        init_containers.append(init_container_push)
     pod_spec = client.V1PodSpec(
         service_account_name=K_SERVICE_ACCOUNT_NAME,
         restart_policy='Never',
-        init_containers=[init_container, init_container_kaniko],
+        init_containers=init_containers,
         containers=[modzy_uploader_container],
-        volumes=[
-            data_volume,
-            empty_dir_volume
-        ]
+        volumes=volumes
     )
 
     # setup and initiate model image build
@@ -417,7 +482,9 @@ def run_kaniko(
         publish,
         registry_auth,
         gpu=False,
-        arm64=False
+        arm64=False,
+        context_uri=None,
+        modzy_uri=None
 ):
     '''
     This utility method creates and launches a job object that uses Kaniko to create the desired image during the `/build` process.
@@ -445,10 +512,13 @@ def run_kaniko(
             publish,
             registry_auth,
             gpu,
-            arm64
+            arm64,
+            context_uri,
+            modzy_uri
         )
         create_job(batch_v1, job)
     except Exception as err:
+        logger.error(str(err))
         return str(err)
 
     return False
@@ -486,6 +556,80 @@ def unzip_model(model, module_name, random_name):
 
     return zip_content_dst
 
+def upload_context(model, module_name, random_name, modzy_metadata_data, dockerfile):
+
+    tmp_dir = tempfile.mkdtemp()
+    path_to_zip_file = f'{tmp_dir}/{model.filename}'
+    model.save(path_to_zip_file)
+
+    dst = f'{tmp_dir}/{"flavours"}'
+    copytree(f'./{"flavours"}', dst)
+
+    copyfile(f'./flavours/{module_name}/{dockerfile}',f'{tmp_dir}/Dockerfile')
+
+    zip_content_dst = f'{tmp_dir}/flavours/{module_name}/model-{random_name}'
+    with zipfile.ZipFile(path_to_zip_file, 'r') as zip_ref:
+        zip_ref.extractall(zip_content_dst)
+
+    metadata_path = f'{tmp_dir}/flavours/{module_name}/model-{random_name}.yaml'
+    if modzy_metadata_data:
+        modzy_metadata_data.save(metadata_path)
+        modzy_metadata_data.seek(0)
+    else:
+        # Use the default one if user has not sent its own metadata file.
+        # This way, mlflow/Dockerfile will not throw an error because it
+        # will copy a file that does exist.
+        copyfile(f'flavours/{module_name}/interfaces/modzy/asset_bundle/0.1.0/model.yaml',metadata_path)
+
+    tar_tmp_dir = tempfile.mkdtemp()
+    tar_path = f'{tar_tmp_dir}/{"model.tar.gz"}'
+
+    with tarfile.open(tar_path, "w:gz") as tar:
+        for filename in os.listdir(tmp_dir):
+            filepath = os.path.join(tmp_dir, filename)
+            tar.add(filepath, arcname=filename)
+
+    object_name = f'context-{random_name}.tar.gz'
+    try:
+        response = s3_client.upload_file(tar_path,CONTEXT_BUCKET,object_name)
+    except ClientError as e:
+        logger.error(str(e))
+        rmtree(tmp_dir)
+        rmtree(tar_tmp_dir)
+        return False
+
+    rmtree(tmp_dir)
+    rmtree(tar_tmp_dir)
+
+    return f's3://{CONTEXT_BUCKET}/{object_name}'
+
+def upload_modzy_files(random_name,modzy_metadata_data,modzy_sample_input_data):
+    tmp_dir = tempfile.mkdtemp()
+    modzy_metadata_data.save(f'{tmp_dir}/model.yaml')
+    modzy_metadata_data.seek(0)
+    modzy_sample_input_data.save(f'{tmp_dir}/input')
+
+    tar_tmp_dir = tempfile.mkdtemp()
+    tar_path = f'{tar_tmp_dir}/{"modzy-data.tar.gz"}'
+    with tarfile.open(tar_path, "w:gz") as tar:
+        for filename in os.listdir(tmp_dir):
+            filepath = os.path.join(tmp_dir, filename)
+            tar.add(filepath, arcname=filename)
+
+    object_name = f'modzy-data-{random_name}.tar.gz'
+    try:
+        response = s3_client.upload_file(tar_path,CONTEXT_BUCKET,object_name)
+    except ClientError as e:
+        logger.error(str(e))
+        rmtree(tmp_dir)
+        rmtree(tar_tmp_dir)
+        return False
+
+    rmtree(tmp_dir)
+    rmtree(tar_tmp_dir)
+
+    return f's3://{CONTEXT_BUCKET}/{object_name}'
+
 def extract_modzy_metadata(modzy_metadata_data, module_name, random_name):
     '''
     This utility method returns model metadata is used in two separate places during the `/build` process
@@ -500,7 +644,9 @@ def extract_modzy_metadata(modzy_metadata_data, module_name, random_name):
     '''
     if modzy_metadata_data:
         metadata_path = f'flavours/{module_name}/model-{random_name}.yaml'
-        modzy_metadata_data.save(f'{DATA_DIR}/{metadata_path}')
+        if not S3_MODE:
+            modzy_metadata_data.save(f'{DATA_DIR}/{metadata_path}')
+            modzy_metadata_data.seek(0)
     else:
         # Use the default one if user has not sent its own metadata file.
         # This way, mlflow/Dockerfile will not throw an error because it
@@ -584,7 +730,22 @@ def download_tar(job_id):
     '''
     uid = job_id.split(f'{K_JOB_NAME}-')[1]
 
-    return send_from_directory(DATA_DIR, path=f'kaniko_image-{uid}.tar', as_attachment=False)
+    if S3_MODE:
+        tmp_dir = tempfile.mkdtemp()
+        tar_name = f'kaniko_image-{uid}.tar'
+        tar_path = f'{tmp_dir}/{tar_name}'
+        s3_client.download_file(CONTEXT_BUCKET,f'tar/{tar_name}',tar_path)
+
+        return_data = io.BytesIO()
+        with open(tar_path, 'rb') as fo:
+            return_data.write(fo.read())
+        return_data.seek(0)
+        rmtree(tmp_dir)
+
+        return send_file(return_data,as_attachment=False)
+
+    else:
+        return send_from_directory(DATA_DIR, path=f'kaniko_image-{uid}.tar', as_attachment=False)
 
 def build_image():
     '''
@@ -627,22 +788,32 @@ def build_image():
     random_name = str(uuid.uuid4())
 
     # Unzip model archive
-    unzip_model(model, module_name, random_name)
+    if S3_MODE:
+        dockerfile = choose_dockerfile(gpu,arm64)
+        context_uri = upload_context(model, module_name, random_name, modzy_metadata_data, dockerfile)
+    else:
+        unzip_model(model, module_name, random_name)
+        context_uri = None
 
     # User can build the image but not deploy it to Modzy. So no input_sample is mandatory.
     # On the other hand, the model.yaml is needed to build the image so proceed with it.
 
     # save the sample input to the modzy_sample_input_path directory
     if modzy_data:
-        modzy_sample_input_path = extract_modzy_sample_input(modzy_sample_input_data, module_name, random_name)
-        modzy_data['modzy_sample_input_path'] = modzy_sample_input_path
-
-    # TODO: this probably should only be done if modzy_data is true.
-    modzy_metadata_path = extract_modzy_metadata(modzy_metadata_data, module_name, random_name)
-    modzy_data['modzy_metadata_path'] = modzy_metadata_path
+        if S3_MODE:
+            modzy_uri = upload_modzy_files(random_name,modzy_metadata_data,modzy_sample_input_data)
+        else:
+            modzy_sample_input_path = extract_modzy_sample_input(modzy_sample_input_data, module_name, random_name)
+            modzy_data['modzy_sample_input_path'] = modzy_sample_input_path
+            modzy_uri = None
+        modzy_metadata_path = extract_modzy_metadata(modzy_metadata_data, module_name, random_name)
+        modzy_data['modzy_metadata_path'] = modzy_metadata_path
 
     # this path is the local location that kaniko will store the image it creates
-    path_to_tar_file = f'{DATA_DIR}/kaniko_image-{random_name}.tar'
+    if S3_MODE:
+        path_to_tar_file = f'/tar/kaniko_image-{random_name}.tar'
+    else:
+        path_to_tar_file = f'{DATA_DIR}/kaniko_image-{random_name}.tar'
 
     logger.debug(f'Request data: {image_name}, {module_name}, {model_name}, {path_to_tar_file}')
 
@@ -656,7 +827,9 @@ def build_image():
         publish,
         registry_auth,
         gpu,
-        arm64
+        arm64,
+        context_uri,
+        modzy_uri
     )
 
     if error:
@@ -784,7 +957,8 @@ def create_app():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
 
-    copy_required_files_for_kaniko()
+    if not S3_MODE:
+        copy_required_files_for_kaniko()
 
     if CHASSIS_DEV:
         create_dev_environment()
