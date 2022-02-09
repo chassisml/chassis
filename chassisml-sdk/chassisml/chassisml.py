@@ -13,9 +13,10 @@ import mlflow
 import base64
 import string
 import numpy as np
+import warnings
 from chassisml import __version__
-from ._utils import zipdir,fix_dependencies,write_modzy_yaml,NumpyEncoder
 from .open_model_initiative_checks.open_model_initiative_checks import OMI_check
+from ._utils import zipdir,fix_dependencies,write_modzy_yaml,NumpyEncoder,fix_dependencies_arm_gpu
 
 ###########################################
 MODEL_ZIP_NAME = 'model.zip'
@@ -199,7 +200,7 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
 
         return res.json()
 
-    def save(self,path,conda_env=None,overwrite=False):
+    def save(self,path,conda_env=None,overwrite=False,fix_env=True,gpu=False,arm64=False):
         '''
         Saves a copy of ChassisModel to local filepath
 
@@ -207,6 +208,8 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
             path (str): Filepath to save chassis model as local MLflow model
             conda_env (Union[str, dict]): Either filepath to conda.yaml file or dictionary with environment requirements. If not provided, chassis will infer dependency requirements from local environment
             overwrite (bool): If True, overwrites existing contents of `path` parameter
+            gpu (bool): If True and `arm64` is True, modifies dependencies as needed by chassis for ARM64+GPU support
+            arm64 (bool): If True and `gpu` is True, modifies dependencies as needed by chassis for ARM64+GPU support
 
         Returns:
             None: This method does not return an object
@@ -220,11 +223,16 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
         if overwrite and os.path.exists(path):
             shutil.rmtree(path)
         mlflow.pyfunc.save_model(path=path, python_model=self, conda_env=conda_env)
+        if fix_env:
+            fix_dependencies(path)
+        if arm64 and gpu:
+            fix_dependencies_arm_gpu(path)
+
         print("Chassis model saved.")
 
     def publish(self,model_name,model_version,registry_user,registry_pass,
-                conda_env=None,fix_env=True,gpu=False,modzy_sample_input_path=None,
-                modzy_api_key=None):
+                conda_env=None,fix_env=True,gpu=False,arm64=False,
+                modzy_sample_input_path=None,modzy_api_key=None):
         '''
         Executes chassis job, which containerizes model, pushes container image to Docker registry, and optionally deploys model to Modzy
 
@@ -236,6 +244,7 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
             conda_env (Union[str, dict]): Either filepath to conda.yaml file or dictionary with environment requirements. If not provided, chassis will infer dependency requirements from local environment
             fix_env (bool): Modifies conda or pip-installable packages into list of dependencies to be installed during the container build
             gpu (bool): If True, builds container image that runs on GPU hardware
+            arm64 (bool): If True, builds container image that runs on ARM64 architecture
             modzy_sample_input_path (str): Filepath to sample input data. Required to deploy model to Modzy
             modzy_api_key (str): Valid Modzy API Key
 
@@ -274,6 +283,10 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
             if fix_env:
                 fix_dependencies(model_directory)
 
+            if arm64 and gpu:
+                warnings.warn("ARM64+GPU support (tested on Nvidia Jetson) is experimental, KServe not supported and builds may take a while or fail depending on your required dependencies.")
+                fix_dependencies_arm_gpu(model_directory)
+
             # Compress all files in model directory to send them as a zip.
             tmppath = tempfile.mkdtemp()
             zipdir(model_directory,tmppath,MODEL_ZIP_NAME)
@@ -285,7 +298,8 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
                 'model_path': tmppath,
                 'registry_auth': base64.b64encode("{}:{}".format(registry_user,registry_pass).encode("utf-8")).decode("utf-8"),
                 'publish': True,
-                'gpu': gpu
+                'gpu': gpu,
+                'arm64': arm64
             }
 
             if modzy_sample_input_path and modzy_api_key:
@@ -387,7 +401,7 @@ class ChassisClient:
         data = res.json()
         return data
 
-    def block_until_complete(self,job_id,timeout=1800,poll_interval=5):
+    def block_until_complete(self,job_id,timeout=None,poll_interval=5):
         '''
         Blocks until Chassis job is complete or timeout is reached. Polls Chassis job API until a result is marked finished.
 
