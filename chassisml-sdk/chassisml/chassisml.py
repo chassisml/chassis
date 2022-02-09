@@ -96,7 +96,6 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
         sample_filepath = './sample_data.json'
         results = chassis_model.test(sample_filepath)
         ```
-
         '''
         if isinstance(test_input,_io.BufferedReader):
             result = self.predict(None,test_input.read())
