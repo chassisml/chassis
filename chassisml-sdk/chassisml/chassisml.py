@@ -467,25 +467,25 @@ class ChassisClient:
 
     def test_OMI_compliance(self, image_id=None):
         '''
-                test a local image for compliance with the Open Model Interface Spec www.openmodel.ml/spec
+        Tests a local image for compliance with the [Open Model Interface Specification](https://openmodel.ml/spec/)
 
-                Args:
-                    image_id (str): image id of a local docker container. e.g. dockerusername/modelname:tag
+        Args:
+            image_id (str): image id of a local docker container. e.g. `dockerusername/repositoryname:tag`
 
-                Returns:
-                    (bool, str): True if compliant, False if non-compliant for the bool.  the str is a concat of any logs.
+        Returns:
+            tuple(bool, str): Tuple containing compliance boolean (`True` if compliant, `False` if not) and corresponding string containing concatenation of any logs.
 
-                Examples:
-                ```python
-                # test a local docker image
+        Examples:
+        ```python
+        # test a local docker image
 
-                OMI_test, logs = chassis_client.test_OMI_compliance(image_id)
-                if OMI_test:
-                    print("OMI compliance test passed")
-                else:
-                    print("OMI compliance test failed",logs)
-                ```
-                '''
+        OMI_test, logs = chassis_client.test_OMI_compliance(image_id)
+        if OMI_test:
+            print("OMI compliance test passed")
+        else:
+            print("OMI compliance test failed",logs)
+        ```
+        '''
 
         rValue = (False, "Nothing Initialized")
 

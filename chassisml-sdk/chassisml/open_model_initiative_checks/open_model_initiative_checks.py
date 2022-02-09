@@ -35,14 +35,19 @@ class OMI_check():
     host_port = None        # must be numeric
     url = None
 
-    def __init__(self, base_url='npipe:////./pipe/docker_engine',
+    # The base_url variable to the init constructor is used to initialize the 
+    # Docker API client. For windows, this url is 'npipe:////./pipe/docker_engine'
+    # But by default, Docker will set the url to the DOCKER_HOST environment variable,
+    # which automatically detects where the Docker server is hosted based on operating system 
+    def __init__(self, base_url=None, 
                  image_id=None,
                  container_port=45000,
                  host_port=5001,
                  url="localhost"):
 
         try:
-            self.client = docker.APIClient(base_url=base_url)
+            print(base_url)
+            self.client = docker.APIClient()
             self.image_id = image_id
             self.container_port = container_port
             self.host_port = host_port
