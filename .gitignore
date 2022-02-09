@@ -11,3 +11,4 @@ dist
 chassisml-sdk/examples/keras/*
 chassisml-sdk/examples/tensorflow/*
 chassisml-sdk/examples/tensorflow/tensorflow_basic_image_classification.ipynb
+chassisml-sdk/examples/onnx/models/*
