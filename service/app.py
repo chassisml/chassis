@@ -50,10 +50,7 @@ K_SERVICE_ACCOUNT_NAME = "local-job-builder" if CHASSIS_DEV else os.getenv('K_SE
 K_JOB_NAME = os.getenv('K_JOB_NAME')
 
 MODE = os.getenv('MODE')
-if MODE == "S3":
-    S3_MODE = True
-else:
-    S3_MODE = False
+S3_MODE = True if MODE == "S3" else False
 CONTEXT_BUCKET = os.getenv('CONTEXT_BUCKET')
 AWS_REGION = os.getenv('AWS_REGION')
 
