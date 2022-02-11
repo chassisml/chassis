@@ -13,6 +13,10 @@ CONTEXT_BUCKET: ''
 S3_MODE: ''
 AWS_REGION: ''
 
+CONTEXT_BUCKET: 'chassis-contexts'
+MODE: "PV"
+AWS_REGION: "us-east-1"
+
 replicaCount: 1
 
 image:
