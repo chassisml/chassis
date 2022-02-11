@@ -11,13 +11,16 @@ from shutil import rmtree, copytree, copyfile
 
 from loguru import logger
 from dotenv import load_dotenv
-from flask import Flask, request, send_from_directory
+from flask import Flask, request, send_from_directory, Response
 
-from kubernetes import client, config
+from kubernetes import client, config, watch
 from kubernetes.client.rest import ApiException
 
 import boto3
 import tarfile
+import base64
+import asyncio
+import threading
 
 ###########################################
 
@@ -46,8 +49,12 @@ K_KANIKO_EMPTY_DIR_PATH = os.getenv('K_KANIKO_EMPTY_DIR_PATH')
 K_SERVICE_ACCOUNT_NAME = "local-job-builder" if CHASSIS_DEV else os.getenv('K_SERVICE_ACCOUNT_NAME')
 K_JOB_NAME = os.getenv('K_JOB_NAME')
 
+MODE = os.getenv('MODE')
+if MODE == "S3":
+    S3_MODE = True
+else:
+    S3_MODE = False
 CONTEXT_BUCKET = os.getenv('CONTEXT_BUCKET')
-S3_MODE = os.getenv('S3_MODE') == "true"
 AWS_REGION = os.getenv('AWS_REGION')
 
 s3_client = boto3.client('s3')
@@ -209,6 +216,16 @@ def create_dev_environment():
     return
 
 def choose_dockerfile(gpu,arm64):
+    '''
+    This utility method returns the correct Dockerfile name based on the gpu and arm64 flags
+    
+    Args:
+        gpu (bool): whether or not user requested image to be built with gpu support
+        arm64 (bool): whether or not user requested image to be built for arm64 architecture
+
+    Returns:
+        str: name of Dockerfile to use
+    '''
     if gpu and not arm64:
         return "Dockerfile.gpu"
     elif arm64 and not gpu:
@@ -253,14 +270,13 @@ def create_job_object(
         Job: Chassis job object
           
     '''
-    # 
-
     job_name = f'{K_JOB_NAME}-{random_name}'
 
     # credential setup for Docker Hub.
     # json for holding registry credentials that will access docker hub.
     # reference: https://github.com/GoogleContainerTools/kaniko#pushing-to-docker-hub
     registry_credentials = f'{{"auths":{{"https://index.docker.io/v1/":{{"auth":"{registry_auth}"}}}}}}'
+    b64_registry_credentials = base64.b64encode(registry_credentials.encode("utf-8")).decode("utf-8")
 
     # mount path leads to /data
     # this is a mount point. NOT the volume itself.
@@ -274,76 +290,33 @@ def create_job_object(
             name=K_DATA_VOLUME_NAME
         )
 
-    # This volume will be used by init container to populate registry credentials.
-    # mount leads to /tmp/credentials
-    # this is a mount point. NOT the volume itself.
-    # name aligns with a volume defined below.
-    init_empty_dir_volume_mount = client.V1VolumeMount(
-        mount_path=K_INIT_EMPTY_DIR_PATH,
-        name=K_EMPTY_DIR_NAME
-    )
-
     # This volume will be used by kaniko container to get registry credentials.
     # mount path leads to /kaniko/.docker per kaniko reference documentation
     # this is a mount point. NOT the volume itself.
     # name aligns with a volume defined below.
-    kaniko_empty_dir_volume_mount = client.V1VolumeMount(
+    kaniko_credentials_volume_mount = client.V1VolumeMount(
         mount_path=K_KANIKO_EMPTY_DIR_PATH,
         name=K_EMPTY_DIR_NAME
     )
 
+    # create secret for registry credentials       
+    registry_creds_secret_name = f'{random_name}-creds'
+    metadata = {'name': registry_creds_secret_name, 'namespace': ENVIRONMENT}
+    data = {'config.json': b64_registry_credentials}
+    api_version = 'v1'
+    kind = 'Secret'
+    secret = client.V1Secret(api_version, data , kind, metadata)
+    client.CoreV1Api().create_namespaced_secret(ENVIRONMENT, secret)
+
     # volume holding credentials
-    empty_dir_volume = client.V1Volume(
+    kaniko_credentials_volume = client.V1Volume(
         name=K_EMPTY_DIR_NAME,
-        empty_dir=client.V1EmptyDirVolumeSource()
-    )
-
-    if S3_MODE:
-        # This volume will be used by kaniko container to save image tar.
-        # this is a mount point. NOT the volume itself.
-        # name aligns with a volume defined below.
-        kaniko_tar_volume_mount = client.V1VolumeMount(
-            mount_path="/tar",
-            name="image-tar"
-        )
-
-        # This volume will be used by push container to read image tar.
-        # this is a mount point. NOT the volume itself.
-        # name aligns with a volume defined below.
-        push_tar_volume_mount = client.V1VolumeMount(
-            mount_path="/tar",
-            name="image-tar"
-        )
-
-        # This container will push the image tar to S3
-        init_container_push = client.V1Container(
-            name='push-tar',
-            image='amazon/aws-cli:latest',
-            command=["aws","s3","cp",path_to_tar_file,f"s3://{CONTEXT_BUCKET}{path_to_tar_file}"],
-            volume_mounts=[
-                push_tar_volume_mount
-            ],
-        )
-
-    # This container is used to populate registry credentials.
-    # it only runs the single command in shell to echo our credentials into their proper file
-    # per the reference documentation for Docker Hub
-    # TODO: add credentials for Cloud Providers
-    init_container = client.V1Container(
-        name='credentials',
-        image='busybox',
-        volume_mounts=[init_empty_dir_volume_mount],
-        command=[
-            '/bin/sh',
-            '-c',
-            f'echo \'{registry_credentials}\' > {K_INIT_EMPTY_DIR_PATH}/config.json'
-        ]
+        secret=client.V1SecretVolumeSource(secret_name=registry_creds_secret_name)
     )
 
     # This is the kaniko container used to build the final image.
     kaniko_args = [
         '' if publish else '--no-push',
-        f'--tarPath={path_to_tar_file}',
         f'--destination={image_name}{"" if ":" in image_name else ":latest"}',
         f'--build-arg=MODEL_DIR=model-{random_name}',
         f'--build-arg=MODZY_METADATA_PATH={modzy_data.get("modzy_metadata_path")}',
@@ -353,13 +326,13 @@ def create_job_object(
         '--build-arg=INTERFACE=modzy'   
     ]
 
-    kaniko_volume_mounts = [kaniko_empty_dir_volume_mount]
+    kaniko_volume_mounts = [kaniko_credentials_volume_mount]
     if S3_MODE:
         kaniko_args.append(f'--context={context_uri}')
-        kaniko_volume_mounts.append(kaniko_tar_volume_mount)
     else:
         dockerfile = choose_dockerfile(gpu,arm64)
-        kaniko_args.extend([f'--dockerfile={DATA_DIR}/flavours/{module_name}/{dockerfile}',f'--context={DATA_DIR}'])
+        kaniko_args.extend([f'--dockerfile={DATA_DIR}/flavours/{module_name}/{dockerfile}',f'--context={DATA_DIR}',
+                            f'--tarPath={path_to_tar_file}',])
         kaniko_volume_mounts.append(data_volume_mount)
 
     init_container_kaniko = client.V1Container(
@@ -377,7 +350,7 @@ def create_job_object(
             f'--image_tag={image_name}{"" if ":" in image_name else ":latest"}',
         ]
     modzy_uploader_volume_mounts = []
-    volumes = [empty_dir_volume]
+    volumes = [kaniko_credentials_volume]
 
     if not S3_MODE:
         # volume claim
@@ -402,13 +375,6 @@ def create_job_object(
         volumes.append(data_volume)
 
     else:
-        # volume holding tar
-        empty_tar_volume = client.V1Volume(
-            name="image-tar",
-            empty_dir=client.V1EmptyDirVolumeSource()
-        )
-        volumes.append(empty_tar_volume)
-
         modzy_uploader_args.append(f'--modzy_uri={modzy_uri}')
         
     modzy_uploader_container = client.V1Container(
@@ -423,13 +389,10 @@ def create_job_object(
     )
 
     # Pod spec for the image build process
-    init_containers = [init_container, init_container_kaniko]
-    if S3_MODE:
-        init_containers.append(init_container_push)
     pod_spec = client.V1PodSpec(
         service_account_name=K_SERVICE_ACCOUNT_NAME,
         restart_policy='Never',
-        init_containers=init_containers,
+        init_containers=[init_container_kaniko],
         containers=[modzy_uploader_container],
         volumes=volumes
     )
@@ -470,6 +433,24 @@ def create_job(api_instance, job):
         body=job,
         namespace=ENVIRONMENT)
     logger.info(f'Pod created. Status={str(api_response.status)}')
+
+async def delete_credentials_secret(random_name):
+    '''
+    This async utility method waits for the job to complete and then deletes the secret containing the user's registry credentials
+    
+    Args:
+        random_name (str): random id generated during build process that is used to ensure that all jobs are uniquely named and traceable
+
+    Returns:
+        None
+    '''
+    v1 = client.CoreV1Api()
+    while True:
+        status = get_job_status(f'{K_JOB_NAME}-{random_name}')
+        if status['status']['failed'] or status['status']['succeeded']:
+            v1.delete_namespaced_secret(namespace=ENVIRONMENT,name=f'{random_name}-creds')
+            break
+        time.sleep(5)
 
 def run_kaniko(
         image_name,
@@ -516,6 +497,11 @@ def run_kaniko(
             modzy_uri
         )
         create_job(batch_v1, job)
+
+        loop = asyncio.new_event_loop()
+        threading.Thread(target=loop.run_forever).start()
+        future = asyncio.run_coroutine_threadsafe(delete_credentials_secret(random_name),loop)
+
     except Exception as err:
         logger.error(str(err))
         return str(err)
@@ -556,7 +542,19 @@ def unzip_model(model, module_name, random_name):
     return zip_content_dst
 
 def upload_context(model, module_name, random_name, modzy_metadata_data, dockerfile):
+    '''
+    This utility method uploads the files required by Kaniko in S3 mode
+    
+    Args:
+        model (str): data returned from `request.files` component of REST call
+        module_name (str): reference module to locate location within service input is saved
+        random_name (str): random id generated during build process that is used to ensure that all jobs are uniquely named and traceable
+        modzy_metadata_data (str): data returned from `request.files` component of REST call
+        dockerfile (str): name of dockerfile to use
 
+    Returns:
+        str: location of uploaded context tar archive in S3 
+    '''
     tmp_dir = tempfile.mkdtemp()
     path_to_zip_file = f'{tmp_dir}/{model.filename}'
     model.save(path_to_zip_file)
@@ -603,6 +601,17 @@ def upload_context(model, module_name, random_name, modzy_metadata_data, dockerf
     return f's3://{CONTEXT_BUCKET}/{object_name}'
 
 def upload_modzy_files(random_name,modzy_metadata_data,modzy_sample_input_data):
+    '''
+    This utility method uploads the files required by the Modzy Uploader in S3 mode
+    
+    Args:
+        random_name (str): random id generated during build process that is used to ensure that all jobs are uniquely named and traceable
+        modzy_metadata_data (str): data returned from `request.files` component of REST call
+        modzy_sample_input_data (str): data returned from `request.files` component of REST call
+
+    Returns:
+        str: location of uploaded Modzy tar archive in S3 
+    '''
     tmp_dir = tempfile.mkdtemp()
     modzy_metadata_data.save(f'{tmp_dir}/model.yaml')
     modzy_metadata_data.seek(0)
@@ -730,19 +739,7 @@ def download_tar(job_id):
     uid = job_id.split(f'{K_JOB_NAME}-')[1]
 
     if S3_MODE:
-        tmp_dir = tempfile.mkdtemp()
-        tar_name = f'kaniko_image-{uid}.tar'
-        tar_path = f'{tmp_dir}/{tar_name}'
-        s3_client.download_file(CONTEXT_BUCKET,f'tar/{tar_name}',tar_path)
-
-        return_data = io.BytesIO()
-        with open(tar_path, 'rb') as fo:
-            return_data.write(fo.read())
-        return_data.seek(0)
-        rmtree(tmp_dir)
-
-        return send_file(return_data,as_attachment=False)
-
+        return Response(f"400 Bad Request: Tar download not available in production mode, please use 'docker pull ...'",400)
     else:
         return send_from_directory(DATA_DIR, path=f'kaniko_image-{uid}.tar', as_attachment=False)
 
