@@ -209,7 +209,8 @@ def create_job_object(
         publish,
         registry_auth,
         gpu=False,
-        arm64=False
+        arm64=False,
+        modzy_model_id=None
 ):
     '''
     This utility method sets up all the required objects needed to create a model image and is run within the `run_kaniko` method.
@@ -225,6 +226,7 @@ def create_job_object(
         registry_auth (dict): Docker registry authorization credentials  
         gpu (bool): If `True`, will build container image that runs on GPU 
         arm64 (bool): If `True`, will build container image that runs on ARM64 architecture
+        modzy_model_id (str): existing modzy model id if user requested new version
 
     Returns:
         Job: Chassis job object
@@ -318,6 +320,17 @@ def create_job_object(
         args=kaniko_args
     )
 
+    modzy_uploader_args = [
+            f'--api_key={modzy_data.get("api_key")}',
+            f'--deploy={True if modzy_data.get("deploy") else ""}',
+            f'--sample_input_path={modzy_data.get("modzy_sample_input_path")}',
+            f'--metadata_path={DATA_DIR}/{modzy_data.get("modzy_metadata_path")}',
+            f'--image_tag={image_name}{"" if ":" in image_name else ":latest"}',
+        ]
+
+    if modzy_model_id:
+        modzy_uploader_args.append(f'--model_id={modzy_model_id}')
+
     modzy_uploader_container = client.V1Container(
         name='modzy-uploader',
         image=MODZY_UPLOADER_REPOSITORY,
@@ -326,13 +339,7 @@ def create_job_object(
             client.V1EnvVar(name='JOB_NAME', value=job_name),
             client.V1EnvVar(name='ENVIRONMENT', value=ENVIRONMENT)
         ],
-        args=[
-            f'--api_key={modzy_data.get("api_key")}',
-            f'--deploy={True if modzy_data.get("deploy") else ""}',
-            f'--sample_input_path={modzy_data.get("modzy_sample_input_path")}',
-            f'--metadata_path={DATA_DIR}/{modzy_data.get("modzy_metadata_path")}',
-            f'--image_tag={image_name}{"" if ":" in image_name else ":latest"}',
-        ]
+        args=modzy_uploader_args
     )
 
     # volume claim
@@ -417,7 +424,8 @@ def run_kaniko(
         publish,
         registry_auth,
         gpu=False,
-        arm64=False
+        arm64=False,
+        modzy_model_id=None
 ):
     '''
     This utility method creates and launches a job object that uses Kaniko to create the desired image during the `/build` process.
@@ -445,7 +453,8 @@ def run_kaniko(
             publish,
             registry_auth,
             gpu,
-            arm64
+            arm64,
+            modzy_model_id
         )
         create_job(batch_v1, job)
     except Exception as err:
@@ -618,6 +627,7 @@ def build_image():
 
     # json string loaded into variable
     modzy_data = json.load(request.files.get('modzy_data') or  {})
+    modzy_model_id = modzy_data.get('modzy_model_id')
 
     # This is a future proofing variable in case we encounter a model that cannot be converted into mlflow.
     # It will remain hardcoded for now.
@@ -656,7 +666,8 @@ def build_image():
         publish,
         registry_auth,
         gpu,
-        arm64
+        arm64,
+        modzy_model_id
     )
 
     if error:
