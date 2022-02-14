@@ -20,6 +20,7 @@ parser.add_argument('--deploy', type=bool, required=False)
 parser.add_argument('--image_tag', type=str, required=False)
 parser.add_argument('--sample_input_path', type=str, required=False)
 parser.add_argument('--metadata_path', type=str, required=False)
+parser.add_argument('--model_id', type=str, required=False)
 args = parser.parse_args()
 
 JOB_NAME = os.getenv('JOB_NAME')
@@ -38,10 +39,29 @@ routes = {
     'run_model': '/api/models/{}/versions/{}/run-process',
     'deploy_model': '/api/models/{}/versions/{}',
     'model_url': '/models/{}/{}',
+    'create_version': '/api/models/{}/versions'
 }
-
+    
 def format_url(route, *args):
     return urllib.parse.urljoin(MODZY_BASE_URL, route).format(*args)
+
+def create_version(model_id,metadata):
+
+    start = time.time()
+
+    route = format_url(routes['create_version'],model_id)
+    requested_version = metadata.get('version')
+
+    data = {"version": requested_version}
+
+    res = r_session.post(route, json=data)
+    res.raise_for_status()
+
+    logger.info(f'create_version returned took [{1000*(time.time()-start)} ms]')
+
+    model_data = res.json()
+
+    return model_data['model'].get('modelId'),model_data.get('version')
 
 def create_model(metadata):
     '''https://v2ui.dev.modzy.engineering/docs/deployment/models/create-model'''
@@ -58,7 +78,9 @@ def create_model(metadata):
 
     logger.info(f'create_model returned took [{1000*(time.time()-start)} ms]')
 
-    return res.json()
+    model_data = res.json()
+
+    return model_data.get('identifier'), version
 
 def add_tags_and_description(identifier, metadata):
     '''https://v2ui.dev.modzy.engineering/docs/deployment/models/update-model'''
@@ -253,9 +275,10 @@ def upload_model():
     with open(args.metadata_path, 'r') as f:
         metadata = yaml.safe_load(f)
 
-    model_data = create_model(metadata)
-
-    identifier, version = model_data.get('identifier'), metadata.get('version')
+    if args.model_id:
+        identifier, version = create_version(args.model_id,metadata)
+    else:
+        identifier, version = create_model(metadata)
 
     logger.debug(f'Identifier: {identifier}, Version: {version}')
 
@@ -293,6 +316,7 @@ def update_job_with_result(api_instance, result):
     api_instance.patch_namespaced_job(JOB_NAME, ENVIRONMENT, job)
 
 def main():
+
     # Only deploy to Modzy if user wants to.
     if not args.deploy:
         return
