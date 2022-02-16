@@ -248,7 +248,7 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
             arm64 (bool): If True, builds container image that runs on ARM64 architecture
             modzy_sample_input_path (str): Filepath to sample input data. Required to deploy model to Modzy
             modzy_api_key (str): Valid Modzy API Key
-            modzy_url (str): Valid Modzy instance URl, example: https://my.modzy.com
+            modzy_url (str): Valid Modzy instance URL, example: https://my.modzy.com
 
         Returns:
             Dict: Response to Chassis `/build` endpoint
