@@ -23,8 +23,7 @@ CHASSIS_DEV = False
 WINDOWS = True if os.name == 'nt' else False
 
 HOME_DIR = str(Path.home())
-#MODZY_UPLOADER_REPOSITORY = 'ghcr.io/modzy/chassis-modzy-uploader'
-MODZY_UPLOADER_REPOSITORY = 'local-modzy-uploader:latest'
+MODZY_UPLOADER_REPOSITORY = 'ghcr.io/modzy/chassis-modzy-uploader'
 
 if CHASSIS_DEV:
     MOUNT_PATH_DIR = "/"+ str(os.path.join(HOME_DIR,".chassis_data"))[3:].replace("\\", "/") if WINDOWS else os.path.join(HOME_DIR,".chassis_data")
@@ -322,7 +321,6 @@ def create_job_object(
     modzy_uploader_container = client.V1Container(
         name='modzy-uploader',
         image=MODZY_UPLOADER_REPOSITORY,
-        image_pull_policy='Never',
         volume_mounts=[data_volume_mount],
         env=[
             client.V1EnvVar(name='JOB_NAME', value=job_name),
