@@ -23,7 +23,8 @@ CHASSIS_DEV = False
 WINDOWS = True if os.name == 'nt' else False
 
 HOME_DIR = str(Path.home())
-MODZY_UPLOADER_REPOSITORY = 'ghcr.io/modzy/chassis-modzy-uploader'
+#MODZY_UPLOADER_REPOSITORY = 'ghcr.io/modzy/chassis-modzy-uploader'
+MODZY_UPLOADER_REPOSITORY = 'local-modzy-uploader:latest'
 
 if CHASSIS_DEV:
     MOUNT_PATH_DIR = "/"+ str(os.path.join(HOME_DIR,".chassis_data"))[3:].replace("\\", "/") if WINDOWS else os.path.join(HOME_DIR,".chassis_data")
@@ -321,6 +322,7 @@ def create_job_object(
     modzy_uploader_container = client.V1Container(
         name='modzy-uploader',
         image=MODZY_UPLOADER_REPOSITORY,
+        image_pull_policy='Never',
         volume_mounts=[data_volume_mount],
         env=[
             client.V1EnvVar(name='JOB_NAME', value=job_name),
@@ -332,6 +334,7 @@ def create_job_object(
             f'--sample_input_path={modzy_data.get("modzy_sample_input_path")}',
             f'--metadata_path={DATA_DIR}/{modzy_data.get("modzy_metadata_path")}',
             f'--image_tag={image_name}{"" if ":" in image_name else ":latest"}',
+            f'--modzy_url={modzy_data.get("modzy_url")}'
         ]
     )
 
@@ -636,10 +639,8 @@ def build_image():
     if modzy_data:
         modzy_sample_input_path = extract_modzy_sample_input(modzy_sample_input_data, module_name, random_name)
         modzy_data['modzy_sample_input_path'] = modzy_sample_input_path
-
-    # TODO: this probably should only be done if modzy_data is true.
-    modzy_metadata_path = extract_modzy_metadata(modzy_metadata_data, module_name, random_name)
-    modzy_data['modzy_metadata_path'] = modzy_metadata_path
+        modzy_metadata_path = extract_modzy_metadata(modzy_metadata_data, module_name, random_name)
+        modzy_data['modzy_metadata_path'] = modzy_metadata_path
 
     # this path is the local location that kaniko will store the image it creates
     path_to_tar_file = f'{DATA_DIR}/kaniko_image-{random_name}.tar'
