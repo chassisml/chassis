@@ -4,6 +4,7 @@ loguru
 # Modzy Requirements
 grpcio-tools
 grpcio
+grpcio-reflection
 protobuf
 pyyaml
 six
