@@ -5,6 +5,7 @@ kfserving==0.5.0.1
 # Modzy Requirements
 grpcio-tools
 grpcio
+grpcio-reflection
 protobuf
 pyyaml
 six

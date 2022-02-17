@@ -6,9 +6,11 @@ from time import time as t
 from typing import Dict, List
 
 import grpc
+from grpc_reflection.v1alpha import reflection
 
 from ...grpc_model import GRPC_SERVER_PORT as _GRPC_SERVER_PORT
 from ...grpc_model.src.auto_generated.model2_template.model_pb2 import (
+    DESCRIPTOR,
     ModelDescription,
     ModelFeatures,
     ModelInfo,
@@ -280,6 +282,12 @@ def serve():
         ],
     )
     add_ModzyModelServicer_to_server(model_service, grpc_server)
+
+    SERVICE_NAMES = [x.full_name for x in DESCRIPTOR.services_by_name['ModzyModel'].methods]
+    SERVICE_NAMES.append(reflection.SERVICE_NAME)
+    SERVICE_NAMES_2 = (DESCRIPTOR.services_by_name['ModzyModel'].full_name, reflection.SERVICE_NAME)
+    #reflection.enable_server_reflection(tuple(SERVICE_NAMES), grpc_server)
+    reflection.enable_server_reflection(SERVICE_NAMES_2, grpc_server)
 
     server_port = get_server_port()
     grpc_server.add_insecure_port(f"[::]:{server_port}")  # TODO: is this insecure port really what we want?
