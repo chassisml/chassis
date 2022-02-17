@@ -368,6 +368,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#chassisml-sdk.chassisml.chassisml.ChassisClient.test_OMI_compliance" class="md-nav__link">
+    test_OMI_compliance()
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -662,6 +669,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#chassisml-sdk.chassisml.chassisml.ChassisClient.test_OMI_compliance" class="md-nav__link">
+    test_OMI_compliance()
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -928,6 +942,53 @@ ChassisClient        </code>
                 <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Error download tar: </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">test_OMI_compliance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Tests a local image for compliance with the [Open Model Interface Specification](https://openmodel.ml/spec/)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            image_id (str): image id of a local docker container. e.g. `dockerusername/repositoryname:tag`</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple(bool, str): Tuple containing compliance boolean (`True` if compliant, `False` if not) and corresponding string containing concatenation of any logs.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">        ```python</span>
+<span class="sd">        # test a local docker image</span>
+
+<span class="sd">        OMI_test, logs = chassis_client.test_OMI_compliance(image_id)</span>
+<span class="sd">        if OMI_test:</span>
+<span class="sd">            print(&quot;OMI compliance test passed&quot;)</span>
+<span class="sd">        else:</span>
+<span class="sd">            print(&quot;OMI compliance test failed&quot;,logs)</span>
+<span class="sd">        ```</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">rValue</span> <span class="o">=</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Nothing Initialized&quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">checkObject</span> <span class="o">=</span> <span class="n">OMI_check</span><span class="p">(</span><span class="n">image_id</span><span class="o">=</span><span class="n">image_id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">checkObject</span><span class="o">.</span><span class="n">client</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;The Docker Client couldn&#39;t be initialized. Is Docker installed?&quot;</span><span class="p">)</span>
+            <span class="n">image_check</span> <span class="o">=</span> <span class="n">checkObject</span><span class="o">.</span><span class="n">validate_image</span><span class="p">()</span>
+            <span class="k">if</span> <span class="s2">&quot;Failure&quot;</span> <span class="ow">in</span> <span class="n">image_check</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">image_check</span><span class="p">)</span>
+            <span class="n">container_start</span> <span class="o">=</span> <span class="n">checkObject</span><span class="o">.</span><span class="n">start_container</span><span class="p">()</span>
+            <span class="k">if</span> <span class="s2">&quot;Failure&quot;</span> <span class="ow">in</span> <span class="n">container_start</span><span class="p">:</span>
+                <span class="k">raise</span>  <span class="ne">ValueError</span><span class="p">(</span><span class="n">container_start</span><span class="p">)</span>
+            <span class="n">gRPC_check</span> <span class="o">=</span> <span class="n">checkObject</span><span class="o">.</span><span class="n">validate_gRPC</span><span class="p">()</span>
+            <span class="k">if</span> <span class="s2">&quot;Failure&quot;</span><span class="ow">in</span> <span class="n">gRPC_check</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">gRPC_check</span><span class="p">)</span>
+            <span class="n">clean_up</span> <span class="o">=</span> <span class="n">checkObject</span><span class="o">.</span><span class="n">clean_up</span><span class="p">()</span>
+            <span class="k">if</span> <span class="s2">&quot;Failure&quot;</span> <span class="ow">in</span> <span class="n">clean_up</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">clean_up</span><span class="p">)</span>
+            <span class="n">rValue</span> <span class="o">=</span> <span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">image_check</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">container_start</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">gRPC_check</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span><span class="n">clean_up</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">rValue</span> <span class="o">=</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">rValue</span>
 
     <span class="k">def</span> <span class="nf">create_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">context</span><span class="p">,</span><span class="n">process_fn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">batch_process_fn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">batch_size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
@@ -1567,6 +1628,121 @@ ChassisClient        </code>
 
 
 
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="chassisml-sdk.chassisml.chassisml.ChassisClient.test_OMI_compliance" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">test_OMI_compliance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_id</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Tests a local image for compliance with the <a href="https://openmodel.ml/spec/">Open Model Interface Specification</a></p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>image_id</code></td>
+        <td><code>str</code></td>
+        <td><p>image id of a local docker container. e.g. <code>dockerusername/repositoryname:tag</code></p></td>
+        <td><code>None</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>tuple(bool, str)</code></td>
+      <td><p>Tuple containing compliance boolean (<code>True</code> if compliant, <code>False</code> if not) and corresponding string containing concatenation of any logs.</p></td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>Examples:</strong></p>
+    
+      <div class="highlight"><pre><span></span><code><span class="c1"># test a local docker image</span>
+
+<span class="n">OMI_test</span><span class="p">,</span> <span class="n">logs</span> <span class="o">=</span> <span class="n">chassis_client</span><span class="o">.</span><span class="n">test_OMI_compliance</span><span class="p">(</span><span class="n">image_id</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">OMI_test</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;OMI compliance test passed&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;OMI compliance test failed&quot;</span><span class="p">,</span><span class="n">logs</span><span class="p">)</span>
+</code></pre></div>
+
+        <details class="quote">
+          <summary>Source code in <code>chassisml-sdk/chassisml/chassisml.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">test_OMI_compliance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Tests a local image for compliance with the [Open Model Interface Specification](https://openmodel.ml/spec/)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        image_id (str): image id of a local docker container. e.g. `dockerusername/repositoryname:tag`</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple(bool, str): Tuple containing compliance boolean (`True` if compliant, `False` if not) and corresponding string containing concatenation of any logs.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">    ```python</span>
+<span class="sd">    # test a local docker image</span>
+
+<span class="sd">    OMI_test, logs = chassis_client.test_OMI_compliance(image_id)</span>
+<span class="sd">    if OMI_test:</span>
+<span class="sd">        print(&quot;OMI compliance test passed&quot;)</span>
+<span class="sd">    else:</span>
+<span class="sd">        print(&quot;OMI compliance test failed&quot;,logs)</span>
+<span class="sd">    ```</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">rValue</span> <span class="o">=</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Nothing Initialized&quot;</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">checkObject</span> <span class="o">=</span> <span class="n">OMI_check</span><span class="p">(</span><span class="n">image_id</span><span class="o">=</span><span class="n">image_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">checkObject</span><span class="o">.</span><span class="n">client</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;The Docker Client couldn&#39;t be initialized. Is Docker installed?&quot;</span><span class="p">)</span>
+        <span class="n">image_check</span> <span class="o">=</span> <span class="n">checkObject</span><span class="o">.</span><span class="n">validate_image</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s2">&quot;Failure&quot;</span> <span class="ow">in</span> <span class="n">image_check</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">image_check</span><span class="p">)</span>
+        <span class="n">container_start</span> <span class="o">=</span> <span class="n">checkObject</span><span class="o">.</span><span class="n">start_container</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s2">&quot;Failure&quot;</span> <span class="ow">in</span> <span class="n">container_start</span><span class="p">:</span>
+            <span class="k">raise</span>  <span class="ne">ValueError</span><span class="p">(</span><span class="n">container_start</span><span class="p">)</span>
+        <span class="n">gRPC_check</span> <span class="o">=</span> <span class="n">checkObject</span><span class="o">.</span><span class="n">validate_gRPC</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s2">&quot;Failure&quot;</span><span class="ow">in</span> <span class="n">gRPC_check</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">gRPC_check</span><span class="p">)</span>
+        <span class="n">clean_up</span> <span class="o">=</span> <span class="n">checkObject</span><span class="o">.</span><span class="n">clean_up</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s2">&quot;Failure&quot;</span> <span class="ow">in</span> <span class="n">clean_up</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">clean_up</span><span class="p">)</span>
+        <span class="n">rValue</span> <span class="o">=</span> <span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">image_check</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">container_start</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">gRPC_check</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span><span class="n">clean_up</span><span class="p">)</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">rValue</span> <span class="o">=</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">rValue</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
 
 
   </div>
@@ -1685,7 +1861,6 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
 <span class="sd">        sample_filepath = &#39;./sample_data.json&#39;</span>
 <span class="sd">        results = chassis_model.test(sample_filepath)</span>
 <span class="sd">        ```</span>
-
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">test_input</span><span class="p">,</span><span class="n">_io</span><span class="o">.</span><span class="n">BufferedReader</span><span class="p">):</span>
             <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span><span class="n">test_input</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
@@ -2393,7 +2568,6 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
 <span class="sd">    sample_filepath = &#39;./sample_data.json&#39;</span>
 <span class="sd">    results = chassis_model.test(sample_filepath)</span>
 <span class="sd">    ```</span>
-
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">test_input</span><span class="p">,</span><span class="n">_io</span><span class="o">.</span><span class="n">BufferedReader</span><span class="p">):</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span><span class="n">test_input</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
