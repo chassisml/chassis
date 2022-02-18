@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding utf-8 -*-
 
-from tabnanny import check
 import _io
 import os
 import time
