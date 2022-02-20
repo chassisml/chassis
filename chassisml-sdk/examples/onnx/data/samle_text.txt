@@ -1,1 +1,0 @@
-ONNX models are awesome, and Chassisml is even better for auto-containerizing them for me!
