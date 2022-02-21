@@ -6,3 +6,4 @@ pytest
 pylint
 autopep8
 python-dotenv
+modzy-sdk
