@@ -2,6 +2,7 @@ chassisml
 flask>=2.0.2
 requests>=2.27.1
 kubernetes>=21.7.0
+grpc-requests>=0.1.0
 loguru>=0.6.0
 pytest>=6.2.5
 pylint>=2.12.2
@@ -12,6 +13,8 @@ mkdocs-material>=8.1.6
 mkdocs-material-extensions>=1.0.3
 mkdocstrings>=0.17.0
 mlflow>=1.22.0
+modzy-sdk>=0.6.0
 numpy>=1.22.0
 pandas>=1.4.0
 python-dotenv>=0.19.2
+validators>=0.18.2

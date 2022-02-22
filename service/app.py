@@ -7,6 +7,7 @@ import zipfile
 import time
 import subprocess
 from pathlib import Path
+from modzy.client import ApiClient
 from shutil import rmtree, copytree, copyfile
 
 from loguru import logger
@@ -345,6 +346,7 @@ def create_job_object(
             f'--deploy={True if modzy_data.get("deploy") else ""}',
             f'--sample_input_path={modzy_data.get("modzy_sample_input_path")}',
             f'--image_tag={image_name}{"" if ":" in image_name else ":latest"}',
+            f'--modzy_url={modzy_data.get("modzy_url")}'
         ]
     modzy_uploader_volume_mounts = []
     volumes = [kaniko_credentials_volume]
@@ -793,12 +795,18 @@ def build_image():
 
     # save the sample input to the modzy_sample_input_path directory
     if modzy_data:
+        try:
+            ApiClient(modzy_data.get('modzy_url'),modzy_data.get('api_key'))
+        except Exception as e:
+            return {"error":str(e),'job_id': None}
+          
         if S3_MODE:
             modzy_uri = upload_modzy_files(random_name,modzy_metadata_data,modzy_sample_input_data)
         else:
             modzy_sample_input_path = extract_modzy_sample_input(modzy_sample_input_data, module_name, random_name)
             modzy_data['modzy_sample_input_path'] = modzy_sample_input_path
             modzy_uri = None
+            
         modzy_metadata_path = extract_modzy_metadata(modzy_metadata_data, module_name, random_name)
         modzy_data['modzy_metadata_path'] = modzy_metadata_path
 

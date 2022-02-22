@@ -1,6 +1,13 @@
-:root {
+[data-md-color-scheme="chassis"] {
+  /* Sets the primary color (i.e., background of top nav) */
   --md-primary-fg-color:       #11284F;
-  --md-typeset-a-color:        #0092DF;
-  --md-typset-mark-color:      #0092DF;
-  --md-typeset-kbd-color:      #0092DF;
+
+  /* Sets the links color */
+  --md-typeset-a-color:        #046aa5;
+    /* --md-typeset-mark-color:     #0092DF;
+    --md-typeset-kbd-color:      #0092DF; */
+
+  /* Sets the accent color (i.e., links on hover) */
+  --md-accent-fg-color:        #024a74;
 }
+ 
