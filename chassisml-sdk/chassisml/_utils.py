@@ -3,6 +3,9 @@ import yaml
 import json
 import zipfile
 import numpy as np
+from chassisml import __version__
+from packaging import version
+import validators
 
 DEFAULT_MODZY_YAML_DATA = {'specification': '0.4',
         'type': 'grpc',
@@ -36,6 +39,8 @@ DEFAULT_MODZY_YAML_DATA = {'specification': '0.4',
         'features': {'explainable': False, 'adversarialDefense': False}
     }
 
+ARM_GPU_REMOVE = {'torch','tensorflow','mxnet','scikit-learn','onnx','pandas','scipy','numpy','scikit-learn','opencv'}
+
 class NumpyEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, np.ndarray):
@@ -57,13 +62,61 @@ def zipdir(model_directory,tmppath,model_zip_name):
 def fix_dependencies(model_directory):
     conda_path = os.path.join(model_directory,"conda.yaml")
     pip_path = os.path.join(model_directory,"requirements.txt")
+
     with open(conda_path) as conda_r, open(pip_path) as pip_r:
-        conda = conda_r.read().replace("opencv-python=","opencv-python-headless=")
-        pip = pip_r.read().replace("opencv-python=","opencv-python-headless=")
+
+        conda_lines = conda_r.readlines()
+        pip_lines = pip_r.readlines()
+
+        new_conda = ""
+        new_pip = ""
+        opencv_found = False
+        for line in conda_lines:
+            if "opencv-python" in line:
+                if opencv_found:
+                    continue
+                else:
+                    new_conda += line.replace("opencv-python=","opencv-python-headless=")
+                    opencv_found = True
+            else:
+                    new_conda += line
+
+        opencv_found = False
+        for line in pip_lines:
+            if "opencv-python" in line:
+                if opencv_found:
+                    continue
+                else:
+                    new_pip += line.replace("opencv-python=","opencv-python-headless=")
+                    opencv_found = True
+            else:
+                    new_pip += line
+        
+    with open(conda_path,"w") as conda_w, open(pip_path,"w") as pip_w:
+        conda_w.write(new_conda)
+        pip_w.write(new_pip)
+
+def fix_dependencies_arm_gpu(model_directory):
+    conda_path = os.path.join(model_directory,"conda.yaml")
+    pip_path = os.path.join(model_directory,"requirements.txt")
+
+    if version.parse(yaml.safe_load(open(conda_path))['dependencies'][0].split('=')[1])>=version.parse('3.7'):
+        print(yaml.safe_load(open(conda_path))['dependencies'][0].split('=')[1])
+        raise ValueError('For GPU ARM support, Python version must be < 3.7')
+    
+    with open(conda_path) as conda_r, open(pip_path) as pip_r:
+        conda_lines = conda_r.read().splitlines()
+        pip_lines = pip_r.read().splitlines()
     
     with open(conda_path,"w") as conda_w, open(pip_path,"w") as pip_w:
-        conda_w.write(conda)
-        pip_w.write(pip)
+        for line in conda_lines:
+            if not any(package in line for package in ARM_GPU_REMOVE):
+                conda_w.write(line)
+                conda_w.write('\n')
+        for line in pip_lines:
+            if not any(package in line for package in ARM_GPU_REMOVE):
+                pip_w.write(line)
+                pip_w.write('\n')
 
 def write_modzy_yaml(model_name,model_version,output_path,batch_size=None,gpu=False):
     yaml_data = DEFAULT_MODZY_YAML_DATA
@@ -75,3 +128,12 @@ def write_modzy_yaml(model_name,model_version,output_path,batch_size=None,gpu=Fa
         yaml_data['resources']['gpu']['count'] = 1
     with open(output_path,'w',encoding = "utf-8") as f:
         f.write(yaml.dump(yaml_data))
+
+def check_modzy_url(modzy_url):
+    if not validators.url(modzy_url):
+        raise ValueError("Provided Modzy URL is not a valid URL")
+    if not modzy_url.startswith('https://'):
+        raise ValueError("Modzy URL must start with 'https://', example: 'https://my.modzy.com'")
+    if not modzy_url[-1].isalpha():
+        raise ValueError("Modzy URL must end with alpha char, example: 'https://my.modzy.com'")
+    return True

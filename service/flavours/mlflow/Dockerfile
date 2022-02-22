@@ -42,6 +42,14 @@ ARG INTERFACE
 # This is the model.yaml file.
 ARG MODZY_METADATA_PATH
 
+#OMI Annotations
+
+LABEL ml.openmodel.interfaces=["${INTERFACE}"]
+LABEL ml.openml.model_name="${MODEL_NAME}"
+LABEL ml.openmodel.protocols=[["v2"]]
+LABEL ml.openmodel.port="45000"
+
+
 WORKDIR /app
 
 COPY flavours/${MODEL_CLASS}/${MODEL_DIR} ./model/${MODEL_NAME}

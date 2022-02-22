@@ -2,6 +2,9 @@ site_name: Chassis
 nav:
   - index.md
   - design.md
+  - Documentation:
+      - Chassisml API Reference: service-reference.md
+      - Python SDK: chassisml-sdk-reference.md
   - Tutorials:
       - tutorials/devops-deploy.md
       - tutorials/ds-connect.md
@@ -14,13 +17,24 @@ nav:
 theme:
   name: material
   palette:
-    primary: white
-    accent: blue
-    scheme: slate
-  logo: images/chassis-symbol.png
+    scheme: chassis
+  logo: images/chassis-symbol-negative.png
   favicon: images/chassis-symbol.png
   features:
     - navigation.expand
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          setup_commands:
+            - import sys 
+            - sys.path.append('../')
+          selection:
+            new_path_syntax: true
+            docstring_style: "google" 
+          rendering:
+            show_category_heading: no
 markdown_extensions:
   - attr_list
   - pymdownx.details
@@ -40,3 +54,5 @@ extra:
   analytics:
     provider: google
     property: G-4NVL0DTGZ4
+  generator: false
+# use_directory_controls: false
