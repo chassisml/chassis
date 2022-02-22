@@ -6,6 +6,7 @@ import zipfile
 import time
 import subprocess
 from pathlib import Path
+from modzy.client import ApiClient
 from shutil import rmtree, copytree
 
 from loguru import logger
@@ -332,6 +333,7 @@ def create_job_object(
             f'--sample_input_path={modzy_data.get("modzy_sample_input_path")}',
             f'--metadata_path={DATA_DIR}/{modzy_data.get("modzy_metadata_path")}',
             f'--image_tag={image_name}{"" if ":" in image_name else ":latest"}',
+            f'--modzy_url={modzy_data.get("modzy_url")}'
         ]
     )
 
@@ -634,12 +636,15 @@ def build_image():
 
     # save the sample input to the modzy_sample_input_path directory
     if modzy_data:
+        # attempt Modzy connection
+        try:
+            ApiClient(modzy_data.get('modzy_url'),modzy_data.get('api_key'))
+        except Exception as e:
+            return {"error":str(e),'job_id': None}
         modzy_sample_input_path = extract_modzy_sample_input(modzy_sample_input_data, module_name, random_name)
         modzy_data['modzy_sample_input_path'] = modzy_sample_input_path
-
-    # TODO: this probably should only be done if modzy_data is true.
-    modzy_metadata_path = extract_modzy_metadata(modzy_metadata_data, module_name, random_name)
-    modzy_data['modzy_metadata_path'] = modzy_metadata_path
+        modzy_metadata_path = extract_modzy_metadata(modzy_metadata_data, module_name, random_name)
+        modzy_data['modzy_metadata_path'] = modzy_metadata_path
 
     # this path is the local location that kaniko will store the image it creates
     path_to_tar_file = f'{DATA_DIR}/kaniko_image-{random_name}.tar'
