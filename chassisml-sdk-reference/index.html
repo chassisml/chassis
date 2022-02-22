@@ -9,7 +9,7 @@
       
       
       <link rel="icon" href="../images/chassis-symbol.png">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.11">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.2.1">
     
     
       
@@ -17,7 +17,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.50e68009.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.e8d9bf0c.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.e6a45f82.min.css">
@@ -744,6 +744,7 @@
 <a href="https://github.com/modzy/chassis/edit/main/docs/docs/chassisml-sdk-reference.md" title="Edit this page" class="md-content__button md-icon">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
 </a>
+
 
 
 <h1 id="chassisml-python-sdk">Chassisml Python SDK</h1>
@@ -1996,7 +1997,8 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
 
     <span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">model_name</span><span class="p">,</span><span class="n">model_version</span><span class="p">,</span><span class="n">registry_user</span><span class="p">,</span><span class="n">registry_pass</span><span class="p">,</span>
                 <span class="n">conda_env</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">fix_env</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">gpu</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">arm64</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                <span class="n">modzy_sample_input_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">modzy_api_key</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+                <span class="n">modzy_sample_input_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">modzy_api_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">modzy_url</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Executes chassis job, which containerizes model, pushes container image to Docker registry, and optionally deploys model to Modzy</span>
 
@@ -2011,6 +2013,7 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
 <span class="sd">            arm64 (bool): If True, builds container image that runs on ARM64 architecture</span>
 <span class="sd">            modzy_sample_input_path (str): Filepath to sample input data. Required to deploy model to Modzy</span>
 <span class="sd">            modzy_api_key (str): Valid Modzy API Key</span>
+<span class="sd">            modzy_url (str): Valid Modzy instance URL, example: https://my.modzy.com</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Dict: Response to Chassis `/build` endpoint</span>
@@ -2035,9 +2038,9 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
 
 <span class="sd">        &#39;&#39;&#39;</span>
 
-        <span class="k">if</span> <span class="p">(</span><span class="n">modzy_sample_input_path</span> <span class="ow">or</span> <span class="n">modzy_api_key</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> \
-            <span class="p">(</span><span class="n">modzy_sample_input_path</span> <span class="ow">and</span> <span class="n">modzy_api_key</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;&quot;modzy_sample_input_path&quot;, and &quot;modzy_api_key&quot; must both be provided to publish to Modzy.&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">modzy_sample_input_path</span> <span class="ow">or</span> <span class="n">modzy_api_key</span> <span class="ow">or</span> <span class="n">modzy_url</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> \
+            <span class="p">(</span><span class="n">modzy_sample_input_path</span> <span class="ow">and</span> <span class="n">modzy_api_key</span> <span class="ow">and</span> <span class="n">modzy_url</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;&quot;modzy_sample_input_path&quot;, &quot;modzy_api_key&quot; and &quot;modzy_url&quot; must all be provided to publish to Modzy.&#39;</span><span class="p">)</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">model_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">(),</span><span class="n">CHASSIS_TMP_DIRNAME</span><span class="p">)</span>
@@ -2066,13 +2069,14 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
                 <span class="s1">&#39;arm64&#39;</span><span class="p">:</span> <span class="n">arm64</span>
             <span class="p">}</span>
 
-            <span class="k">if</span> <span class="n">modzy_sample_input_path</span> <span class="ow">and</span> <span class="n">modzy_api_key</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">modzy_sample_input_path</span> <span class="ow">and</span> <span class="n">modzy_api_key</span> <span class="ow">and</span> <span class="n">check_modzy_url</span><span class="p">(</span><span class="n">modzy_url</span><span class="p">):</span>
                 <span class="n">modzy_metadata_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmppath</span><span class="p">,</span><span class="n">MODZY_YAML_NAME</span><span class="p">)</span>
                 <span class="n">modzy_data</span> <span class="o">=</span> <span class="p">{</span>
                     <span class="s1">&#39;metadata_path&#39;</span><span class="p">:</span> <span class="n">modzy_metadata_path</span><span class="p">,</span>
                     <span class="s1">&#39;sample_input_path&#39;</span><span class="p">:</span> <span class="n">modzy_sample_input_path</span><span class="p">,</span>
                     <span class="s1">&#39;deploy&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-                    <span class="s1">&#39;api_key&#39;</span><span class="p">:</span> <span class="n">modzy_api_key</span>
+                    <span class="s1">&#39;api_key&#39;</span><span class="p">:</span> <span class="n">modzy_api_key</span><span class="p">,</span>
+                    <span class="s1">&#39;modzy_url&#39;</span><span class="p">:</span> <span class="n">modzy_url</span>
                 <span class="p">}</span>
                 <span class="n">write_modzy_yaml</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span><span class="n">model_version</span><span class="p">,</span><span class="n">modzy_metadata_path</span><span class="p">,</span><span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span><span class="n">gpu</span><span class="o">=</span><span class="n">gpu</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
@@ -2107,12 +2111,11 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
             <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
 
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">tmppath</span><span class="p">):</span>
                 <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">tmppath</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">model_directory</span><span class="p">):</span>
                 <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">model_directory</span><span class="p">)</span>
-            <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">raise</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 </code></pre></div>
         </details>
 
@@ -2134,7 +2137,7 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
 
 
 <h3 id="chassisml-sdk.chassisml.chassisml.ChassisModel.publish" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">model_version</span><span class="p">,</span> <span class="n">registry_user</span><span class="p">,</span> <span class="n">registry_pass</span><span class="p">,</span> <span class="n">conda_env</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fix_env</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">gpu</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">arm64</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">modzy_sample_input_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">modzy_api_key</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">model_version</span><span class="p">,</span> <span class="n">registry_user</span><span class="p">,</span> <span class="n">registry_pass</span><span class="p">,</span> <span class="n">conda_env</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fix_env</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">gpu</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">arm64</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">modzy_sample_input_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">modzy_api_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">modzy_url</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 
 </h3>
@@ -2214,6 +2217,12 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
         <td><p>Valid Modzy API Key</p></td>
         <td><code>None</code></td>
       </tr>
+      <tr>
+        <td><code>modzy_url</code></td>
+        <td><code>str</code></td>
+        <td><p>Valid Modzy instance URL, example: https://my.modzy.com</p></td>
+        <td><code>None</code></td>
+      </tr>
   </tbody>
 </table>
 <p><strong>Returns:</strong></p>
@@ -2253,7 +2262,8 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
           <summary>Source code in <code>chassisml-sdk/chassisml/chassisml.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">model_name</span><span class="p">,</span><span class="n">model_version</span><span class="p">,</span><span class="n">registry_user</span><span class="p">,</span><span class="n">registry_pass</span><span class="p">,</span>
             <span class="n">conda_env</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">fix_env</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">gpu</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">arm64</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="n">modzy_sample_input_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">modzy_api_key</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="n">modzy_sample_input_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">modzy_api_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">modzy_url</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Executes chassis job, which containerizes model, pushes container image to Docker registry, and optionally deploys model to Modzy</span>
 
@@ -2268,6 +2278,7 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
 <span class="sd">        arm64 (bool): If True, builds container image that runs on ARM64 architecture</span>
 <span class="sd">        modzy_sample_input_path (str): Filepath to sample input data. Required to deploy model to Modzy</span>
 <span class="sd">        modzy_api_key (str): Valid Modzy API Key</span>
+<span class="sd">        modzy_url (str): Valid Modzy instance URL, example: https://my.modzy.com</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Dict: Response to Chassis `/build` endpoint</span>
@@ -2292,9 +2303,9 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
 
 <span class="sd">    &#39;&#39;&#39;</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">modzy_sample_input_path</span> <span class="ow">or</span> <span class="n">modzy_api_key</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> \
-        <span class="p">(</span><span class="n">modzy_sample_input_path</span> <span class="ow">and</span> <span class="n">modzy_api_key</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;&quot;modzy_sample_input_path&quot;, and &quot;modzy_api_key&quot; must both be provided to publish to Modzy.&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">modzy_sample_input_path</span> <span class="ow">or</span> <span class="n">modzy_api_key</span> <span class="ow">or</span> <span class="n">modzy_url</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> \
+        <span class="p">(</span><span class="n">modzy_sample_input_path</span> <span class="ow">and</span> <span class="n">modzy_api_key</span> <span class="ow">and</span> <span class="n">modzy_url</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;&quot;modzy_sample_input_path&quot;, &quot;modzy_api_key&quot; and &quot;modzy_url&quot; must all be provided to publish to Modzy.&#39;</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="n">model_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">(),</span><span class="n">CHASSIS_TMP_DIRNAME</span><span class="p">)</span>
@@ -2323,13 +2334,14 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
             <span class="s1">&#39;arm64&#39;</span><span class="p">:</span> <span class="n">arm64</span>
         <span class="p">}</span>
 
-        <span class="k">if</span> <span class="n">modzy_sample_input_path</span> <span class="ow">and</span> <span class="n">modzy_api_key</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">modzy_sample_input_path</span> <span class="ow">and</span> <span class="n">modzy_api_key</span> <span class="ow">and</span> <span class="n">check_modzy_url</span><span class="p">(</span><span class="n">modzy_url</span><span class="p">):</span>
             <span class="n">modzy_metadata_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmppath</span><span class="p">,</span><span class="n">MODZY_YAML_NAME</span><span class="p">)</span>
             <span class="n">modzy_data</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="s1">&#39;metadata_path&#39;</span><span class="p">:</span> <span class="n">modzy_metadata_path</span><span class="p">,</span>
                 <span class="s1">&#39;sample_input_path&#39;</span><span class="p">:</span> <span class="n">modzy_sample_input_path</span><span class="p">,</span>
                 <span class="s1">&#39;deploy&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-                <span class="s1">&#39;api_key&#39;</span><span class="p">:</span> <span class="n">modzy_api_key</span>
+                <span class="s1">&#39;api_key&#39;</span><span class="p">:</span> <span class="n">modzy_api_key</span><span class="p">,</span>
+                <span class="s1">&#39;modzy_url&#39;</span><span class="p">:</span> <span class="n">modzy_url</span>
             <span class="p">}</span>
             <span class="n">write_modzy_yaml</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span><span class="n">model_version</span><span class="p">,</span><span class="n">modzy_metadata_path</span><span class="p">,</span><span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span><span class="n">gpu</span><span class="o">=</span><span class="n">gpu</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -2364,12 +2376,11 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
         <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
 
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">tmppath</span><span class="p">):</span>
             <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">tmppath</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">model_directory</span><span class="p">):</span>
             <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">model_directory</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">raise</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -2897,10 +2908,10 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.expand"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.092fa1f6.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.expand"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
     
     
-      <script src="../assets/javascripts/bundle.5a9542cf.min.js"></script>
+      <script src="../assets/javascripts/bundle.8aa65030.min.js"></script>
       
     
   </body>

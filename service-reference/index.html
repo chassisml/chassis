@@ -9,7 +9,7 @@
       
       
       <link rel="icon" href="../images/chassis-symbol.png">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.11">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.2.1">
     
     
       
@@ -17,7 +17,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.50e68009.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.e8d9bf0c.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.e6a45f82.min.css">
@@ -636,6 +636,7 @@
 </a>
 
 
+
 <h1 id="chassisml-api-reference">Chassisml API Reference</h1>
 <p>Welcome to the Chassisml API Reference documentation homepage. The API is designed using the principles of REST services using standard HTTP verbs and status codes, implemented with <a href="https://flask.palletsprojects.com/en/2.0.x/">Flask</a>. On this page, you will find documentation for:</p>
 <ul>
@@ -781,12 +782,15 @@ It generates a model image based upon a POST request. The <code>request.files</c
 
     <span class="c1"># save the sample input to the modzy_sample_input_path directory</span>
     <span class="k">if</span> <span class="n">modzy_data</span><span class="p">:</span>
+        <span class="c1"># attempt Modzy connection</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">ApiClient</span><span class="p">(</span><span class="n">modzy_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;modzy_url&#39;</span><span class="p">),</span><span class="n">modzy_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;api_key&#39;</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">),</span><span class="s1">&#39;job_id&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
         <span class="n">modzy_sample_input_path</span> <span class="o">=</span> <span class="n">extract_modzy_sample_input</span><span class="p">(</span><span class="n">modzy_sample_input_data</span><span class="p">,</span> <span class="n">module_name</span><span class="p">,</span> <span class="n">random_name</span><span class="p">)</span>
         <span class="n">modzy_data</span><span class="p">[</span><span class="s1">&#39;modzy_sample_input_path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">modzy_sample_input_path</span>
-
-    <span class="c1"># TODO: this probably should only be done if modzy_data is true.</span>
-    <span class="n">modzy_metadata_path</span> <span class="o">=</span> <span class="n">extract_modzy_metadata</span><span class="p">(</span><span class="n">modzy_metadata_data</span><span class="p">,</span> <span class="n">module_name</span><span class="p">,</span> <span class="n">random_name</span><span class="p">)</span>
-    <span class="n">modzy_data</span><span class="p">[</span><span class="s1">&#39;modzy_metadata_path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">modzy_metadata_path</span>
+        <span class="n">modzy_metadata_path</span> <span class="o">=</span> <span class="n">extract_modzy_metadata</span><span class="p">(</span><span class="n">modzy_metadata_data</span><span class="p">,</span> <span class="n">module_name</span><span class="p">,</span> <span class="n">random_name</span><span class="p">)</span>
+        <span class="n">modzy_data</span><span class="p">[</span><span class="s1">&#39;modzy_metadata_path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">modzy_metadata_path</span>
 
     <span class="c1"># this path is the local location that kaniko will store the image it creates</span>
     <span class="n">path_to_tar_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">DATA_DIR</span><span class="si">}</span><span class="s1">/kaniko_image-</span><span class="si">{</span><span class="n">random_name</span><span class="si">}</span><span class="s1">.tar&#39;</span>
@@ -1055,6 +1059,7 @@ It generates a model image based upon a POST request. The <code>request.files</c
             <span class="sa">f</span><span class="s1">&#39;--sample_input_path=</span><span class="si">{</span><span class="n">modzy_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;modzy_sample_input_path&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
             <span class="sa">f</span><span class="s1">&#39;--metadata_path=</span><span class="si">{</span><span class="n">DATA_DIR</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">modzy_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;modzy_metadata_path&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
             <span class="sa">f</span><span class="s1">&#39;--image_tag=</span><span class="si">{</span><span class="n">image_name</span><span class="si">}{</span><span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">image_name</span> <span class="k">else</span> <span class="s2">&quot;:latest&quot;</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">&#39;--modzy_url=</span><span class="si">{</span><span class="n">modzy_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;modzy_url&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
         <span class="p">]</span>
     <span class="p">)</span>
 
@@ -1479,10 +1484,10 @@ Based on a GET request, it retrieves the status of the Kaniko job and the result
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.expand"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.092fa1f6.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.expand"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
     
     
-      <script src="../assets/javascripts/bundle.5a9542cf.min.js"></script>
+      <script src="../assets/javascripts/bundle.8aa65030.min.js"></script>
       
     
   </body>
