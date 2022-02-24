@@ -1,19 +1,25 @@
 site_name: Chassis
 nav:
   - index.md
-  - design.md
-  - Documentation:
-      - Chassisml API Reference: service-reference.md
-      - Python SDK: chassisml-sdk-reference.md
   - Tutorials:
       - tutorials/devops-deploy.md
       - tutorials/ds-connect.md
       - tutorials/ds-deploy.md
       - tutorials/ds-deploy-modzy.md
+  - How-to Guides:
+      - Model Containers by Framework: how-to-guides/frameworks.md
+      - CPU Support: how-to-guides/cpu-support.md
+      - GPU Support: how-to-guides/gpu-support.md
+      - Adding Explainability: how-to-guides/explainability.md
+  - Reference:
+      - Chassisml API Reference: service-reference.md
+      - Python SDK: chassisml-sdk-reference.md
+  - Conceptual Guides:
+      - Design & Architecture: conceptual-guides/design.md
+      - Pre and Post-Processing: conceptual-guides/processing.md
   - Help: help.md
   - Get Involved: get-involved.md
   - Release Notes: release-notes.md
-  - FAQs: faqs.md
 theme:
   name: material
   palette:

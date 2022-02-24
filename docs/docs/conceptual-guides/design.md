@@ -12,11 +12,11 @@ Deploy Chassis, send your model to it and start using the built container image 
 
 This diagram shows the overall architecture of the Chassis system:
 
-![](images/architecture.png){ style="border:20px solid white" }
+![](../images/architecture.png){ style="border:20px solid white" }
 
 This diagram zooms in on the generated container, showing the pluggable interface, configurable at runtime:
 
-![](images/container.png){ style="border:20px solid white" }
+![](../images/container.png){ style="border:20px solid white" }
 
 
 ## Goals
