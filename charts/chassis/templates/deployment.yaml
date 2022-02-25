@@ -43,8 +43,6 @@ spec:
           env:
             - name: MODE
               value: {{ .Values.MODE }}
-            - name: AWS_REGION
-              value: {{ .Values.AWS_REGION }}
             - name: CONTEXT_BUCKET
               value: {{ .Values.CONTEXT_BUCKET }}
           ports:
