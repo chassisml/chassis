@@ -17,10 +17,8 @@ nav:
 theme:
   name: material
   palette:
-    # primary: black
-    accent: blue
-    scheme: default
-  logo: images/chassis-symbol.png
+    scheme: chassis
+  logo: images/chassis-symbol-negative.png
   favicon: images/chassis-symbol.png
   features:
     - navigation.expand
@@ -56,4 +54,5 @@ extra:
   analytics:
     provider: google
     property: G-4NVL0DTGZ4
+  generator: false
 # use_directory_controls: false

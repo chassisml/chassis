@@ -27,11 +27,13 @@ parser.add_argument('--image_tag', type=str, required=False)
 parser.add_argument('--sample_input_path', type=str, required=False)
 parser.add_argument('--metadata_path', type=str, required=False)
 parser.add_argument('--modzy_uri', type=str, required=False)
+parser.add_argument('--modzy_url', type=str, required=False)
 args = parser.parse_args()
 
 JOB_NAME = os.getenv('JOB_NAME')
 ENVIRONMENT = os.getenv('ENVIRONMENT')
-MODZY_BASE_URL = 'https://integration.modzy.engineering'
+
+MODZY_BASE_URL = args.modzy_url
 
 SUPPORTED_STORAGE_PROVIDERS = {
     "s3": Provider.S3,

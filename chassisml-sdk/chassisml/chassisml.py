@@ -15,7 +15,9 @@ import string
 import numpy as np
 import warnings
 from chassisml import __version__
-from ._utils import zipdir,fix_dependencies,write_modzy_yaml,NumpyEncoder,fix_dependencies_arm_gpu
+
+from .open_model_initiative_checks.open_model_initiative_checks import OMI_check
+from ._utils import zipdir,fix_dependencies,write_modzy_yaml,NumpyEncoder,fix_dependencies_arm_gpu,check_modzy_url
 
 ###########################################
 MODEL_ZIP_NAME = 'model.zip'
@@ -95,7 +97,6 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
         sample_filepath = './sample_data.json'
         results = chassis_model.test(sample_filepath)
         ```
-
         '''
         if isinstance(test_input,_io.BufferedReader):
             result = self.predict(None,test_input.read())
@@ -231,7 +232,8 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
 
     def publish(self,model_name,model_version,registry_user,registry_pass,
                 conda_env=None,fix_env=True,gpu=False,arm64=False,
-                modzy_sample_input_path=None,modzy_api_key=None):
+                modzy_sample_input_path=None,modzy_api_key=None,
+                modzy_url=None):
         '''
         Executes chassis job, which containerizes model, pushes container image to Docker registry, and optionally deploys model to Modzy
 
@@ -246,6 +248,7 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
             arm64 (bool): If True, builds container image that runs on ARM64 architecture
             modzy_sample_input_path (str): Filepath to sample input data. Required to deploy model to Modzy
             modzy_api_key (str): Valid Modzy API Key
+            modzy_url (str): Valid Modzy instance URL, example: https://my.modzy.com
 
         Returns:
             Dict: Response to Chassis `/build` endpoint
@@ -270,9 +273,9 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
 
         '''
 
-        if (modzy_sample_input_path or modzy_api_key) and not \
-            (modzy_sample_input_path and modzy_api_key):
-            raise ValueError('"modzy_sample_input_path", and "modzy_api_key" must both be provided to publish to Modzy.')
+        if (modzy_sample_input_path or modzy_api_key or modzy_url) and not \
+            (modzy_sample_input_path and modzy_api_key and modzy_url):
+            raise ValueError('"modzy_sample_input_path", "modzy_api_key" and "modzy_url" must all be provided to publish to Modzy.')
 
         try:
             model_directory = os.path.join(tempfile.mkdtemp(),CHASSIS_TMP_DIRNAME)
@@ -281,7 +284,7 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
 
             if fix_env:
                 fix_dependencies(model_directory)
-            
+
             if arm64 and gpu:
                 warnings.warn("ARM64+GPU support (tested on Nvidia Jetson) is experimental, KServe not supported and builds may take a while or fail depending on your required dependencies.")
                 fix_dependencies_arm_gpu(model_directory)
@@ -301,13 +304,14 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
                 'arm64': arm64
             }
 
-            if modzy_sample_input_path and modzy_api_key:
+            if modzy_sample_input_path and modzy_api_key and check_modzy_url(modzy_url):
                 modzy_metadata_path = os.path.join(tmppath,MODZY_YAML_NAME)
                 modzy_data = {
                     'metadata_path': modzy_metadata_path,
                     'sample_input_path': modzy_sample_input_path,
                     'deploy': True,
-                    'api_key': modzy_api_key
+                    'api_key': modzy_api_key,
+                    'modzy_url': modzy_url
                 }
                 write_modzy_yaml(model_name,model_version,modzy_metadata_path,batch_size=self.batch_size,gpu=gpu)
             else:
@@ -342,12 +346,11 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
             return res.json()
         
         except Exception as e:
-            print(e)
             if os.path.exists(tmppath):
                 shutil.rmtree(tmppath)
             if os.path.exists(model_directory):
                 shutil.rmtree(model_directory)
-            return False
+            raise(e)
 
 ###########################################
 
@@ -477,6 +480,53 @@ class ChassisClient:
                 f.write(r.content)
         else:
             print(f'Error download tar: {r.text}')
+
+    def test_OMI_compliance(self, image_id=None):
+        '''
+        Tests a local image for compliance with the [Open Model Interface Specification](https://openmodel.ml/spec/)
+
+        Args:
+            image_id (str): image id of a local docker container. e.g. `dockerusername/repositoryname:tag`
+
+        Returns:
+            tuple(bool, str): Tuple containing compliance boolean (`True` if compliant, `False` if not) and corresponding string containing concatenation of any logs.
+
+        Examples:
+        ```python
+        # test a local docker image
+
+        OMI_test, logs = chassis_client.test_OMI_compliance(image_id)
+        if OMI_test:
+            print("OMI compliance test passed")
+        else:
+            print("OMI compliance test failed",logs)
+        ```
+        '''
+
+        rValue = (False, "Nothing Initialized")
+
+        try:
+            checkObject = OMI_check(image_id=image_id)
+            if checkObject.client is None:
+                raise TypeError("The Docker Client couldn't be initialized. Is Docker installed?")
+            image_check = checkObject.validate_image()
+            if "Failure" in image_check:
+                raise ValueError(image_check)
+            container_start = checkObject.start_container()
+            if "Failure" in container_start:
+                raise  ValueError(container_start)
+            gRPC_check = checkObject.validate_gRPC()
+            if "Failure"in gRPC_check:
+                raise ValueError(gRPC_check)
+            clean_up = checkObject.clean_up()
+            if "Failure" in clean_up:
+                raise ValueError(clean_up)
+            rValue = (True, "\n" + image_check + "\n" + container_start + "\n" + gRPC_check + "\n" +clean_up)
+
+        except Exception as e:
+            rValue = (False, e)
+
+        return rValue
 
     def create_model(self,context,process_fn=None,batch_process_fn=None,batch_size=None):
         '''

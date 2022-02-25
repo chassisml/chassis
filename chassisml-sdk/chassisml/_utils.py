@@ -5,6 +5,7 @@ import zipfile
 import numpy as np
 from chassisml import __version__
 from packaging import version
+import validators
 
 DEFAULT_MODZY_YAML_DATA = {'specification': '0.4',
         'type': 'grpc',
@@ -127,3 +128,12 @@ def write_modzy_yaml(model_name,model_version,output_path,batch_size=None,gpu=Fa
         yaml_data['resources']['gpu']['count'] = 1
     with open(output_path,'w',encoding = "utf-8") as f:
         f.write(yaml.dump(yaml_data))
+
+def check_modzy_url(modzy_url):
+    if not validators.url(modzy_url):
+        raise ValueError("Provided Modzy URL is not a valid URL")
+    if not modzy_url.startswith('https://'):
+        raise ValueError("Modzy URL must start with 'https://', example: 'https://my.modzy.com'")
+    if not modzy_url[-1].isalpha():
+        raise ValueError("Modzy URL must end with alpha char, example: 'https://my.modzy.com'")
+    return True
