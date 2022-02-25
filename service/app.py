@@ -16,11 +16,16 @@ from flask import Flask, request, send_from_directory, Response
 from kubernetes import client, config, watch
 from kubernetes.client.rest import ApiException
 
-import boto3
 import tarfile
 import base64
 import asyncio
 import threading
+from ast import literal_eval
+
+from retry import retry
+from libcloud.storage.types import Provider
+from requests.exceptions import ConnectionError
+from libcloud.storage.providers import get_driver
 
 ###########################################
 
@@ -49,12 +54,46 @@ K_KANIKO_EMPTY_DIR_PATH = os.getenv('K_KANIKO_EMPTY_DIR_PATH')
 K_SERVICE_ACCOUNT_NAME = "local-job-builder" if CHASSIS_DEV else os.getenv('K_SERVICE_ACCOUNT_NAME')
 K_JOB_NAME = os.getenv('K_JOB_NAME')
 
-MODE = os.getenv('MODE')
-S3_MODE = True if MODE == "S3" else False
-CONTEXT_BUCKET = os.getenv('CONTEXT_BUCKET')
-AWS_REGION = os.getenv('AWS_REGION')
+SUPPORTED_STORAGE_PROVIDERS = {
+    "s3": Provider.S3,
+    "gs": Provider.GOOGLE_STORAGE
+}
 
-s3_client = boto3.client('s3')
+MODE = os.getenv('MODE')
+PV_MODE = True if MODE == "pv" else False
+
+if MODE == "pv":
+    # use persistent volume to transfer build context
+    PV_MODE = True
+else:
+    PV_MODE = False
+    CONTEXT_BUCKET = os.getenv('CONTEXT_BUCKET')
+    config.load_incluster_config()
+    v1 = client.CoreV1Api()
+    secret = v1.read_namespaced_secret("storage-key", ENVIRONMENT).data
+
+    if MODE == 'gs':
+        # use Google Cloud Storage bucket to transfer build context
+        storage_key = literal_eval(base64.b64decode(secret["storage-key.json"]).decode())
+        access_key = storage_key['client_email']
+        secret_key = storage_key['private_key']
+        storage_driver = get_driver(SUPPORTED_STORAGE_PROVIDERS[MODE])(access_key, secret_key)
+        container = storage_driver.get_container(container_name=CONTEXT_BUCKET)
+    elif MODE == 's3':
+        # use S3 bucket to transfer build context
+        s3_key_lines = base64.b64decode(secret["credentials"]).decode().splitlines()
+        s3_creds = {}
+        for line in s3_key_lines:
+            if "=" in line:
+                k,v = line.split("=")
+                s3_creds[k] = v
+        AWS_REGION = s3_creds['region']
+        access_key = s3_creds['aws_access_key_id']
+        secret_key = s3_creds['aws_secret_access_key']
+        storage_driver = get_driver(SUPPORTED_STORAGE_PROVIDERS[MODE])(access_key, secret_key)
+        container = storage_driver.get_container(container_name=CONTEXT_BUCKET)
+    else:
+        raise ValueError("Only allowed modes are: 'pv', 'gs', 's3'")
 
 ###########################################
 def create_dev_environment():
@@ -278,7 +317,7 @@ def create_job_object(
     # mount path leads to /data
     # this is a mount point. NOT the volume itself.
     # name aligns with a volume defined below.
-    if not S3_MODE:
+    if PV_MODE:
         data_volume_mount = client.V1VolumeMount(
             mount_path=MOUNT_PATH_DIR,
             name="local-volume-code"
@@ -320,25 +359,8 @@ def create_job_object(
         f'--build-arg=MODEL_NAME={model_name}',
         f'--build-arg=MODEL_CLASS={module_name}',
         # Modzy is the default interface.
-        '--build-arg=INTERFACE=modzy'   
+        '--build-arg=INTERFACE=modzy',
     ]
-
-    kaniko_volume_mounts = [kaniko_credentials_volume_mount]
-    if S3_MODE:
-        kaniko_args.append(f'--context={context_uri}')
-    else:
-        dockerfile = choose_dockerfile(gpu,arm64)
-        kaniko_args.extend([f'--dockerfile={DATA_DIR}/flavours/{module_name}/{dockerfile}',f'--context={DATA_DIR}',
-                            f'--tarPath={path_to_tar_file}',])
-        kaniko_volume_mounts.append(data_volume_mount)
-
-    init_container_kaniko = client.V1Container(
-        name='kaniko',
-        image='gcr.io/kaniko-project/executor:latest',
-        volume_mounts=kaniko_volume_mounts,
-        env=[client.V1EnvVar(name='AWS_REGION', value=AWS_REGION)],
-        args=kaniko_args
-    )
 
     modzy_uploader_args = [
             f'--api_key={modzy_data.get("api_key")}',
@@ -346,10 +368,24 @@ def create_job_object(
             f'--sample_input_path={modzy_data.get("modzy_sample_input_path")}',
             f'--image_tag={image_name}{"" if ":" in image_name else ":latest"}',
         ]
-    modzy_uploader_volume_mounts = []
-    volumes = [kaniko_credentials_volume]
 
-    if not S3_MODE:
+    volumes = [kaniko_credentials_volume]
+    modzy_uploader_volume_mounts = []
+    kaniko_volume_mounts = [kaniko_credentials_volume_mount]
+
+    if PV_MODE:
+        dockerfile = choose_dockerfile(gpu,arm64)
+        kaniko_args.extend([f'--dockerfile={DATA_DIR}/flavours/{module_name}/{dockerfile}',f'--context={DATA_DIR}',
+                            f'--tarPath={path_to_tar_file}',])
+        kaniko_volume_mounts.append(data_volume_mount)
+
+        init_container_kaniko = client.V1Container(
+            name='kaniko',
+            image='gcr.io/kaniko-project/executor:latest',
+            volume_mounts=kaniko_volume_mounts,
+            args=kaniko_args
+        )
+
         # volume claim
         data_pv_claim = client.V1PersistentVolumeClaimVolumeSource(
             claim_name="dir-claim-chassis"
@@ -370,9 +406,52 @@ def create_job_object(
             f'--metadata_path={DATA_DIR}/{modzy_data.get("modzy_metadata_path")}'])
         modzy_uploader_volume_mounts.append(data_volume_mount)
         volumes.append(data_volume)
-
     else:
+        kaniko_args.append(f'--context={context_uri}')
+        if MODE=="s3":
+            kaniko_s3_volume_mount = client.V1VolumeMount(
+                mount_path='/root/.aws',
+                name='storage-key'
+            )
+
+            kaniko_storage_key_volume = client.V1Volume(
+                name='storage-key',
+                secret=client.V1SecretVolumeSource(secret_name='storage-key')
+            )
+
+            kaniko_volume_mounts.append(kaniko_s3_volume_mount)
+            init_container_kaniko = client.V1Container(
+                name='kaniko',
+                image='gcr.io/kaniko-project/executor:latest',
+                volume_mounts=kaniko_volume_mounts,
+                env=[client.V1EnvVar(name='AWS_REGION', value=AWS_REGION)],
+                args=kaniko_args
+            )
+        elif MODE=="gs":
+            kaniko_gs_volume_mount = client.V1VolumeMount(
+                mount_path='/secret',
+                name='storage-key'
+            )
+
+            kaniko_storage_key_volume = client.V1Volume(
+                name='storage-key',
+                secret=client.V1SecretVolumeSource(secret_name='storage-key')
+            )
+
+            kaniko_volume_mounts.append(kaniko_gs_volume_mount)
+
+            init_container_kaniko = client.V1Container(
+                name='kaniko',
+                image='gcr.io/kaniko-project/executor:latest',
+                volume_mounts=kaniko_volume_mounts,
+                env=[client.V1EnvVar(name='GOOGLE_APPLICATION_CREDENTIALS', value='/secret/storage-key.json')],
+                args=kaniko_args
+            )
+        else:
+            raise ValueError("Only allowed modes are: 'pv', 'gs', 's3'")
+
         modzy_uploader_args.append(f'--modzy_uri={modzy_uri}')
+        volumes.append(kaniko_storage_key_volume)
         
     modzy_uploader_container = client.V1Container(
         name='modzy-uploader',
@@ -538,6 +617,7 @@ def unzip_model(model, module_name, random_name):
 
     return zip_content_dst
 
+@retry(ConnectionError, tries=3, delay=2)
 def upload_context(model, module_name, random_name, modzy_metadata_data, dockerfile):
     '''
     This utility method uploads the files required by Kaniko in S3 mode
@@ -585,8 +665,8 @@ def upload_context(model, module_name, random_name, modzy_metadata_data, dockerf
 
     object_name = f'context-{random_name}.tar.gz'
     try:
-        response = s3_client.upload_file(tar_path,CONTEXT_BUCKET,object_name)
-    except ClientError as e:
+        obj = storage_driver.upload_object(file_path=tar_path,container=container,object_name=object_name)
+    except Exception as e:
         logger.error(str(e))
         rmtree(tmp_dir)
         rmtree(tar_tmp_dir)
@@ -595,8 +675,9 @@ def upload_context(model, module_name, random_name, modzy_metadata_data, dockerf
     rmtree(tmp_dir)
     rmtree(tar_tmp_dir)
 
-    return f's3://{CONTEXT_BUCKET}/{object_name}'
+    return f'{MODE}://{CONTEXT_BUCKET}/{object_name}'
 
+@retry(ConnectionError, tries=3, delay=2)
 def upload_modzy_files(random_name,modzy_metadata_data,modzy_sample_input_data):
     '''
     This utility method uploads the files required by the Modzy Uploader in S3 mode
@@ -623,8 +704,8 @@ def upload_modzy_files(random_name,modzy_metadata_data,modzy_sample_input_data):
 
     object_name = f'modzy-data-{random_name}.tar.gz'
     try:
-        response = s3_client.upload_file(tar_path,CONTEXT_BUCKET,object_name)
-    except ClientError as e:
+        obj = storage_driver.upload_object(file_path=tar_path,container=container,object_name=object_name)
+    except Exception as e:
         logger.error(str(e))
         rmtree(tmp_dir)
         rmtree(tar_tmp_dir)
@@ -633,7 +714,7 @@ def upload_modzy_files(random_name,modzy_metadata_data,modzy_sample_input_data):
     rmtree(tmp_dir)
     rmtree(tar_tmp_dir)
 
-    return f's3://{CONTEXT_BUCKET}/{object_name}'
+    return f'{MODE}://{CONTEXT_BUCKET}/{object_name}'
 
 def extract_modzy_metadata(modzy_metadata_data, module_name, random_name):
     '''
@@ -649,7 +730,7 @@ def extract_modzy_metadata(modzy_metadata_data, module_name, random_name):
     '''
     if modzy_metadata_data:
         metadata_path = f'flavours/{module_name}/model-{random_name}.yaml'
-        if not S3_MODE:
+        if PV_MODE:
             modzy_metadata_data.save(f'{DATA_DIR}/{metadata_path}')
             modzy_metadata_data.seek(0)
     else:
@@ -735,10 +816,10 @@ def download_tar(job_id):
     '''
     uid = job_id.split(f'{K_JOB_NAME}-')[1]
 
-    if S3_MODE:
-        return Response(f"400 Bad Request: Tar download not available in production mode, please use 'docker pull ...'",400)
-    else:
+    if PV_MODE:
         return send_from_directory(DATA_DIR, path=f'kaniko_image-{uid}.tar', as_attachment=False)
+    else:
+        return Response(f"400 Bad Request: Tar download not available in production mode, please use 'docker pull ...'",400)
 
 def build_image():
     '''
@@ -781,35 +862,31 @@ def build_image():
     random_name = str(uuid.uuid4())
 
     # Unzip model archive
-    if S3_MODE:
-        dockerfile = choose_dockerfile(gpu,arm64)
-        context_uri = upload_context(model, module_name, random_name, modzy_metadata_data, dockerfile)
-    else:
+    if PV_MODE:
         unzip_model(model, module_name, random_name)
         context_uri = None
+    else:
+        dockerfile = choose_dockerfile(gpu,arm64)
+        context_uri = upload_context(model, module_name, random_name, modzy_metadata_data, dockerfile)
 
     # User can build the image but not deploy it to Modzy. So no input_sample is mandatory.
     # On the other hand, the model.yaml is needed to build the image so proceed with it.
 
     # save the sample input to the modzy_sample_input_path directory
     if modzy_data:
-        if S3_MODE:
-            modzy_uri = upload_modzy_files(random_name,modzy_metadata_data,modzy_sample_input_data)
-        else:
+        if PV_MODE:
             modzy_sample_input_path = extract_modzy_sample_input(modzy_sample_input_data, module_name, random_name)
             modzy_data['modzy_sample_input_path'] = modzy_sample_input_path
             modzy_uri = None
+        else:
+            modzy_uri = upload_modzy_files(random_name,modzy_metadata_data,modzy_sample_input_data)
         modzy_metadata_path = extract_modzy_metadata(modzy_metadata_data, module_name, random_name)
         modzy_data['modzy_metadata_path'] = modzy_metadata_path
 
     # this path is the local location that kaniko will store the image it creates
-    if S3_MODE:
-        path_to_tar_file = f'/tar/kaniko_image-{random_name}.tar'
-    else:
-        path_to_tar_file = f'{DATA_DIR}/kaniko_image-{random_name}.tar'
+    path_to_tar_file = f'{DATA_DIR if PV_MODE else "/tar"}/kaniko_image-{random_name}.tar'
 
     logger.debug(f'Request data: {image_name}, {module_name}, {model_name}, {path_to_tar_file}')
-
     error = run_kaniko(
         image_name,
         module_name,
@@ -950,7 +1027,7 @@ def create_app():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
 
-    if not S3_MODE:
+    if PV_MODE:
         copy_required_files_for_kaniko()
 
     if CHASSIS_DEV:
