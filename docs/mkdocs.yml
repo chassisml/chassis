@@ -15,9 +15,9 @@ nav:
       - Chassisml API Reference: service-reference.md
       - Python SDK: chassisml-sdk-reference.md
   - Conceptual Guides:
+      - Overview: conceptual-guides/overview.md
       - Design & Architecture: conceptual-guides/design.md
       - Pre and Post-Processing: conceptual-guides/processing.md
-  - Help: help.md
   - Get Involved: get-involved.md
   - Release Notes: release-notes.md
 theme:
@@ -44,8 +44,10 @@ plugins:
 markdown_extensions:
   - attr_list
   - pymdownx.details
-  - pymdownx.highlight
+  - pymdownx.highlight:
+      anchor_linenums: true
   - pymdownx.superfences
+  - pymdownx.snippets
   - pymdownx.inlinehilite
   - admonition
   - pymdownx.emoji:
@@ -61,4 +63,14 @@ extra:
     provider: google
     property: G-4NVL0DTGZ4
   generator: false
+  social:
+    - icon: fontawesome/brands/discord
+      link: https://discord.gg/Fk5sUfZPGE
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/chassisml/
+    - icon: fontawesome/brands/slack
+      link: https://join.slack.com/t/mlops-community/shared_invite/zt-10jopsclv-sny902l2GOFdElU2blfACg
+    - icon: fontawesome/brands/github
+      link: https://github.com/modzy/chassis
+copyright: Copyright &copy; 2022 Modzy
 # use_directory_controls: false

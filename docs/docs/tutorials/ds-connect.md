@@ -1,4 +1,4 @@
-# Build a Model (Data Scientists)
+# Build a Model (Data Science)
 
 !!! note
     If you just want to try Chassis, you can use the test drive, which will deploy it for you so that you can go straight to building a MLflow model into a Docker container and pushing it to your Docker Hub account in the `svc_demo.ipynb` sample notebook:
