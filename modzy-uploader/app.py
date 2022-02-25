@@ -13,9 +13,12 @@ from requests.packages.urllib3.util.retry import Retry
 from kubernetes import client, config
 import humanfriendly
 import argparse
-import boto3
 import tempfile
 import tarfile
+import base64
+from ast import literal_eval
+from libcloud.storage.types import Provider
+from libcloud.storage.providers import get_driver
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--api_key', type=str, required=False)
@@ -30,7 +33,11 @@ JOB_NAME = os.getenv('JOB_NAME')
 ENVIRONMENT = os.getenv('ENVIRONMENT')
 MODZY_BASE_URL = 'https://integration.modzy.engineering'
 
-s3_client = boto3.client('s3')
+SUPPORTED_STORAGE_PROVIDERS = {
+    "s3": Provider.S3,
+    "gs": Provider.GOOGLE_STORAGE
+}
+
 r_session = requests.Session()
 
 routes = {
@@ -46,11 +53,37 @@ routes = {
 }
 
 def download_modzy_data(modzy_uri):
+    config.load_incluster_config()
+    v1 = client.CoreV1Api()
+    storage_secret = v1.read_namespaced_secret("storage-key", ENVIRONMENT).data
+    
+    provider = modzy_uri.split(':')[0]
+    if provider == "gs":
+        gs_key = literal_eval(base64.b64decode(storage_secret["storage-key.json"]).decode())
+        access_key = gs_key['client_email']
+        secret_key = gs_key['private_key']
+        storage_driver = get_driver(SUPPORTED_STORAGE_PROVIDERS[provider])(access_key, secret_key)
+    elif provider == "s3":
+        s3_key_lines = base64.b64decode(storage_secret["credentials"]).decode().splitlines()
+        s3_creds = {}
+        for line in s3_key_lines:
+            if "=" in line:
+                k,v = line.split("=")
+                s3_creds[k] = v
+        access_key = s3_creds['aws_access_key_id']
+        secret_key = s3_creds['aws_secret_access_key']
+        storage_driver = get_driver(SUPPORTED_STORAGE_PROVIDERS[provider])(access_key, secret_key)
+    else:
+        raise ValueError("Invalid storage provider, only S3 and GCS are currently supported.")
+
     tmp_dir = tempfile.mkdtemp()
-    bucket, key = modzy_uri.split('/',2)[-1].split('/',1)
     output_tarpath = f'{tmp_dir}/modzy-data.tar.gz'
 
-    s3_client.download_file(bucket, key, output_tarpath)
+    bucket = modzy_uri.split('/')[2]
+    key = modzy_uri.split('/')[-1]
+    obj = storage_driver.get_object(container_name=bucket, object_name=key)
+    obj.download(destination_path=output_tarpath)
+
     my_tar = tarfile.open(output_tarpath)
     my_tar.extractall(tmp_dir)
     my_tar.close()  
@@ -61,7 +94,6 @@ def format_url(route, *args):
     return urllib.parse.urljoin(MODZY_BASE_URL, route).format(*args)
 
 def create_model(metadata):
-    '''https://v2ui.dev.modzy.engineering/docs/deployment/models/create-model'''
 
     start = time.time()
 
@@ -78,7 +110,6 @@ def create_model(metadata):
     return res.json()
 
 def add_tags_and_description(identifier, metadata):
-    '''https://v2ui.dev.modzy.engineering/docs/deployment/models/update-model'''
 
     start = time.time()
 
@@ -99,7 +130,6 @@ def add_tags_and_description(identifier, metadata):
     logger.info(f'add_tags_and_description took [{1000*(time.time()-start)} ms]')
 
 def add_container_image(identifier, version, image_tag):
-    '''https://v2ui.dev.modzy.engineering/docs/deployment/container-image/add-container-image'''
 
     start = time.time()
 
@@ -170,7 +200,6 @@ def _format_metadata(metadata):
     return body
 
 def add_metadata(identifier, version, metadata):
-    '''https://v2ui.dev.modzy.engineering/docs/deployment/metadata/metadata'''
 
     start = time.time()
 
@@ -186,7 +215,6 @@ def add_metadata(identifier, version, metadata):
     return res.json()
 
 def load_model(identifier, version):
-    '''https://v2ui.dev.modzy.engineering/docs/deployment/tests/load-model'''
 
     start = time.time()
 
@@ -224,7 +252,7 @@ def load_model(identifier, version):
     logger.info(f'load_model took [{1000*(time.time()-start)} ms]')
 
 def upload_input_example(identifier, version, model_data_metadata, input_sample_path):
-    '''https://v2ui.dev.modzy.engineering/docs/deployment/inputs-test-file/add-test-input'''
+
     start = time.time()
 
     route = format_url(routes['upload_input_example'], identifier, version)
@@ -239,7 +267,6 @@ def upload_input_example(identifier, version, model_data_metadata, input_sample_
     logger.info(f'upload_input_example took [{1000*(time.time()-start)} ms]')
 
 def run_model(identifier, version):
-    '''https://v2ui.dev.modzy.engineering/docs/deployment/tests/run-model'''
 
     start = time.time()
 
@@ -251,7 +278,6 @@ def run_model(identifier, version):
     logger.info(f'run_model took [{1000*(time.time()-start)} ms]')
 
 def deploy_model(identifier, version):
-    '''https://v2ui.dev.modzy.engineering/docs/deployment/models/deploy-model-version'''
 
     start = time.time()
 
