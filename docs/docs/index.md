@@ -20,7 +20,7 @@ response = chassis_model.publish(
 ) 
 ```
 
-**Serve your model whereever containers run**
+**Serve your model wherever containers run**
 <style>
 #container {
   border: none;
