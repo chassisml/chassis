@@ -1,0 +1,22 @@
+apiVersion: "serving.kubeflow.org/v1beta1"
+kind: "InferenceService"
+metadata:
+  name: chassisml-sklearn-demo
+spec:
+  predictor:
+    containers:
+    - image: carmilso/chassisml-sklearn-demo:latest
+      name: chassisml-sklearn-demo-container
+      imagePullPolicy: IfNotPresent
+      env:
+        - name: INTERFACE
+          value: kserve
+        - name: HTTP_PORT
+          value: "8080"
+        - name: PROTOCOL
+          value: v2
+        - name: MODEL_NAME
+          value: digits
+      ports:
+        - containerPort: 8080
+          protocol: TCP
