@@ -27,7 +27,7 @@ It also provides a python SDK that makes it very easy to communicate with Chassi
 
 Some non-goals of this project are:
 
-- Deploy the built image - this is up to the platform that you deploy the container into, like KFServing or Modzy
+- Deploy the built image - this is up to the platform that you deploy the container into, like KServe or Modzy
 
 ## Intro Video
 
