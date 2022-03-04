@@ -9,7 +9,7 @@
       
       
       <link rel="icon" href="../images/chassis-symbol.png">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.2.1">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.2.4">
     
     
       
@@ -17,7 +17,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.e8d9bf0c.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.2d9f7617.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.e6a45f82.min.css">
@@ -28,8 +28,9 @@
     
       
         
+        
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
         <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
       
     
@@ -775,28 +776,37 @@ It generates a model image based upon a POST request. The <code>request.files</c
     <span class="n">random_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
 
     <span class="c1"># Unzip model archive</span>
-    <span class="n">unzip_model</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">module_name</span><span class="p">,</span> <span class="n">random_name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">PV_MODE</span><span class="p">:</span>
+        <span class="n">unzip_model</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">module_name</span><span class="p">,</span> <span class="n">random_name</span><span class="p">)</span>
+        <span class="n">context_uri</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dockerfile</span> <span class="o">=</span> <span class="n">choose_dockerfile</span><span class="p">(</span><span class="n">gpu</span><span class="p">,</span><span class="n">arm64</span><span class="p">)</span>
+        <span class="n">context_uri</span> <span class="o">=</span> <span class="n">upload_context</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">module_name</span><span class="p">,</span> <span class="n">random_name</span><span class="p">,</span> <span class="n">modzy_metadata_data</span><span class="p">,</span> <span class="n">dockerfile</span><span class="p">)</span>
 
     <span class="c1"># User can build the image but not deploy it to Modzy. So no input_sample is mandatory.</span>
     <span class="c1"># On the other hand, the model.yaml is needed to build the image so proceed with it.</span>
 
     <span class="c1"># save the sample input to the modzy_sample_input_path directory</span>
     <span class="k">if</span> <span class="n">modzy_data</span><span class="p">:</span>
-        <span class="c1"># attempt Modzy connection</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">ApiClient</span><span class="p">(</span><span class="n">modzy_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;modzy_url&#39;</span><span class="p">),</span><span class="n">modzy_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;api_key&#39;</span><span class="p">))</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">),</span><span class="s1">&#39;job_id&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
-        <span class="n">modzy_sample_input_path</span> <span class="o">=</span> <span class="n">extract_modzy_sample_input</span><span class="p">(</span><span class="n">modzy_sample_input_data</span><span class="p">,</span> <span class="n">module_name</span><span class="p">,</span> <span class="n">random_name</span><span class="p">)</span>
-        <span class="n">modzy_data</span><span class="p">[</span><span class="s1">&#39;modzy_sample_input_path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">modzy_sample_input_path</span>
+
+        <span class="k">if</span> <span class="n">PV_MODE</span><span class="p">:</span>
+            <span class="n">modzy_sample_input_path</span> <span class="o">=</span> <span class="n">extract_modzy_sample_input</span><span class="p">(</span><span class="n">modzy_sample_input_data</span><span class="p">,</span> <span class="n">module_name</span><span class="p">,</span> <span class="n">random_name</span><span class="p">)</span>
+            <span class="n">modzy_data</span><span class="p">[</span><span class="s1">&#39;modzy_sample_input_path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">modzy_sample_input_path</span>
+            <span class="n">modzy_uri</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">modzy_uri</span> <span class="o">=</span> <span class="n">upload_modzy_files</span><span class="p">(</span><span class="n">random_name</span><span class="p">,</span><span class="n">modzy_metadata_data</span><span class="p">,</span><span class="n">modzy_sample_input_data</span><span class="p">)</span>
+
         <span class="n">modzy_metadata_path</span> <span class="o">=</span> <span class="n">extract_modzy_metadata</span><span class="p">(</span><span class="n">modzy_metadata_data</span><span class="p">,</span> <span class="n">module_name</span><span class="p">,</span> <span class="n">random_name</span><span class="p">)</span>
         <span class="n">modzy_data</span><span class="p">[</span><span class="s1">&#39;modzy_metadata_path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">modzy_metadata_path</span>
 
     <span class="c1"># this path is the local location that kaniko will store the image it creates</span>
-    <span class="n">path_to_tar_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">DATA_DIR</span><span class="si">}</span><span class="s1">/kaniko_image-</span><span class="si">{</span><span class="n">random_name</span><span class="si">}</span><span class="s1">.tar&#39;</span>
+    <span class="n">path_to_tar_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">DATA_DIR</span> <span class="k">if</span> <span class="n">PV_MODE</span> <span class="k">else</span> <span class="s2">&quot;/tar&quot;</span><span class="si">}</span><span class="s1">/kaniko_image-</span><span class="si">{</span><span class="n">random_name</span><span class="si">}</span><span class="s1">.tar&#39;</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Request data: </span><span class="si">{</span><span class="n">image_name</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="n">module_name</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="n">path_to_tar_file</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-
     <span class="n">error</span> <span class="o">=</span> <span class="n">run_kaniko</span><span class="p">(</span>
         <span class="n">image_name</span><span class="p">,</span>
         <span class="n">module_name</span><span class="p">,</span>
@@ -807,7 +817,9 @@ It generates a model image based upon a POST request. The <code>request.files</c
         <span class="n">publish</span><span class="p">,</span>
         <span class="n">registry_auth</span><span class="p">,</span>
         <span class="n">gpu</span><span class="p">,</span>
-        <span class="n">arm64</span>
+        <span class="n">arm64</span><span class="p">,</span>
+        <span class="n">context_uri</span><span class="p">,</span>
+        <span class="n">modzy_uri</span>
     <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">error</span><span class="p">:</span>
@@ -827,7 +839,7 @@ It generates a model image based upon a POST request. The <code>request.files</c
 
 
 <h3 id="service.app.create_job_object" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">create_job_object</span><span class="p">(</span><span class="n">image_name</span><span class="p">,</span> <span class="n">module_name</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">path_to_tar_file</span><span class="p">,</span> <span class="n">random_name</span><span class="p">,</span> <span class="n">modzy_data</span><span class="p">,</span> <span class="n">publish</span><span class="p">,</span> <span class="n">registry_auth</span><span class="p">,</span> <span class="n">gpu</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">arm64</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">create_job_object</span><span class="p">(</span><span class="n">image_name</span><span class="p">,</span> <span class="n">module_name</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">path_to_tar_file</span><span class="p">,</span> <span class="n">random_name</span><span class="p">,</span> <span class="n">modzy_data</span><span class="p">,</span> <span class="n">publish</span><span class="p">,</span> <span class="n">registry_auth</span><span class="p">,</span> <span class="n">gpu</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">arm64</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">context_uri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">modzy_uri</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 
 </h3>
@@ -907,6 +919,18 @@ It generates a model image based upon a POST request. The <code>request.files</c
         <td><p>If <code>True</code>, will build container image that runs on ARM64 architecture</p></td>
         <td><code>False</code></td>
       </tr>
+      <tr>
+        <td><code>context_uri</code></td>
+        <td><code>str</code></td>
+        <td><p>Location of build context in S3 (S3 mode only)</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>modzy_uri</code></td>
+        <td><code>str</code></td>
+        <td><p>Location of modzy data in S3 (S3 mode only)</p></td>
+        <td><code>None</code></td>
+      </tr>
   </tbody>
 </table>
 <p><strong>Returns:</strong></p>
@@ -936,7 +960,9 @@ It generates a model image based upon a POST request. The <code>request.files</c
         <span class="n">publish</span><span class="p">,</span>
         <span class="n">registry_auth</span><span class="p">,</span>
         <span class="n">gpu</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">arm64</span><span class="o">=</span><span class="kc">False</span>
+        <span class="n">arm64</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">context_uri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">modzy_uri</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    This utility method sets up all the required objects needed to create a model image and is run within the `run_kaniko` method.</span>
@@ -952,150 +978,179 @@ It generates a model image based upon a POST request. The <code>request.files</c
 <span class="sd">        registry_auth (dict): Docker registry authorization credentials  </span>
 <span class="sd">        gpu (bool): If `True`, will build container image that runs on GPU </span>
 <span class="sd">        arm64 (bool): If `True`, will build container image that runs on ARM64 architecture</span>
+<span class="sd">        context_uri (str): Location of build context in S3 (S3 mode only)</span>
+<span class="sd">        modzy_uri (str): Location of modzy data in S3 (S3 mode only)</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Job: Chassis job object</span>
 
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="c1"># </span>
-
     <span class="n">job_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">K_JOB_NAME</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">random_name</span><span class="si">}</span><span class="s1">&#39;</span>
 
     <span class="c1"># credential setup for Docker Hub.</span>
     <span class="c1"># json for holding registry credentials that will access docker hub.</span>
     <span class="c1"># reference: https://github.com/GoogleContainerTools/kaniko#pushing-to-docker-hub</span>
     <span class="n">registry_credentials</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="se">{{</span><span class="s1">&quot;auths&quot;:</span><span class="se">{{</span><span class="s1">&quot;https://index.docker.io/v1/&quot;:</span><span class="se">{{</span><span class="s1">&quot;auth&quot;:&quot;</span><span class="si">{</span><span class="n">registry_auth</span><span class="si">}</span><span class="s1">&quot;</span><span class="se">}}}}}}</span><span class="s1">&#39;</span>
+    <span class="n">b64_registry_credentials</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">registry_credentials</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
 
     <span class="c1"># mount path leads to /data</span>
     <span class="c1"># this is a mount point. NOT the volume itself.</span>
     <span class="c1"># name aligns with a volume defined below.</span>
-    <span class="n">data_volume_mount</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">V1VolumeMount</span><span class="p">(</span>
-        <span class="n">mount_path</span><span class="o">=</span><span class="n">MOUNT_PATH_DIR</span><span class="p">,</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;local-volume-code&quot;</span>
-    <span class="p">)</span> <span class="k">if</span> <span class="n">CHASSIS_DEV</span> <span class="k">else</span> <span class="n">client</span><span class="o">.</span><span class="n">V1VolumeMount</span><span class="p">(</span>
-        <span class="n">mount_path</span><span class="o">=</span><span class="n">MOUNT_PATH_DIR</span><span class="p">,</span>
-        <span class="n">name</span><span class="o">=</span><span class="n">K_DATA_VOLUME_NAME</span>
-    <span class="p">)</span>
-
-    <span class="c1"># This volume will be used by init container to populate registry credentials.</span>
-    <span class="c1"># mount leads to /tmp/credentials</span>
-    <span class="c1"># this is a mount point. NOT the volume itself.</span>
-    <span class="c1"># name aligns with a volume defined below.</span>
-    <span class="n">init_empty_dir_volume_mount</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">V1VolumeMount</span><span class="p">(</span>
-        <span class="n">mount_path</span><span class="o">=</span><span class="n">K_INIT_EMPTY_DIR_PATH</span><span class="p">,</span>
-        <span class="n">name</span><span class="o">=</span><span class="n">K_EMPTY_DIR_NAME</span>
-    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">PV_MODE</span><span class="p">:</span>
+        <span class="n">data_volume_mount</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">V1VolumeMount</span><span class="p">(</span>
+            <span class="n">mount_path</span><span class="o">=</span><span class="n">MOUNT_PATH_DIR</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;local-volume-code&quot;</span>
+        <span class="p">)</span> <span class="k">if</span> <span class="n">CHASSIS_DEV</span> <span class="k">else</span> <span class="n">client</span><span class="o">.</span><span class="n">V1VolumeMount</span><span class="p">(</span>
+            <span class="n">mount_path</span><span class="o">=</span><span class="n">MOUNT_PATH_DIR</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">K_DATA_VOLUME_NAME</span>
+        <span class="p">)</span>
 
     <span class="c1"># This volume will be used by kaniko container to get registry credentials.</span>
     <span class="c1"># mount path leads to /kaniko/.docker per kaniko reference documentation</span>
     <span class="c1"># this is a mount point. NOT the volume itself.</span>
     <span class="c1"># name aligns with a volume defined below.</span>
-    <span class="n">kaniko_empty_dir_volume_mount</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">V1VolumeMount</span><span class="p">(</span>
+    <span class="n">kaniko_credentials_volume_mount</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">V1VolumeMount</span><span class="p">(</span>
         <span class="n">mount_path</span><span class="o">=</span><span class="n">K_KANIKO_EMPTY_DIR_PATH</span><span class="p">,</span>
         <span class="n">name</span><span class="o">=</span><span class="n">K_EMPTY_DIR_NAME</span>
     <span class="p">)</span>
 
-    <span class="c1"># This container is used to populate registry credentials.</span>
-    <span class="c1"># it only runs the single command in shell to echo our credentials into their proper file</span>
-    <span class="c1"># per the reference documentation for Docker Hub</span>
-    <span class="c1"># TODO: add credentials for Cloud Providers</span>
-    <span class="n">init_container</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">V1Container</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;credentials&#39;</span><span class="p">,</span>
-        <span class="n">image</span><span class="o">=</span><span class="s1">&#39;busybox&#39;</span><span class="p">,</span>
-        <span class="n">volume_mounts</span><span class="o">=</span><span class="p">[</span><span class="n">init_empty_dir_volume_mount</span><span class="p">],</span>
-        <span class="n">command</span><span class="o">=</span><span class="p">[</span>
-            <span class="s1">&#39;/bin/sh&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;-c&#39;</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s1">&#39;echo </span><span class="se">\&#39;</span><span class="si">{</span><span class="n">registry_credentials</span><span class="si">}</span><span class="se">\&#39;</span><span class="s1"> &gt; </span><span class="si">{</span><span class="n">K_INIT_EMPTY_DIR_PATH</span><span class="si">}</span><span class="s1">/config.json&#39;</span>
-        <span class="p">]</span>
+    <span class="c1"># create secret for registry credentials       </span>
+    <span class="n">registry_creds_secret_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">random_name</span><span class="si">}</span><span class="s1">-creds&#39;</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">registry_creds_secret_name</span><span class="p">,</span> <span class="s1">&#39;namespace&#39;</span><span class="p">:</span> <span class="n">ENVIRONMENT</span><span class="p">}</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;config.json&#39;</span><span class="p">:</span> <span class="n">b64_registry_credentials</span><span class="p">}</span>
+    <span class="n">api_version</span> <span class="o">=</span> <span class="s1">&#39;v1&#39;</span>
+    <span class="n">kind</span> <span class="o">=</span> <span class="s1">&#39;Secret&#39;</span>
+    <span class="n">secret</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">V1Secret</span><span class="p">(</span><span class="n">api_version</span><span class="p">,</span> <span class="n">data</span> <span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">CoreV1Api</span><span class="p">()</span><span class="o">.</span><span class="n">create_namespaced_secret</span><span class="p">(</span><span class="n">ENVIRONMENT</span><span class="p">,</span> <span class="n">secret</span><span class="p">)</span>
+
+    <span class="c1"># volume holding credentials</span>
+    <span class="n">kaniko_credentials_volume</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">V1Volume</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">K_EMPTY_DIR_NAME</span><span class="p">,</span>
+        <span class="n">secret</span><span class="o">=</span><span class="n">client</span><span class="o">.</span><span class="n">V1SecretVolumeSource</span><span class="p">(</span><span class="n">secret_name</span><span class="o">=</span><span class="n">registry_creds_secret_name</span><span class="p">)</span>
     <span class="p">)</span>
 
     <span class="c1"># This is the kaniko container used to build the final image.</span>
-
-    <span class="k">if</span> <span class="n">gpu</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">arm64</span><span class="p">:</span>
-        <span class="n">dockerfile</span> <span class="o">=</span> <span class="s2">&quot;Dockerfile.gpu&quot;</span>
-    <span class="k">elif</span> <span class="n">arm64</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">gpu</span><span class="p">:</span>
-        <span class="n">dockerfile</span> <span class="o">=</span> <span class="s2">&quot;Dockerfile.arm&quot;</span>
-    <span class="k">elif</span> <span class="n">arm64</span> <span class="ow">and</span> <span class="n">gpu</span><span class="p">:</span>
-        <span class="n">dockerfile</span> <span class="o">=</span> <span class="s2">&quot;Dockerfile.arm.gpu&quot;</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">dockerfile</span> <span class="o">=</span> <span class="s2">&quot;Dockerfile&quot;</span>
-
     <span class="n">kaniko_args</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="sa">f</span><span class="s1">&#39;--dockerfile=</span><span class="si">{</span><span class="n">DATA_DIR</span><span class="si">}</span><span class="s1">/flavours/</span><span class="si">{</span><span class="n">module_name</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">dockerfile</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
         <span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="n">publish</span> <span class="k">else</span> <span class="s1">&#39;--no-push&#39;</span><span class="p">,</span>
-        <span class="sa">f</span><span class="s1">&#39;--tarPath=</span><span class="si">{</span><span class="n">path_to_tar_file</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
         <span class="sa">f</span><span class="s1">&#39;--destination=</span><span class="si">{</span><span class="n">image_name</span><span class="si">}{</span><span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">image_name</span> <span class="k">else</span> <span class="s2">&quot;:latest&quot;</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-        <span class="sa">f</span><span class="s1">&#39;--context=</span><span class="si">{</span><span class="n">DATA_DIR</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
         <span class="sa">f</span><span class="s1">&#39;--build-arg=MODEL_DIR=model-</span><span class="si">{</span><span class="n">random_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
         <span class="sa">f</span><span class="s1">&#39;--build-arg=MODZY_METADATA_PATH=</span><span class="si">{</span><span class="n">modzy_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;modzy_metadata_path&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
         <span class="sa">f</span><span class="s1">&#39;--build-arg=MODEL_NAME=</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
         <span class="sa">f</span><span class="s1">&#39;--build-arg=MODEL_CLASS=</span><span class="si">{</span><span class="n">module_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
         <span class="c1"># Modzy is the default interface.</span>
-        <span class="s1">&#39;--build-arg=INTERFACE=modzy&#39;</span>   
+        <span class="s1">&#39;--build-arg=INTERFACE=modzy&#39;</span><span class="p">,</span>
     <span class="p">]</span>
 
-    <span class="n">init_container_kaniko</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">V1Container</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;kaniko&#39;</span><span class="p">,</span>
-        <span class="n">image</span><span class="o">=</span><span class="s1">&#39;gcr.io/kaniko-project/executor:latest&#39;</span><span class="p">,</span>
-        <span class="n">volume_mounts</span><span class="o">=</span><span class="p">[</span>
-            <span class="n">data_volume_mount</span><span class="p">,</span>
-            <span class="n">kaniko_empty_dir_volume_mount</span>
-        <span class="p">],</span>
-        <span class="n">args</span><span class="o">=</span><span class="n">kaniko_args</span>
-    <span class="p">)</span>
+    <span class="n">modzy_uploader_args</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="sa">f</span><span class="s1">&#39;--api_key=</span><span class="si">{</span><span class="n">modzy_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;api_key&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">&#39;--deploy=</span><span class="si">{</span><span class="kc">True</span> <span class="k">if</span> <span class="n">modzy_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;deploy&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">&#39;--sample_input_path=</span><span class="si">{</span><span class="n">modzy_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;modzy_sample_input_path&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">&#39;--image_tag=</span><span class="si">{</span><span class="n">image_name</span><span class="si">}{</span><span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">image_name</span> <span class="k">else</span> <span class="s2">&quot;:latest&quot;</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">&#39;--modzy_url=</span><span class="si">{</span><span class="n">modzy_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;modzy_url&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="p">]</span>
+
+    <span class="n">volumes</span> <span class="o">=</span> <span class="p">[</span><span class="n">kaniko_credentials_volume</span><span class="p">]</span>
+    <span class="n">modzy_uploader_volume_mounts</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">kaniko_volume_mounts</span> <span class="o">=</span> <span class="p">[</span><span class="n">kaniko_credentials_volume_mount</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">PV_MODE</span><span class="p">:</span>
+        <span class="n">dockerfile</span> <span class="o">=</span> <span class="n">choose_dockerfile</span><span class="p">(</span><span class="n">gpu</span><span class="p">,</span><span class="n">arm64</span><span class="p">)</span>
+        <span class="n">kaniko_args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;--dockerfile=</span><span class="si">{</span><span class="n">DATA_DIR</span><span class="si">}</span><span class="s1">/flavours/</span><span class="si">{</span><span class="n">module_name</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">dockerfile</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span><span class="sa">f</span><span class="s1">&#39;--context=</span><span class="si">{</span><span class="n">DATA_DIR</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                            <span class="sa">f</span><span class="s1">&#39;--tarPath=</span><span class="si">{</span><span class="n">path_to_tar_file</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,])</span>
+        <span class="n">kaniko_volume_mounts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data_volume_mount</span><span class="p">)</span>
+
+        <span class="n">init_container_kaniko</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">V1Container</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;kaniko&#39;</span><span class="p">,</span>
+            <span class="n">image</span><span class="o">=</span><span class="s1">&#39;gcr.io/kaniko-project/executor:latest&#39;</span><span class="p">,</span>
+            <span class="n">volume_mounts</span><span class="o">=</span><span class="n">kaniko_volume_mounts</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="n">kaniko_args</span>
+        <span class="p">)</span>
+
+        <span class="c1"># volume claim</span>
+        <span class="n">data_pv_claim</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">V1PersistentVolumeClaimVolumeSource</span><span class="p">(</span>
+            <span class="n">claim_name</span><span class="o">=</span><span class="s2">&quot;dir-claim-chassis&quot;</span>
+        <span class="p">)</span> <span class="k">if</span> <span class="n">CHASSIS_DEV</span> <span class="k">else</span> <span class="n">client</span><span class="o">.</span><span class="n">V1PersistentVolumeClaimVolumeSource</span><span class="p">(</span>
+            <span class="n">claim_name</span><span class="o">=</span><span class="n">K_DATA_VOLUME_NAME</span>
+        <span class="p">)</span>
+
+        <span class="c1"># volume holding data</span>
+        <span class="n">data_volume</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">V1Volume</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;local-volume-code&quot;</span><span class="p">,</span>
+            <span class="n">persistent_volume_claim</span><span class="o">=</span><span class="n">data_pv_claim</span>
+        <span class="p">)</span> <span class="k">if</span> <span class="n">CHASSIS_DEV</span> <span class="k">else</span> <span class="n">client</span><span class="o">.</span><span class="n">V1Volume</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">K_DATA_VOLUME_NAME</span><span class="p">,</span>
+            <span class="n">persistent_volume_claim</span><span class="o">=</span><span class="n">data_pv_claim</span>
+        <span class="p">)</span>
+
+        <span class="n">modzy_uploader_args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;--sample_input_path=</span><span class="si">{</span><span class="n">modzy_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;modzy_sample_input_path&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">&#39;--metadata_path=</span><span class="si">{</span><span class="n">DATA_DIR</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">modzy_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;modzy_metadata_path&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">])</span>
+        <span class="n">modzy_uploader_volume_mounts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data_volume_mount</span><span class="p">)</span>
+        <span class="n">volumes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data_volume</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">kaniko_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;--context=</span><span class="si">{</span><span class="n">context_uri</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">MODE</span><span class="o">==</span><span class="s2">&quot;s3&quot;</span><span class="p">:</span>
+            <span class="n">kaniko_s3_volume_mount</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">V1VolumeMount</span><span class="p">(</span>
+                <span class="n">mount_path</span><span class="o">=</span><span class="s1">&#39;/root/.aws&#39;</span><span class="p">,</span>
+                <span class="n">name</span><span class="o">=</span><span class="s1">&#39;storage-key&#39;</span>
+            <span class="p">)</span>
+
+            <span class="n">kaniko_storage_key_volume</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">V1Volume</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="s1">&#39;storage-key&#39;</span><span class="p">,</span>
+                <span class="n">secret</span><span class="o">=</span><span class="n">client</span><span class="o">.</span><span class="n">V1SecretVolumeSource</span><span class="p">(</span><span class="n">secret_name</span><span class="o">=</span><span class="s1">&#39;storage-key&#39;</span><span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="n">kaniko_volume_mounts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">kaniko_s3_volume_mount</span><span class="p">)</span>
+            <span class="n">init_container_kaniko</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">V1Container</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="s1">&#39;kaniko&#39;</span><span class="p">,</span>
+                <span class="n">image</span><span class="o">=</span><span class="s1">&#39;gcr.io/kaniko-project/executor:latest&#39;</span><span class="p">,</span>
+                <span class="n">volume_mounts</span><span class="o">=</span><span class="n">kaniko_volume_mounts</span><span class="p">,</span>
+                <span class="n">env</span><span class="o">=</span><span class="p">[</span><span class="n">client</span><span class="o">.</span><span class="n">V1EnvVar</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;AWS_REGION&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">AWS_REGION</span><span class="p">)],</span>
+                <span class="n">args</span><span class="o">=</span><span class="n">kaniko_args</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">MODE</span><span class="o">==</span><span class="s2">&quot;gs&quot;</span><span class="p">:</span>
+            <span class="n">kaniko_gs_volume_mount</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">V1VolumeMount</span><span class="p">(</span>
+                <span class="n">mount_path</span><span class="o">=</span><span class="s1">&#39;/secret&#39;</span><span class="p">,</span>
+                <span class="n">name</span><span class="o">=</span><span class="s1">&#39;storage-key&#39;</span>
+            <span class="p">)</span>
+
+            <span class="n">kaniko_storage_key_volume</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">V1Volume</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="s1">&#39;storage-key&#39;</span><span class="p">,</span>
+                <span class="n">secret</span><span class="o">=</span><span class="n">client</span><span class="o">.</span><span class="n">V1SecretVolumeSource</span><span class="p">(</span><span class="n">secret_name</span><span class="o">=</span><span class="s1">&#39;storage-key&#39;</span><span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="n">kaniko_volume_mounts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">kaniko_gs_volume_mount</span><span class="p">)</span>
+
+            <span class="n">init_container_kaniko</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">V1Container</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="s1">&#39;kaniko&#39;</span><span class="p">,</span>
+                <span class="n">image</span><span class="o">=</span><span class="s1">&#39;gcr.io/kaniko-project/executor:latest&#39;</span><span class="p">,</span>
+                <span class="n">volume_mounts</span><span class="o">=</span><span class="n">kaniko_volume_mounts</span><span class="p">,</span>
+                <span class="n">env</span><span class="o">=</span><span class="p">[</span><span class="n">client</span><span class="o">.</span><span class="n">V1EnvVar</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;GOOGLE_APPLICATION_CREDENTIALS&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s1">&#39;/secret/storage-key.json&#39;</span><span class="p">)],</span>
+                <span class="n">args</span><span class="o">=</span><span class="n">kaniko_args</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Only allowed modes are: &#39;pv&#39;, &#39;gs&#39;, &#39;s3&#39;&quot;</span><span class="p">)</span>
+
+        <span class="n">modzy_uploader_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;--modzy_uri=</span><span class="si">{</span><span class="n">modzy_uri</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">volumes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">kaniko_storage_key_volume</span><span class="p">)</span>
 
     <span class="n">modzy_uploader_container</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">V1Container</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;modzy-uploader&#39;</span><span class="p">,</span>
         <span class="n">image</span><span class="o">=</span><span class="n">MODZY_UPLOADER_REPOSITORY</span><span class="p">,</span>
-        <span class="n">volume_mounts</span><span class="o">=</span><span class="p">[</span><span class="n">data_volume_mount</span><span class="p">],</span>
+        <span class="n">volume_mounts</span><span class="o">=</span><span class="n">modzy_uploader_volume_mounts</span><span class="p">,</span>
         <span class="n">env</span><span class="o">=</span><span class="p">[</span>
             <span class="n">client</span><span class="o">.</span><span class="n">V1EnvVar</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;JOB_NAME&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">job_name</span><span class="p">),</span>
             <span class="n">client</span><span class="o">.</span><span class="n">V1EnvVar</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;ENVIRONMENT&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">ENVIRONMENT</span><span class="p">)</span>
         <span class="p">],</span>
-        <span class="n">args</span><span class="o">=</span><span class="p">[</span>
-            <span class="sa">f</span><span class="s1">&#39;--api_key=</span><span class="si">{</span><span class="n">modzy_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;api_key&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s1">&#39;--deploy=</span><span class="si">{</span><span class="kc">True</span> <span class="k">if</span> <span class="n">modzy_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;deploy&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s1">&#39;--sample_input_path=</span><span class="si">{</span><span class="n">modzy_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;modzy_sample_input_path&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s1">&#39;--metadata_path=</span><span class="si">{</span><span class="n">DATA_DIR</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">modzy_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;modzy_metadata_path&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s1">&#39;--image_tag=</span><span class="si">{</span><span class="n">image_name</span><span class="si">}{</span><span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">image_name</span> <span class="k">else</span> <span class="s2">&quot;:latest&quot;</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s1">&#39;--modzy_url=</span><span class="si">{</span><span class="n">modzy_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;modzy_url&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
-        <span class="p">]</span>
-    <span class="p">)</span>
-
-    <span class="c1"># volume claim</span>
-    <span class="n">data_pv_claim</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">V1PersistentVolumeClaimVolumeSource</span><span class="p">(</span>
-        <span class="n">claim_name</span><span class="o">=</span><span class="s2">&quot;dir-claim-chassis&quot;</span>
-    <span class="p">)</span> <span class="k">if</span> <span class="n">CHASSIS_DEV</span> <span class="k">else</span> <span class="n">client</span><span class="o">.</span><span class="n">V1PersistentVolumeClaimVolumeSource</span><span class="p">(</span>
-        <span class="n">claim_name</span><span class="o">=</span><span class="n">K_DATA_VOLUME_NAME</span>
-    <span class="p">)</span>
-
-    <span class="c1"># volume holding data</span>
-
-    <span class="n">data_volume</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">V1Volume</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;local-volume-code&quot;</span><span class="p">,</span>
-        <span class="n">persistent_volume_claim</span><span class="o">=</span><span class="n">data_pv_claim</span>
-    <span class="p">)</span> <span class="k">if</span> <span class="n">CHASSIS_DEV</span> <span class="k">else</span> <span class="n">client</span><span class="o">.</span><span class="n">V1Volume</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="n">K_DATA_VOLUME_NAME</span><span class="p">,</span>
-        <span class="n">persistent_volume_claim</span><span class="o">=</span><span class="n">data_pv_claim</span>
-    <span class="p">)</span>
-
-    <span class="c1"># volume holding credentials</span>
-    <span class="n">empty_dir_volume</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">V1Volume</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="n">K_EMPTY_DIR_NAME</span><span class="p">,</span>
-        <span class="n">empty_dir</span><span class="o">=</span><span class="n">client</span><span class="o">.</span><span class="n">V1EmptyDirVolumeSource</span><span class="p">()</span>
+        <span class="n">args</span><span class="o">=</span><span class="n">modzy_uploader_args</span>
     <span class="p">)</span>
 
     <span class="c1"># Pod spec for the image build process</span>
     <span class="n">pod_spec</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">V1PodSpec</span><span class="p">(</span>
         <span class="n">service_account_name</span><span class="o">=</span><span class="n">K_SERVICE_ACCOUNT_NAME</span><span class="p">,</span>
         <span class="n">restart_policy</span><span class="o">=</span><span class="s1">&#39;Never&#39;</span><span class="p">,</span>
-        <span class="n">init_containers</span><span class="o">=</span><span class="p">[</span><span class="n">init_container</span><span class="p">,</span> <span class="n">init_container_kaniko</span><span class="p">],</span>
+        <span class="n">init_containers</span><span class="o">=</span><span class="p">[</span><span class="n">init_container_kaniko</span><span class="p">],</span>
         <span class="n">containers</span><span class="o">=</span><span class="p">[</span><span class="n">modzy_uploader_container</span><span class="p">],</span>
-        <span class="n">volumes</span><span class="o">=</span><span class="p">[</span>
-            <span class="n">data_volume</span><span class="p">,</span>
-            <span class="n">empty_dir_volume</span>
-        <span class="p">]</span>
+        <span class="n">volumes</span><span class="o">=</span><span class="n">volumes</span>
     <span class="p">)</span>
 
     <span class="c1"># setup and initiate model image build</span>
@@ -1190,7 +1245,10 @@ It downloads the container image from kaniko, built during the chassis job with 
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">uid</span> <span class="o">=</span> <span class="n">job_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">K_JOB_NAME</span><span class="si">}</span><span class="s1">-&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
 
-    <span class="k">return</span> <span class="n">send_from_directory</span><span class="p">(</span><span class="n">DATA_DIR</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;kaniko_image-</span><span class="si">{</span><span class="n">uid</span><span class="si">}</span><span class="s1">.tar&#39;</span><span class="p">,</span> <span class="n">as_attachment</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">PV_MODE</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">send_from_directory</span><span class="p">(</span><span class="n">DATA_DIR</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;kaniko_image-</span><span class="si">{</span><span class="n">uid</span><span class="si">}</span><span class="s1">.tar&#39;</span><span class="p">,</span> <span class="n">as_attachment</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;400 Bad Request: Tar download not available in production mode, please use &#39;docker pull ...&#39;&quot;</span><span class="p">,</span><span class="mi">400</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -1487,7 +1545,7 @@ Based on a GET request, it retrieves the status of the Kaniko job and the result
     <script id="__config" type="application/json">{"base": "..", "features": ["navigation.expand"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
     
     
-      <script src="../assets/javascripts/bundle.8aa65030.min.js"></script>
+      <script src="../assets/javascripts/bundle.5413a266.min.js"></script>
       
     
   </body>
