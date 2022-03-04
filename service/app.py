@@ -61,13 +61,9 @@ SUPPORTED_STORAGE_PROVIDERS = {
 }
 
 MODE = os.getenv('MODE')
-PV_MODE = True if MODE == "pv" else False
+PV_MODE = True if (MODE == "pv" or not MODE) else False
 
-if MODE == "pv":
-    # use persistent volume to transfer build context
-    PV_MODE = True
-else:
-    PV_MODE = False
+if not PV_MODE:
     CONTEXT_BUCKET = os.getenv('CONTEXT_BUCKET')
     config.load_incluster_config()
     v1 = client.CoreV1Api()
