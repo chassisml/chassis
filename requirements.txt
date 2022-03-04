@@ -1,3 +1,4 @@
+retry
 chassisml
 flask>=2.0.2
 requests>=2.27.1
