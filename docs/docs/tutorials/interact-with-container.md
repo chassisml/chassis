@@ -13,14 +13,15 @@ After building a container with Chassisml, there are several ways to interact wi
     * Open a terminal on your machine, and try to run `docker ps`
         * If you get a permissions error, follow instructions [here](https://docs.docker.com/engine/install/linux-postinstall/)
 * Install [Postman](https://www.postman.com/downloads/)
+* Download [proto file](https://github.com/modzy/chassis/blob/main/service/flavours/mlflow/interfaces/modzy/protos/model2_template/model.proto)
 
-### Download Chassisml Sample Container
+### Download Sample Container
 
 ```bash
 docker pull <add chassis public image to modzy repo?>
 ```
 
-## Run Chassisml Container Locally
+## Run Container Locally
 
 Before interacting with the container using Postman, we need to first spin up the container and port forward it to a port we will use in the local URL configuration in Postman.
 
@@ -42,7 +43,30 @@ After running the container, you should see this logs message printed to your te
 
 ## Send gRPC Requests to Running Container
 
-Once the container is running locally, open the Postman app.
+Once the container is running locally, open the Postman app. On the upper left of the screen, select **New** and open **gRPC Request**.
+
+![](../images/grpc-request.png){ style="border:20px solid white" }
+
+Enter your local server URL into the first box.
+
+![](../images/enter-url.png){ style="border:20px solid white" }
+
+In the second box, select the **Import protobuf definition from local file** and upload the [proto file](https://github.com/modzy/chassis/blob/main/service/flavours/mlflow/interfaces/modzy/protos/model2_template/model.proto) you downloaded during setup.
+
+![](../images/import-proto.png){ style="border:20px solid white" }
+
+Give your protobuf a name and version.
+
+![](../images/model-proto.png){ style="border:20px solid white" }
+
+The three remote procedure calls defined in the protobuf file (to which our Chassisml container adheres to) will appear in the **Select a method** dropdown.
+
+![](../images/methods.png){ style="border:20px solid white" }
+
+We are now ready to invoke requests to 
+
+
+
 
 
 
