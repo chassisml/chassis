@@ -93,7 +93,7 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
 
         Examples:
         ```python
-        chassis_model = chassis_client.create_model(context=context,process_fn=process)
+        chassis_model = chassis_client.create_model(process_fn=process)
         sample_filepath = './sample_data.json'
         results = chassis_model.test(sample_filepath)
         ```
@@ -124,7 +124,7 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
 
         Examples:
         ```python
-        chassis_model = chassis_client.create_model(context=context,process_fn=process)
+        chassis_model = chassis_client.create_model(process_fn=process)
         sample_input = sample_filepath = './sample_data.json'
         results = chassis_model.test_batch(sample_filepath)
         ```        
@@ -166,7 +166,7 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
 
         Examples:
         ```python
-        chassis_model = chassis_client.create_model(context=context,process_fn=process)
+        chassis_model = chassis_client.create_model(process_fn=process)
         sample_filepath = './sample_data.json'
         results = chassis_model.test_env(sample_filepath)
         ```        
@@ -216,7 +216,7 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
         
         Examples:
         ```python
-        chassis_model = chassis_client.create_model(context=context,process_fn=process)
+        chassis_model = chassis_client.create_model(process_fn=process)
         chassis_model.save("local_model_directory")
         ```
         '''
@@ -256,7 +256,7 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
         Examples:
         ```python
         # Create Chassisml model
-        chassis_model = chassis_client.create_model(context=context,process_fn=process)
+        chassis_model = chassis_client.create_model(process_fn=process)
 
         # Define Dockerhub credentials
         dockerhub_user = "user"
@@ -379,7 +379,7 @@ class ChassisClient:
         Examples:
         ```python
         # Create Chassisml model
-        chassis_model = chassis_client.create_model(context=context,process_fn=process)
+        chassis_model = chassis_client.create_model(process_fn=process)
 
         # Define Dockerhub credentials
         dockerhub_user = "user"
@@ -418,7 +418,7 @@ class ChassisClient:
         Examples:
         ```python
         # Create Chassisml model
-        chassis_model = chassis_client.create_model(context=context,process_fn=process)
+        chassis_model = chassis_client.create_model(process_fn=process)
 
         # Define Dockerhub credentials
         dockerhub_user = "user"
@@ -533,9 +533,8 @@ class ChassisClient:
         Builds chassis model locally
 
         Args:
-            context (dict): Dictionary that will contain the trained model object and any other inference-specific dependencies that will persist while model container is running. Should include all objects that only need to be loaded one time (e.g., loaded model, labels file(s), data transformation objects, etc.) that can be accessed during inference.
-            process_fn (function): Python function that must accept a single piece of input data in raw bytes form and `context` dictionary as input parameters. This method is responsible for handling all data preprocessing, executing inference, and returning the processed predictions. Defining additional functions is acceptable as long as they are called within the `process` method
-            batch_process_fn (function): Python function that must accept a batch of input data in raw bytes form and `context` dictionary as input parameters. This method is responsible for handling all data preprocessing, executing inference, and returning the processed predictions. Defining additional functions is acceptable as long as they are called within the `process` method
+            process_fn (function): Python function that must accept a single piece of input data in raw bytes form. This method is responsible for handling all data preprocessing, executing inference, and returning the processed predictions. Defining additional functions is acceptable as long as they are called within the `process` method
+            batch_process_fn (function): Python function that must accept a batch of input data in raw bytes form. This method is responsible for handling all data preprocessing, executing inference, and returning the processed predictions. Defining additional functions is acceptable as long as they are called within the `process` method
             batch_size (int): Maximum batch size if `batch_process_fn` is defined
 
         Returns:
@@ -569,7 +568,7 @@ class ChassisClient:
             json.dump(sample, out)        
 
         # Define Process function
-        def process(input_bytes,context):
+        def process(input_bytes):
             inputs = np.array(json.loads(input_bytes))
             inference_results = logistic.predict(inputs)
             structured_results = []
