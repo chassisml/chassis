@@ -1,4 +1,4 @@
-# Building Containers for Specific Frameworks
+# Building Containers for Common Machine Learning and Deep Learning Frameworks
 
 If you build models using a common machine learning framework and you want a way to containerize them automatically, you have come to the right place! This page provides guides for leveraging Chassis to create containers out of your models built from the most popular ML frameworks available.
 
@@ -238,7 +238,6 @@ response = chassis_model.publish(
 job_id = response.get('job_id')
 final_status = chassis_client.block_until_complete(job_id)
 ```
-
 ## XGBoost
 
 This guide trains an XGBoost regression model that predicts housing prices based on a series of features in the [Boston Housing tabular dataset](https://www.kaggle.com/prasadperera/the-boston-housing-dataset). 
@@ -374,7 +373,6 @@ response = chassis_model.publish(
 job_id = response.get('job_id')
 final_status = chassis_client.block_until_complete(job_id)
 ```
-
 ## LightGBM
 
 This guide builds a LightGBM classifier model to predict the likelihood of women being diagnosed with Breast Cancer. This guide was adapted from this [Kaggle notebook](https://www.kaggle.com/prashant111/lightgbm-classifier-in-python). 
@@ -487,7 +485,6 @@ response = chassis_model.publish(
 job_id = response.get('job_id')
 final_status = chassis_client.block_until_complete(job_id)
 ```
-
 ## Fastai
 
 This builds off Fastai's [Tabular training tutorial](https://docs.fast.ai/tutorial.tabular.html), which predicts the income of adults based on various education and socioeconomic factors.  
@@ -632,7 +629,6 @@ response = chassis_model.publish(
 job_id = response.get('job_id')
 final_status = chassis_client.block_until_complete(job_id)
 ```
-
 ## MXNet
 
 This guide leverages the [MXNet framework](https://mxnet.apache.org/versions/1.9.0/) to build a simple Image Classification model with a MobileNet architecture, avaialable directly in MXNet's [Gluon Model Zoo](https://mxnet.apache.org/api/python/docs/api/gluon/model_zoo/index.html). This guide is an adaptation of MXNet's [tutorial](https://mxnet.apache.org/versions/1.6/api/python/docs/tutorials/packages/gluon/image/pretrained_models.html#Loading-the-model) for using pretrained models. 
@@ -771,7 +767,6 @@ response = chassis_model.publish(
 job_id = response.get('job_id')
 final_status = chassis_client.block_until_complete(job_id)
 ```
-
 ## ONNX
 
 This guide leverages the `chassisml` SDK to auto-containerize a pretrained model from the [ONNX Model Zoo](https://github.com/onnx/models/tree/main/vision/classification/mobilenet). 
@@ -906,7 +901,6 @@ response = chassis_model.publish(
 job_id = response.get('job_id')
 final_status = chassis_client.block_until_complete(job_id)
 ```
-
 ## PMML
 
 Predictive Model Markup Language (PMML) is an XML-based model format that is widely accepted and used to save machine learning models. This guide leverages the `chassisml` SDK to auto-containerize a pretrained model from this [PMML Scikit-Learn package model library](https://github.com/iamDecode/sklearn-pmml-model/tree/master/models). 
@@ -1042,15 +1036,12 @@ response = chassis_model.publish(
 job_id = response.get('job_id')
 final_status = chassis_client.block_until_complete(job_id)
 ```
-
 ## Tensorflow & Keras
 
 *Coming Soon*
-
 ## Spacy
 
 *Coming Soon*
-
 ## Spark MLlib
 
 *Coming Soon*
