@@ -11,8 +11,6 @@ Can't find the framework you are looking for? Feel free to fork this repository,
     
     For help getting started, visit our [Tutorials](https://chassis.ml/tutorials/devops-deploy/) page.
 
-## TODO confirm context syntax for change
-
 ## PyTorch
 
 This guide builds a simple Image Classification model with a ResNet50 architecture, avaialable directly in PyTorch's [Torvision model library](https://pytorch.org/vision/stable/models.html).
@@ -52,7 +50,7 @@ device = 'cpu'
 Next, define `process` function that will be passed as the input parameter to create a `ChassisModel` object.
 
 ```python
-def process(input_bytes,context):
+def process(input_bytes):
     
     # preprocess
     decoded = cv2.imdecode(np.frombuffer(input_bytes, np.uint8), -1)
@@ -87,7 +85,7 @@ Initialize Chassis Client and create Chassis model. Replace the URL with your Ch
 
 ```python
 chassis_client = chassisml.ChassisClient("http://localhost:5000")
-chassis_model = chassis_client.create_model(context=context,process_fn=process)
+chassis_model = chassis_client.create_model(process_fn=process)
 ```
 
 Test `chassis_model` locally.
@@ -169,7 +167,7 @@ with open("data/digits_sample.json", 'w') as out:
 Next, prepare a `process` function that will be passed as the input parameter to create a `ChassisModel` object.
 
 ```python
-def process(input_bytes,context):
+def process(input_bytes):
     inputs = np.array(json.loads(input_bytes))
     inference_results = logistic.predict(inputs)
     structured_results = []
@@ -187,7 +185,7 @@ Initialize Chassis Client and create Chassis model. Replace the URL with your Ch
 
 ```python
 chassis_client = chassisml.ChassisClient("http://localhost:5000")
-chassis_model = chassis_client.create_model(context=context,process_fn=process)
+chassis_model = chassis_client.create_model(process_fn=process)
 ```
 
 Test `chassis_model` locally.
@@ -314,7 +312,7 @@ mean_squared_error(y_test, y_pred)
 Next, prepare a `process` function that will be passed as the input parameter to create a `ChassisModel` object.
 
 ```python
-def process(input_bytes,context):
+def process(input_bytes):
     # load data
     inputs = pd.read_csv(StringIO(str(input_bytes, "utf-8")))    
     
@@ -342,7 +340,7 @@ Initialize Chassis Client and create Chassis model. Replace the URL with your Ch
 
 ```python
 chassis_client = chassisml.ChassisClient("http://localhost:5000")
-chassis_model = chassis_client.create_model(context=context,process_fn=process)
+chassis_model = chassis_client.create_model(process_fn=process)
 ```
 
 Test `chassis_model` locally.
@@ -430,7 +428,7 @@ Next, prepare a `process` function that will be passed as the input parameter to
 
 ```python
 labels = ["No Cancer", "Cancer"]
-def process(input_bytes,context):
+def process(input_bytes):
     inputs = pd.read_csv(StringIO(str(input_bytes, "utf-8")))
     preds = clf.predict_proba(inputs)
     
@@ -455,7 +453,7 @@ Initialize Chassis Client and create Chassis model. Replace the URL with your Ch
 
 ```python
 chassis_client = chassisml.ChassisClient("http://localhost:5000")
-chassis_model = chassis_client.create_model(context=context,process_fn=process)
+chassis_model = chassis_client.create_model(process_fn=process)
 ```
 
 Test `chassis_model` locally.
@@ -569,7 +567,7 @@ Next, prepare a `process` function that will be passed as the input parameter to
 
 ```python
 labels = ['<50k', '>50k']
-def process(input_bytes,context):
+def process(input_bytes):
     inputs = pd.read_csv(StringIO(str(input_bytes, "utf-8")))
     dl = learn.dls.test_dl(inputs)
     preds = learn.get_preds(dl=dl)[0].numpy()
@@ -600,7 +598,7 @@ Initialize Chassis Client and create Chassis model. Replace the URL with your Ch
 
 ```python
 chassis_client = chassisml.ChassisClient("http://localhost:5000")
-chassis_model = chassis_client.create_model(context=context,process_fn=process)
+chassis_model = chassis_client.create_model(process_fn=process)
 ```
 
 Test `chassis_model` locally.
@@ -711,7 +709,7 @@ print(labels)
 Next, define `process` function that will be passed as the input parameter to create a `ChassisModel` object.
 
 ```python
-def process(input_bytes,context):
+def process(input_bytes):
     # read image bytes
     img = mxnet_img.imdecode(input_bytes)
     
@@ -739,7 +737,7 @@ Initialize Chassis Client and create Chassis model. Replace the URL with your Ch
 
 ```python
 chassis_client = chassisml.ChassisClient("http://localhost:5000")
-chassis_model = chassis_client.create_model(context=context,process_fn=process)
+chassis_model = chassis_client.create_model(process_fn=process)
 ```
 
 Test `chassis_model` locally.
@@ -840,7 +838,7 @@ print("Top Prediction: {}".format(labels[results[0].argmax()]))
 Next, define `process` function that will be passed as the input parameter to create a `ChassisModel` object. One strict requirement to use Chassis is that your model *must* be able to be loaded into memory and perform an inference call from it's loaded, pre-trained state. Due to the unique ORT syntax that requires a *model file* be passed through as a parameter when creating an ORT inference session (which means it must be loaded to memory as a part of the inference session instantiation, not loaded before), we will get a little creative and leverage Python's [tempfile](https://docs.python.org/3/library/tempfile.html) library to take the loaded model, save it to a temporary directory as a `.onnx` file, and load it back in during inference.  
 
 ```python
-def process(input_bytes,context):
+def process(input_bytes):
     # save model to filepath for inference
     tmp_dir = tempfile.mkdtemp()
     import onnx
@@ -874,7 +872,7 @@ Initialize Chassis Client and create Chassis model. Replace the URL with your Ch
 
 ```python
 chassis_client = chassisml.ChassisClient("http://localhost:5000")
-chassis_model = chassis_client.create_model(context=context,process_fn=process)
+chassis_model = chassis_client.create_model(process_fn=process)
 ```
 
 Test `chassis_model` locally.
@@ -996,7 +994,7 @@ def postprocess_outputs(raw_predictions):
 Next, define `process` function that will be passed as the input parameter to create a `ChassisModel` object. 
 
 ```python
-def process(input_bytes,context):
+def process(input_bytes):
     # load data
     inputs = preprocess_inputs(input_bytes)
     # make predictions
@@ -1010,7 +1008,7 @@ Initialize Chassis Client and create Chassis model. Replace the URL with your Ch
 
 ```python
 chassis_client = chassisml.ChassisClient("http://localhost:5000")
-chassis_model = chassis_client.create_model(context=context,process_fn=process)
+chassis_model = chassis_client.create_model(process_fn=process)
 ```
 
 Test `chassis_model` locally.
