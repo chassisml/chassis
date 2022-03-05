@@ -50,7 +50,7 @@ model.to(device)
 Most deep learning frameworks have built-in support for batch processing. This support includes different dataloader functionalities that will take an entire folder of data in some cases and process it in a way that can be fed to a neural network in the proper tensor form. We will define a `batch_process` function that takes a *list* of inputs, formats them into the structure our model expects, and runs inference on the batch of data.
 
 ```python
-def batch_process(inputs,context):
+def batch_process(inputs):
     
     # preprocess list of inputs
     images = []
@@ -59,10 +59,10 @@ def batch_process(inputs,context):
         resized = cv2.resize(decoded, (224, 224)).reshape((1,224,224,3))
         images.append(resized)
     images_arr = np.concatenate(images)
-    batch_t = torch.stack(tuple(context['transform'](i) for i in images_arr), dim=0).to(context['device'])
+    batch_t = torch.stack(tuple(transform(i) for i in images_arr), dim=0).to(device)
 
     # run batch inference and add softmax layer
-    output = context['model'](batch_t)
+    output = model(batch_t)
     probs = torch.nn.functional.softmax(output, dim=1)
     softmax_preds = probs.detach().cpu().numpy()
     
@@ -70,7 +70,7 @@ def batch_process(inputs,context):
     all_formatted_results = []
     for preds in softmax_preds: 
         indices = np.argsort(preds)[::-1]
-        classes = [context['labels'][idx] for idx in indices[:5]]
+        classes = [labels[idx] for idx in indices[:5]]
         scores = [float(preds[idx]) for idx in indices[:5]]
         preds = [{"class": "{}".format(label), "score": round(float(score),3)} for label, score in zip(classes, scores)]
         preds.sort(key = lambda x: x["score"],reverse=True)
@@ -85,11 +85,9 @@ When we create our `ChassisModel` object, we will pass this batch_process functi
 
 Now, initialize Chassis Client and create Chassis model. Replace the URL with your Chassis connection. If you followed these [installation instructions](https://chassis.ml/tutorials/devops-deploy/), keep the local host URL as is, but if you are connected to the Modzy-hosted Chassis instance, replace the URL with "https://chassis.modzy.com".
 
-### TODO confirm new context syntax
-
 ```python
 chassis_client = chassisml.ChassisClient("http://localhost:5000")
-chassis_model = chassis_client.create_model(context=context,batch_process_fn=batch_process,batch_size=4)
+chassis_model = chassis_client.create_model(batch_process_fn=batch_process,batch_size=4)
 ```
 
 Test `chassis_model` locally (both single and batch data).

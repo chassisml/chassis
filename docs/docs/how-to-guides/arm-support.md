@@ -1,3 +1,3 @@
-#CPU Support
+#OS and Arm Support
 
 ##Compiling for ARM
