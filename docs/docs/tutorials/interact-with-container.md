@@ -31,8 +31,8 @@ docker run -p 5000:45000 -it modzy/chassisml-image-classification:latest
 
 In this docker command, we use the following parameters:
 
-* -p: Forwards the port serving the gRPC server inside the container (45000) to a local port (5000)
-* -it: Runs container interactively, so you can see the logs from the container as you make API calls to it
+* **-p**: Forwards the port serving the gRPC server inside the container (45000) to a local port (5000)
+* **-it**: Runs container interactively, so you can see the logs from the container as you make API calls to it
 
 To learn more, visit the [Docker run](https://docs.docker.com/engine/reference/run/) reference documentation.
 
@@ -226,32 +226,6 @@ In practice, encoding and decoding data is easy to do in your program of choice,
 #### Shutdown()
 
 Lastly, invoke the `Shutdown()` method the same way you invoked the `Status()` method. This will shutdown the container running locally on your machine.
-
-
-
-
-
-Once the container is running locally, open the Postman app. On the upper left of the screen, select **New** and open **gRPC Request**.
-
-![](../images/grpc-request.png){ style="border:20px solid white" }
-
-Enter your local server URL into the first box.
-
-![](../images/enter-url.png){ style="border:20px solid white" }
-
-In the second box, select the **Import protobuf definition from local file** and upload the [proto file](https://github.com/modzy/chassis/blob/main/service/flavours/mlflow/interfaces/modzy/protos/model2_template/model.proto) you downloaded during setup.
-
-![](../images/import-proto.png){ style="border:20px solid white" }
-
-Give your protobuf a name and version.
-
-![](../images/model-proto.png){ style="border:20px solid white" }
-
-The three remote procedure calls defined in the protobuf file (to which our Chassisml container adheres to) will appear in the **Select a method** dropdown.
-
-![](../images/methods.png){ style="border:20px solid white" }
-
-We are now ready to invoke requests to 
 
 
 
