@@ -31,7 +31,7 @@ Follow one of our tutorials to easily get started and see how Chassis works:
 
 - [Install with Helm](https://modzy.github.io/chassis/tutorials/devops-deploy) into a Cluster
 - [Build an image](https://modzy.github.io/chassis/tutorials/ds-connect)
-- [Deploy to KFServing](https://modzy.github.io/chassis/tutorials/ds-deploy) the built image
+- [Deploy to KServe](https://modzy.github.io/chassis/tutorials/ds-deploy) the built image
 
 ## Contributors
 

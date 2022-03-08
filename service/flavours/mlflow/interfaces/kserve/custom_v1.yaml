@@ -10,7 +10,7 @@ spec:
       imagePullPolicy: IfNotPresent
       env:
         - name: INTERFACE
-          value: kfserving
+          value: kserve
         - name: HTTP_PORT
           value: "8080"
         - name: PROTOCOL

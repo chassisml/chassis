@@ -1,7 +1,7 @@
 # Deploy Model to Modzy
 
 !!! note
-    If you just want to try Chassis, you can use the test drive, which will deploy Chassis and KFServing for you so you can use Chassis to containerize an MLflow model, push it to your Docker Hub account, and then publish it to the KFServing instance running inside the test drive, in the `kfserving.ipynb` sample notebook:
+    If you just want to try Chassis, you can use the test drive, which will deploy Chassis and KServe for you so you can use Chassis to containerize an MLflow model, push it to your Docker Hub account, and then publish it to the KServe instance running inside the test drive, in the `kfserving.ipynb` sample notebook:
 
     <a href="https://testfaster.ci/launch?embedded=true&repo=https://github.com/combinator-ml/terraform-k8s-chassis&file=examples/testfaster/.testfaster.yml" target="_blank">:computer: Launch Test Drive :computer:</a>
 
@@ -86,7 +86,7 @@ Job ID: chassis-builder-job-a3864869-a509-4658-986b-25cb4ddd604d
 
 ## Check the job status
 
-Notice that unlike in the [KFServing tutorial](https://chassis.ml/tutorials/ds-deploy/), here we don't need to define the `INTERFACE` environment variable since Modzy is the default one.
+Notice that unlike in the [KServe tutorial](https://chassis.ml/tutorials/ds-deploy/), here we don't need to define the `INTERFACE` environment variable since Modzy is the default one.
 
 We must wait until it has finished, which may take several minutes. We can use the job id to check the status of the job. Once it has finished we should see something similar to this.
 

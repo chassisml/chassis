@@ -6,10 +6,10 @@ The idea behind this project is to provide Data Scientists with a way to package
 
 * Build models directly into DevOps-ready container images for inference (using [MLflow](https://mlflow.org) under the hood)
 * Supports parallel builds in Kubernetes jobs, using [Kaniko](https://github.com/GoogleContainerTools/kaniko), no Docker socket required!
-* Generates [Open Model Interface](https://openmodel.ml) compatible images that are multi-purpose and portable, they work on multiple platforms: KFServing and Modzy
+* Generates [Open Model Interface](https://openmodel.ml) compatible images that are multi-purpose and portable, they work on multiple platforms: KServe and Modzy
 * Try the test drive today, then deploy our Helm chart to your K8s cluster to use it for real
 
-At the moment, Chassis images are compatible with KFServing and Modzy gRPC. This means you can deploy your built image into these platforms once it has been built.
+At the moment, Chassis images are compatible with KServe and Modzy gRPC. This means you can deploy your built image into these platforms once it has been built.
 
 Deploy Chassis, send your model to it and start using the built container image to run inference on your data.
 
