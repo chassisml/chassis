@@ -7,4 +7,5 @@ def create_version(modzy_client,modzy_model_id,requested_version):
     create_version_url = modzy_client.base_url + f'models/{modzy_model_id}/versions'
     data = {"version": requested_version}
     res = requests.post(create_version_url, json=data, headers={'Authorization': f'ApiKey {modzy_client.api_key}'})
-    res.raise_for_status()
+    if not res.ok and not "already exists" in res.text:
+        res.raise_for_status()
