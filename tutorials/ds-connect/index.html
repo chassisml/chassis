@@ -9,7 +9,7 @@
       
       
       <link rel="icon" href="../../images/chassis-symbol.png">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.2.5">
     
     
       
@@ -692,14 +692,11 @@
 </code></pre></div>
 <h2 id="transform-the-model-to-chassis-format">Transform the model to Chassis format</h2>
 <p>Once that we have our model we transform it to Chassis format.</p>
-<p>First we prepare the <code>context</code> dict, initializing anything here that should persist across inference runs. In this case, just the model:</p>
-<div class="highlight"><pre><span></span><code><span class="n">context</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="n">clf</span><span class="p">}</span>
-</code></pre></div>
-<p>Notice that the SKLearn model that we created before is loaded into memory so that it will be packaged inside the MLFlow model. </p>
-<p>Next, we prepare the process function, which must take input file bytes and the context dict we prepared as input. It is responsible for preprocessing the bytes, running inference, and returning formatted results. It can leverage anything in the context dict to do so:</p>
+<p>Notice that the SKLearn model that we created before is loaded into memory, and if it is referenced in the process function we are about to define, it will be saved out along with the model. </p>
+<p>Next, we prepare the process function, which must take input file bytes as input. It is responsible for preprocessing the bytes, running inference, and returning formatted results.</p>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="n">input_bytes</span><span class="p">,</span><span class="n">context</span><span class="p">):</span>
     <span class="n">inputs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">input_bytes</span><span class="p">))</span><span class="o">/</span><span class="mi">2</span>
-    <span class="n">inference_results</span> <span class="o">=</span> <span class="n">context</span><span class="p">[</span><span class="s2">&quot;model&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+    <span class="n">inference_results</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
     <span class="n">structured_results</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">inference_result</span> <span class="ow">in</span> <span class="n">inference_results</span><span class="p">:</span>
         <span class="n">structured_output</span> <span class="o">=</span> <span class="p">{</span>
@@ -716,7 +713,7 @@
 </code></pre></div>
 <p>Now let's create a Chassis model with our context dict and process function, test it locally with a local input file, and then also test the creation of the environment and the execution of the model with a sample input file within that created environment (this will occur within the Chassis service):</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># create Chassis model</span>
-<span class="n">chassis_model</span> <span class="o">=</span> <span class="n">chassis_client</span><span class="o">.</span><span class="n">create_model</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span><span class="n">process_fn</span><span class="o">=</span><span class="n">process</span><span class="p">)</span>
+<span class="n">chassis_model</span> <span class="o">=</span> <span class="n">chassis_client</span><span class="o">.</span><span class="n">create_model</span><span class="p">(</span><span class="n">process_fn</span><span class="o">=</span><span class="n">process</span><span class="p">)</span>
 
 <span class="c1"># test Chassis model locally (can pass filepath, bufferedreader, bytes, or text here):</span>
 <span class="n">sample_filepath</span> <span class="o">=</span> <span class="s1">&#39;./examples/modzy/input_sample.json&#39;</span>
@@ -826,7 +823,7 @@
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.expand"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
     
     
-      <script src="../../assets/javascripts/bundle.5413a266.min.js"></script>
+      <script src="../../assets/javascripts/bundle.467223ff.min.js"></script>
       
     
   </body>

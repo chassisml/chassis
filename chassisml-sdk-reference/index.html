@@ -9,7 +9,7 @@
       
       
       <link rel="icon" href="../images/chassis-symbol.png">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.2.5">
     
     
       
@@ -843,7 +843,7 @@ ChassisClient        </code>
 <span class="sd">        Examples:</span>
 <span class="sd">        ```python</span>
 <span class="sd">        # Create Chassisml model</span>
-<span class="sd">        chassis_model = chassis_client.create_model(context=context,process_fn=process)</span>
+<span class="sd">        chassis_model = chassis_client.create_model(process_fn=process)</span>
 
 <span class="sd">        # Define Dockerhub credentials</span>
 <span class="sd">        dockerhub_user = &quot;user&quot;</span>
@@ -882,7 +882,7 @@ ChassisClient        </code>
 <span class="sd">        Examples:</span>
 <span class="sd">        ```python</span>
 <span class="sd">        # Create Chassisml model</span>
-<span class="sd">        chassis_model = chassis_client.create_model(context=context,process_fn=process)</span>
+<span class="sd">        chassis_model = chassis_client.create_model(process_fn=process)</span>
 
 <span class="sd">        # Define Dockerhub credentials</span>
 <span class="sd">        dockerhub_user = &quot;user&quot;</span>
@@ -992,14 +992,13 @@ ChassisClient        </code>
 
         <span class="k">return</span> <span class="n">rValue</span>
 
-    <span class="k">def</span> <span class="nf">create_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">context</span><span class="p">,</span><span class="n">process_fn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">batch_process_fn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">batch_size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">create_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">process_fn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">batch_process_fn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">batch_size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Builds chassis model locally</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            context (dict): Dictionary that will contain the trained model object and any other inference-specific dependencies that will persist while model container is running. Should include all objects that only need to be loaded one time (e.g., loaded model, labels file(s), data transformation objects, etc.) that can be accessed during inference.</span>
-<span class="sd">            process_fn (function): Python function that must accept a single piece of input data in raw bytes form and `context` dictionary as input parameters. This method is responsible for handling all data preprocessing, executing inference, and returning the processed predictions. Defining additional functions is acceptable as long as they are called within the `process` method</span>
-<span class="sd">            batch_process_fn (function): Python function that must accept a batch of input data in raw bytes form and `context` dictionary as input parameters. This method is responsible for handling all data preprocessing, executing inference, and returning the processed predictions. Defining additional functions is acceptable as long as they are called within the `process` method</span>
+<span class="sd">            process_fn (function): Python function that must accept a single piece of input data in raw bytes form. This method is responsible for handling all data preprocessing, executing inference, and returning the processed predictions. Defining additional functions is acceptable as long as they are called within the `process` method</span>
+<span class="sd">            batch_process_fn (function): Python function that must accept a batch of input data in raw bytes form. This method is responsible for handling all data preprocessing, executing inference, and returning the processed predictions. Defining additional functions is acceptable as long as they are called within the `process` method</span>
 <span class="sd">            batch_size (int): Maximum batch size if `batch_process_fn` is defined</span>
 
 <span class="sd">        Returns:</span>
@@ -1032,13 +1031,10 @@ ChassisClient        </code>
 <span class="sd">        with open(&quot;digits_sample.json&quot;, &#39;w&#39;) as out:</span>
 <span class="sd">            json.dump(sample, out)        </span>
 
-<span class="sd">        # 1. Define Context Dictionary</span>
-<span class="sd">        context = {&quot;model&quot;: logistic}</span>
-
-<span class="sd">        # 2. Define Process function</span>
-<span class="sd">        def process(input_bytes,context):</span>
+<span class="sd">        # Define Process function</span>
+<span class="sd">        def process(input_bytes):</span>
 <span class="sd">            inputs = np.array(json.loads(input_bytes))</span>
-<span class="sd">            inference_results = context[&quot;model&quot;].predict(inputs)</span>
+<span class="sd">            inference_results = logistic.predict(inputs)</span>
 <span class="sd">            structured_results = []</span>
 <span class="sd">            for inference_result in inference_results:</span>
 <span class="sd">                structured_output = {</span>
@@ -1050,7 +1046,7 @@ ChassisClient        </code>
 <span class="sd">            return structured_results      </span>
 
 <span class="sd">        # create Chassis model</span>
-<span class="sd">        chassis_model = chassis_client.create_model(context=context,process_fn=process)              </span>
+<span class="sd">        chassis_model = chassis_client.create_model(process_fn=process)              </span>
 <span class="sd">        ```</span>
 
 <span class="sd">        &#39;&#39;&#39;</span>
@@ -1060,7 +1056,7 @@ ChassisClient        </code>
         <span class="k">if</span> <span class="p">(</span><span class="n">batch_process_fn</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">batch_size</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">batch_size</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">batch_process_fn</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Both batch_process_fn and batch_size must be provided for batch support.&quot;</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">ChassisModel</span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="n">process_fn</span><span class="p">,</span><span class="n">batch_process_fn</span><span class="p">,</span><span class="n">batch_size</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ChassisModel</span><span class="p">(</span><span class="n">process_fn</span><span class="p">,</span><span class="n">batch_process_fn</span><span class="p">,</span><span class="n">batch_size</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="p">)</span>
 </code></pre></div>
         </details>
 
@@ -1140,7 +1136,7 @@ ChassisClient        </code>
 <p><strong>Examples:</strong></p>
     
       <div class="highlight"><pre><span></span><code><span class="c1"># Create Chassisml model</span>
-<span class="n">chassis_model</span> <span class="o">=</span> <span class="n">chassis_client</span><span class="o">.</span><span class="n">create_model</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span><span class="n">process_fn</span><span class="o">=</span><span class="n">process</span><span class="p">)</span>
+<span class="n">chassis_model</span> <span class="o">=</span> <span class="n">chassis_client</span><span class="o">.</span><span class="n">create_model</span><span class="p">(</span><span class="n">process_fn</span><span class="o">=</span><span class="n">process</span><span class="p">)</span>
 
 <span class="c1"># Define Dockerhub credentials</span>
 <span class="n">dockerhub_user</span> <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
@@ -1175,7 +1171,7 @@ ChassisClient        </code>
 <span class="sd">    Examples:</span>
 <span class="sd">    ```python</span>
 <span class="sd">    # Create Chassisml model</span>
-<span class="sd">    chassis_model = chassis_client.create_model(context=context,process_fn=process)</span>
+<span class="sd">    chassis_model = chassis_client.create_model(process_fn=process)</span>
 
 <span class="sd">    # Define Dockerhub credentials</span>
 <span class="sd">    dockerhub_user = &quot;user&quot;</span>
@@ -1216,7 +1212,7 @@ ChassisClient        </code>
 
 
 <h3 id="chassisml-sdk.chassisml.chassisml.ChassisClient.create_model" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">create_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">process_fn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">batch_process_fn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">create_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">process_fn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">batch_process_fn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 
 </h3>
@@ -1237,21 +1233,15 @@ ChassisClient        </code>
   </thead>
   <tbody>
       <tr>
-        <td><code>context</code></td>
-        <td><code>dict</code></td>
-        <td><p>Dictionary that will contain the trained model object and any other inference-specific dependencies that will persist while model container is running. Should include all objects that only need to be loaded one time (e.g., loaded model, labels file(s), data transformation objects, etc.) that can be accessed during inference.</p></td>
-        <td><em>required</em></td>
-      </tr>
-      <tr>
         <td><code>process_fn</code></td>
         <td><code>function</code></td>
-        <td><p>Python function that must accept a single piece of input data in raw bytes form and <code>context</code> dictionary as input parameters. This method is responsible for handling all data preprocessing, executing inference, and returning the processed predictions. Defining additional functions is acceptable as long as they are called within the <code>process</code> method</p></td>
+        <td><p>Python function that must accept a single piece of input data in raw bytes form. This method is responsible for handling all data preprocessing, executing inference, and returning the processed predictions. Defining additional functions is acceptable as long as they are called within the <code>process</code> method</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>batch_process_fn</code></td>
         <td><code>function</code></td>
-        <td><p>Python function that must accept a batch of input data in raw bytes form and <code>context</code> dictionary as input parameters. This method is responsible for handling all data preprocessing, executing inference, and returning the processed predictions. Defining additional functions is acceptable as long as they are called within the <code>process</code> method</p></td>
+        <td><p>Python function that must accept a batch of input data in raw bytes form. This method is responsible for handling all data preprocessing, executing inference, and returning the processed predictions. Defining additional functions is acceptable as long as they are called within the <code>process</code> method</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
@@ -1304,13 +1294,10 @@ ChassisClient        </code>
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;digits_sample.json&quot;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">out</span><span class="p">:</span>
     <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>        
 
-<span class="c1"># 1. Define Context Dictionary</span>
-<span class="n">context</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="n">logistic</span><span class="p">}</span>
-
-<span class="c1"># 2. Define Process function</span>
-<span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="n">input_bytes</span><span class="p">,</span><span class="n">context</span><span class="p">):</span>
+<span class="c1"># Define Process function</span>
+<span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="n">input_bytes</span><span class="p">):</span>
     <span class="n">inputs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">input_bytes</span><span class="p">))</span>
-    <span class="n">inference_results</span> <span class="o">=</span> <span class="n">context</span><span class="p">[</span><span class="s2">&quot;model&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+    <span class="n">inference_results</span> <span class="o">=</span> <span class="n">logistic</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
     <span class="n">structured_results</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">inference_result</span> <span class="ow">in</span> <span class="n">inference_results</span><span class="p">:</span>
         <span class="n">structured_output</span> <span class="o">=</span> <span class="p">{</span>
@@ -1322,19 +1309,18 @@ ChassisClient        </code>
     <span class="k">return</span> <span class="n">structured_results</span>      
 
 <span class="c1"># create Chassis model</span>
-<span class="n">chassis_model</span> <span class="o">=</span> <span class="n">chassis_client</span><span class="o">.</span><span class="n">create_model</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span><span class="n">process_fn</span><span class="o">=</span><span class="n">process</span><span class="p">)</span>              
+<span class="n">chassis_model</span> <span class="o">=</span> <span class="n">chassis_client</span><span class="o">.</span><span class="n">create_model</span><span class="p">(</span><span class="n">process_fn</span><span class="o">=</span><span class="n">process</span><span class="p">)</span>              
 </code></pre></div></p>
 
         <details class="quote">
           <summary>Source code in <code>chassisml-sdk/chassisml/chassisml.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">create_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">context</span><span class="p">,</span><span class="n">process_fn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">batch_process_fn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">batch_size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">create_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">process_fn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">batch_process_fn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">batch_size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Builds chassis model locally</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        context (dict): Dictionary that will contain the trained model object and any other inference-specific dependencies that will persist while model container is running. Should include all objects that only need to be loaded one time (e.g., loaded model, labels file(s), data transformation objects, etc.) that can be accessed during inference.</span>
-<span class="sd">        process_fn (function): Python function that must accept a single piece of input data in raw bytes form and `context` dictionary as input parameters. This method is responsible for handling all data preprocessing, executing inference, and returning the processed predictions. Defining additional functions is acceptable as long as they are called within the `process` method</span>
-<span class="sd">        batch_process_fn (function): Python function that must accept a batch of input data in raw bytes form and `context` dictionary as input parameters. This method is responsible for handling all data preprocessing, executing inference, and returning the processed predictions. Defining additional functions is acceptable as long as they are called within the `process` method</span>
+<span class="sd">        process_fn (function): Python function that must accept a single piece of input data in raw bytes form. This method is responsible for handling all data preprocessing, executing inference, and returning the processed predictions. Defining additional functions is acceptable as long as they are called within the `process` method</span>
+<span class="sd">        batch_process_fn (function): Python function that must accept a batch of input data in raw bytes form. This method is responsible for handling all data preprocessing, executing inference, and returning the processed predictions. Defining additional functions is acceptable as long as they are called within the `process` method</span>
 <span class="sd">        batch_size (int): Maximum batch size if `batch_process_fn` is defined</span>
 
 <span class="sd">    Returns:</span>
@@ -1367,13 +1353,10 @@ ChassisClient        </code>
 <span class="sd">    with open(&quot;digits_sample.json&quot;, &#39;w&#39;) as out:</span>
 <span class="sd">        json.dump(sample, out)        </span>
 
-<span class="sd">    # 1. Define Context Dictionary</span>
-<span class="sd">    context = {&quot;model&quot;: logistic}</span>
-
-<span class="sd">    # 2. Define Process function</span>
-<span class="sd">    def process(input_bytes,context):</span>
+<span class="sd">    # Define Process function</span>
+<span class="sd">    def process(input_bytes):</span>
 <span class="sd">        inputs = np.array(json.loads(input_bytes))</span>
-<span class="sd">        inference_results = context[&quot;model&quot;].predict(inputs)</span>
+<span class="sd">        inference_results = logistic.predict(inputs)</span>
 <span class="sd">        structured_results = []</span>
 <span class="sd">        for inference_result in inference_results:</span>
 <span class="sd">            structured_output = {</span>
@@ -1385,7 +1368,7 @@ ChassisClient        </code>
 <span class="sd">        return structured_results      </span>
 
 <span class="sd">    # create Chassis model</span>
-<span class="sd">    chassis_model = chassis_client.create_model(context=context,process_fn=process)              </span>
+<span class="sd">    chassis_model = chassis_client.create_model(process_fn=process)              </span>
 <span class="sd">    ```</span>
 
 <span class="sd">    &#39;&#39;&#39;</span>
@@ -1395,7 +1378,7 @@ ChassisClient        </code>
     <span class="k">if</span> <span class="p">(</span><span class="n">batch_process_fn</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">batch_size</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">batch_size</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">batch_process_fn</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Both batch_process_fn and batch_size must be provided for batch support.&quot;</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">ChassisModel</span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="n">process_fn</span><span class="p">,</span><span class="n">batch_process_fn</span><span class="p">,</span><span class="n">batch_size</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ChassisModel</span><span class="p">(</span><span class="n">process_fn</span><span class="p">,</span><span class="n">batch_process_fn</span><span class="p">,</span><span class="n">batch_size</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -1566,7 +1549,7 @@ ChassisClient        </code>
 <p><strong>Examples:</strong></p>
     
       <div class="highlight"><pre><span></span><code><span class="c1"># Create Chassisml model</span>
-<span class="n">chassis_model</span> <span class="o">=</span> <span class="n">chassis_client</span><span class="o">.</span><span class="n">create_model</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span><span class="n">process_fn</span><span class="o">=</span><span class="n">process</span><span class="p">)</span>
+<span class="n">chassis_model</span> <span class="o">=</span> <span class="n">chassis_client</span><span class="o">.</span><span class="n">create_model</span><span class="p">(</span><span class="n">process_fn</span><span class="o">=</span><span class="n">process</span><span class="p">)</span>
 
 <span class="c1"># Define Dockerhub credentials</span>
 <span class="n">dockerhub_user</span> <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
@@ -1599,7 +1582,7 @@ ChassisClient        </code>
 <span class="sd">    Examples:</span>
 <span class="sd">    ```python</span>
 <span class="sd">    # Create Chassisml model</span>
-<span class="sd">    chassis_model = chassis_client.create_model(context=context,process_fn=process)</span>
+<span class="sd">    chassis_model = chassis_client.create_model(process_fn=process)</span>
 
 <span class="sd">    # Define Dockerhub credentials</span>
 <span class="sd">    dockerhub_user = &quot;user&quot;</span>
@@ -1809,24 +1792,24 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
 <span class="sd">        chassis_build_url (str): The build url for the Chassis API.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">model_context</span><span class="p">,</span><span class="n">process_fn</span><span class="p">,</span><span class="n">batch_process_fn</span><span class="p">,</span><span class="n">batch_size</span><span class="p">,</span><span class="n">chassis_base_url</span><span class="p">):</span>      
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">process_fn</span><span class="p">,</span><span class="n">batch_process_fn</span><span class="p">,</span><span class="n">batch_size</span><span class="p">,</span><span class="n">chassis_base_url</span><span class="p">):</span>      
 
         <span class="k">if</span> <span class="n">process_fn</span> <span class="ow">and</span> <span class="n">batch_process_fn</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">batch_size</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Both batch_process_fn and batch_size must be provided for batch support.&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">predict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gen_predict_method</span><span class="p">(</span><span class="n">process_fn</span><span class="p">,</span><span class="n">model_context</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">batch_predict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gen_predict_method</span><span class="p">(</span><span class="n">batch_process_fn</span><span class="p">,</span><span class="n">model_context</span><span class="p">,</span><span class="n">batch</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">predict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gen_predict_method</span><span class="p">(</span><span class="n">process_fn</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">batch_predict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gen_predict_method</span><span class="p">(</span><span class="n">batch_process_fn</span><span class="p">,</span><span class="n">batch</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">batch_input</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
         <span class="k">elif</span> <span class="n">process_fn</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">batch_process_fn</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">predict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gen_predict_method</span><span class="p">(</span><span class="n">process_fn</span><span class="p">,</span><span class="n">model_context</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">predict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gen_predict_method</span><span class="p">(</span><span class="n">process_fn</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">batch_input</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">elif</span> <span class="n">batch_process_fn</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">process_fn</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">batch_size</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Both batch_process_fn and batch_size must be provided for batch support.&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">predict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gen_predict_method</span><span class="p">(</span><span class="n">batch_process_fn</span><span class="p">,</span><span class="n">model_context</span><span class="p">,</span><span class="n">batch_to_single</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">batch_predict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gen_predict_method</span><span class="p">(</span><span class="n">batch_process_fn</span><span class="p">,</span><span class="n">model_context</span><span class="p">,</span><span class="n">batch</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">predict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gen_predict_method</span><span class="p">(</span><span class="n">batch_process_fn</span><span class="p">,</span><span class="n">batch_to_single</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">batch_predict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gen_predict_method</span><span class="p">(</span><span class="n">batch_process_fn</span><span class="p">,</span><span class="n">batch</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">batch_input</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
         <span class="k">else</span><span class="p">:</span>
@@ -1835,12 +1818,12 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
         <span class="bp">self</span><span class="o">.</span><span class="n">chassis_build_url</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urljoin</span><span class="p">(</span><span class="n">chassis_base_url</span><span class="p">,</span> <span class="n">routes</span><span class="p">[</span><span class="s1">&#39;build&#39;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">chassis_test_url</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urljoin</span><span class="p">(</span><span class="n">chassis_base_url</span><span class="p">,</span> <span class="n">routes</span><span class="p">[</span><span class="s1">&#39;test&#39;</span><span class="p">])</span>
 
-    <span class="k">def</span> <span class="nf">_gen_predict_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">process_fn</span><span class="p">,</span><span class="n">model_context</span><span class="p">,</span><span class="n">batch</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">batch_to_single</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_gen_predict_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">process_fn</span><span class="p">,</span><span class="n">batch</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">batch_to_single</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="n">_</span><span class="p">,</span><span class="n">model_input</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">batch_to_single</span><span class="p">:</span>
-                <span class="n">output</span> <span class="o">=</span> <span class="n">process_fn</span><span class="p">([</span><span class="n">model_input</span><span class="p">],</span><span class="n">model_context</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="n">process_fn</span><span class="p">([</span><span class="n">model_input</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">output</span> <span class="o">=</span> <span class="n">process_fn</span><span class="p">(</span><span class="n">model_input</span><span class="p">,</span><span class="n">model_context</span><span class="p">)</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="n">process_fn</span><span class="p">(</span><span class="n">model_input</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">batch</span><span class="p">:</span>
                 <span class="k">return</span> <span class="p">[</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="n">separators</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">),</span><span class="bp">cls</span><span class="o">=</span><span class="n">NumpyEncoder</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span> <span class="k">for</span> <span class="n">out</span> <span class="ow">in</span> <span class="n">output</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
@@ -1859,7 +1842,7 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
 
 <span class="sd">        Examples:</span>
 <span class="sd">        ```python</span>
-<span class="sd">        chassis_model = chassis_client.create_model(context=context,process_fn=process)</span>
+<span class="sd">        chassis_model = chassis_client.create_model(process_fn=process)</span>
 <span class="sd">        sample_filepath = &#39;./sample_data.json&#39;</span>
 <span class="sd">        results = chassis_model.test(sample_filepath)</span>
 <span class="sd">        ```</span>
@@ -1890,7 +1873,7 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
 
 <span class="sd">        Examples:</span>
 <span class="sd">        ```python</span>
-<span class="sd">        chassis_model = chassis_client.create_model(context=context,process_fn=process)</span>
+<span class="sd">        chassis_model = chassis_client.create_model(process_fn=process)</span>
 <span class="sd">        sample_input = sample_filepath = &#39;./sample_data.json&#39;</span>
 <span class="sd">        results = chassis_model.test_batch(sample_filepath)</span>
 <span class="sd">        ```        </span>
@@ -1932,7 +1915,7 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
 
 <span class="sd">        Examples:</span>
 <span class="sd">        ```python</span>
-<span class="sd">        chassis_model = chassis_client.create_model(context=context,process_fn=process)</span>
+<span class="sd">        chassis_model = chassis_client.create_model(process_fn=process)</span>
 <span class="sd">        sample_filepath = &#39;./sample_data.json&#39;</span>
 <span class="sd">        results = chassis_model.test_env(sample_filepath)</span>
 <span class="sd">        ```        </span>
@@ -1982,7 +1965,7 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
 
 <span class="sd">        Examples:</span>
 <span class="sd">        ```python</span>
-<span class="sd">        chassis_model = chassis_client.create_model(context=context,process_fn=process)</span>
+<span class="sd">        chassis_model = chassis_client.create_model(process_fn=process)</span>
 <span class="sd">        chassis_model.save(&quot;local_model_directory&quot;)</span>
 <span class="sd">        ```</span>
 <span class="sd">        &#39;&#39;&#39;</span>
@@ -2022,7 +2005,7 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
 <span class="sd">        Examples:</span>
 <span class="sd">        ```python</span>
 <span class="sd">        # Create Chassisml model</span>
-<span class="sd">        chassis_model = chassis_client.create_model(context=context,process_fn=process)</span>
+<span class="sd">        chassis_model = chassis_client.create_model(process_fn=process)</span>
 
 <span class="sd">        # Define Dockerhub credentials</span>
 <span class="sd">        dockerhub_user = &quot;user&quot;</span>
@@ -2244,7 +2227,7 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
 <p><strong>Examples:</strong></p>
     
       <div class="highlight"><pre><span></span><code><span class="c1"># Create Chassisml model</span>
-<span class="n">chassis_model</span> <span class="o">=</span> <span class="n">chassis_client</span><span class="o">.</span><span class="n">create_model</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span><span class="n">process_fn</span><span class="o">=</span><span class="n">process</span><span class="p">)</span>
+<span class="n">chassis_model</span> <span class="o">=</span> <span class="n">chassis_client</span><span class="o">.</span><span class="n">create_model</span><span class="p">(</span><span class="n">process_fn</span><span class="o">=</span><span class="n">process</span><span class="p">)</span>
 
 <span class="c1"># Define Dockerhub credentials</span>
 <span class="n">dockerhub_user</span> <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
@@ -2287,7 +2270,7 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
 <span class="sd">    Examples:</span>
 <span class="sd">    ```python</span>
 <span class="sd">    # Create Chassisml model</span>
-<span class="sd">    chassis_model = chassis_client.create_model(context=context,process_fn=process)</span>
+<span class="sd">    chassis_model = chassis_client.create_model(process_fn=process)</span>
 
 <span class="sd">    # Define Dockerhub credentials</span>
 <span class="sd">    dockerhub_user = &quot;user&quot;</span>
@@ -2464,7 +2447,7 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
 </table>
 <p><strong>Examples:</strong></p>
     
-      <div class="highlight"><pre><span></span><code><span class="n">chassis_model</span> <span class="o">=</span> <span class="n">chassis_client</span><span class="o">.</span><span class="n">create_model</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span><span class="n">process_fn</span><span class="o">=</span><span class="n">process</span><span class="p">)</span>
+      <div class="highlight"><pre><span></span><code><span class="n">chassis_model</span> <span class="o">=</span> <span class="n">chassis_client</span><span class="o">.</span><span class="n">create_model</span><span class="p">(</span><span class="n">process_fn</span><span class="o">=</span><span class="n">process</span><span class="p">)</span>
 <span class="n">chassis_model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;local_model_directory&quot;</span><span class="p">)</span>
 </code></pre></div>
 
@@ -2486,7 +2469,7 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
 
 <span class="sd">    Examples:</span>
 <span class="sd">    ```python</span>
-<span class="sd">    chassis_model = chassis_client.create_model(context=context,process_fn=process)</span>
+<span class="sd">    chassis_model = chassis_client.create_model(process_fn=process)</span>
 <span class="sd">    chassis_model.save(&quot;local_model_directory&quot;)</span>
 <span class="sd">    ```</span>
 <span class="sd">    &#39;&#39;&#39;</span>
@@ -2557,7 +2540,7 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
 </table>
 <p><strong>Examples:</strong></p>
     
-      <div class="highlight"><pre><span></span><code><span class="n">chassis_model</span> <span class="o">=</span> <span class="n">chassis_client</span><span class="o">.</span><span class="n">create_model</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span><span class="n">process_fn</span><span class="o">=</span><span class="n">process</span><span class="p">)</span>
+      <div class="highlight"><pre><span></span><code><span class="n">chassis_model</span> <span class="o">=</span> <span class="n">chassis_client</span><span class="o">.</span><span class="n">create_model</span><span class="p">(</span><span class="n">process_fn</span><span class="o">=</span><span class="n">process</span><span class="p">)</span>
 <span class="n">sample_filepath</span> <span class="o">=</span> <span class="s1">&#39;./sample_data.json&#39;</span>
 <span class="n">results</span> <span class="o">=</span> <span class="n">chassis_model</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">sample_filepath</span><span class="p">)</span>
 </code></pre></div>
@@ -2576,7 +2559,7 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
 
 <span class="sd">    Examples:</span>
 <span class="sd">    ```python</span>
-<span class="sd">    chassis_model = chassis_client.create_model(context=context,process_fn=process)</span>
+<span class="sd">    chassis_model = chassis_client.create_model(process_fn=process)</span>
 <span class="sd">    sample_filepath = &#39;./sample_data.json&#39;</span>
 <span class="sd">    results = chassis_model.test(sample_filepath)</span>
 <span class="sd">    ```</span>
@@ -2652,7 +2635,7 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
 </table>
 <p><strong>Examples:</strong></p>
     
-      <div class="highlight"><pre><span></span><code><span class="n">chassis_model</span> <span class="o">=</span> <span class="n">chassis_client</span><span class="o">.</span><span class="n">create_model</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span><span class="n">process_fn</span><span class="o">=</span><span class="n">process</span><span class="p">)</span>
+      <div class="highlight"><pre><span></span><code><span class="n">chassis_model</span> <span class="o">=</span> <span class="n">chassis_client</span><span class="o">.</span><span class="n">create_model</span><span class="p">(</span><span class="n">process_fn</span><span class="o">=</span><span class="n">process</span><span class="p">)</span>
 <span class="n">sample_input</span> <span class="o">=</span> <span class="n">sample_filepath</span> <span class="o">=</span> <span class="s1">&#39;./sample_data.json&#39;</span>
 <span class="n">results</span> <span class="o">=</span> <span class="n">chassis_model</span><span class="o">.</span><span class="n">test_batch</span><span class="p">(</span><span class="n">sample_filepath</span><span class="p">)</span>
 </code></pre></div>
@@ -2671,7 +2654,7 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
 
 <span class="sd">    Examples:</span>
 <span class="sd">    ```python</span>
-<span class="sd">    chassis_model = chassis_client.create_model(context=context,process_fn=process)</span>
+<span class="sd">    chassis_model = chassis_client.create_model(process_fn=process)</span>
 <span class="sd">    sample_input = sample_filepath = &#39;./sample_data.json&#39;</span>
 <span class="sd">    results = chassis_model.test_batch(sample_filepath)</span>
 <span class="sd">    ```        </span>
@@ -2768,7 +2751,7 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
 </table>
 <p><strong>Examples:</strong></p>
     
-      <div class="highlight"><pre><span></span><code><span class="n">chassis_model</span> <span class="o">=</span> <span class="n">chassis_client</span><span class="o">.</span><span class="n">create_model</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span><span class="n">process_fn</span><span class="o">=</span><span class="n">process</span><span class="p">)</span>
+      <div class="highlight"><pre><span></span><code><span class="n">chassis_model</span> <span class="o">=</span> <span class="n">chassis_client</span><span class="o">.</span><span class="n">create_model</span><span class="p">(</span><span class="n">process_fn</span><span class="o">=</span><span class="n">process</span><span class="p">)</span>
 <span class="n">sample_filepath</span> <span class="o">=</span> <span class="s1">&#39;./sample_data.json&#39;</span>
 <span class="n">results</span> <span class="o">=</span> <span class="n">chassis_model</span><span class="o">.</span><span class="n">test_env</span><span class="p">(</span><span class="n">sample_filepath</span><span class="p">)</span>
 </code></pre></div>
@@ -2789,7 +2772,7 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
 
 <span class="sd">    Examples:</span>
 <span class="sd">    ```python</span>
-<span class="sd">    chassis_model = chassis_client.create_model(context=context,process_fn=process)</span>
+<span class="sd">    chassis_model = chassis_client.create_model(process_fn=process)</span>
 <span class="sd">    sample_filepath = &#39;./sample_data.json&#39;</span>
 <span class="sd">    results = chassis_model.test_env(sample_filepath)</span>
 <span class="sd">    ```        </span>
@@ -2912,7 +2895,7 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
     <script id="__config" type="application/json">{"base": "..", "features": ["navigation.expand"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
     
     
-      <script src="../assets/javascripts/bundle.5413a266.min.js"></script>
+      <script src="../assets/javascripts/bundle.467223ff.min.js"></script>
       
     
   </body>
