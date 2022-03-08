@@ -32,7 +32,7 @@ from libcloud.storage.providers import get_driver
 
 load_dotenv()
 
-CHASSIS_DEV = False
+CHASSIS_DEV = True
 WINDOWS = True if os.name == 'nt' else False
 
 HOME_DIR = str(Path.home())
@@ -352,7 +352,7 @@ def create_job_object(
         '' if publish else '--no-push',
         f'--destination={image_name}{"" if ":" in image_name else ":latest"}',
         f'--build-arg=MODEL_DIR=model-{random_name}',
-        f'--build-arg=MODZY_METADATA_PATH={modzy_data.get("modzy_metadata_path")}',
+        f'--build-arg=MODZY_METADATA_PATH={modzy_data.get("modzy_metadata_path") if modzy_data.get("modzy_metadata_path") is not None else "flavours/mlflow/interfaces/modzy/asset_bundle/0.1.0/model.yaml"}',
         f'--build-arg=MODEL_NAME={model_name}',
         f'--build-arg=MODEL_CLASS={module_name}',
         # Modzy is the default interface.
@@ -463,11 +463,19 @@ def create_job_object(
     )
 
     # Pod spec for the image build process
+    if modzy_data.get("modzy_metadata_path") is None:
+        # No specific Modzy Data provided
+        init_container_list = []
+        containers_list = [init_container_kaniko]
+    else:
+        init_container_list = [init_container_kaniko]
+        containers_list = [modzy_uploader_container]
+
     pod_spec = client.V1PodSpec(
         service_account_name=K_SERVICE_ACCOUNT_NAME,
         restart_policy='Never',
-        init_containers=[init_container_kaniko],
-        containers=[modzy_uploader_container],
+        init_containers=init_container_list,
+        containers=containers_list,
         volumes=volumes
     )
 
@@ -886,6 +894,8 @@ def build_image():
 
         modzy_metadata_path = extract_modzy_metadata(modzy_metadata_data, module_name, random_name)
         modzy_data['modzy_metadata_path'] = modzy_metadata_path
+    else:
+        modzy_uri = None
 
     # this path is the local location that kaniko will store the image it creates
     path_to_tar_file = f'{DATA_DIR if PV_MODE else "/tar"}/kaniko_image-{random_name}.tar'
