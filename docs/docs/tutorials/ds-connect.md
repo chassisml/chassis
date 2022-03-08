@@ -58,20 +58,14 @@ clf.fit(X_train, y_train)
 
 Once that we have our model we transform it to Chassis format.
 
-First we prepare the `context` dict, initializing anything here that should persist across inference runs. In this case, just the model:
+Notice that the SKLearn model that we created before is loaded into memory, and if it is referenced in the process function we are about to define, it will be saved out along with the model. 
 
-```python
-context = {"model": clf}
-```
-
-Notice that the SKLearn model that we created before is loaded into memory so that it will be packaged inside the MLFlow model. 
-
-Next, we prepare the process function, which must take input file bytes and the context dict we prepared as input. It is responsible for preprocessing the bytes, running inference, and returning formatted results. It can leverage anything in the context dict to do so:
+Next, we prepare the process function, which must take input file bytes as input. It is responsible for preprocessing the bytes, running inference, and returning formatted results.
 
 ```python
 def process(input_bytes,context):
     inputs = np.array(json.loads(input_bytes))/2
-    inference_results = context["model"].predict(inputs)
+    inference_results = clf.predict(inputs)
     structured_results = []
     for inference_result in inference_results:
         structured_output = {
@@ -95,7 +89,7 @@ Now let's create a Chassis model with our context dict and process function, tes
 
 ```python
 # create Chassis model
-chassis_model = chassis_client.create_model(context=context,process_fn=process)
+chassis_model = chassis_client.create_model(process_fn=process)
 
 # test Chassis model locally (can pass filepath, bufferedreader, bytes, or text here):
 sample_filepath = './examples/modzy/input_sample.json'
