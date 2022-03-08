@@ -5,6 +5,8 @@ import uuid
 import tempfile
 import zipfile
 import time
+import yaml
+import requests
 import subprocess
 from pathlib import Path
 from modzy.client import ApiClient
@@ -22,6 +24,7 @@ import base64
 import asyncio
 import threading
 from ast import literal_eval
+from target_utils import modzy_utils
 
 from retry import retry
 from libcloud.storage.types import Provider
@@ -280,7 +283,8 @@ def create_job_object(
         gpu=False,
         arm64=False,
         context_uri=None,
-        modzy_uri=None
+        modzy_uri=None,
+        modzy_model_id=None
 ):
     '''
     This utility method sets up all the required objects needed to create a model image and is run within the `run_kaniko` method.
@@ -298,6 +302,7 @@ def create_job_object(
         arm64 (bool): If `True`, will build container image that runs on ARM64 architecture
         context_uri (str): Location of build context in S3 (S3 mode only)
         modzy_uri (str): Location of modzy data in S3 (S3 mode only)
+        modzy_model_id (str): existing modzy model id if user requested new version
 
     Returns:
         Job: Chassis job object
@@ -366,6 +371,9 @@ def create_job_object(
             f'--image_tag={image_name}{"" if ":" in image_name else ":latest"}',
             f'--modzy_url={modzy_data.get("modzy_url")}'
         ]
+
+    if modzy_model_id:
+        modzy_uploader_args.append(f'--model_id={modzy_model_id}')
 
     volumes = [kaniko_credentials_volume]
     modzy_uploader_volume_mounts = []
@@ -538,7 +546,8 @@ def run_kaniko(
         gpu=False,
         arm64=False,
         context_uri=None,
-        modzy_uri=None
+        modzy_uri=None,
+        modzy_model_id=None
 ):
     '''
     This utility method creates and launches a job object that uses Kaniko to create the desired image during the `/build` process.
@@ -568,13 +577,14 @@ def run_kaniko(
             gpu,
             arm64,
             context_uri,
-            modzy_uri
+            modzy_uri,
+            modzy_model_id
         )
         create_job(batch_v1, job)
 
         loop = asyncio.new_event_loop()
         threading.Thread(target=loop.run_forever).start()
-        future = asyncio.run_coroutine_threadsafe(delete_credentials_secret(random_name),loop)
+        asyncio.run_coroutine_threadsafe(delete_credentials_secret(random_name),loop)
 
     except Exception as err:
         logger.error(str(err))
@@ -851,6 +861,7 @@ def build_image():
 
     # json string loaded into variable
     modzy_data = json.load(request.files.get('modzy_data') or  {})
+    modzy_model_id = modzy_data.get('modzy_model_id')
 
     # This is a future proofing variable in case we encounter a model that cannot be converted into mlflow.
     # It will remain hardcoded for now.
@@ -873,9 +884,18 @@ def build_image():
     # save the sample input to the modzy_sample_input_path directory
     if modzy_data:
         try:
-            ApiClient(modzy_data.get('modzy_url'),modzy_data.get('api_key'))
+            # attempt modzy connection
+            modzy_url = modzy_data.get('modzy_url')
+            api_key = modzy_data.get('api_key')
+            modzy_client = ApiClient(modzy_url,api_key)
+
+            # attempt to create new version of existing modzy model if requested
+            if modzy_model_id:
+                requested_version = yaml.safe_load(modzy_metadata_data)['version']
+                modzy_metadata_data.seek(0)
+                modzy_utils.create_version(modzy_client,modzy_model_id,requested_version)
         except Exception as e:
-            return {"error":str(e),'job_id': None}
+            return {'error':str(e),'job_id': None}
 
         if PV_MODE:
             modzy_sample_input_path = extract_modzy_sample_input(modzy_sample_input_data, module_name, random_name)
@@ -903,7 +923,8 @@ def build_image():
         gpu,
         arm64,
         context_uri,
-        modzy_uri
+        modzy_uri,
+        modzy_model_id
     )
 
     if error:
