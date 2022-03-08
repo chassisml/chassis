@@ -233,7 +233,7 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
     def publish(self,model_name,model_version,registry_user,registry_pass,
                 conda_env=None,fix_env=True,gpu=False,arm64=False,
                 modzy_sample_input_path=None,modzy_api_key=None,
-                modzy_url=None):
+                modzy_url=None,modzy_model_id=None):
         '''
         Executes chassis job, which containerizes model, pushes container image to Docker registry, and optionally deploys model to Modzy
 
@@ -249,6 +249,7 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
             modzy_sample_input_path (str): Filepath to sample input data. Required to deploy model to Modzy
             modzy_api_key (str): Valid Modzy API Key
             modzy_url (str): Valid Modzy instance URL, example: https://my.modzy.com
+            modzy_model_id (str): Existing Modzy model identifier, if requesting new version of existing model instead of new model
 
         Returns:
             Dict: Response to Chassis `/build` endpoint
@@ -311,7 +312,8 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
                     'sample_input_path': modzy_sample_input_path,
                     'deploy': True,
                     'api_key': modzy_api_key,
-                    'modzy_url': modzy_url
+                    'modzy_url': modzy_url,
+                    'modzy_model_id': modzy_model_id
                 }
                 write_modzy_yaml(model_name,model_version,modzy_metadata_path,batch_size=self.batch_size,gpu=gpu)
             else:
