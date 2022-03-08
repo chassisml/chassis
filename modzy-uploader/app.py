@@ -28,6 +28,7 @@ parser.add_argument('--sample_input_path', type=str, required=False)
 parser.add_argument('--metadata_path', type=str, required=False)
 parser.add_argument('--modzy_uri', type=str, required=False)
 parser.add_argument('--modzy_url', type=str, required=False)
+parser.add_argument('--model_id', type=str, required=False)
 args = parser.parse_args()
 
 JOB_NAME = os.getenv('JOB_NAME')
@@ -52,6 +53,7 @@ routes = {
     'run_model': '/api/models/{}/versions/{}/run-process',
     'deploy_model': '/api/models/{}/versions/{}',
     'model_url': '/models/{}/{}',
+    'create_version': '/api/models/{}/versions'
 }
 
 def download_modzy_data(modzy_uri):
@@ -109,7 +111,9 @@ def create_model(metadata):
 
     logger.info(f'create_model returned took [{1000*(time.time()-start)} ms]')
 
-    return res.json()
+    model_data = res.json()
+
+    return model_data.get('identifier'), version
 
 def add_tags_and_description(identifier, metadata):
 
@@ -304,9 +308,10 @@ def upload_model(modzy_dir=None):
     with open(yaml_path, 'r') as f:
         metadata = yaml.safe_load(f)
 
-    model_data = create_model(metadata)
-
-    identifier, version = model_data.get('identifier'), metadata.get('version')
+    if args.model_id:
+        identifier, version = args.model_id,metadata.get('version')
+    else:
+        identifier, version = create_model(metadata)
 
     logger.debug(f'Identifier: {identifier}, Version: {version}')
 
