@@ -1,9 +1,11 @@
 # Deploy Chassis (DevOps)
 
-!!! note
+<!-- TODO: check about test drive -->
+
+<!-- !!! note
     If you just want to try Chassis, you can use the test drive, which will deploy it for you:
 
-    <a href="https://testfaster.ci/launch?embedded=true&repo=https://github.com/combinator-ml/terraform-k8s-chassis&file=examples/testfaster/.testfaster.yml" target="_blank">:computer: Launch Test Drive :computer:</a>
+    <a href="https://testfaster.ci/launch?embedded=true&repo=https://github.com/combinator-ml/terraform-k8s-chassis&file=examples/testfaster/.testfaster.yml" target="_blank">:computer: Launch Test Drive :computer:</a> -->
 
 ## Install required dependencies
 
