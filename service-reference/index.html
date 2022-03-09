@@ -802,6 +802,8 @@ It generates a model image based upon a POST request. The <code>request.files</c
 
         <span class="n">modzy_metadata_path</span> <span class="o">=</span> <span class="n">extract_modzy_metadata</span><span class="p">(</span><span class="n">modzy_metadata_data</span><span class="p">,</span> <span class="n">module_name</span><span class="p">,</span> <span class="n">random_name</span><span class="p">)</span>
         <span class="n">modzy_data</span><span class="p">[</span><span class="s1">&#39;modzy_metadata_path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">modzy_metadata_path</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">modzy_uri</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="c1"># this path is the local location that kaniko will store the image it creates</span>
     <span class="n">path_to_tar_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">DATA_DIR</span> <span class="k">if</span> <span class="n">PV_MODE</span> <span class="k">else</span> <span class="s2">&quot;/tar&quot;</span><span class="si">}</span><span class="s1">/kaniko_image-</span><span class="si">{</span><span class="n">random_name</span><span class="si">}</span><span class="s1">.tar&#39;</span>
@@ -1034,7 +1036,7 @@ It generates a model image based upon a POST request. The <code>request.files</c
         <span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="n">publish</span> <span class="k">else</span> <span class="s1">&#39;--no-push&#39;</span><span class="p">,</span>
         <span class="sa">f</span><span class="s1">&#39;--destination=</span><span class="si">{</span><span class="n">image_name</span><span class="si">}{</span><span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">image_name</span> <span class="k">else</span> <span class="s2">&quot;:latest&quot;</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
         <span class="sa">f</span><span class="s1">&#39;--build-arg=MODEL_DIR=model-</span><span class="si">{</span><span class="n">random_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-        <span class="sa">f</span><span class="s1">&#39;--build-arg=MODZY_METADATA_PATH=</span><span class="si">{</span><span class="n">modzy_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;modzy_metadata_path&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s1">&#39;--build-arg=MODZY_METADATA_PATH=</span><span class="si">{</span><span class="n">modzy_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;modzy_metadata_path&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">modzy_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;modzy_metadata_path&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;flavours/mlflow/interfaces/modzy/asset_bundle/0.1.0/model.yaml&quot;</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
         <span class="sa">f</span><span class="s1">&#39;--build-arg=MODEL_NAME=</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
         <span class="sa">f</span><span class="s1">&#39;--build-arg=MODEL_CLASS=</span><span class="si">{</span><span class="n">module_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
         <span class="c1"># Modzy is the default interface.</span>
@@ -1145,11 +1147,19 @@ It generates a model image based upon a POST request. The <code>request.files</c
     <span class="p">)</span>
 
     <span class="c1"># Pod spec for the image build process</span>
+    <span class="k">if</span> <span class="n">modzy_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;modzy_metadata_path&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># No specific Modzy Data provided</span>
+        <span class="n">init_container_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">containers_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">init_container_kaniko</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">init_container_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">init_container_kaniko</span><span class="p">]</span>
+        <span class="n">containers_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">modzy_uploader_container</span><span class="p">]</span>
+
     <span class="n">pod_spec</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">V1PodSpec</span><span class="p">(</span>
         <span class="n">service_account_name</span><span class="o">=</span><span class="n">K_SERVICE_ACCOUNT_NAME</span><span class="p">,</span>
         <span class="n">restart_policy</span><span class="o">=</span><span class="s1">&#39;Never&#39;</span><span class="p">,</span>
-        <span class="n">init_containers</span><span class="o">=</span><span class="p">[</span><span class="n">init_container_kaniko</span><span class="p">],</span>
-        <span class="n">containers</span><span class="o">=</span><span class="p">[</span><span class="n">modzy_uploader_container</span><span class="p">],</span>
+        <span class="n">init_containers</span><span class="o">=</span><span class="n">init_container_list</span><span class="p">,</span>
+        <span class="n">containers</span><span class="o">=</span><span class="n">containers_list</span><span class="p">,</span>
         <span class="n">volumes</span><span class="o">=</span><span class="n">volumes</span>
     <span class="p">)</span>
 
