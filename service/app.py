@@ -998,8 +998,7 @@ def test_model():
         output_dict["model_output"] = test_ret.stdout.decode()
     except subprocess.CalledProcessError as e:
         subprocess.run(rm_env_cmd, capture_output=True, shell=True, executable='/bin/bash')
-        error_output = e.stderr.decode()
-        output_dict["model_error"] = error_output[error_output.find('in process'):]
+        output_dict["model_error"] = e.stderr.decode()
         return output_dict
 
     # if we make it here, test was successful, remove env and return output
