@@ -8,7 +8,7 @@ RPC stands for "Remote Procedure Call", and it is a newer model for API design. 
 
 gRPC is an RPC framework built by Google that uses the HTTP 2.0 protocol under the hood. In gRPC, code "stubs" are auto-generated (in different languages) for the client and server, so the details of the RPC to HTTP mapping are abstracted away for developers.
 
-## Benefits versus traditional REST
+## Benefits Versus Traditional REST
 
 **Client-Server Interaction**
 
