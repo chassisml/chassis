@@ -272,10 +272,70 @@ def run_model(identifier, version):
 
     start = time.time()
 
-    route = format_url(routes['run_model'], identifier, version)
+    run_route = format_url(routes['run_model'], identifier, version)
 
-    res = r_session.post(route)
+    res = r_session.post(run_route)
     res.raise_for_status()
+
+    percentage = -1
+    while percentage < 100:
+        res = r_session.get(run_route)
+        res.raise_for_status()
+
+        res_data = res.json()
+        new_percentage = res_data.get('percentage')
+
+        if new_percentage != percentage:
+            logger.debug(f'Running model at {new_percentage}%')
+            percentage = new_percentage
+
+        time.sleep(1)
+
+    test_output = res.json()['result']
+
+    sample_input = {'input': {'accessKeyID': '<accessKeyID>',
+                                    'region': '<region>',
+                                    'secretAccessKey': '<secretAccessKey>',
+                                    'sources': {'0001': {'input': {'bucket': '<bucket>',
+                                                        'key': '/path/to/s3/input'}}},
+                                                        'type': 'aws-s3'},
+                                'model': {'identifier': identifier, 'version':version}
+                    }
+    
+    formatted_sample_output = {'jobIdentifier': '<uuid>',
+                                'total': '<number of inputs>',
+                                'completed': '<total number of completed inputs>',
+                                'failed': '<number of failed inputs>',
+                                'finished': '<true or false>',
+                                'submittedByKey': '<api key>',
+                                'results': {'<input-id>': {'model': None,
+                                'userIdentifier': None,
+                                'status': test_output['status'],
+                                'engine': test_output['engine'],
+                                'error': test_output['error'],
+                                'startTime': test_output['startTime'],
+                                'endTime': test_output['endTime'],
+                                'updateTime': test_output['updateTime'],
+                                'inputSize': test_output['inputSize'],
+                                'accessKey': None,
+                                'teamIdentifier': None,
+                                'accountIdentifier': None,
+                                'timeMeters': None,
+                                'datasourceCompletedTime': None,
+                                'elapsedTime': test_output['elapsedTime'],
+                                'results.json': test_output['results.json']}
+                                }
+                            }
+
+    sample_input_route = format_url(routes['put_sample_input'], identifier, version)
+
+    sample_input_res = r_session.put(sample_input_route, json=sample_input, headers={'content-type':'application/json'})
+    sample_input_res.raise_for_status()
+
+    sample_output_route = format_url(routes['put_sample_output'], identifier, version)
+
+    sample_output_res = r_session.put(sample_output_route, json=formatted_sample_output, headers={'content-type':'application/json'})
+    sample_output_res.raise_for_status()
 
     logger.info(f'run_model took [{1000*(time.time()-start)} ms]')
 
