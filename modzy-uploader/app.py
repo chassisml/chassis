@@ -51,6 +51,8 @@ routes = {
     'upload_input_example': '/api/models/{}/versions/{}/testInput',
     'run_model': '/api/models/{}/versions/{}/run-process',
     'deploy_model': '/api/models/{}/versions/{}',
+    'put_sample_input': '/api/models/{}/versions/{}/sample-input',
+    'put_sample_output': '/api/models/{}/versions/{}/sample-output',
     'model_url': '/models/{}/{}',
 }
 
