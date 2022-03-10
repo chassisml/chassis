@@ -1,14 +1,10 @@
 # Deploy Chassis (DevOps)
 
-Recommend docker desktop (link to )
-
-if docker desktop, only have to install helm
-
 <!-- TODO: add link to google colab notebook -->
 
 ## Install required dependencies
 
-* Install [Docker](https://docs.docker.com/get-docker/)
+* Install [Docker Desktop](https://docs.docker.com/get-docker/)
     * Try to run `docker ps`
         * If you get a permissions error, follow instructions [here](https://docs.docker.com/engine/install/linux-postinstall/)
 * Install [Kubectl](https://kubernetes.io/docs/tasks/tools/)
