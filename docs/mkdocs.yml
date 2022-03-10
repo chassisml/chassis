@@ -4,14 +4,14 @@ nav:
   - Tutorials:
       - tutorials/devops-deploy.md
       - tutorials/ds-connect.md
-      - tutorials/interact-with-container.md
+      - tutorials/ds-postman.md
       - tutorials/ds-deploy.md
       - tutorials/ds-deploy-modzy.md
   - How-to Guides:
       - Model Containers by Framework: how-to-guides/frameworks.md
       - OS & Arm Support: how-to-guides/arm-support.md
       - GPU Support: how-to-guides/gpu-support.md
-      - Adding Explainability: how-to-guides/explainability.md
+      # - Adding Explainability: how-to-guides/explainability.md
   - Reference:
       - Chassisml Service: service-reference.md
       - Python SDK: chassisml-sdk-reference.md

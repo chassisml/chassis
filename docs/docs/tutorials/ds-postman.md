@@ -1,5 +1,7 @@
 # Run Model in Postman
 
+<!-- TODO: add link to google colab notebook -->
+
 After building a container with Chassisml, there are several ways to interact with it: via [Modzy](https://www.modzy.com/try-free/), [KServe](https://kserve.github.io/website/0.8/), or locally on your machine. This tutorial demonstrates how to make API calls to a container locally using Postman.
 
 !!! note

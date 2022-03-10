@@ -1,11 +1,10 @@
 # Deploy Chassis (DevOps)
 
-<!-- TODO: check about test drive -->
+Recommend docker desktop (link to )
 
-<!-- !!! note
-    If you just want to try Chassis, you can use the test drive, which will deploy it for you:
+if docker desktop, only have to install helm
 
-    <a href="https://testfaster.ci/launch?embedded=true&repo=https://github.com/combinator-ml/terraform-k8s-chassis&file=examples/testfaster/.testfaster.yml" target="_blank">:computer: Launch Test Drive :computer:</a> -->
+<!-- TODO: add link to google colab notebook -->
 
 ## Install required dependencies
 

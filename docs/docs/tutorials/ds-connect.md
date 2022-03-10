@@ -1,11 +1,6 @@
 # Build a Model (Data Science)
 
-<!-- TODO: confirm test drive stuff -->
-
-<!-- !!! note
-    If you just want to try Chassis, you can use the test drive, which will deploy it for you so that you can go straight to building a MLflow model into a Docker container and pushing it to your Docker Hub account in the `svc_demo.ipynb` sample notebook:
-
-    <a href="https://testfaster.ci/launch?embedded=true&repo=https://github.com/combinator-ml/terraform-k8s-chassis&file=examples/testfaster/.testfaster.yml" target="_blank">:computer: Launch Test Drive :computer:</a> -->
+<!-- TODO: add link to google colab notebook -->
 
 In this tutorial, we will:
 
@@ -144,22 +139,3 @@ If everything has gone as expected we will see something similar to this.
 REPOSITORY                        TAG       IMAGE ID       CREATED         SIZE
 <my.username>/sklearn-digits            latest    0e5c5815f2ec   3 minutes ago   2.19GB
 ```
-<!-- 
-## Run an inference job in Modzy
-
-If you provided the required arguments to `publish()` to publish the model to Modzy, you can use the Modzy SDK to submit an inference job to your newly-published model. 
-
-```python
-from modzy import ApiClient
-
-client = ApiClient(base_url='https://your.modzy.com/api', api_key=modzy_api_key)
-
-input_name = final_status['result']['inputs'][0]['name']
-model_id = final_status['result'].get("model").get("modelId")
-model_version = final_status['result'].get("version")
-
-inference_job = client.jobs.submit_file(model_id, model_version, {input_name: sample_filepath})
-inference_job_result = client.results.block_until_complete(inference_job, timeout=None)
-inference_job_results_json = inference_job_result.get_first_outputs()['results.json']
-print(inference_job_results_json)
-``` -->

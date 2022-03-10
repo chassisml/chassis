@@ -1,11 +1,6 @@
 # Deploy Model to KServe
 
-<!-- TODO: figure this out -->
-
-<!-- !!! note
-    If you just want to try Chassis, you can use the test drive, which will deploy Chassis and KServe for you so you can use Chassis to containerize an MLflow model, push it to your Docker Hub account, and then publish it to the KServe instance running inside the test drive, in the `kfserving.ipynb` sample notebook:
-
-    <a href="https://testfaster.ci/launch?embedded=true&repo=https://github.com/combinator-ml/terraform-k8s-chassis&file=examples/testfaster/.testfaster.yml" target="_blank">:computer: Launch Test Drive :computer:</a> -->
+<!-- TODO: add link to google colab notebook -->
 
 
 ## Install KServe in minikube
