@@ -1,19 +1,49 @@
 ![Chassis logo](images/chassis-positive.png){: style="width:200px; margin-bottom:10px;" }
-#Build ML-friendly Containers. Automatically.
+
+# Build ML Model Containers. Automatically.
+
 Turn machine learning models into portable container images that can run just about anywhere.
-``` py
+
+After setting up your model environment, get started quickly by adding the Chassisml SDK.
+
+```bash
 pip install chassisml
 ```
-**Create a model**
-``` py
-# Create Chassisml model
-chassis_model = chassis_client.create_model(context=context,process_fn=process)
+
+### Load Your Model
+
+```python
+model = framework.load("path/to/model.file")
 ```
-**Create and publish an image of your model**
+
+### Write Process Function
+
+```python
+def process(input_bytes):
+  # preprocess
+  data = preprocess(input_bytes)
+
+  # run inference
+  predictions = model.predict(data)
+
+  # post process predictions
+  formatted_results = postprocess(predictions)
+
+  return formatted_results
+```
+
+### Initialize Client and Create Chassis Model
+
+*NOTE: Initialize client by pointing to running Chassis instance*
+
 ``` py
-# Publish model to Docker Hub
+chassis_client = chassisml.ChassisClient("http://localhost:5000")
+chassis_model = chassis_client.create_model(process_fn=process)
+```
+### Publish Chassis Model
+``` py
 response = chassis_model.publish(
-    model_name="Chassisml Regression Model",
+    model_name="Sample ML Model",
     model_version="0.0.1",
     registry_user=dockerhub_user,
     registry_pass=dockerhub_pass,

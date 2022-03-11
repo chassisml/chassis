@@ -2,10 +2,9 @@
 
 <!-- TODO: add link to google colab notebook -->
 
-
 ## Install KServe in minikube
 
-Clone the KServe repository and run the `quick_install.sh` script.
+Clone the [KServe repository](https://github.com/kserve/kserve) and run the `quick_install.sh` script.
 
 ```bash
 curl -s "https://raw.githubusercontent.com/kserve/kserve/release-0.7/hack/quick_install.sh" | bash

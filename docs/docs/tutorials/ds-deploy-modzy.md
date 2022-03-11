@@ -11,16 +11,15 @@ pip install chassisml scikit-learn mlflow joblib requests
 ```
 
 ```python
-'''
-import depedencies
-'''
+
 import chassisml
 import sklearn
+import numpy as np
+import json
 from joblib import dump, load
 
-'''
-create model
-'''
+
+# create model
 from sklearn import datasets, svm
 from sklearn.model_selection import train_test_split
 
@@ -37,9 +36,8 @@ X_train, X_test, y_train, y_test = train_test_split(
 # Learn the digits on the train subset
 clf.fit(X_train, y_train)
 
-'''
-build process method
-'''
+
+# build process method
 def process(input_bytes):
     inputs = np.array(json.loads(input_bytes))/2
     inference_results = clf.predict(inputs)
@@ -53,14 +51,19 @@ def process(input_bytes):
         structured_results.append(structured_output)
     return structured_results
 
-'''
-connect to Chassis client and build Chassis model
-'''
+
+# intialize Chassis client
+chassis_client = chassisml.ChassisClient("http://localhost:5000")
 # create Chassis model
 chassis_model = chassis_client.create_model(process_fn=process)
 
+# save sample data for testing
+sample = X_test[:1].tolist()
+with open("./digits_sample.json", 'w') as out:
+    json.dump(sample, out)
+
 # test Chassis model locally (can pass filepath, bufferedreader, bytes, or text here):
-sample_filepath = './examples/modzy/input_sample.json'
+sample_filepath = './digits_sample.json'
 results = chassis_model.test(sample_filepath)
 print(results)
 
@@ -68,9 +71,8 @@ print(results)
 test_env_result = chassis_model.test_env(sample_filepath)
 print(test_env_result)
 
-'''
-define Docker Hub credentials
-'''
+
+# define Docker Hub credentials
 dockerhub_user = <my.username>
 dockerhob_pass = <my.password>
 ```

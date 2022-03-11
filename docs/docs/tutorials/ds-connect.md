@@ -32,6 +32,8 @@ Since we are going to train our own model as an example, we need to import all t
 ```python
 import chassisml
 import sklearn
+import numpy as np
+import json
 from joblib import dump, load
 ```
 
@@ -90,8 +92,13 @@ Now let's create a Chassis model with our process function, test it locally with
 # create Chassis model
 chassis_model = chassis_client.create_model(process_fn=process)
 
+# save sample data for testing
+sample = X_test[:1].tolist()
+with open("./digits_sample.json", 'w') as out:
+    json.dump(sample, out)
+
 # test Chassis model locally (can pass filepath, bufferedreader, bytes, or text here):
-sample_filepath = './examples/modzy/input_sample.json'
+sample_filepath = './digits_sample.json'
 results = chassis_model.test(sample_filepath)
 print(results)
 

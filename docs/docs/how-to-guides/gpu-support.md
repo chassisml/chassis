@@ -1,14 +1,14 @@
-#GPU Support
+# GPU Support
 
 Data scientists who spend most of their time building and training new machine learning models are likely familiar with two buzzwords that are often brought up when discussing the required resources needed to conduct such experiments: *Graphics Processing Unit (GPU)* and *batch processing*. GPUs are designed to quickly process large quantities of data concurrently and in turn makes the batch processing of data more efficient. This is pivotal process for not only model training, but also model inference.
 
-If you are familiar with the Chassisml service, you will know that by default, Chassisml will automatically create containers that run on GPU. But what if there is a real need for *batch* inference in a production setting that processes significantly quicker running on a GPU? 
+If you are familiar with the Chassisml service, you will know that by default, Chassisml will automatically create containers that run on CPU. But what if there is a real need for *batch* inference in a production setting that processes significantly quicker running on a GPU? 
 
 This page walks through the process of implementing both GPU and batch inference support.
 
 To follow along, you can reference the Jupyter notebook example and data files [here](https://github.com/modzy/chassis/blob/main/chassisml-sdk/examples/pytorch/pytorch_resnet50_image_classification_batch_gpu.ipynb).
 
-##Enable Batch Processing
+## Enable Batch Processing
 
 Batch processing goes hand in hand with GPU support. Enabling GPU support does accerate the model inferences execution, but to truly unlock the full potential of a GPU, batch processing is critical. So, we will build a simple Image Classification model with a ResNet50 architecture, avaialable directly in PyTorch's [Torvision model library](https://pytorch.org/vision/stable/models.html), and implement a batch processing function that takes advantage of GPU access.
 
