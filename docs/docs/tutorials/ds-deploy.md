@@ -2,10 +2,15 @@
 
 <!-- TODO: add link to google colab notebook -->
 
-## Install KServe in minikube
+## Install Required Dependencies
 
-Clone the [KServe repository](https://github.com/kserve/kserve) and run the `quick_install.sh` script.
-
+* Install [Docker Desktop](https://docs.docker.com/get-docker/)
+    * Try to run `docker ps`
+        * If you get a permissions error, follow instructions [here](https://docs.docker.com/engine/install/linux-postinstall/)
+* Install [Kubectl](https://kubernetes.io/docs/tasks/tools/)
+* Install [Minikube](https://minikube.sigs.k8s.io/docs/start/)
+    * Start cluster: `minikube start`
+* Install KServe:
 ```bash
 curl -s "https://raw.githubusercontent.com/kserve/kserve/release-0.7/hack/quick_install.sh" | bash
 ```
@@ -21,22 +26,22 @@ There are some environment variables that must be defined for KServe to work:
 
 ## Deploy the model
 
-For this tutorial, we will use the Chassis-generated container image uploaded as `modzy/chassisml-image-classification`. To deploy to KServe, we will use the [file](https://github.com/modzy/chassis/blob/main/service/flavours/mlflow/interfaces/kfserving/custom_v1.yaml) that defines the `InferenceService` for the protocol v1 of KServe.
+For this tutorial, we will use the Chassis-generated container image uploaded as `bmunday131/sklearn-digits`. To deploy to KServe, we will use the [file](https://github.com/modzy/chassis/blob/main/service/flavours/mlflow/interfaces/kfserving/custom_v1.yaml) that defines the `InferenceService` for the protocol v1 of KServe.
 
 ```yaml
-apiVersion: "serving.kubeflow.org/v1beta1"
+apiVersion: "serving.kserve.io/v1beta1"
 kind: "InferenceService"
 metadata:
-  name: chassisml-demo
+  name: chassisml-sklearn-demo
 spec:
   predictor:
     containers:
-    - image: modzy/chassisml-image-classification
-      name: chassisml-demo-container
+    - image: bmunday131/sklearn-digits:0.0.1
+      name: chassisml-sklearn-demo-container
       imagePullPolicy: IfNotPresent
       env:
         - name: INTERFACE
-          value: kfserving
+          value: kserve
         - name: HTTP_PORT
           value: "8080"
         - name: PROTOCOL
