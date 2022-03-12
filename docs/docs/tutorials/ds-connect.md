@@ -146,3 +146,7 @@ If everything has gone as expected we will see something similar to this.
 REPOSITORY                        TAG       IMAGE ID       CREATED         SIZE
 <my.username>/sklearn-digits            latest    0e5c5815f2ec   3 minutes ago   2.19GB
 ```
+
+## Tutorial in Action
+
+ADD VIDEO LINK

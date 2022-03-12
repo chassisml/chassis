@@ -163,3 +163,7 @@ inference_job_result = client.results.block_until_complete(inference_job, timeou
 inference_job_results_json = inference_job_result.get_first_outputs()['results.json']
 print(inference_job_results_json)
 ```
+
+## Tutorial in Action
+
+ADD VIDEO LINK

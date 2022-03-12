@@ -209,3 +209,7 @@ So we can query it this way. Take into account that you must download [`inputsv2
 ```bash
 curl localhost:8080/v2/models/digits/infer -d@inputsv2.json
 ```
+
+## Tutorial in Action
+
+ADD VIDEO LINK

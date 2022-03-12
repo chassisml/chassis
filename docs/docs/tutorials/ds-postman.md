@@ -229,6 +229,10 @@ In practice, encoding and decoding data is easy to do in your program of choice,
 
 Lastly, invoke the `Shutdown()` method the same way you invoked the `Status()` method. This will shutdown the container running locally on your machine.
 
+## Tutorial in Action
+
+ADD VIDEO LINK
+
 
 
 
