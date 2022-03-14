@@ -149,4 +149,29 @@ REPOSITORY                        TAG       IMAGE ID       CREATED         SIZE
 
 ## Tutorial in Action
 
-ADD VIDEO LINK
+Follow along as we walk through this tutorial step by step!
+
+<style>
+.video-wrapper {
+  position: relative;
+  display: block;
+  height: 0;
+  padding: 0;
+  overflow: hidden;
+  padding-bottom: 56.25%;
+  border: 1px solid gray;
+}
+.video-wrapper > iframe {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+</style>
+
+<div class="video-wrapper">
+  <iframe width="1280" height="720" src="https://youtube.com/embed/uIsxJfisDIU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
