@@ -43,24 +43,24 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
         chassis_build_url (str): The build url for the Chassis API.
     """
 
-    def __init__(self,model_context,process_fn,batch_process_fn,batch_size,chassis_base_url):      
+    def __init__(self,process_fn,batch_process_fn,batch_size,chassis_base_url):      
         
         if process_fn and batch_process_fn:
             if not batch_size:
                 raise ValueError("Both batch_process_fn and batch_size must be provided for batch support.")
-            self.predict = self._gen_predict_method(process_fn,model_context)
-            self.batch_predict = self._gen_predict_method(batch_process_fn,model_context,batch=True)
+            self.predict = self._gen_predict_method(process_fn)
+            self.batch_predict = self._gen_predict_method(batch_process_fn,batch=True)
             self.batch_input = True
             self.batch_size = batch_size
         elif process_fn and not batch_process_fn:
-            self.predict = self._gen_predict_method(process_fn,model_context)
+            self.predict = self._gen_predict_method(process_fn)
             self.batch_input = False
             self.batch_size = None
         elif batch_process_fn and not process_fn:
             if not batch_size:
                 raise ValueError("Both batch_process_fn and batch_size must be provided for batch support.")
-            self.predict = self._gen_predict_method(batch_process_fn,model_context,batch_to_single=True)
-            self.batch_predict = self._gen_predict_method(batch_process_fn,model_context,batch=True)
+            self.predict = self._gen_predict_method(batch_process_fn,batch_to_single=True)
+            self.batch_predict = self._gen_predict_method(batch_process_fn,batch=True)
             self.batch_input = True
             self.batch_size = batch_size
         else:
@@ -69,12 +69,12 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
         self.chassis_build_url = urllib.parse.urljoin(chassis_base_url, routes['build'])
         self.chassis_test_url = urllib.parse.urljoin(chassis_base_url, routes['test'])
 
-    def _gen_predict_method(self,process_fn,model_context,batch=False,batch_to_single=False):
+    def _gen_predict_method(self,process_fn,batch=False,batch_to_single=False):
         def predict(_,model_input):
             if batch_to_single:
-                output = process_fn([model_input],model_context)[0]
+                output = process_fn([model_input])[0]
             else:
-                output = process_fn(model_input,model_context)
+                output = process_fn(model_input)
             if batch:
                 return [json.dumps(out,separators=(",", ":"),cls=NumpyEncoder).encode() for out in output]
             else:
@@ -93,7 +93,7 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
 
         Examples:
         ```python
-        chassis_model = chassis_client.create_model(context=context,process_fn=process)
+        chassis_model = chassis_client.create_model(process_fn=process)
         sample_filepath = './sample_data.json'
         results = chassis_model.test(sample_filepath)
         ```
@@ -124,7 +124,7 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
 
         Examples:
         ```python
-        chassis_model = chassis_client.create_model(context=context,process_fn=process)
+        chassis_model = chassis_client.create_model(process_fn=process)
         sample_input = sample_filepath = './sample_data.json'
         results = chassis_model.test_batch(sample_filepath)
         ```        
@@ -166,7 +166,7 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
 
         Examples:
         ```python
-        chassis_model = chassis_client.create_model(context=context,process_fn=process)
+        chassis_model = chassis_client.create_model(process_fn=process)
         sample_filepath = './sample_data.json'
         results = chassis_model.test_env(sample_filepath)
         ```        
@@ -216,7 +216,7 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
         
         Examples:
         ```python
-        chassis_model = chassis_client.create_model(context=context,process_fn=process)
+        chassis_model = chassis_client.create_model(process_fn=process)
         chassis_model.save("local_model_directory")
         ```
         '''
@@ -256,7 +256,7 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
         Examples:
         ```python
         # Create Chassisml model
-        chassis_model = chassis_client.create_model(context=context,process_fn=process)
+        chassis_model = chassis_client.create_model(process_fn=process)
 
         # Define Dockerhub credentials
         dockerhub_user = "user"
@@ -311,7 +311,7 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
                     'sample_input_path': modzy_sample_input_path,
                     'deploy': True,
                     'api_key': modzy_api_key,
-                    'modzy_url': modzy_url
+                    'modzy_url': modzy_url if not modzy_url.endswith('/api') else modzy_url[:-4]
                 }
                 write_modzy_yaml(model_name,model_version,modzy_metadata_path,batch_size=self.batch_size,gpu=gpu)
             else:
@@ -379,7 +379,7 @@ class ChassisClient:
         Examples:
         ```python
         # Create Chassisml model
-        chassis_model = chassis_client.create_model(context=context,process_fn=process)
+        chassis_model = chassis_client.create_model(process_fn=process)
 
         # Define Dockerhub credentials
         dockerhub_user = "user"
@@ -418,7 +418,7 @@ class ChassisClient:
         Examples:
         ```python
         # Create Chassisml model
-        chassis_model = chassis_client.create_model(context=context,process_fn=process)
+        chassis_model = chassis_client.create_model(process_fn=process)
 
         # Define Dockerhub credentials
         dockerhub_user = "user"
@@ -528,14 +528,13 @@ class ChassisClient:
 
         return rValue
 
-    def create_model(self,context,process_fn=None,batch_process_fn=None,batch_size=None):
+    def create_model(self,process_fn=None,batch_process_fn=None,batch_size=None):
         '''
         Builds chassis model locally
 
         Args:
-            context (dict): Dictionary that will contain the trained model object and any other inference-specific dependencies that will persist while model container is running. Should include all objects that only need to be loaded one time (e.g., loaded model, labels file(s), data transformation objects, etc.) that can be accessed during inference.
-            process_fn (function): Python function that must accept a single piece of input data in raw bytes form and `context` dictionary as input parameters. This method is responsible for handling all data preprocessing, executing inference, and returning the processed predictions. Defining additional functions is acceptable as long as they are called within the `process` method
-            batch_process_fn (function): Python function that must accept a batch of input data in raw bytes form and `context` dictionary as input parameters. This method is responsible for handling all data preprocessing, executing inference, and returning the processed predictions. Defining additional functions is acceptable as long as they are called within the `process` method
+            process_fn (function): Python function that must accept a single piece of input data in raw bytes form. This method is responsible for handling all data preprocessing, executing inference, and returning the processed predictions. Defining additional functions is acceptable as long as they are called within the `process` method
+            batch_process_fn (function): Python function that must accept a batch of input data in raw bytes form. This method is responsible for handling all data preprocessing, executing inference, and returning the processed predictions. Defining additional functions is acceptable as long as they are called within the `process` method
             batch_size (int): Maximum batch size if `batch_process_fn` is defined
 
         Returns:
@@ -568,13 +567,10 @@ class ChassisClient:
         with open("digits_sample.json", 'w') as out:
             json.dump(sample, out)        
 
-        # 1. Define Context Dictionary
-        context = {"model": logistic}
-
-        # 2. Define Process function
-        def process(input_bytes,context):
+        # Define Process function
+        def process(input_bytes):
             inputs = np.array(json.loads(input_bytes))
-            inference_results = context["model"].predict(inputs)
+            inference_results = logistic.predict(inputs)
             structured_results = []
             for inference_result in inference_results:
                 structured_output = {
@@ -586,7 +582,7 @@ class ChassisClient:
             return structured_results      
 
         # create Chassis model
-        chassis_model = chassis_client.create_model(context=context,process_fn=process)              
+        chassis_model = chassis_client.create_model(process_fn=process)              
         ```
         
         '''
@@ -596,5 +592,5 @@ class ChassisClient:
         if (batch_process_fn and not batch_size) or (batch_size and not batch_process_fn):
             raise ValueError("Both batch_process_fn and batch_size must be provided for batch support.")
 
-        return ChassisModel(context,process_fn,batch_process_fn,batch_size,self.base_url)
+        return ChassisModel(process_fn,batch_process_fn,batch_size,self.base_url)
 

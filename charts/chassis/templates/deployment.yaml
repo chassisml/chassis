@@ -27,23 +27,28 @@ spec:
       serviceAccountName: {{ include "chassis.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{ if eq .Values.MODE "pv" }}
       volumes:
         - name: {{ .Values.K_DATA_VOLUME_NAME }}
           persistentVolumeClaim:
             claimName: {{ .Values.K_DATA_VOLUME_NAME }}
+      {{ end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.SERVICE_REPOSITORY }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{ if eq .Values.MODE "pv" }}
           volumeMounts:
             - mountPath: {{ .Values.MOUNT_PATH_DIR }}
               name: {{ .Values.K_DATA_VOLUME_NAME }}
-          {{- with .Values.env }}
+          {{ end }}
           env:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
+            - name: MODE
+              value: {{ .Values.MODE }}
+            - name: CONTEXT_BUCKET
+              value: {{ .Values.CONTEXT_BUCKET }}
           ports:
             - name: http
               containerPort: {{ .Values.PORT }}
