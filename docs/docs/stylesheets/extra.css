@@ -10,4 +10,59 @@
   /* Sets the accent color (i.e., links on hover) */
   --md-accent-fg-color:        #024a74;
 }
- 
+
+
+/* Styles the logos section on index.md  */
+#logos-container {
+  border: none;
+  height: 75px;
+  text-align: justify;
+  -ms-text-justify: distribute-all-lines;
+  text-justify: distribute-all-lines;
+  padding-top: 20px;
+
+  /* just for demo */
+  min-width: 612px;
+}
+
+.logo-box1,
+.logo-box2,
+.logo-box3,
+.logo-box4 {
+  width: 150px;
+  height: 125px;
+  vertical-align: top;
+  display: inline-block;
+  *display: inline;
+  zoom: 1
+}
+
+.stretch {
+  width: 100%;
+  display: inline-block;
+  font-size: 0;
+  line-height: 0
+}
+
+.logo-box1 img {
+  width: 100%;
+  padding-top: 20px;
+}
+
+.logo-box2 img {
+  width: 100%;
+  padding-top: 20px;
+}
+
+.logo-box3 img {
+  width: auto;
+  height: 80px;
+  padding-left: 20px;
+}
+
+.logo-box4 img {
+  height: 80px;
+  text-align: auto
+}
+
+
