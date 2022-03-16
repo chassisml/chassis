@@ -51,7 +51,9 @@ response = chassis_model.publish(
 ) 
 ```
 
-###Serve your models locally or on your model inferencing platform of choice
+### Run and Query Model
+
+*NOTE: Run your model locally or on your preferred serving platform and begin making inference calls right away.*
 
 
 <div id="logos-container">
@@ -63,8 +65,10 @@ response = chassis_model.publish(
 </div>
 <br>
 
-###Try it Yourself
+### Try it Yourself
 
-Create an account [here] at chassis.modzy.com to start building your own ML containers (or check out [Deploy Chassis](tutorials/devops-deploy.md) to host an instance on a private k8s cluster).
+To start building your own ML containers, check out the [Deploy Chassis](tutorials/devops-deploy.md) tutorial to host an instance on a private k8s cluster.
+
+*Coming Soon:* Publicly-hosted version of Chassis!
 
 <br>
