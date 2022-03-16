@@ -3,3 +3,5 @@ kubernetes==12.0.1
 loguru
 pyyaml==5.4.1
 humanfriendly
+apache-libcloud
+cryptography==36.0.1

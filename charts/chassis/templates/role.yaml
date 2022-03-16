@@ -4,8 +4,8 @@ metadata:
   name: {{ include "chassis.serviceAccountName" . }}
 rules:
 - apiGroups: [""] # "" indicates the core API group
-  resources: ["pods"]
-  verbs: ["get", "create", "list"]
+  resources: ["pods", "secrets"]
+  verbs: ["get", "create", "list", "delete", "watch"]
 - apiGroups: ["batch", "extensions"]
   resources: ["jobs", "pods"]
   verbs: ["get", "create", "patch"]
