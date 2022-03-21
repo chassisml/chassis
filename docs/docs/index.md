@@ -1,58 +1,74 @@
-# Model Containerizer for K8s
-
 ![Chassis logo](images/chassis-positive.png){: style="width:200px; margin-bottom:10px;" }
 
-* Build models directly into DevOps-ready container images for inference (using [MLflow](https://mlflow.org) under the hood)
-* Supports parallel builds in Kubernetes jobs, using [Kaniko](https://github.com/GoogleContainerTools/kaniko), no Docker socket required!
-* Generates [Open Model Interface](https://openmodel.ml) compatible images that are multi-purpose and portable, they work on multiple platforms: KFServing and Modzy
-* Try the test drive today, then deploy our Helm chart to your K8s cluster to use it for real
+# Build ML Model Containers. Automatically.
 
-## Test Drive
+Turn machine learning models into portable container images that can run just about anywhere.
 
-The fastest way to get started is to use the test drive functionality provided by [Testfaster](https://testfaster.ci). Click on the "Launch Test Drive" button below (opens a new window).
+After setting up your model environment, get started quickly by adding the Chassisml SDK.
 
-<a href="https://testfaster.ci/launch?embedded=true&repo=https://github.com/combinator-ml/terraform-k8s-chassis&file=examples/testfaster/.testfaster.yml" target="_blank">:computer: Launch Test Drive :computer:</a>
+```bash
+pip install chassisml
+```
 
-## Talk & Demo
+### Load Your Model
 
-<style>
-.video-wrapper {
-  position: relative;
-  display: block;
-  height: 0;
-  padding: 0;
-  overflow: hidden;
-  padding-bottom: 56.25%;
-  border: 1px solid gray;
-}
-.video-wrapper > iframe {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border: 0;
-}
-</style>
+```python
+model = framework.load("path/to/model.file")
+```
 
-<div class="video-wrapper">
-  <iframe width="1280" height="720" src="https://www.youtube.com/embed/3i4ynyECo_I" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+### Write Process Function
+
+```python
+def process(input_bytes):
+  # preprocess
+  data = preprocess(input_bytes)
+
+  # run inference
+  predictions = model.predict(data)
+
+  # post process predictions
+  formatted_results = postprocess(predictions)
+
+  return formatted_results
+```
+
+### Initialize Client and Create Chassis Model
+
+*NOTE: Initialize client by pointing to running Chassis instance*
+
+``` py
+chassis_client = chassisml.ChassisClient("http://localhost:5000")
+chassis_model = chassis_client.create_model(process_fn=process)
+```
+### Publish Chassis Model
+
+``` py
+response = chassis_model.publish(
+    model_name="Sample ML Model",
+    model_version="0.0.1",
+    registry_user=dockerhub_user,
+    registry_pass=dockerhub_pass,
+) 
+```
+
+### Run and Query Model
+
+*NOTE: Run your model locally or on your preferred serving platform and begin making inference calls right away.*
+
+
+<div id="logos-container">
+  <div class="logo-box1"><img src="images/docker.png" ></div>
+  <div class="logo-box2"><img src="images/modzy.png" ></div>
+  <div class="logo-box3"><img src="images/kserve.png" ></div>
+  <div class="logo-box4"><img src="images/postman/postman-logo.png" ></div>
+  <span class="stretch"></span>
 </div>
+<br>
 
-## Getting Started
+### Try it Yourself
 
-Follow one of our tutorials to easily get started and see how Chassis works:
+To start building your own ML containers, check out the [Deploy Chassis](tutorials/devops-deploy.md) tutorial to host an instance on a private k8s cluster.
 
-* [Tech Support](https://www2.modzy.com/modzy-discord-chassis) Our tech support is graciously hosted on Modzy's Discord server in the "Open Source" channels
-* [Install with Helm](tutorials/devops-deploy.md) into a Kubernetes cluster
-* [Build a container image](tutorials/ds-connect) from your model
-* [Deploy to KFServing](tutorials/ds-deploy.md) the built image
+*Coming Soon:* Publicly-hosted version of Chassis!
 
-## Shameless plug
-
-Chassis is developed by [Modzy](https://modzy.com), a commercial ModelOps platform designed to run any kind of machine learning and artifical intelligence model in production, at scale, with enterprise grade security, governance, and compliance. The design of Chassis grew out of Modzy's internal research and development to provide a way to easily containerize MLflow models to publish into the [Modzy catalog](https://www.modzy.com/marketplace/) and to support all kinds of models, both present and future, with first-class support for emerging capabilities like drift detection, explainability, and adversarial defense.
-
-## Contributors
-
-A full list of contributors can be found [here](https://github.com/modzy/chassis/graphs/contributors).
+<br>

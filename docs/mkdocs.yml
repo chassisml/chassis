@@ -1,19 +1,27 @@
 site_name: Chassis
 nav:
   - index.md
-  - design.md
-  - Documentation:
-      - Chassisml API Reference: service-reference.md
-      - Python SDK: chassisml-sdk-reference.md
   - Tutorials:
       - tutorials/devops-deploy.md
       - tutorials/ds-connect.md
+      - tutorials/ds-postman.md
       - tutorials/ds-deploy.md
       - tutorials/ds-deploy-modzy.md
-  - Help: help.md
+  - How-to Guides:
+      - Model Containers by Framework: how-to-guides/frameworks.md
+      - Arm Support: how-to-guides/arm-support.md
+      - GPU Support: how-to-guides/gpu-support.md
+      # - Adding Explainability: how-to-guides/explainability.md
+  - Reference:
+      - Chassisml Service: service-reference.md
+      - Python SDK: chassisml-sdk-reference.md
+  - Conceptual Guides:
+      - Overview: conceptual-guides/overview.md
+      - Design & Architecture: conceptual-guides/design.md
+      - gRPC: conceptual-guides/grpc.md
+      - Containers: conceptual-guides/containers.md
   - Get Involved: get-involved.md
   - Release Notes: release-notes.md
-  - FAQs: faqs.md
 theme:
   name: material
   palette:
@@ -38,8 +46,10 @@ plugins:
 markdown_extensions:
   - attr_list
   - pymdownx.details
-  - pymdownx.highlight
+  - pymdownx.highlight:
+      anchor_linenums: true
   - pymdownx.superfences
+  - pymdownx.snippets
   - pymdownx.inlinehilite
   - admonition
   - pymdownx.emoji:
@@ -55,4 +65,14 @@ extra:
     provider: google
     property: G-4NVL0DTGZ4
   generator: false
+  social:
+    - icon: fontawesome/brands/discord
+      link: https://discord.gg/Fk5sUfZPGE
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/chassisml/
+    - icon: fontawesome/brands/slack
+      link: https://join.slack.com/t/mlops-community/shared_invite/zt-10jopsclv-sny902l2GOFdElU2blfACg
+    - icon: fontawesome/brands/github
+      link: https://github.com/modzy/chassis
+copyright: Copyright &copy; 2022 Modzy
 # use_directory_controls: false
