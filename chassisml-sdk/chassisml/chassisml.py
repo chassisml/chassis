@@ -312,8 +312,8 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
                     'sample_input_path': modzy_sample_input_path,
                     'deploy': True,
                     'api_key': modzy_api_key,
-                    'modzy_url': modzy_url,
-                    'modzy_model_id': modzy_model_id
+                    'modzy_model_id': modzy_model_id,
+                    'modzy_url': modzy_url if not modzy_url.endswith('/api') else modzy_url[:-4]
                 }
                 write_modzy_yaml(model_name,model_version,modzy_metadata_path,batch_size=self.batch_size,gpu=gpu)
             else:

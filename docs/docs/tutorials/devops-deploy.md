@@ -1,13 +1,10 @@
 # Deploy Chassis (DevOps)
 
-!!! note
-    If you just want to try Chassis, you can use the test drive, which will deploy it for you:
-
-    <a href="https://testfaster.ci/launch?embedded=true&repo=https://github.com/combinator-ml/terraform-k8s-chassis&file=examples/testfaster/.testfaster.yml" target="_blank">:computer: Launch Test Drive :computer:</a>
+<!-- TODO: add link to google colab notebook -->
 
 ## Install required dependencies
 
-* Install [Docker](https://docs.docker.com/get-docker/)
+* Install [Docker Desktop](https://docs.docker.com/get-docker/)
     * Try to run `docker ps`
         * If you get a permissions error, follow instructions [here](https://docs.docker.com/engine/install/linux-postinstall/)
 * Install [Kubectl](https://kubernetes.io/docs/tasks/tools/)

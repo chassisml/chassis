@@ -1,6 +1,6 @@
 import os
 import sys
-import kfserving
+import kserve
 
 import numpy as np
 import pandas as pd
@@ -13,7 +13,7 @@ from uuid import uuid4
 import mlflow
 
 MODEL_DIR = os.getenv('MODEL_DIR')
-class KFServing(kfserving.KFModel):
+class KServe(kserve.Model):
     def __init__(self, name: str, protocol: str):
         super().__init__(name)
         self.name = name
@@ -38,7 +38,6 @@ class KFServing(kfserving.KFModel):
         elif self.protocol == 'v2':
             return self._predictv2(request)
 
-    # https://github.com/kubeflow/kfserving/tree/master/docs/samples/v1beta1/sklearn/v1#run-a-prediction
     def _predictv1(self, request):
         input_data = request['instances']
 
@@ -56,7 +55,6 @@ class KFServing(kfserving.KFModel):
 
         return { 'predictions': preds }
 
-    # https://github.com/kubeflow/kfserving/tree/master/docs/samples/v1beta1/sklearn/v2#testing-deployed-model
     def _predictv2(self, request):
         output_data = {
             'id': str(uuid4()),
@@ -105,15 +103,15 @@ def start_server():
             logger.critical(f'No {env} environment variable defined.')
             sys.exit(1)
 
-    logger.debug(f'Initializing KFServer instance with protocol {envs.get("PROTOCOL")} in port {envs.get("HTTP_PORT")}')
+    logger.debug(f'Initializing KServe instance with protocol {envs.get("PROTOCOL")} in port {envs.get("HTTP_PORT")}')
 
-    model = KFServing(
+    model = KServe(
         envs.get('MODEL_NAME'),
         envs.get('PROTOCOL')
     )
     model.load()
 
-    kfserving.KFServer(
+    kserve.ModelServer(
         http_port=envs.get('HTTP_PORT'),
     ).start([model])
 

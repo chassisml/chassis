@@ -1,6 +1,4 @@
-![Chassis logo](https://github.com/modzy/chassis/blob/main/docs/docs/images/chassis-logo.png)
-
-# Containerizing your models easily
+#Overview
 
 ## Goals
 
@@ -25,14 +23,35 @@ It also provides a python SDK that makes it very easy to communicate with Chassi
 
 - Using [Kaniko](https://github.com/GoogleContainerTools/kaniko/) to securely build the image
 
-## Getting Started
+## Non-goals
 
-Follow one of our tutorials to easily get started and see how Chassis works:
+Some non-goals of this project are:
 
-- [Install with Helm](https://modzy.github.io/chassis/tutorials/devops-deploy) into a Cluster
-- [Build an image](https://modzy.github.io/chassis/tutorials/ds-connect)
-- [Deploy to KServe](https://modzy.github.io/chassis/tutorials/ds-deploy) the built image
+- Deploy the built image - this is up to the platform that you deploy the container into, like KServe or Modzy
 
-## Contributors
+## Intro Video
 
-A full list of contributors, which includes individuals that have contributed entries, can be found [here](https://github.com/modzy/chassis/graphs/contributors).
+<style>
+.video-wrapper {
+  position: relative;
+  display: block;
+  height: 0;
+  padding: 0;
+  overflow: hidden;
+  padding-bottom: 56.25%;
+  border: 1px solid gray;
+}
+.video-wrapper > iframe {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+</style>
+
+<div class="video-wrapper">
+  <iframe width="1280" height="720" src="https://www.youtube.com/embed/3i4ynyECo_I" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
