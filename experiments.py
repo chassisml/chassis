@@ -4,50 +4,8 @@ import importlib
 from numpy import isin
 import requests
 
-import sys
-sys.path.append('.')
-
-# import logging
-
-# LOGGER = logging.getLogger(__name__)
-
-
-# def test_eggs():
-#     LOGGER.info('eggs info')
-#     LOGGER.warning('eggs warning')
-#     LOGGER.error('eggs error')
-#     LOGGER.critical('eggs critical')
-#     assert True
-
-# sys.exit()
-
-# from tests.utils.models import assemble_models_dict
-chassisml = importlib.import_module("chassisml-sdk.chassisml.chassisml") # TODO: need to figure out how to make this a local test
-
-# import chassisml
-
-# test_str = "Hello World!"
-
-# test = "-".join(item for item in test_str.split(" ") for character in item if character.isalnum())
-# print(test)
-
-
-
-# sys.exit()
-
-# test = []
-
-# print(all(test))
-# sys.exit()
-
-# print(models)
-# test = "hi"
-# output = models[0]["process_fn"](test)
-# print(output)
-# sys.exit()
 
 def process_hello(input_bytes):
-    # test = hi
     return "Hello World!"
 
 def assemble_models_dict():
