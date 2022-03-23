@@ -38,6 +38,7 @@ plugins:
           setup_commands:
             - import sys 
             - sys.path.append('../')
+            - sys.path.append('../service/')
           selection:
             new_path_syntax: true
             docstring_style: "google" 
