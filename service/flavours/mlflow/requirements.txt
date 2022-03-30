@@ -1,6 +1,6 @@
 flask==2.0.1
 loguru>=0.6.0
-kfserving==0.5.0.1
+kserve
 
 # Modzy Requirements
 grpcio-tools==1.36.1

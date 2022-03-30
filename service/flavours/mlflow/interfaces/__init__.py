@@ -6,8 +6,8 @@ INTERFACE = os.getenv('INTERFACE')
 
 
 def start_interface_server():
-    if INTERFACE == 'kfserving':
-        from .kfserving import start_server
+    if INTERFACE == 'kserve':
+        from .kserve import start_server
         start_server()
     elif INTERFACE == 'modzy':
         from .modzy.grpc_model.src.model_server import serve

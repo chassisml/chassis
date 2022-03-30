@@ -1,4 +1,4 @@
-apiVersion: "serving.kubeflow.org/v1beta1"
+apiVersion: "serving.kserve.io/v1beta1"
 kind: "InferenceService"
 metadata:
   name: chassisml-sklearn-demo
@@ -10,11 +10,11 @@ spec:
       imagePullPolicy: IfNotPresent
       env:
         - name: INTERFACE
-          value: kfserving
+          value: kserve
         - name: HTTP_PORT
           value: "8080"
         - name: PROTOCOL
-          value: v1
+          value: v2
         - name: MODEL_NAME
           value: digits
       ports:
