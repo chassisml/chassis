@@ -1,9 +1,18 @@
 import subprocess
+import logging
 
-# TODO: instantiate HOST_URL in __init__
+logging.basicConfig(level=logging.DEBUG, format= '%(levelname)s: %(message)s')
 
-HOST_URL = "http://localhost:5000"
+def test_can_connect_to_service(host_url, logger, test_name):
+    output = subprocess.run("curl {}".format(host_url), shell=True, capture_output=True)
+    out = 0
+    if output.stdout.decode() == "Alive!":
+        logger.info(" ******** PASSED - test:{}".format(test_name))
+        out = 1
+    else:
+        logger.info(" ******** FAILED - test:{}".format(test_name))
+        logger.error(output.stdout.decode())
+    return out
 
-def test_can_connect_to_service():
-    output = subprocess.run("curl {}".format(HOST_URL), shell=True, capture_output=True)
-    assert output.stdout.decode() == "Alive!"
+if __name__ == "__main__":
+    out = test_can_connect_to_service()
