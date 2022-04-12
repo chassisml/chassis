@@ -286,9 +286,11 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
             if fix_env:
                 fix_dependencies(model_directory)
 
-            if arm64 and gpu:
-                warnings.warn("ARM64+GPU support (tested on Nvidia Jetson) is experimental, KServe not supported and builds may take a while or fail depending on your required dependencies.")
-                fix_dependencies_arm_gpu(model_directory)
+            if arm64:
+                warnings.warn("ARM64 support is experimental, KServe currently not supported and builds may take a while or fail depending on your required dependencies")
+                if gpu:
+                    warnings.warn("ARM64+GPU support tested on Nvidia Jetson Nano")
+                    fix_dependencies_arm_gpu(model_directory)
 
             # Compress all files in model directory to send them as a zip.
             tmppath = tempfile.mkdtemp()
