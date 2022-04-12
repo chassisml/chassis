@@ -19,6 +19,8 @@ COPY flavours/${MODEL_CLASS}/${MODEL_DIR}/conda.yaml ./conda.yaml
 
 ENV CONDA_ENV chassis-env
 
+RUN apk update \
+    && apk --no-cache --update add build-base 
 # Create conda environment.
 RUN conda env create --name $CONDA_ENV --file ./conda.yaml
 # Install conda-pack.
@@ -65,6 +67,7 @@ SHELL ["/bin/bash", "-c"]
 # Run conda-unpack to re-create symlinks and set everything up.
 RUN source /venv/bin/activate && conda-unpack
 
+RUN apt-get update && apt-get install -y build-essential
 COPY flavours/${MODEL_CLASS}/requirements.txt .
 RUN source /venv/bin/activate && pip install -r requirements.txt
 
