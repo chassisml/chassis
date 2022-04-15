@@ -10,7 +10,6 @@ import chassisml
 # from tests.utils.models import assemble_models_dict
 from tests.test_connection import *
 from tests.test_sdk import *
-from tests.test_service import *
 import logging
 logging.basicConfig(level=logging.INFO, format= '%(levelname)s: %(message)s')
 
