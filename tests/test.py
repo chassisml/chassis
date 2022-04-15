@@ -68,8 +68,6 @@ def assemble_models_dict(hello_world, sklearn, pytorch):
     return models
 
 
-
-
 if __name__ == "__main__":
     
     # fixtures used throughout all test cases

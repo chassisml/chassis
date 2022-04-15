@@ -12,6 +12,14 @@ This subdirectory contains the test suite for Chassisml, and this page provides 
 
 ## Usage
 
+**Before starting the test suite you must first define the following Environment Variables**
+
+MODZY_API_KEY
+MODZY_BASE_URL
+DOCKER_USER
+DOCKER_PASS
+
+
 To kickoff the test suite, you must first create a virtual environment and install the dependencies listed in `requirements.txt` within this directory.
 
 `python -m venv test-suite`
