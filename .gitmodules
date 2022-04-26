@@ -1,0 +1,3 @@
+[submodule "chassisml-sdk/chassisml/grpc_model"]
+	path = chassisml-sdk/chassisml/grpc_model
+	url = git@github.com:modzy/grpc_model.git
