@@ -35,7 +35,7 @@ from libcloud.storage.providers import get_driver
 
 load_dotenv()
 
-CHASSIS_DEV = False
+CHASSIS_DEV = True
 WINDOWS = True if os.name == 'nt' else False
 
 HOME_DIR = str(Path.home())

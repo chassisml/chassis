@@ -16,6 +16,7 @@ import numpy as np
 import warnings
 from chassisml import __version__
 
+from .grpc_model.src import model_client
 from .open_model_initiative_checks.open_model_initiative_checks import OMI_check
 from ._utils import zipdir,fix_dependencies,write_modzy_yaml,NumpyEncoder,fix_dependencies_arm_gpu,check_modzy_url
 
@@ -598,3 +599,6 @@ class ChassisClient:
 
         return ChassisModel(process_fn,batch_process_fn,batch_size,self.base_url)
 
+    def process_data(self,container_host="localhost", container_port=45000, input_data):
+        model_client.override_server_URL(container_host,container_port)
+        model_client.run(input_data)
