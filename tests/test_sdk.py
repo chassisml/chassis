@@ -6,9 +6,8 @@ import docker
 import sys
 sys.path.append('./chassisml-sdk/')
 import chassisml
-# from .utils.models import assemble_models_dict
 import logging
-logging.basicConfig(level=logging.DEBUG, format= '%(levelname)s: %(message)s')
+logging.basicConfig(level=logging.INFO, format= '%(levelname)s: %(message)s')
 
 # Test cases ordered in flow of usage (i.e., you need to create a model before testing or publishing it)
 
@@ -38,7 +37,7 @@ def test_create_model(client, logger, model, test_name="test_create_model"):
             logger.info(" ******** PASSED - test:{}, model:{}".format(test_name, model["model_name"]))
     except Exception as e:
         result = {"error": e}
-        logger.debug("Error with {} model: {}".format(model["model_name"], e))
+        logger.error("Error with {} model: {}".format(model["model_name"], e))
 
     # determine number of errors produced
     output = 1
@@ -70,7 +69,7 @@ def test_create_model_with_batch(client, logger, model, test_name="test_create_m
                 logger.info(" ******** PASSED - test:{}, model:{}".format(test_name, model["model_name"]))
         except Exception as e:
             result = {"error": e}
-            logger.debug("Error with {} model: {}".format(model["model_name"], e))
+            logger.error("Error with {} model: {}".format(model["model_name"], e))
 
     # determine number of errors produced
     output = 1
@@ -159,7 +158,7 @@ def test_env_test(client, logger, model, test_name="test_env_test"):
             logger.info(" ******** PASSED - test:{}, model:{}".format(test_name, model["model_name"]))            
     except Exception as e:
         result = {"error": e}
-        logger.debug("Error with {} model: {}".format(model["model_name"], e))
+        logger.error("Error with {} model: {}".format(model["model_name"], e))
 
     # determine number of errors produced
     output = 1
@@ -189,7 +188,7 @@ def test_env_test_manual_env_config(client, logger, model, test_name="test_env_t
             logger.info(" ******** PASSED - test:{}, model:{}".format(test_name, model["model_name"]))            
     except Exception as e:
         result = {"error": e}
-        logger.debug("Error with {} model: {}".format(model["model_name"], e))
+        logger.error("Error with {} model: {}".format(model["model_name"], e))
 
     # determine number of errors produced
     output = 1
@@ -224,7 +223,7 @@ def test_save(client, logger, model, utils_path, test_name="test_save"):
         check["saved_model_checks"].append(os.path.isfile(os.path.join(TMP_SAVE_DIR, "requirements.txt")))
     except Exception as e:
         logger.error(" ******** FAILED - test:{}, model:{}".format(test_name, model["model_name"]))
-        logger.debug(e)
+        logger.error(e)
         check["saved_model_checks"] = [False]
     # load model and confirm it is the correct instance
     try:
@@ -238,7 +237,7 @@ def test_save(client, logger, model, utils_path, test_name="test_save"):
             logger.error("Loaded model not correct instance type")
             check["model_load_check"] = False
     except Exception as e:
-        logger.debug("Error loading pyfunc model: {}".format(e))
+        logger.error("Error loading pyfunc model: {}".format(e))
         check["model_load_check"] = False
     
     agg_checks += check["saved_model_checks"]
@@ -277,7 +276,7 @@ def test_save_manual_env_config(client, logger, model, utils_path, test_name="te
         check["saved_model_checks"].append(os.path.isfile(os.path.join(TMP_SAVE_DIR, "requirements.txt")))
     except Exception as e:
         logger.error(" ******** FAILED - test:{}, model:{}".format(test_name, model["model_name"]))
-        logger.debug(e)
+        logger.error(e)
         check["saved_model_checks"] = [False]
     # load model and confirm it is the correct instance
     try:
@@ -291,7 +290,7 @@ def test_save_manual_env_config(client, logger, model, utils_path, test_name="te
             logger.error("Loaded model not correct instance type")
             check["model_load_check"] = False
     except Exception as e:
-        logger.debug("Error loading pyfunc model: {}".format(e))
+        logger.error("Error loading pyfunc model: {}".format(e))
         check["model_load_check"] = False
     
     agg_checks += check["saved_model_checks"]
@@ -330,7 +329,7 @@ def test_save_gpu(client, logger, model, utils_path, test_name="test_save_gpu"):
         check["saved_model_checks"].append(os.path.isfile(os.path.join(TMP_SAVE_DIR, "requirements.txt")))
     except Exception as e:
         logger.error(" ******** FAILED - test:{}, model:{}".format(test_name, model["model_name"]))
-        logger.debug(e)
+        logger.error(e)
         check["saved_model_checks"] = [False]
     # load model and confirm it is the correct instance
     try:
@@ -344,7 +343,7 @@ def test_save_gpu(client, logger, model, utils_path, test_name="test_save_gpu"):
             logger.error("Loaded model not correct instance type")
             check["model_load_check"] = False
     except Exception as e:
-        logger.debug("Error loading pyfunc model: {}".format(e))
+        logger.error("Error loading pyfunc model: {}".format(e))
         check["model_load_check"] = False
     
     agg_checks += check["saved_model_checks"]
@@ -383,7 +382,7 @@ def test_save_arm(client, logger, model, utils_path, test_name="test_save_arm"):
         check["saved_model_checks"].append(os.path.isfile(os.path.join(TMP_SAVE_DIR, "requirements.txt")))
     except Exception as e:
         logger.error(" ******** FAILED - test:{}, model:{}".format(test_name, model["model_name"]))
-        logger.debug(e)
+        logger.error(e)
         check["saved_model_checks"] = [False]
     # load model and confirm it is the correct instance
     try:
@@ -397,7 +396,7 @@ def test_save_arm(client, logger, model, utils_path, test_name="test_save_arm"):
             logger.error("Loaded model not correct instance type")
             check["model_load_check"] = False
     except Exception as e:
-        logger.debug("Error loading pyfunc model: {}".format(e))
+        logger.error("Error loading pyfunc model: {}".format(e))
         check["model_load_check"] = False
     
     agg_checks += check["saved_model_checks"]
@@ -436,7 +435,7 @@ def test_save_gpu_and_arm(client, logger, model, utils_path, test_name="test_sav
         check["saved_model_checks"].append(os.path.isfile(os.path.join(TMP_SAVE_DIR, "requirements.txt")))
     except Exception as e:
         logger.error(" ******** FAILED - test:{}, model:{}".format(test_name, model["model_name"]))
-        logger.debug(e)
+        logger.error(e)
         check["saved_model_checks"] = [False]
     # load model and confirm it is the correct instance
     try:
@@ -450,7 +449,7 @@ def test_save_gpu_and_arm(client, logger, model, utils_path, test_name="test_sav
             logger.error("Loaded model not correct instance type")
             check["model_load_check"] = False
     except Exception as e:
-        logger.debug("Error loading pyfunc model: {}".format(e))
+        logger.error("Error loading pyfunc model: {}".format(e))
         check["model_load_check"] = False
     
     agg_checks += check["saved_model_checks"]
@@ -492,7 +491,7 @@ def test_publish(client, logger, model, credentials, test_name="test_publish"):
             result = job_id                
     except Exception as e:
         result = {"error": e, "model": model["model_name"]}
-        logger.debug("Error with {} model: {}".format(model["model_name"], e))
+        logger.error("Error with {} model: {}".format(model["model_name"], e))
 
     # determine number of errors produced
     output = 1
@@ -529,7 +528,7 @@ def test_publish_modzy_deploy(client, logger, model, credentials, modzy_info, te
             result = job_id                
     except Exception as e:
         result = {"error": e, "model": model["model_name"]}
-        logger.debug("Error with {} model: {}".format(model["model_name"], e))
+        logger.error("Error with {} model: {}".format(model["model_name"], e))
 
     # determine number of errors produced
     output = 1
@@ -564,7 +563,7 @@ def test_publish_manual_env_config(client, logger, model, credentials, test_name
             result = job_id                
     except Exception as e:
         result = {"error": e, "model": model["model_name"]}
-        logger.debug("Error with {} model: {}".format(model["model_name"], e))
+        logger.error("Error with {} model: {}".format(model["model_name"], e))
 
     # determine number of errors produced
     output = 1
@@ -599,7 +598,7 @@ def test_publish_gpu(client, logger, model, credentials, test_name="test_publish
             result = job_id                
     except Exception as e:
         result = {"error": e, "model": model["model_name"]}
-        logger.debug("Error with {} model: {}".format(model["model_name"], e))
+        logger.error("Error with {} model: {}".format(model["model_name"], e))
 
     # determine number of errors produced
     output = 1
@@ -634,7 +633,7 @@ def test_publish_arm(client, logger, model, credentials, test_name="test_publish
             result = job_id                
     except Exception as e:
         result = {"error": e, "model": model["model_name"]}
-        logger.debug("Error with {} model: {}".format(model["model_name"], e))
+        logger.error("Error with {} model: {}".format(model["model_name"], e))
 
     # determine number of errors produced
     output = 1
@@ -670,7 +669,7 @@ def test_publish_gpu_and_arm(client, logger, model, credentials, test_name="test
             result = job_id                
     except Exception as e:
         result = {"error": e, "model": model["model_name"]}
-        logger.debug("Error with {} model: {}".format(model["model_name"], e))
+        logger.error("Error with {} model: {}".format(model["model_name"], e))
 
     # determine number of errors produced
     output = 1
@@ -695,7 +694,7 @@ def test_get_job_status(client, logger, job, test_name="test_get_job_status"):
             logger.error(status)
             result = 0                                
     except Exception as e:
-        logger.debug("Error with {} model: {}".format(job["model"], e))
+        logger.error("Error with {} model: {}".format(job["model"], e))
         result = 0
 
     return result           
@@ -714,7 +713,7 @@ def test_block_until_complete(client, logger, job, test_name="test_block_until_c
             logger.error(status)
             result = 0                                
     except Exception as e:
-        logger.debug("Error with {} model: {}".format(job["model"], e))
+        logger.error("Error with {} model: {}".format(job["model"], e))
         result = 0
 
     return result    
@@ -738,7 +737,7 @@ def test_download_tar(client, logger, job, out_path, test_name="test_download_ta
             logger.info(" ******** FAILED - test:{}, model:{}".format(test_name, job["model"]))
             result = 0                                
     except Exception as e:
-        logger.debug("Error with {} model: {}".format(job["model"], e))
+        logger.error("Error with {} model: {}".format(job["model"], e))
         result = 0   
     
     return result, out_path
@@ -758,7 +757,7 @@ def test_omi_compliance(client, logger, path, test_name="test_omi_compliance"):
             logger.info(" ******** FAILED - test:{}, tar:{}".format(test_name, path))
             result = 0                 
     except Exception as e:
-        logger.debug("Error with path {}".format(path, e))
+        logger.error("Error with path {}".format(path, e))
         result = 0
 
     # remove temp dir

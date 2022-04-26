@@ -2,12 +2,10 @@ import os
 import numpy as np
 import json
 import pickle
-# import mlflow
 import time
 import sys
 sys.path.append('./chassisml-sdk/')
 import chassisml
-# from tests.utils.models import assemble_models_dict
 from tests.test_connection import *
 from tests.test_sdk import *
 import logging

@@ -1,7 +1,7 @@
 import subprocess
 import logging
 
-logging.basicConfig(level=logging.DEBUG, format= '%(levelname)s: %(message)s')
+logging.basicConfig(level=logging.INFO, format= '%(levelname)s: %(message)s')
 
 def test_can_connect_to_service(host_url, logger, test_name):
     output = subprocess.run("curl {}".format(host_url), shell=True, capture_output=True)
