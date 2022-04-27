@@ -621,7 +621,7 @@ class ChassisClient:
                 input_list = [input_data for _ in range(30)]
 
                 print("single input")
-                print(client.run_inference(input_data, container_host="localhost", container_port=5002))
+                print(client.run_inference(input_data, container_host="localhost", container_port=5001))
                 print("multi inputs")
                 results = client.run_inference(input_list, container_host="localhost", container_port=5002)
                 for x in results:
