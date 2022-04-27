@@ -2,15 +2,22 @@
 
 <!-- TODO: add link to google colab notebook -->
 
+!!! Note
+    Before following this guide, note that you can connect to the Chassis service in one of two ways:
+    
+    1. Continue following this guide to install the Chassis service locally on a private Kubernetes cluster
+    2. Bypass this guide by connecting to our [publicly-hosted](https://chassis.modzy.com) and free instance of the service 
+
 ## Install required dependencies
 
 * Install [Docker Desktop](https://docs.docker.com/get-docker/)
     * Try to run `docker ps`
         * If you get a permissions error, follow instructions [here](https://docs.docker.com/engine/install/linux-postinstall/)
-* Install [Kubectl](https://kubernetes.io/docs/tasks/tools/)
 * Install [Helm](https://helm.sh/docs/intro/install/)
-* Install [Minikube](https://minikube.sigs.k8s.io/docs/start/)
-    * Start cluster: `minikube start`
+
+## Enable Kubernetes
+
+Follow [these](https://docs.docker.com/desktop/kubernetes/) instructions to enable Kubernetes in Docker Desktop.
 
 ## Add the Helm repository
 

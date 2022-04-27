@@ -2,6 +2,8 @@
 
 # Build ML Model Containers. Automatically.
 
+[Click to Use Free Chassis Service   :rocket:](https://chassis.modzy.com){.md-button .md-button--primary}
+
 Turn machine learning models into portable container images that can run just about anywhere.
 
 After setting up your model environment, get started quickly by adding the Chassisml SDK.
@@ -67,8 +69,9 @@ response = chassis_model.publish(
 
 ### Try it Yourself
 
-To start building your own ML containers, check out the [Deploy Chassis](tutorials/devops-deploy.md) tutorial to host an instance on a private k8s cluster.
+To start building your own ML containers, get started with one of the following connection options:
 
-*Coming Soon:* Publicly-hosted version of Chassis!
+1. [Deploy Chassis](tutorials/devops-deploy.md) locally on your machine to host an instance on a private k8s cluster
+2. Connect to the [publicly-hosted](https://chassis.modzy.com) Chassis instance and start right away 
 
 <br>
