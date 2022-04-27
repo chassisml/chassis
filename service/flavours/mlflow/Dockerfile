@@ -44,6 +44,4 @@ COPY flavours/${MODEL_CLASS}/interfaces ./interfaces
 # Overwrite the default one.
 COPY ${MODZY_METADATA_PATH} ./interfaces/modzy/asset_bundle/0.1.0/model.yaml
 
-SHELL ["/bin/sh", "-c"]
-
-ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", $CONDA_ENV, "python", "app.py"]
+ENTRYPOINT ["/bin/bash", "-c", "source activate $CONDA_ENV && python app.py"]
