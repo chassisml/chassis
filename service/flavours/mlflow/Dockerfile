@@ -33,8 +33,6 @@ COPY flavours/${MODEL_CLASS}/entrypoint.sh /
 ENV MODEL_DIR ./model/${MODEL_NAME}
 ENV INTERFACE ${INTERFACE}
 
-SHELL ["/bin/bash", "-c"]
-
 COPY flavours/${MODEL_CLASS}/requirements.txt .
 RUN source activate $CONDA_ENV && pip install -r requirements.txt
 
