@@ -35,10 +35,13 @@ ENV INTERFACE ${INTERFACE}
 
 SHELL ["/bin/bash", "-c"]
 
+COPY flavours/${MODEL_CLASS}/requirements.txt .
+RUN source activate $CONDA_ENV && pip install -r requirements.txt
+
 COPY flavours/${MODEL_CLASS}/app.py .
 COPY flavours/${MODEL_CLASS}/interfaces ./interfaces
 
 # Overwrite the default one.
 COPY ${MODZY_METADATA_PATH} ./interfaces/modzy/asset_bundle/0.1.0/model.yaml
 
-ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "chassis-env", "python", "app.py"]
+ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", $CONDA_ENV, "python", "app.py"]
