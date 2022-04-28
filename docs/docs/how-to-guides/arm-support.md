@@ -117,7 +117,7 @@ final_status = chassis_client.block_until_complete(job_id)
 
 ## Enable Arm + GPU Support
 
-!!! Note
+!!! info "Note"
     The ARM + GPU option is in *alpha* and has only been tested on the NVIDIA Jetson Nano device. 
 
 Enabling ARM & GPU support requires one more flag set to true during the `publish` method. Repeate the steps outlined in the above section with the one difference being a slight change the `device` variable.

@@ -156,6 +156,8 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
         '''
         Runs a sample inference test in new conda environment created on the chassis service side. In other words, a "dry run" of a true chassis job to ensure model code runs within the chassis service.
         
+        **NOTE**: This method is not available in the publicly-hosted service.
+        
         Args:
             test_input_path (str): Filepath to sample input data
             conda_env (str): Either filepath to conda.yaml file or dictionary with environment requirements. If not provided, chassis will infer dependency requirements from local environment
@@ -455,6 +457,8 @@ class ChassisClient:
         '''
         Downloads container image as tar archive
 
+        **NOTE**: This method is not available in the publicly-hosted service.
+        
         Args:
             job_id (str): Chassis job identifier generated from `ChassisModel.publish` method
             output_filename (str): Local output filepath to save container image
