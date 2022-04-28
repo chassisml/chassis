@@ -80,6 +80,14 @@
   color: #0092df;
 }
 
+th  {
+  font-size: 18px;
+}
+
+td {
+  font-size: 20px;
+}
+
 /* For breakpoints above 641px */
 
 .button-styling {
@@ -88,7 +96,7 @@
   background-color: #fff;
   border: 2px solid #12284f;
   padding: 10px 20px;
-  font-size: 14px;
+  font-size: 20px;
   font-weight: 600;
 }
 
@@ -110,6 +118,8 @@
   border: 2px solid #024a74;
   background-color: #024a74;
 }
+
+/* For breakpoints UNDER 640px */
 
 @media only screen 
   and (min-device-width: 320px) 
