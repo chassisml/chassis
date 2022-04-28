@@ -2,8 +2,9 @@ site_name: Chassis
 nav:
   - index.md
   - Getting Started:
-      - getting-started/deploy-connect.md
-      - getting-started/deploy-manual.md
+      - Installation:
+          - getting-started/deploy-connect.md
+          - getting-started/deploy-manual.md
   - Tutorials:
       - tutorials/ds-connect.md
       - tutorials/ds-postman.md

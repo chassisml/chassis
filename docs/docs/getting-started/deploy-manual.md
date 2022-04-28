@@ -2,7 +2,7 @@
 
 <!-- TODO: add link to google colab notebook -->
 
-!!! warning "Different Connection Options"
+!!! info "Different Connection Options"
     Before following this guide, note that you can connect to the Chassis service in one of two ways:
     
     1. Continue following this guide to install the Chassis service locally on a private Kubernetes cluster

@@ -5,26 +5,24 @@
 
 ## Download Chassis SDK
 
+To get started, make sure you set up a [Python virtual enviornment](https://realpython.com/what-is-pip/#using-pip-in-a-python-virtual-environment) and install the `chassisml` SDK.
+
+```bash
+pip install chassisml
+```
+
 ## Get Chassis Connection URL
 
 **[Sign up](https://chassis.modzy.com)** for the publicly-hosted service.
 
 Next, when you receive your connection link, use the URL and `ChassisClient` object to establish connection to the running service. The information you receive will look something like this:
 
-## Example Code
-
 ```python
 chassis_client = chassisml.ChassisClient("https://chassis-xxxxxxxxxx.modzy.com")
 ```
 
-## Begin Using the Service
+## Begin Using Chassis
 
-TODO: add in notebook
+With your environment set up and connection URL in hand, you can now start to integrate the service into your MLOps pipelines. 
 
-Congratulations, you are all set to use the Chassis hosted service running on Google Cloud. To get started, make sure you set up a Python virtual enviornment and install the `chassisml` SDK.
-
-```bash
-pip install chassisml
-```
-
-For more resources, check out our [tutorials](../tutorials/ds-connect.md) and [how-to guides](../how-to-guides/frameworks.md)
+Check out this [example](https://github.com/modzy/chassis/blob/feat/sdk-docs/chassisml-sdk/examples/sklearn/sklearn_svm_image_classification_public_hosted.ipynb) to follow along and see Chassis in action. Just insert your URL into the aforementioned client connection and you're well on your way. 
