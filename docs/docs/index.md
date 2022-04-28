@@ -8,12 +8,6 @@ Turn your machine learning models into portable container images that can run ju
 
 [Connect to Free Chassis Service   :rocket:](./getting-started/deploy-connect.md){.md-button .md-button--primary}   [Install Chassis on Your Machine  :fontawesome-solid-paper-plane:](./getting-started/deploy-manual.md){.md-button .md-button}  
 
-<br>
-!!! info "Select the best option for you"
-    * **Connect to Free Chassis Service** for the quickest and easiest method to start using the tool immediately 
-    * **Install Service on Your Machine** for a more involved installation that offers more insight into the Kubernetes side of the service
-
-<br>
 
 ## Chassis Workflow
 
