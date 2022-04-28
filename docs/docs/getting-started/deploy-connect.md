@@ -1,7 +1,7 @@
 # Connect to Hosted Service
 
 !!! success "Welcome!"
-     Connecting to this service eliminates the need for you to manually deploy and stand up a private Kubernetes cluster. We take care of that for you! This page will allow you to quickly connect and begin containerizing your models right away.  
+     Connecting to this service eliminates the need for you to manually deploy and stand up a private Kubernetes cluster. We take care of that for you! This page will allow you to connect and start using the Chassis right away.  
 
 ## Download Chassis SDK
 

@@ -1,6 +1,11 @@
 site_name: Chassis
 nav:
-  - index.md
+  # - index.md
+  # - landing/connect.md
+  # - connect.md
+  - Home:
+      - connect.md
+      - workflow.md
   - Getting Started:
       - Installation:
           - getting-started/deploy-connect.md
@@ -35,7 +40,7 @@ theme:
     - navigation.expand
     - navigation.tabs
     - navigation.top
-    # - toc.integrate
+    - toc.integrate
 plugins:
   - search
   - mkdocstrings:
