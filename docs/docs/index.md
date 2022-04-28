@@ -2,9 +2,7 @@
 
 # Build ML Model Containers. Automatically.
 
-Turn your machine learning models into portable container images that can run just about anywhere using Chassis.
-
-Get started by connecting to the service. 
+Turn your machine learning models into portable container images that can run just about anywhere using Chassis. For a deeper dive and better understanding into how Chassis works, learn more [here](./conceptual-guides/overview.md).
 
 ## Connect to Service
 
