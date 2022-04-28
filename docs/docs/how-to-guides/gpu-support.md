@@ -12,7 +12,7 @@ To follow along, you can reference the Jupyter notebook example and data files [
 
 Batch processing goes hand in hand with GPU support. Enabling GPU support does accerate the model inferences execution, but to truly unlock the full potential of a GPU, batch processing is critical. So, we will build a simple Image Classification model with a ResNet50 architecture, avaialable directly in PyTorch's [Torvision model library](https://pytorch.org/vision/stable/models.html), and implement a batch processing function that takes advantage of GPU access.
 
-!!! info Note
+!!! info "Note"
     To add this support, you *must* have access to a GPU to test locally before submitting a Chassisml job. Most Python ML frameworks will also require you to set up [CUDA](https://developer.nvidia.com/cuda-toolkit) on your machine.  
 
 To get started, we will install our required dependencies.

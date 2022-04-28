@@ -2,7 +2,7 @@
 
 # Build ML Model Containers. Automatically.
 
-Turn your machine learning models into portable container images that can run just about anywhere using Chassis. For a deeper dive and better understanding of how Chassis works, learn more [here](./conceptual-guides/overview.md).
+Turn your machine learning models into portable container images that can run just about anywhere using Chassis. For a deeper dive and better understanding of what Chassis is, learn more [here](./conceptual-guides/overview.md).
 
 <br>
 
