@@ -2,23 +2,43 @@
 
 # Build ML Model Containers. Automatically.
 
-[Click to Use Free Chassis Service   :rocket:](https://chassis.modzy.com){.md-button .md-button--primary}
+Turn your machine learning models into portable container images that can run just about anywhere using Chassis.
 
-Turn machine learning models into portable container images that can run just about anywhere.
+Get started by connecting to the service. 
 
-After setting up your model environment, get started quickly by adding the Chassisml SDK.
+<br>
+
+[Connect to Free Chassis Service   :rocket:](./getting-started/deploy-connect.md){.md-button .md-button--primary}   [Install Chassis on Your Machine  :fontawesome-solid-paper-plane:](./getting-started/deploy-manual.md){.md-button .md-button}  
+
+<br>
+!!! info "Select the best option for you"
+    * **Connect to Free Chassis Service** for the quickest and easiest method to start using the tool immediately 
+    * **Install Service on Your Machine** for a more involved installation that offers more insight into the Kubernetes side of the service
+
+<br>
+## Chassis Workflow
+
+After connecting to the Chassis service, your workflow will involve a few simple steps: 
+
+### Set Up Environment
+
+Create your workspace environment, open a Jupyter Notebook or other Python editor, and install the Chassisml SDK.
 
 ```bash
 pip install chassisml
-```
+``` 
 
 ### Load Your Model
+
+Train your model or load your pre-trained model into memory (`.pth`, `.pkl`, `.h5`, `.joblib`, or other file format - all model types and formats are supported!).
 
 ```python
 model = framework.load("path/to/model.file")
 ```
 
 ### Write Process Function
+
+The `process` function will use your model to perform any required preprocessing and inference execution on the incoming `input_bytes` data. 
 
 ```python
 def process(input_bytes):
@@ -36,10 +56,12 @@ def process(input_bytes):
 
 ### Initialize Client and Create Chassis Model
 
-*NOTE: Initialize client by pointing to running Chassis instance*
+**NOTE**: Depending on how you connect to the service, you will need to identify the URL on which the service is running and can be accessed. If you are connecting to the publicly-hosted version, make sure to **[sign up](https://chassis.modzy.com)** to access this URL. Otherwise if you are deploying manually and connecting to a locally running instance, your URL will look something like *http://localhost:5000*.
+
+Once you have this URL, replace ```<chassis-instance-url>``` in the below line with your URL.
 
 ``` py
-chassis_client = chassisml.ChassisClient("http://localhost:5000")
+chassis_client = chassisml.ChassisClient("<chassis-instance-url>")
 chassis_model = chassis_client.create_model(process_fn=process)
 ```
 ### Publish Chassis Model
@@ -55,7 +77,7 @@ response = chassis_model.publish(
 
 ### Run and Query Model
 
-*NOTE: Run your model locally or on your preferred serving platform and begin making inference calls right away.*
+Run your model locally or on your preferred serving platform and begin making inference calls right away.
 
 
 <div id="logos-container">
@@ -65,13 +87,4 @@ response = chassis_model.publish(
   <div class="logo-box4"><img src="images/postman/postman-logo.png" ></div>
   <span class="stretch"></span>
 </div>
-<br>
-
-### Try it Yourself
-
-To start building your own ML containers, get started with one of the following connection options:
-
-1. [Deploy Chassis](tutorials/devops-deploy.md) locally on your machine to host an instance on a private k8s cluster
-2. Connect to the [publicly-hosted](https://chassis.modzy.com) Chassis instance and start right away 
-
 <br>

@@ -1,12 +1,12 @@
-# Deploy Chassis (DevOps)
+# Deploy Service Manually
 
 <!-- TODO: add link to google colab notebook -->
 
-!!! Note
+!!! warning "Different Connection Options"
     Before following this guide, note that you can connect to the Chassis service in one of two ways:
     
     1. Continue following this guide to install the Chassis service locally on a private Kubernetes cluster
-    2. Bypass this guide by connecting to our [publicly-hosted](https://chassis.modzy.com) and free instance of the service 
+    2. Bypass this guide and follow the [instructions](deploy-connect.md) to connect to our [publicly-hosted](https://chassis.modzy.com) and free instance of the service 
 
 ## Install required dependencies
 
@@ -86,3 +86,13 @@ curl localhost:5000
 ```
 
 Which should output an alive message.
+
+## Begin Using the Service
+
+Congratulations, you have now successfully deployed the service in a private Kubernetes cluster. To get started, make sure you set up a Python virtual enviornment and install the `chassisml` SDK.
+
+```bash
+pip install chassisml
+```
+
+For more resources, check out our [tutorials](../tutorials/ds-connect.md) and [how-to guides](../how-to-guides/frameworks.md)

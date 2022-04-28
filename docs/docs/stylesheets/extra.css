@@ -63,4 +63,20 @@
   height: 80px;
 }
 
+/* Styles the buttons section on index.md  */
+#buttons-container {
+  border: none;
+  height: 200px;
+  text-align: justify;
+  -ms-text-justify: distribute-all-lines;
+  text-justify: distribute-all-lines;
+  padding-top: 20px;
+
+  /* just for demo */
+  min-width: 612px;
+}
+
+
+
+
 
