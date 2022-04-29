@@ -120,7 +120,7 @@ final_status = chassis_client.block_until_complete(job_id)
 If everything has gone well we should see something similar to this.
 
 ```bash
-Publishing container... Ok!
+Starting build job... Ok!
 ```
 
 Print status of job completion and your new model URL:
