@@ -80,7 +80,7 @@ def process(input_bytes):
 
 The process function can call other functions if needed. 
 
-Next, we initialize our Chassis client, which we'll use to communicate with the Chassis service. Here, we assume our instance of Chassis is running locally on port 5000:
+Next, we initialize our Chassis client, which we'll use to communicate with the Chassis service. Here, we assume our instance of Chassis is [running locally](../getting-started/deploy-manual.md) on port 5000:
 
 ```python
 chassis_client = chassisml.ChassisClient("http://localhost:5000")
