@@ -89,7 +89,7 @@ Which should output an alive message.
 
 ## Begin Using the Service
 
-Congratulations, you have now successfully deployed the service in a private Kubernetes cluster. To get started, make sure you set up a Python virtual enviornment and install the `chassisml` SDK.
+Congratulations, you have now successfully deployed the service in a private Kubernetes cluster. To get started, make sure you set up a [Python virtual enviornment](https://realpython.com/what-is-pip/#using-pip-in-a-python-virtual-environment) and install the `chassisml` SDK.
 
 ```bash
 pip install chassisml
