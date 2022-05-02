@@ -12,7 +12,7 @@ import shutil
 import mlflow
 import base64
 import string
-import numpy as np
+import docker
 import warnings
 from chassisml import __version__
 
@@ -599,7 +599,7 @@ class ChassisClient:
 
         return ChassisModel(process_fn,batch_process_fn,batch_size,self.base_url)
 
-    def run_inference(self, input_data, container_host="localhost", container_port=45000):
+    def run_inference(self, input_data, container_host="localhost", host_port=45000):
         '''
                 This is the method you use to submit data to a container chassis has built for inference.
                 it assumes the container has been downloaded from dockerhub and is running somewhere you have access to
@@ -607,7 +607,7 @@ class ChassisClient:
                 Args:
                     input_data (json): dictionary of the form {"input": <binary respresentaion of your data>}
                     container_host (str): URL where container is running
-                    container_port (int): port that forwards to container's grpc server
+                    host_port (int): port that forwards to container's grpc server port
 
                 Examples:
                 # assume that the container is running locally, and that it was started with this docker command
@@ -621,11 +621,107 @@ class ChassisClient:
                 input_list = [input_data for _ in range(30)]
 
                 print("single input")
-                print(client.run_inference(input_data, container_host="localhost", container_port=5001))
+                print(client.run_inference(input_data, container_host="localhost", host_port=5001))
                 print("multi inputs")
-                results = client.run_inference(input_list, container_host="localhost", container_port=5002)
+                results = client.run_inference(input_list, container_host="localhost", host_port=5001)
                 for x in results:
                     print(x)
         '''
-        model_client.override_server_URL(container_host, container_port)
+        model_client.override_server_URL(container_host, host_port)
         return model_client.run(input_data)
+
+    def docker_start(self, image_id, host_port = 5001, container_host="localhost", container_port=45000, timeout=20):
+        '''
+                Creates and starts a container for gRPC server testing.
+
+                Args:
+                    timeout (int): number of seconds to wait for gRPC server to spin up
+
+                Returns:
+                    str:    Success message if the container is successfully created and started AND the gRPC server spins up within timeout seconds.
+                            Failure message if any success criteria is missing.
+
+                '''
+
+        return_value = "Failure: container didn't start"
+        client = docker.APIClient()
+
+        try:
+
+            #get current container list
+            containers = client.containers(filters={"status": "running", "ancestor": image_id})
+            container_id = None
+
+            if len(containers) == 0:
+
+                container = client.create_container(
+                image=image_id,
+                name="chassis_inference_container",
+                ports=[container_port],
+                host_config=client.create_host_config(port_bindings={
+                    container_port: host_port
+                })
+                )
+                container_id=container.get('Id')
+                client.start(container=container_id)
+            else:
+                container_id = containers[0]['Id']
+
+            grpc_started = False
+            for t in range(timeout):
+                log_entry = "".join([chr(x) for x in client.logs(container=container_id)])
+                if "gRPC Server running" in log_entry:
+                    grpc_started = True
+                    break
+                time.sleep(1)
+
+            if grpc_started is False:
+                raise TimeoutError("server failed to start within timeout limit of " + str(timeout) + "seconds")
+
+            return_value = container_id
+
+        except Exception as e:
+
+            print("Error: Container failed to start with Docker client call\n" + print(e))
+
+        return return_value
+
+    def docker_clean_up(self, container_id):
+        '''
+            Creates and starts a container for gRPC server testing.
+
+            Args:
+            None: N/A
+
+            Returns:
+            str:    Success message if the container is successfully stopped and removed.
+                    Failure message if any success criteria is missing.
+
+            '''
+        client = docker.APIClient()
+
+        Err_str = "Failure: Docker clean up failed."\
+                       "\n Check to make sure containers have been removed from your system." \
+                       "\n If they are on your system still, they will be named chassis_inference_container." \
+                       "\n Manually remove them if they still exist with 'docker rm'."
+        return_value = False
+        partial_success = False
+        try:
+            # containers only shows running containers by default so this grab the container for us to stop it.
+            if len(client.containers(filters={"id":container_id})) > 0:
+                client.stop(container=container_id)
+            partial_success=True
+        except Exception as e:
+
+            print("Error: there was a problem stopping the chassis_inference_container. \n if you are sure it is running, you should manually stop it.\n"+ str(e) +"\n" + Err_str)
+
+        try:
+            # we stop the container regardless of its state as it is not intended for use outside the OMI check.
+            client.remove_container(container=container_id, force=True)
+            if partial_success:
+                return_value = True
+        except Exception as e:
+            return_value += "\n Error Message: " + str(e)
+            print("Error: problem removing the chassis_inference_container. \n if you are sure it is on the system, you should remove it manually.\n" + str(e) +"\n"+ Err_str)
+
+        return return_value
