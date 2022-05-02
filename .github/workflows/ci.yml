@@ -94,7 +94,10 @@ jobs:
         run: python3 -m pip install -r ./requirements.txt
 
       - run: |
-          cd docs/
+          cd chassisml_sdk/chassisml/
+          git clone https://github.com/modzy/grpc_model.git
+          git clone https://github.com/modzy/model_lib
+          cd ../../docs/
           mkdocs build
           cd ../
 
