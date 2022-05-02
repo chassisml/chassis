@@ -17,7 +17,7 @@ To import the library into your editor:
 
 ## Usage
 
-::: chassisml-sdk.chassisml.chassisml
+::: chassisml_sdk.chassisml.chassisml
     :docstring:
     :members:
     rendering:
