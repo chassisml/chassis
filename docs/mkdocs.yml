@@ -1,8 +1,16 @@
 site_name: Chassis
 nav:
   - index.md
+  # - landing/connect.md
+  # - connect.md
+  # - Home:
+  #     - connect.md
+  #     - index.md
+  - Getting Started:
+      - Installation:
+          - getting-started/deploy-connect.md
+          - getting-started/deploy-manual.md
   - Tutorials:
-      - tutorials/devops-deploy.md
       - tutorials/ds-connect.md
       - tutorials/ds-postman.md
       - tutorials/ds-deploy.md
@@ -30,6 +38,9 @@ theme:
   favicon: images/chassis-symbol.png
   features:
     - navigation.expand
+    - navigation.tabs
+    - navigation.top
+    - toc.integrate
 plugins:
   - search
   - mkdocstrings:

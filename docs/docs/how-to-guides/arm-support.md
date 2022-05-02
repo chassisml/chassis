@@ -77,7 +77,7 @@ def batch_process(inputs):
 
 When we create our `ChassisModel` object, we will pass this batch_process function through as a parameter. **NOTE:** If you would also like to define a `process` function that only performs inference on a single piece of data instead of batch, you can do so as well and pass both through as parameters. In this case, our `batch_process` will work if we pass through either a single piece of data or batch.
 
-Now, initialize Chassis Client and create Chassis model. Replace the URL with your Chassis connection. If you followed these [installation instructions](https://chassis.ml/tutorials/devops-deploy/), keep the local host URL as is, but if you are connected to the Modzy-hosted Chassis instance, replace the URL with "https://chassis.modzy.com".
+Now, initialize Chassis Client and create Chassis model. Replace the URL with your Chassis connection. If you followed these [installation instructions](https://chassis.ml/tutorials/devops-deploy/), keep the local host URL as is, but if you are connected to the publicly-hosted Chassis instance, replace the URL with the URL you receive after [signing up](https://chassis.modzy.com).
 
 ```python
 chassis_client = chassisml.ChassisClient("http://localhost:5000")
@@ -117,7 +117,7 @@ final_status = chassis_client.block_until_complete(job_id)
 
 ## Enable Arm + GPU Support
 
-!!! Note
+!!! info "Note"
     The ARM + GPU option is in *alpha* and has only been tested on the NVIDIA Jetson Nano device. 
 
 Enabling ARM & GPU support requires one more flag set to true during the `publish` method. Repeate the steps outlined in the above section with the one difference being a slight change the `device` variable.

@@ -9,3 +9,5 @@ build
 dist
 
 chassisml/examples/keras/*
+local_test_.py
+hello-world.txt

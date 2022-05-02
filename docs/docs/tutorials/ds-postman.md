@@ -155,7 +155,7 @@ message InputItem {
 }
 ```
 
-Fortunately, Postman makes it very easy to create a properly-formatted input request message. At the bottom of the Request section, click **Generate Example Message** button.
+Conveniently, Postman makes it very easy to create a properly-formatted input request message. At the bottom of the Request section, click **Generate Example Message** button.
 
 ![](../images/postman/example-message.png){ style="border:20px solid white" }
 
