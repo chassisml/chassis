@@ -718,7 +718,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#chassisml-sdk.chassisml.chassisml.ChassisClient" class="md-nav__link">
+  <a href="#chassisml_sdk.chassisml.chassisml.ChassisClient" class="md-nav__link">
     ChassisClient
   </a>
   
@@ -726,35 +726,2291 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#chassisml-sdk.chassisml.chassisml.ChassisClient.block_until_complete" class="md-nav__link">
+  <a href="#chassisml_sdk.chassisml.chassisml.ChassisClient.block_until_complete" class="md-nav__link">
     block_until_complete()
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#chassisml-sdk.chassisml.chassisml.ChassisClient.create_model" class="md-nav__link">
+  <a href="#chassisml_sdk.chassisml.chassisml.ChassisClient.create_model" class="md-nav__link">
     create_model()
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#chassisml-sdk.chassisml.chassisml.ChassisClient.download_tar" class="md-nav__link">
+  <a href="#chassisml_sdk.chassisml.chassisml.ChassisClient.download_tar" class="md-nav__link">
     download_tar()
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#chassisml-sdk.chassisml.chassisml.ChassisClient.get_job_status" class="md-nav__link">
+  <a href="#chassisml_sdk.chassisml.chassisml.ChassisClient.get_job_status" class="md-nav__link">
     get_job_status()
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#chassisml-sdk.chassisml.chassisml.ChassisClient.test_OMI_compliance" class="md-nav__link">
+  <a href="#chassisml_sdk.chassisml.chassisml.ChassisClient.run_inference" class="md-nav__link">
+    run_inference()
+  </a>
+  
+    <nav class="md-nav" aria-label="run_inference()">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#chassisml_sdk.chassisml.chassisml.ChassisClient.run_inference--assume-that-the-container-is-running-locally-and-that-it-was-started-with-this-docker-command" class="md-nav__link">
+    assume that the container is running locally, and that it was started with this docker command
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chassisml_sdk.chassisml.chassisml.ChassisClient.run_inference--docker-run-it-p-500145000" class="md-nav__link">
+    docker run -it -p 5001:45000 
+
+  
+
+
+    
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+        
+ChassisClient        
+
+
+
+
+
+    
+
+      The Chassis Client object.
+This class is used to interact with the Kaniko service.
+
+Attributes:
+
+  
+    
+      Name
+      Type
+      Description
+    
+  
+  
+      
+        base_url
+        str
+        The base url for the API.
+      
+  
+
+        
+          Source code in chassisml_sdk/chassisml/chassisml.py
+          class ChassisClient:
+    &quot;&quot;&quot;The Chassis Client object.
+
+    This class is used to interact with the Kaniko service.
+
+    Attributes:
+        base_url (str): The base url for the API.
+    &quot;&quot;&quot;
+
+    def __init__(self,base_url=&#39;http://localhost:5000&#39;):
+        self.base_url = base_url
+
+    def get_job_status(self, job_id):
+        &#39;&#39;&#39;
+        Checks the status of a chassis job
+
+        Args:
+            job_id (str): Chassis job identifier generated from `ChassisModel.publish` method
+
+        Returns:
+            Dict: JSON Chassis job status
+
+        Examples:
+        ```python
+        # Create Chassisml model
+        chassis_model = chassis_client.create_model(process_fn=process)
+
+        # Define Dockerhub credentials
+        dockerhub_user = &quot;user&quot;
+        dockerhub_pass = &quot;password&quot;
+
+        # Publish model to Docker registry
+        response = chassis_model.publish(
+            model_name=&quot;Chassisml Regression Model&quot;,
+            model_version=&quot;0.0.1&quot;,
+            registry_user=dockerhub_user,
+            registry_pass=dockerhub_pass,
+        ) 
+
+        job_id = response.get(&#39;job_id&#39;)
+        job_status = chassis_client.get_job_status(job_id)
+        ```
+
+        &#39;&#39;&#39;
+        route = f&#39;{urllib.parse.urljoin(self.base_url, routes[&quot;job&quot;])}/{job_id}&#39;
+        res = requests.get(route)
+        data = res.json()
+        return data
+
+    def block_until_complete(self,job_id,timeout=None,poll_interval=5):
+        &#39;&#39;&#39;
+        Blocks until Chassis job is complete or timeout is reached. Polls Chassis job API until a result is marked finished.
+
+        Args:
+            job_id (str): Chassis job identifier generated from `ChassisModel.publish` method
+            timeout (int): Timeout threshold in seconds
+            poll_intervall (int): Amount of time to wait in between API polls to check status of job
+
+        Returns:
+            Dict: final job status returned by `ChassisClient.block_until_complete` method
+
+        Examples:
+        ```python
+        # Create Chassisml model
+        chassis_model = chassis_client.create_model(process_fn=process)
+
+        # Define Dockerhub credentials
+        dockerhub_user = &quot;user&quot;
+        dockerhub_pass = &quot;password&quot;
+
+        # Publish model to Docker registry
+        response = chassis_model.publish(
+            model_name=&quot;Chassisml Regression Model&quot;,
+            model_version=&quot;0.0.1&quot;,
+            registry_user=dockerhub_user,
+            registry_pass=dockerhub_pass,
+        ) 
+
+        job_id = response.get(&#39;job_id&#39;)
+        final_status = chassis_client.block_until_complete(job_id)
+        ```        
+
+        &#39;&#39;&#39;
+        endby = time.time() + timeout if (timeout is not None) else None
+        while True:
+            status = self.get_job_status(job_id)
+            if status[&#39;status&#39;][&#39;succeeded&#39;] or status[&#39;status&#39;][&#39;failed&#39;]:
+                return status
+            if (endby is not None) and (time.time() &gt; endby - poll_interval):
+                print(&#39;Timed out before completion.&#39;)
+                return False
+            time.sleep(poll_interval)
+
+    def download_tar(self, job_id, output_filename):
+        &#39;&#39;&#39;
+        Downloads container image as tar archive
+
+        **NOTE**: This method is not available in the publicly-hosted service.
+
+        Args:
+            job_id (str): Chassis job identifier generated from `ChassisModel.publish` method
+            output_filename (str): Local output filepath to save container image
+
+        Returns:
+            None: This method does not return an object
+
+        Examples:
+        ```python
+        # Publish model to Docker registry
+        response = chassis_model.publish(
+            model_name=&quot;Chassisml Regression Model&quot;,
+            model_version=&quot;0.0.1&quot;,
+            registry_user=dockerhub_user,
+            registry_pass=dockerhub_pass,
+        ) 
+
+        job_id = response.get(&#39;job_id)
+        chassis_client.download_tar(job_id, &quot;./chassis-model.tar&quot;)
+        ```
+        &#39;&#39;&#39;
+        url = f&#39;{urllib.parse.urljoin(self.base_url, routes[&quot;job&quot;])}/{job_id}/download-tar&#39;
+        r = requests.get(url)
+
+        if r.status_code == 200:
+            with open(output_filename, &#39;wb&#39;) as f:
+                f.write(r.content)
+        else:
+            print(f&#39;Error download tar: {r.text}&#39;)
+
+    def test_OMI_compliance(self, image_id=None):
+        &#39;&#39;&#39;
+        Tests a local image for compliance with the [Open Model Interface Specification](https://openmodel.ml/spec/)
+
+        Args:
+            image_id (str): image id of a local docker container. e.g. `dockerusername/repositoryname:tag`
+
+        Returns:
+            tuple(bool, str): Tuple containing compliance boolean (`True` if compliant, `False` if not) and corresponding string containing concatenation of any logs.
+
+        Examples:
+        ```python
+        # test a local docker image
+
+        OMI_test, logs = chassis_client.test_OMI_compliance(image_id)
+        if OMI_test:
+            print(&quot;OMI compliance test passed&quot;)
+        else:
+            print(&quot;OMI compliance test failed&quot;,logs)
+        ```
+        &#39;&#39;&#39;
+
+        rValue = (False, &quot;Nothing Initialized&quot;)
+
+        try:
+            checkObject = OMI_check(image_id=image_id)
+            if checkObject.client is None:
+                raise TypeError(&quot;The Docker Client couldn&#39;t be initialized. Is Docker installed?&quot;)
+            image_check = checkObject.validate_image()
+            if &quot;Failure&quot; in image_check:
+                raise ValueError(image_check)
+            container_start = checkObject.start_container()
+            if &quot;Failure&quot; in container_start:
+                raise  ValueError(container_start)
+            gRPC_check = checkObject.validate_gRPC()
+            if &quot;Failure&quot;in gRPC_check:
+                raise ValueError(gRPC_check)
+            clean_up = checkObject.clean_up()
+            if &quot;Failure&quot; in clean_up:
+                raise ValueError(clean_up)
+            rValue = (True, &quot;\n&quot; + image_check + &quot;\n&quot; + container_start + &quot;\n&quot; + gRPC_check + &quot;\n&quot; +clean_up)
+
+        except Exception as e:
+            rValue = (False, e)
+
+        return rValue
+
+    def create_model(self,process_fn=None,batch_process_fn=None,batch_size=None):
+        &#39;&#39;&#39;
+        Builds chassis model locally
+
+        Args:
+            process_fn (function): Python function that must accept a single piece of input data in raw bytes form. This method is responsible for handling all data preprocessing, executing inference, and returning the processed predictions. Defining additional functions is acceptable as long as they are called within the `process` method
+            batch_process_fn (function): Python function that must accept a batch of input data in raw bytes form. This method is responsible for handling all data preprocessing, executing inference, and returning the processed predictions. Defining additional functions is acceptable as long as they are called within the `process` method
+            batch_size (int): Maximum batch size if `batch_process_fn` is defined
+
+        Returns:
+            ChassisModel: Chassis Model object that can be tested locally and published to a Docker Registry
+
+        Examples:
+        The following snippet was taken from this [example](https://docs.modzy.com/docs/chassis-ml).
+        ```python
+        # Import and normalize data
+        X_digits, y_digits = datasets.load_digits(return_X_y=True)
+        X_digits = X_digits / X_digits.max()
+
+        n_samples = len(X_digits)
+
+        # Split data into training and test sets
+        X_train = X_digits[: int(0.9 * n_samples)]
+        y_train = y_digits[: int(0.9 * n_samples)]
+        X_test = X_digits[int(0.9 * n_samples) :]
+        y_test = y_digits[int(0.9 * n_samples) :]
+
+        # Train Model
+        logistic = LogisticRegression(max_iter=1000)
+        print(
+            &quot;LogisticRegression mean accuracy score: %f&quot;
+            % logistic.fit(X_train, y_train).score(X_test, y_test)
+        )
+
+        # Save small sample input to use for testing later
+        sample = X_test[:5].tolist()
+        with open(&quot;digits_sample.json&quot;, &#39;w&#39;) as out:
+            json.dump(sample, out)        
+
+        # Define Process function
+        def process(input_bytes):
+            inputs = np.array(json.loads(input_bytes))
+            inference_results = logistic.predict(inputs)
+            structured_results = []
+            for inference_result in inference_results:
+                structured_output = {
+                    &quot;data&quot;: {
+                        &quot;result&quot;: {&quot;classPredictions&quot;: [{&quot;class&quot;: str(inference_result), &quot;score&quot;: str(1)}]}
+                    }
+                }
+                structured_results.append(structured_output)
+            return structured_results      
+
+        # create Chassis model
+        chassis_model = chassis_client.create_model(process_fn=process)              
+        ```
+
+        &#39;&#39;&#39;
+        if not (process_fn or batch_process_fn):
+            raise ValueError(&quot;At least one of process_fn or batch_process_fn must be provided.&quot;)
+
+        if (batch_process_fn and not batch_size) or (batch_size and not batch_process_fn):
+            raise ValueError(&quot;Both batch_process_fn and batch_size must be provided for batch support.&quot;)
+
+        return ChassisModel(process_fn,batch_process_fn,batch_size,self.base_url)
+
+    def run_inference(self, input_data, container_host=&quot;localhost&quot;, container_port=45000):
+        &#39;&#39;&#39;
+                This is the method you use to submit data to a container chassis has built for inference.
+                it assumes the container has been downloaded from dockerhub and is running somewhere you have access to
+
+                Args:
+                    input_data (json): dictionary of the form {&quot;input&quot;: &lt;binary respresentaion of your data&gt;}
+                    container_host (str): URL where container is running
+                    container_port (int): port that forwards to container&#39;s grpc server
+
+                Examples:
+                # assume that the container is running locally, and that it was started with this docker command
+                #  docker run -it -p 5001:45000 &lt;docker_uname&gt;/&lt;container_name&gt;:&lt;tag_id&gt;
+
+                from chassisml_sdk.chassisml import chassisml
+
+                client = chassisml.ChassisClient()
+
+                input_data = {&quot;input&quot;: b&quot;[[0.0, 0.0, 0.0, 1.0, 12.0, 6.0, 0.0, 0.0, 0.0, 0.0, 0.0, 11.0, 15.0, 2.0, 0.0, 0.0, 0.0, 0.0, 8.0, 16.0, 6.0, 1.0, 2.0, 0.0, 0.0, 4.0, 16.0, 9.0, 1.0, 15.0, 9.0, 0.0, 0.0, 13.0, 15.0, 6.0, 10.0, 16.0, 6.0, 0.0, 0.0, 12.0, 16.0, 16.0, 16.0, 16.0, 1.0, 0.0, 0.0, 1.0, 7.0, 4.0, 14.0, 13.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 14.0, 9.0, 0.0, 0.0], [0.0, 0.0, 8.0, 16.0, 3.0, 0.0, 1.0, 0.0, 0.0, 0.0, 16.0, 14.0, 5.0, 14.0, 12.0, 0.0, 0.0, 0.0, 8.0, 16.0, 16.0, 9.0, 0.0, 0.0, 0.0, 0.0, 3.0, 16.0, 14.0, 1.0, 0.0, 0.0, 0.0, 0.0, 12.0, 16.0, 16.0, 2.0, 0.0, 0.0, 0.0, 0.0, 16.0, 11.0, 16.0, 4.0, 0.0, 0.0, 0.0, 3.0, 16.0, 16.0, 16.0, 6.0, 0.0, 0.0, 0.0, 0.0, 10.0, 16.0, 10.0, 1.0, 0.0, 0.0], [0.0, 0.0, 5.0, 12.0, 8.0, 0.0, 1.0, 0.0, 0.0, 0.0, 11.0, 16.0, 5.0, 13.0, 6.0, 0.0, 0.0, 0.0, 2.0, 15.0, 16.0, 12.0, 1.0, 0.0, 0.0, 0.0, 0.0, 10.0, 16.0, 6.0, 0.0, 0.0, 0.0, 0.0, 1.0, 15.0, 16.0, 7.0, 0.0, 0.0, 0.0, 0.0, 8.0, 16.0, 16.0, 11.0, 0.0, 0.0, 0.0, 0.0, 11.0, 16.0, 16.0, 9.0, 0.0, 0.0, 0.0, 0.0, 6.0, 12.0, 12.0, 3.0, 0.0, 0.0], [0.0, 0.0, 0.0, 3.0, 15.0, 4.0, 0.0, 0.0, 0.0, 0.0, 4.0, 16.0, 12.0, 0.0, 0.0, 0.0, 0.0, 0.0, 12.0, 15.0, 3.0, 4.0, 3.0, 0.0, 0.0, 7.0, 16.0, 5.0, 3.0, 15.0, 8.0, 0.0, 0.0, 13.0, 16.0, 13.0, 15.0, 16.0, 2.0, 0.0, 0.0, 12.0, 16.0, 16.0, 16.0, 13.0, 0.0, 0.0, 0.0, 0.0, 4.0, 5.0, 16.0, 8.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 16.0, 4.0, 0.0, 0.0], [0.0, 0.0, 10.0, 14.0, 8.0, 1.0, 0.0, 0.0, 0.0, 2.0, 16.0, 14.0, 6.0, 1.0, 0.0, 0.0, 0.0, 0.0, 15.0, 15.0, 8.0, 15.0, 0.0, 0.0, 0.0, 0.0, 5.0, 16.0, 16.0, 10.0, 0.0, 0.0, 0.0, 0.0, 12.0, 15.0, 15.0, 12.0, 0.0, 0.0, 0.0, 4.0, 16.0, 6.0, 4.0, 16.0, 6.0, 0.0, 0.0, 8.0, 16.0, 10.0, 8.0, 16.0, 8.0, 0.0, 0.0, 1.0, 8.0, 12.0, 14.0, 12.0, 1.0, 0.0]]&quot;}
+                input_list = [input_data for _ in range(30)]
+
+                print(&quot;single input&quot;)
+                print(client.run_inference(input_data, container_host=&quot;localhost&quot;, container_port=5001))
+                print(&quot;multi inputs&quot;)
+                results = client.run_inference(input_list, container_host=&quot;localhost&quot;, container_port=5002)
+                for x in results:
+                    print(x)
+        &#39;&#39;&#39;
+        model_client.override_server_URL(container_host, container_port)
+        return model_client.run(input_data)
+
+        
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+block_until_complete(self, job_id, timeout=None, poll_interval=5)
+
+
+
+
+    
+
+      Blocks until Chassis job is complete or timeout is reached. Polls Chassis job API until a result is marked finished.
+
+Parameters:
+
+  
+    
+      Name
+      Type
+      Description
+      Default
+    
+  
+  
+      
+        job_id
+        str
+        Chassis job identifier generated from ChassisModel.publish method
+        required
+      
+      
+        timeout
+        int
+        Timeout threshold in seconds
+        None
+      
+      
+        poll_intervall
+        int
+        Amount of time to wait in between API polls to check status of job
+        required
+      
+  
+
+Returns:
+
+  
+    
+      Type
+      Description
+    
+  
+  
+    
+      Dict
+      final job status returned by ChassisClient.block_until_complete method
+    
+  
+
+Examples:
+    
+      # Create Chassisml model
+chassis_model = chassis_client.create_model(process_fn=process)
+
+# Define Dockerhub credentials
+dockerhub_user = &quot;user&quot;
+dockerhub_pass = &quot;password&quot;
+
+# Publish model to Docker registry
+response = chassis_model.publish(
+    model_name=&quot;Chassisml Regression Model&quot;,
+    model_version=&quot;0.0.1&quot;,
+    registry_user=dockerhub_user,
+    registry_pass=dockerhub_pass,
+) 
+
+job_id = response.get(&#39;job_id&#39;)
+final_status = chassis_client.block_until_complete(job_id)
+
+
+        
+          Source code in chassisml_sdk/chassisml/chassisml.py
+          def block_until_complete(self,job_id,timeout=None,poll_interval=5):
+    &#39;&#39;&#39;
+    Blocks until Chassis job is complete or timeout is reached. Polls Chassis job API until a result is marked finished.
+
+    Args:
+        job_id (str): Chassis job identifier generated from `ChassisModel.publish` method
+        timeout (int): Timeout threshold in seconds
+        poll_intervall (int): Amount of time to wait in between API polls to check status of job
+
+    Returns:
+        Dict: final job status returned by `ChassisClient.block_until_complete` method
+
+    Examples:
+    ```python
+    # Create Chassisml model
+    chassis_model = chassis_client.create_model(process_fn=process)
+
+    # Define Dockerhub credentials
+    dockerhub_user = &quot;user&quot;
+    dockerhub_pass = &quot;password&quot;
+
+    # Publish model to Docker registry
+    response = chassis_model.publish(
+        model_name=&quot;Chassisml Regression Model&quot;,
+        model_version=&quot;0.0.1&quot;,
+        registry_user=dockerhub_user,
+        registry_pass=dockerhub_pass,
+    ) 
+
+    job_id = response.get(&#39;job_id&#39;)
+    final_status = chassis_client.block_until_complete(job_id)
+    ```        
+
+    &#39;&#39;&#39;
+    endby = time.time() + timeout if (timeout is not None) else None
+    while True:
+        status = self.get_job_status(job_id)
+        if status[&#39;status&#39;][&#39;succeeded&#39;] or status[&#39;status&#39;][&#39;failed&#39;]:
+            return status
+        if (endby is not None) and (time.time() &gt; endby - poll_interval):
+            print(&#39;Timed out before completion.&#39;)
+            return False
+        time.sleep(poll_interval)
+
+        
+    
+
+  
+
+
+
+  
+
+
+
+
+create_model(self, process_fn=None, batch_process_fn=None, batch_size=None)
+
+
+
+
+    
+
+      Builds chassis model locally
+
+Parameters:
+
+  
+    
+      Name
+      Type
+      Description
+      Default
+    
+  
+  
+      
+        process_fn
+        function
+        Python function that must accept a single piece of input data in raw bytes form. This method is responsible for handling all data preprocessing, executing inference, and returning the processed predictions. Defining additional functions is acceptable as long as they are called within the process method
+        None
+      
+      
+        batch_process_fn
+        function
+        Python function that must accept a batch of input data in raw bytes form. This method is responsible for handling all data preprocessing, executing inference, and returning the processed predictions. Defining additional functions is acceptable as long as they are called within the process method
+        None
+      
+      
+        batch_size
+        int
+        Maximum batch size if batch_process_fn is defined
+        None
+      
+  
+
+Returns:
+
+  
+    
+      Type
+      Description
+    
+  
+  
+    
+      ChassisModel
+      Chassis Model object that can be tested locally and published to a Docker Registry
+    
+  
+
+Examples:
+    
+      The following snippet was taken from this example.
+# Import and normalize data
+X_digits, y_digits = datasets.load_digits(return_X_y=True)
+X_digits = X_digits / X_digits.max()
+
+n_samples = len(X_digits)
+
+# Split data into training and test sets
+X_train = X_digits[: int(0.9 * n_samples)]
+y_train = y_digits[: int(0.9 * n_samples)]
+X_test = X_digits[int(0.9 * n_samples) :]
+y_test = y_digits[int(0.9 * n_samples) :]
+
+# Train Model
+logistic = LogisticRegression(max_iter=1000)
+print(
+    &quot;LogisticRegression mean accuracy score: %f&quot;
+    % logistic.fit(X_train, y_train).score(X_test, y_test)
+)
+
+# Save small sample input to use for testing later
+sample = X_test[:5].tolist()
+with open(&quot;digits_sample.json&quot;, &#39;w&#39;) as out:
+    json.dump(sample, out)        
+
+# Define Process function
+def process(input_bytes):
+    inputs = np.array(json.loads(input_bytes))
+    inference_results = logistic.predict(inputs)
+    structured_results = []
+    for inference_result in inference_results:
+        structured_output = {
+            &quot;data&quot;: {
+                &quot;result&quot;: {&quot;classPredictions&quot;: [{&quot;class&quot;: str(inference_result), &quot;score&quot;: str(1)}]}
+            }
+        }
+        structured_results.append(structured_output)
+    return structured_results      
+
+# create Chassis model
+chassis_model = chassis_client.create_model(process_fn=process)              
+
+
+        
+          Source code in chassisml_sdk/chassisml/chassisml.py
+          def create_model(self,process_fn=None,batch_process_fn=None,batch_size=None):
+    &#39;&#39;&#39;
+    Builds chassis model locally
+
+    Args:
+        process_fn (function): Python function that must accept a single piece of input data in raw bytes form. This method is responsible for handling all data preprocessing, executing inference, and returning the processed predictions. Defining additional functions is acceptable as long as they are called within the `process` method
+        batch_process_fn (function): Python function that must accept a batch of input data in raw bytes form. This method is responsible for handling all data preprocessing, executing inference, and returning the processed predictions. Defining additional functions is acceptable as long as they are called within the `process` method
+        batch_size (int): Maximum batch size if `batch_process_fn` is defined
+
+    Returns:
+        ChassisModel: Chassis Model object that can be tested locally and published to a Docker Registry
+
+    Examples:
+    The following snippet was taken from this [example](https://docs.modzy.com/docs/chassis-ml).
+    ```python
+    # Import and normalize data
+    X_digits, y_digits = datasets.load_digits(return_X_y=True)
+    X_digits = X_digits / X_digits.max()
+
+    n_samples = len(X_digits)
+
+    # Split data into training and test sets
+    X_train = X_digits[: int(0.9 * n_samples)]
+    y_train = y_digits[: int(0.9 * n_samples)]
+    X_test = X_digits[int(0.9 * n_samples) :]
+    y_test = y_digits[int(0.9 * n_samples) :]
+
+    # Train Model
+    logistic = LogisticRegression(max_iter=1000)
+    print(
+        &quot;LogisticRegression mean accuracy score: %f&quot;
+        % logistic.fit(X_train, y_train).score(X_test, y_test)
+    )
+
+    # Save small sample input to use for testing later
+    sample = X_test[:5].tolist()
+    with open(&quot;digits_sample.json&quot;, &#39;w&#39;) as out:
+        json.dump(sample, out)        
+
+    # Define Process function
+    def process(input_bytes):
+        inputs = np.array(json.loads(input_bytes))
+        inference_results = logistic.predict(inputs)
+        structured_results = []
+        for inference_result in inference_results:
+            structured_output = {
+                &quot;data&quot;: {
+                    &quot;result&quot;: {&quot;classPredictions&quot;: [{&quot;class&quot;: str(inference_result), &quot;score&quot;: str(1)}]}
+                }
+            }
+            structured_results.append(structured_output)
+        return structured_results      
+
+    # create Chassis model
+    chassis_model = chassis_client.create_model(process_fn=process)              
+    ```
+
+    &#39;&#39;&#39;
+    if not (process_fn or batch_process_fn):
+        raise ValueError(&quot;At least one of process_fn or batch_process_fn must be provided.&quot;)
+
+    if (batch_process_fn and not batch_size) or (batch_size and not batch_process_fn):
+        raise ValueError(&quot;Both batch_process_fn and batch_size must be provided for batch support.&quot;)
+
+    return ChassisModel(process_fn,batch_process_fn,batch_size,self.base_url)
+
+        
+    
+
+  
+
+
+
+  
+
+
+
+
+download_tar(self, job_id, output_filename)
+
+
+
+
+    
+
+      Downloads container image as tar archive
+NOTE: This method is not available in the publicly-hosted service.
+
+Parameters:
+
+  
+    
+      Name
+      Type
+      Description
+      Default
+    
+  
+  
+      
+        job_id
+        str
+        Chassis job identifier generated from ChassisModel.publish method
+        required
+      
+      
+        output_filename
+        str
+        Local output filepath to save container image
+        required
+      
+  
+
+Returns:
+
+  
+    
+      Type
+      Description
+    
+  
+  
+    
+      None
+      This method does not return an object
+    
+  
+
+Examples:
+    
+      # Publish model to Docker registry
+response = chassis_model.publish(
+    model_name=&quot;Chassisml Regression Model&quot;,
+    model_version=&quot;0.0.1&quot;,
+    registry_user=dockerhub_user,
+    registry_pass=dockerhub_pass,
+) 
+
+job_id = response.get(&#39;job_id)
+chassis_client.download_tar(job_id, &quot;./chassis-model.tar&quot;)
+
+
+        
+          Source code in chassisml_sdk/chassisml/chassisml.py
+          def download_tar(self, job_id, output_filename):
+    &#39;&#39;&#39;
+    Downloads container image as tar archive
+
+    **NOTE**: This method is not available in the publicly-hosted service.
+
+    Args:
+        job_id (str): Chassis job identifier generated from `ChassisModel.publish` method
+        output_filename (str): Local output filepath to save container image
+
+    Returns:
+        None: This method does not return an object
+
+    Examples:
+    ```python
+    # Publish model to Docker registry
+    response = chassis_model.publish(
+        model_name=&quot;Chassisml Regression Model&quot;,
+        model_version=&quot;0.0.1&quot;,
+        registry_user=dockerhub_user,
+        registry_pass=dockerhub_pass,
+    ) 
+
+    job_id = response.get(&#39;job_id)
+    chassis_client.download_tar(job_id, &quot;./chassis-model.tar&quot;)
+    ```
+    &#39;&#39;&#39;
+    url = f&#39;{urllib.parse.urljoin(self.base_url, routes[&quot;job&quot;])}/{job_id}/download-tar&#39;
+    r = requests.get(url)
+
+    if r.status_code == 200:
+        with open(output_filename, &#39;wb&#39;) as f:
+            f.write(r.content)
+    else:
+        print(f&#39;Error download tar: {r.text}&#39;)
+
+        
+    
+
+  
+
+
+
+  
+
+
+
+
+get_job_status(self, job_id)
+
+
+
+
+    
+
+      Checks the status of a chassis job
+
+Parameters:
+
+  
+    
+      Name
+      Type
+      Description
+      Default
+    
+  
+  
+      
+        job_id
+        str
+        Chassis job identifier generated from ChassisModel.publish method
+        required
+      
+  
+
+Returns:
+
+  
+    
+      Type
+      Description
+    
+  
+  
+    
+      Dict
+      JSON Chassis job status
+    
+  
+
+Examples:
+    
+      # Create Chassisml model
+chassis_model = chassis_client.create_model(process_fn=process)
+
+# Define Dockerhub credentials
+dockerhub_user = &quot;user&quot;
+dockerhub_pass = &quot;password&quot;
+
+# Publish model to Docker registry
+response = chassis_model.publish(
+    model_name=&quot;Chassisml Regression Model&quot;,
+    model_version=&quot;0.0.1&quot;,
+    registry_user=dockerhub_user,
+    registry_pass=dockerhub_pass,
+) 
+
+job_id = response.get(&#39;job_id&#39;)
+job_status = chassis_client.get_job_status(job_id)
+
+
+        
+          Source code in chassisml_sdk/chassisml/chassisml.py
+          def get_job_status(self, job_id):
+    &#39;&#39;&#39;
+    Checks the status of a chassis job
+
+    Args:
+        job_id (str): Chassis job identifier generated from `ChassisModel.publish` method
+
+    Returns:
+        Dict: JSON Chassis job status
+
+    Examples:
+    ```python
+    # Create Chassisml model
+    chassis_model = chassis_client.create_model(process_fn=process)
+
+    # Define Dockerhub credentials
+    dockerhub_user = &quot;user&quot;
+    dockerhub_pass = &quot;password&quot;
+
+    # Publish model to Docker registry
+    response = chassis_model.publish(
+        model_name=&quot;Chassisml Regression Model&quot;,
+        model_version=&quot;0.0.1&quot;,
+        registry_user=dockerhub_user,
+        registry_pass=dockerhub_pass,
+    ) 
+
+    job_id = response.get(&#39;job_id&#39;)
+    job_status = chassis_client.get_job_status(job_id)
+    ```
+
+    &#39;&#39;&#39;
+    route = f&#39;{urllib.parse.urljoin(self.base_url, routes[&quot;job&quot;])}/{job_id}&#39;
+    res = requests.get(route)
+    data = res.json()
+    return data
+
+        
+    
+
+  
+
+
+
+  
+
+
+
+
+run_inference(self, input_data, container_host=&#39;localhost&#39;, container_port=45000)
+
+
+
+
+    
+
+      This is the method you use to submit data to a container chassis has built for inference.
+it assumes the container has been downloaded from dockerhub and is running somewhere you have access to
+
+Parameters:
+
+  
+    
+      Name
+      Type
+      Description
+      Default
+    
+  
+  
+      
+        input_data
+        json
+        dictionary of the form {"input": }
+        required
+      
+      
+        container_host
+        str
+        URL where container is running
+        &#39;localhost&#39;
+      
+      
+        container_port
+        int
+        port that forwards to container's grpc server
+        45000
+      
+  
+
+Examples:
+    
+      assume that the container is running locally, and that it was started with this docker command
+docker run -it -p 5001:45000 /:
+from chassisml_sdk.chassisml import chassisml
+client = chassisml.ChassisClient()
+input_data = {"input": b"[[0.0, 0.0, 0.0, 1.0, 12.0, 6.0, 0.0, 0.0, 0.0, 0.0, 0.0, 11.0, 15.0, 2.0, 0.0, 0.0, 0.0, 0.0, 8.0, 16.0, 6.0, 1.0, 2.0, 0.0, 0.0, 4.0, 16.0, 9.0, 1.0, 15.0, 9.0, 0.0, 0.0, 13.0, 15.0, 6.0, 10.0, 16.0, 6.0, 0.0, 0.0, 12.0, 16.0, 16.0, 16.0, 16.0, 1.0, 0.0, 0.0, 1.0, 7.0, 4.0, 14.0, 13.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 14.0, 9.0, 0.0, 0.0], [0.0, 0.0, 8.0, 16.0, 3.0, 0.0, 1.0, 0.0, 0.0, 0.0, 16.0, 14.0, 5.0, 14.0, 12.0, 0.0, 0.0, 0.0, 8.0, 16.0, 16.0, 9.0, 0.0, 0.0, 0.0, 0.0, 3.0, 16.0, 14.0, 1.0, 0.0, 0.0, 0.0, 0.0, 12.0, 16.0, 16.0, 2.0, 0.0, 0.0, 0.0, 0.0, 16.0, 11.0, 16.0, 4.0, 0.0, 0.0, 0.0, 3.0, 16.0, 16.0, 16.0, 6.0, 0.0, 0.0, 0.0, 0.0, 10.0, 16.0, 10.0, 1.0, 0.0, 0.0], [0.0, 0.0, 5.0, 12.0, 8.0, 0.0, 1.0, 0.0, 0.0, 0.0, 11.0, 16.0, 5.0, 13.0, 6.0, 0.0, 0.0, 0.0, 2.0, 15.0, 16.0, 12.0, 1.0, 0.0, 0.0, 0.0, 0.0, 10.0, 16.0, 6.0, 0.0, 0.0, 0.0, 0.0, 1.0, 15.0, 16.0, 7.0, 0.0, 0.0, 0.0, 0.0, 8.0, 16.0, 16.0, 11.0, 0.0, 0.0, 0.0, 0.0, 11.0, 16.0, 16.0, 9.0, 0.0, 0.0, 0.0, 0.0, 6.0, 12.0, 12.0, 3.0, 0.0, 0.0], [0.0, 0.0, 0.0, 3.0, 15.0, 4.0, 0.0, 0.0, 0.0, 0.0, 4.0, 16.0, 12.0, 0.0, 0.0, 0.0, 0.0, 0.0, 12.0, 15.0, 3.0, 4.0, 3.0, 0.0, 0.0, 7.0, 16.0, 5.0, 3.0, 15.0, 8.0, 0.0, 0.0, 13.0, 16.0, 13.0, 15.0, 16.0, 2.0, 0.0, 0.0, 12.0, 16.0, 16.0, 16.0, 13.0, 0.0, 0.0, 0.0, 0.0, 4.0, 5.0, 16.0, 8.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 16.0, 4.0, 0.0, 0.0], [0.0, 0.0, 10.0, 14.0, 8.0, 1.0, 0.0, 0.0, 0.0, 2.0, 16.0, 14.0, 6.0, 1.0, 0.0, 0.0, 0.0, 0.0, 15.0, 15.0, 8.0, 15.0, 0.0, 0.0, 0.0, 0.0, 5.0, 16.0, 16.0, 10.0, 0.0, 0.0, 0.0, 0.0, 12.0, 15.0, 15.0, 12.0, 0.0, 0.0, 0.0, 4.0, 16.0, 6.0, 4.0, 16.0, 6.0, 0.0, 0.0, 8.0, 16.0, 10.0, 8.0, 16.0, 8.0, 0.0, 0.0, 1.0, 8.0, 12.0, 14.0, 12.0, 1.0, 0.0]]"}
+input_list = [input_data for _ in range(30)]
+print("single input")
+print(client.run_inference(input_data, container_host="localhost", container_port=5001))
+print("multi inputs")
+results = client.run_inference(input_list, container_host="localhost", container_port=5002)
+for x in results:
+    print(x)
+
+        
+          Source code in chassisml_sdk/chassisml/chassisml.py
+          def run_inference(self, input_data, container_host=&quot;localhost&quot;, container_port=45000):
+    &#39;&#39;&#39;
+            This is the method you use to submit data to a container chassis has built for inference.
+            it assumes the container has been downloaded from dockerhub and is running somewhere you have access to
+
+            Args:
+                input_data (json): dictionary of the form {&quot;input&quot;: &lt;binary respresentaion of your data&gt;}
+                container_host (str): URL where container is running
+                container_port (int): port that forwards to container&#39;s grpc server
+
+            Examples:
+            # assume that the container is running locally, and that it was started with this docker command
+            #  docker run -it -p 5001:45000 &lt;docker_uname&gt;/&lt;container_name&gt;:&lt;tag_id&gt;
+
+            from chassisml_sdk.chassisml import chassisml
+
+            client = chassisml.ChassisClient()
+
+            input_data = {&quot;input&quot;: b&quot;[[0.0, 0.0, 0.0, 1.0, 12.0, 6.0, 0.0, 0.0, 0.0, 0.0, 0.0, 11.0, 15.0, 2.0, 0.0, 0.0, 0.0, 0.0, 8.0, 16.0, 6.0, 1.0, 2.0, 0.0, 0.0, 4.0, 16.0, 9.0, 1.0, 15.0, 9.0, 0.0, 0.0, 13.0, 15.0, 6.0, 10.0, 16.0, 6.0, 0.0, 0.0, 12.0, 16.0, 16.0, 16.0, 16.0, 1.0, 0.0, 0.0, 1.0, 7.0, 4.0, 14.0, 13.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 14.0, 9.0, 0.0, 0.0], [0.0, 0.0, 8.0, 16.0, 3.0, 0.0, 1.0, 0.0, 0.0, 0.0, 16.0, 14.0, 5.0, 14.0, 12.0, 0.0, 0.0, 0.0, 8.0, 16.0, 16.0, 9.0, 0.0, 0.0, 0.0, 0.0, 3.0, 16.0, 14.0, 1.0, 0.0, 0.0, 0.0, 0.0, 12.0, 16.0, 16.0, 2.0, 0.0, 0.0, 0.0, 0.0, 16.0, 11.0, 16.0, 4.0, 0.0, 0.0, 0.0, 3.0, 16.0, 16.0, 16.0, 6.0, 0.0, 0.0, 0.0, 0.0, 10.0, 16.0, 10.0, 1.0, 0.0, 0.0], [0.0, 0.0, 5.0, 12.0, 8.0, 0.0, 1.0, 0.0, 0.0, 0.0, 11.0, 16.0, 5.0, 13.0, 6.0, 0.0, 0.0, 0.0, 2.0, 15.0, 16.0, 12.0, 1.0, 0.0, 0.0, 0.0, 0.0, 10.0, 16.0, 6.0, 0.0, 0.0, 0.0, 0.0, 1.0, 15.0, 16.0, 7.0, 0.0, 0.0, 0.0, 0.0, 8.0, 16.0, 16.0, 11.0, 0.0, 0.0, 0.0, 0.0, 11.0, 16.0, 16.0, 9.0, 0.0, 0.0, 0.0, 0.0, 6.0, 12.0, 12.0, 3.0, 0.0, 0.0], [0.0, 0.0, 0.0, 3.0, 15.0, 4.0, 0.0, 0.0, 0.0, 0.0, 4.0, 16.0, 12.0, 0.0, 0.0, 0.0, 0.0, 0.0, 12.0, 15.0, 3.0, 4.0, 3.0, 0.0, 0.0, 7.0, 16.0, 5.0, 3.0, 15.0, 8.0, 0.0, 0.0, 13.0, 16.0, 13.0, 15.0, 16.0, 2.0, 0.0, 0.0, 12.0, 16.0, 16.0, 16.0, 13.0, 0.0, 0.0, 0.0, 0.0, 4.0, 5.0, 16.0, 8.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 16.0, 4.0, 0.0, 0.0], [0.0, 0.0, 10.0, 14.0, 8.0, 1.0, 0.0, 0.0, 0.0, 2.0, 16.0, 14.0, 6.0, 1.0, 0.0, 0.0, 0.0, 0.0, 15.0, 15.0, 8.0, 15.0, 0.0, 0.0, 0.0, 0.0, 5.0, 16.0, 16.0, 10.0, 0.0, 0.0, 0.0, 0.0, 12.0, 15.0, 15.0, 12.0, 0.0, 0.0, 0.0, 4.0, 16.0, 6.0, 4.0, 16.0, 6.0, 0.0, 0.0, 8.0, 16.0, 10.0, 8.0, 16.0, 8.0, 0.0, 0.0, 1.0, 8.0, 12.0, 14.0, 12.0, 1.0, 0.0]]&quot;}
+            input_list = [input_data for _ in range(30)]
+
+            print(&quot;single input&quot;)
+            print(client.run_inference(input_data, container_host=&quot;localhost&quot;, container_port=5001))
+            print(&quot;multi inputs&quot;)
+            results = client.run_inference(input_list, container_host=&quot;localhost&quot;, container_port=5002)
+            for x in results:
+                print(x)
+    &#39;&#39;&#39;
+    model_client.override_server_URL(container_host, container_port)
+    return model_client.run(input_data)
+
+        
+    
+
+  
+
+
+
+  
+
+
+
+
+test_OMI_compliance(self, image_id=None)
+
+
+
+
+    
+
+      Tests a local image for compliance with the Open Model Interface Specification
+
+Parameters:
+
+  
+    
+      Name
+      Type
+      Description
+      Default
+    
+  
+  
+      
+        image_id
+        str
+        image id of a local docker container. e.g. dockerusername/repositoryname:tag
+        None
+      
+  
+
+Returns:
+
+  
+    
+      Type
+      Description
+    
+  
+  
+    
+      tuple(bool, str)
+      Tuple containing compliance boolean (True if compliant, False if not) and corresponding string containing concatenation of any logs.
+    
+  
+
+Examples:
+    
+      # test a local docker image
+
+OMI_test, logs = chassis_client.test_OMI_compliance(image_id)
+if OMI_test:
+    print(&quot;OMI compliance test passed&quot;)
+else:
+    print(&quot;OMI compliance test failed&quot;,logs)
+
+
+        
+          Source code in chassisml_sdk/chassisml/chassisml.py
+          def test_OMI_compliance(self, image_id=None):
+    &#39;&#39;&#39;
+    Tests a local image for compliance with the [Open Model Interface Specification](https://openmodel.ml/spec/)
+
+    Args:
+        image_id (str): image id of a local docker container. e.g. `dockerusername/repositoryname:tag`
+
+    Returns:
+        tuple(bool, str): Tuple containing compliance boolean (`True` if compliant, `False` if not) and corresponding string containing concatenation of any logs.
+
+    Examples:
+    ```python
+    # test a local docker image
+
+    OMI_test, logs = chassis_client.test_OMI_compliance(image_id)
+    if OMI_test:
+        print(&quot;OMI compliance test passed&quot;)
+    else:
+        print(&quot;OMI compliance test failed&quot;,logs)
+    ```
+    &#39;&#39;&#39;
+
+    rValue = (False, &quot;Nothing Initialized&quot;)
+
+    try:
+        checkObject = OMI_check(image_id=image_id)
+        if checkObject.client is None:
+            raise TypeError(&quot;The Docker Client couldn&#39;t be initialized. Is Docker installed?&quot;)
+        image_check = checkObject.validate_image()
+        if &quot;Failure&quot; in image_check:
+            raise ValueError(image_check)
+        container_start = checkObject.start_container()
+        if &quot;Failure&quot; in container_start:
+            raise  ValueError(container_start)
+        gRPC_check = checkObject.validate_gRPC()
+        if &quot;Failure&quot;in gRPC_check:
+            raise ValueError(gRPC_check)
+        clean_up = checkObject.clean_up()
+        if &quot;Failure&quot; in clean_up:
+            raise ValueError(clean_up)
+        rValue = (True, &quot;\n&quot; + image_check + &quot;\n&quot; + container_start + &quot;\n&quot; + gRPC_check + &quot;\n&quot; +clean_up)
+
+    except Exception as e:
+        rValue = (False, e)
+
+    return rValue
+
+        
+    
+
+  
+
+
+
+
+
+  
+
+    
+
+  
+
+
+
+  
+
+
+
+
+        
+ChassisModel            (PythonModel)
+        
+
+
+
+
+
+    
+
+      The Chassis Model object.
+This class inherits from mlflow.pyfunc.PythonModel and adds Chassis functionality.
+
+Attributes:
+
+  
+    
+      Name
+      Type
+      Description
+    
+  
+  
+      
+        predict
+        function
+        MLflow pyfunc compatible predict function. 
+Will wrap user-provided function which takes two arguments: model_input (bytes) and model_context (dict).
+      
+      
+        chassis_build_url
+        str
+        The build url for the Chassis API.
+      
+  
+
+        
+          Source code in chassisml_sdk/chassisml/chassisml.py
+          class ChassisModel(mlflow.pyfunc.PythonModel):
+    &quot;&quot;&quot;The Chassis Model object.
+
+    This class inherits from `mlflow.pyfunc.PythonModel` and adds Chassis functionality.
+
+    Attributes:
+        predict (function): MLflow pyfunc compatible predict function. 
+            Will wrap user-provided function which takes two arguments: model_input (bytes) and model_context (dict).
+        chassis_build_url (str): The build url for the Chassis API.
+    &quot;&quot;&quot;
+
+    def __init__(self,process_fn,batch_process_fn,batch_size,chassis_base_url):      
+
+        if process_fn and batch_process_fn:
+            if not batch_size:
+                raise ValueError(&quot;Both batch_process_fn and batch_size must be provided for batch support.&quot;)
+            self.predict = self._gen_predict_method(process_fn)
+            self.batch_predict = self._gen_predict_method(batch_process_fn,batch=True)
+            self.batch_input = True
+            self.batch_size = batch_size
+        elif process_fn and not batch_process_fn:
+            self.predict = self._gen_predict_method(process_fn)
+            self.batch_input = False
+            self.batch_size = None
+        elif batch_process_fn and not process_fn:
+            if not batch_size:
+                raise ValueError(&quot;Both batch_process_fn and batch_size must be provided for batch support.&quot;)
+            self.predict = self._gen_predict_method(batch_process_fn,batch_to_single=True)
+            self.batch_predict = self._gen_predict_method(batch_process_fn,batch=True)
+            self.batch_input = True
+            self.batch_size = batch_size
+        else:
+            raise ValueError(&quot;At least one of process_fn or batch_process_fn must be provided.&quot;)
+
+        self.chassis_build_url = urllib.parse.urljoin(chassis_base_url, routes[&#39;build&#39;])
+        self.chassis_test_url = urllib.parse.urljoin(chassis_base_url, routes[&#39;test&#39;])
+
+    def _gen_predict_method(self,process_fn,batch=False,batch_to_single=False):
+        def predict(_,model_input):
+            if batch_to_single:
+                output = process_fn([model_input])[0]
+            else:
+                output = process_fn(model_input)
+            if batch:
+                return [json.dumps(out,separators=(&quot;,&quot;, &quot;:&quot;),cls=NumpyEncoder).encode() for out in output]
+            else:
+                return json.dumps(output,separators=(&quot;,&quot;, &quot;:&quot;),cls=NumpyEncoder).encode()
+        return predict
+
+    def test(self,test_input):
+        &#39;&#39;&#39;
+        Runs a sample inference test on a single input on chassis model locally
+
+        Args:
+            test_input (Union[str, bytes, BufferedReader]): Single sample input data to test model
+
+        Returns:
+            bytes: raw model predictions returned by `process_fn` method
+
+        Examples:
+        ```python
+        chassis_model = chassis_client.create_model(process_fn=process)
+        sample_filepath = &#39;./sample_data.json&#39;
+        results = chassis_model.test(sample_filepath)
+        ```
+        &#39;&#39;&#39;
+        if isinstance(test_input,_io.BufferedReader):
+            result = self.predict(None,test_input.read())
+        elif isinstance(test_input,bytes):
+            result = self.predict(None,test_input)
+        elif isinstance(test_input,str):
+            if os.path.exists(test_input):
+                result = self.predict(None,open(test_input,&#39;rb&#39;).read())
+            else:
+                result = self.predict(None,bytes(test_input,encoding=&#39;utf8&#39;))
+        else:
+            print(&quot;Invalid input. Must be buffered reader, bytes, valid filepath, or text input.&quot;)
+            return False
+        return result
+
+    def test_batch(self,test_input):
+        &#39;&#39;&#39;
+        Takes a single input file, creates a batch of size `batch_size` defined in `ChassisModel.create_model`, and runs a batch job against chassis model locally if `batch_process_fn` is defined.
+
+        Args:
+            test_input (Union[str, bytes, BufferedReader]): Batch of sample input data to test model
+
+        Returns:
+            bytes: raw model predictions returned by `batch_process_fn` method
+
+        Examples:
+        ```python
+        chassis_model = chassis_client.create_model(process_fn=process)
+        sample_input = sample_filepath = &#39;./sample_data.json&#39;
+        results = chassis_model.test_batch(sample_filepath)
+        ```        
+
+        &#39;&#39;&#39;
+        if not self.batch_input:
+            raise NotImplementedError(&quot;Batch inference not implemented.&quot;)
+
+        if hasattr(self,&#39;batch_predict&#39;):
+            batch_method = self.batch_predict
+        else:
+            batch_method = self.predict
+
+        if isinstance(test_input,_io.BufferedReader):
+            results = batch_method(None,[test_input.read() for _ in range(self.batch_size)])
+        elif isinstance(test_input,bytes):
+            results = batch_method(None,[test_input for _ in range(self.batch_size)])
+        elif isinstance(test_input,str):
+            if os.path.exists(test_input):
+                results = batch_method(None,[open(test_input,&#39;rb&#39;).read() for _ in range(self.batch_size)])
+            else:
+                results = batch_method(None,[bytes(test_input,encoding=&#39;utf8&#39;) for _ in range(self.batch_size)])
+        else:
+            print(&quot;Invalid input. Must be buffered reader, bytes, valid filepath, or text input.&quot;)
+            return False
+        return results
+
+    def test_env(self,test_input_path,conda_env=None,fix_env=True):
+        &#39;&#39;&#39;
+        Runs a sample inference test in new conda environment created on the chassis service side. In other words, a &quot;dry run&quot; of a true chassis job to ensure model code runs within the chassis service.
+
+        **NOTE**: This method is not available in the publicly-hosted service.
+
+        Args:
+            test_input_path (str): Filepath to sample input data
+            conda_env (str): Either filepath to conda.yaml file or dictionary with environment requirements. If not provided, chassis will infer dependency requirements from local environment
+            fix_env (bool): Modifies conda or pip-installable packages into list of dependencies to be installed during the container build
+
+        Returns:
+            Dict: raw model predictions returned by `process_fn` or `batch_process_fn` run from within chassis service
+
+        Examples:
+        ```python
+        chassis_model = chassis_client.create_model(process_fn=process)
+        sample_filepath = &#39;./sample_data.json&#39;
+        results = chassis_model.test_env(sample_filepath)
+        ```        
+
+        &#39;&#39;&#39;
+        model_directory = os.path.join(tempfile.mkdtemp(),CHASSIS_TMP_DIRNAME)
+        mlflow.pyfunc.save_model(path=model_directory, python_model=self, conda_env=conda_env, 
+                                extra_pip_requirements = None if conda_env else [&quot;chassisml=={}&quot;.format(__version__)])
+
+        if fix_env:
+            fix_dependencies(model_directory)
+
+        # Compress all files in model directory to send them as a zip.
+        tmppath = tempfile.mkdtemp()
+        zipdir(model_directory,tmppath,MODEL_ZIP_NAME)
+
+        with open(&#39;{}/{}&#39;.format(tmppath,MODEL_ZIP_NAME),&#39;rb&#39;) as model_f, \
+                open(test_input_path,&#39;rb&#39;) as test_input_f:
+            files = [
+                (&#39;sample_input&#39;, test_input_f),
+                (&#39;model&#39;, model_f)
+            ]
+
+            print(&#39;Starting test job... &#39;, end=&#39;&#39;, flush=True)
+            res = requests.post(self.chassis_test_url, files=files)
+            res.raise_for_status()
+        print(&#39;Ok!&#39;)
+
+        shutil.rmtree(tmppath)
+        shutil.rmtree(model_directory)
+
+        return res.json()
+
+    def save(self,path,conda_env=None,overwrite=False,fix_env=True,gpu=False,arm64=False):
+        &#39;&#39;&#39;
+        Saves a copy of ChassisModel to local filepath
+
+        Args:
+            path (str): Filepath to save chassis model as local MLflow model
+            conda_env (Union[str, dict]): Either filepath to conda.yaml file or dictionary with environment requirements. If not provided, chassis will infer dependency requirements from local environment
+            overwrite (bool): If True, overwrites existing contents of `path` parameter
+            gpu (bool): If True and `arm64` is True, modifies dependencies as needed by chassis for ARM64+GPU support
+            arm64 (bool): If True and `gpu` is True, modifies dependencies as needed by chassis for ARM64+GPU support
+
+        Returns:
+            None: This method does not return an object
+
+        Examples:
+        ```python
+        chassis_model = chassis_client.create_model(process_fn=process)
+        chassis_model.save(&quot;local_model_directory&quot;)
+        ```
+        &#39;&#39;&#39;
+        if overwrite and os.path.exists(path):
+            shutil.rmtree(path)
+        mlflow.pyfunc.save_model(path=path, python_model=self, conda_env=conda_env)
+        if fix_env:
+            fix_dependencies(path)
+        if arm64 and gpu:
+            fix_dependencies_arm_gpu(path)
+
+        print(&quot;Chassis model saved.&quot;)
+
+    def publish(self,model_name,model_version,registry_user,registry_pass,
+                conda_env=None,fix_env=True,gpu=False,arm64=False,
+                modzy_sample_input_path=None,modzy_api_key=None,
+                modzy_url=None,modzy_model_id=None):
+        &#39;&#39;&#39;
+        Executes chassis job, which containerizes model, pushes container image to Docker registry, and optionally deploys model to Modzy
+
+        Args:
+            model_name (str): Model name that serves as model&#39;s name in Modzy and docker registry repository name. **Note**: this string cannot include punctuation
+            model_version (str): Version of model
+            registry_user (str): Docker registry username
+            registry_pass (str): Docker registry password
+            conda_env (Union[str, dict]): Either filepath to conda.yaml file or dictionary with environment requirements. If not provided, chassis will infer dependency requirements from local environment
+            fix_env (bool): Modifies conda or pip-installable packages into list of dependencies to be installed during the container build
+            gpu (bool): If True, builds container image that runs on GPU hardware
+            arm64 (bool): If True, builds container image that runs on ARM64 architecture
+            modzy_sample_input_path (str): Filepath to sample input data. Required to deploy model to Modzy
+            modzy_api_key (str): Valid Modzy API Key
+            modzy_url (str): Valid Modzy instance URL, example: https://my.modzy.com
+            modzy_model_id (str): Existing Modzy model identifier, if requesting new version of existing model instead of new model
+
+        Returns:
+            Dict: Response to Chassis `/build` endpoint
+
+        Examples:
+        ```python
+        # Create Chassisml model
+        chassis_model = chassis_client.create_model(process_fn=process)
+
+        # Define Dockerhub credentials
+        dockerhub_user = &quot;user&quot;
+        dockerhub_pass = &quot;password&quot;
+
+        # Publish model to Docker registry
+        response = chassis_model.publish(
+            model_name=&quot;Chassisml Regression Model&quot;,
+            model_version=&quot;0.0.1&quot;,
+            registry_user=dockerhub_user,
+            registry_pass=dockerhub_pass,
+        )        
+        ```            
+
+        &#39;&#39;&#39;
+
+        if (modzy_sample_input_path or modzy_api_key or modzy_url) and not \
+            (modzy_sample_input_path and modzy_api_key and modzy_url):
+            raise ValueError(&#39;&quot;modzy_sample_input_path&quot;, &quot;modzy_api_key&quot; and &quot;modzy_url&quot; must all be provided to publish to Modzy.&#39;)
+
+        try:
+            model_directory = os.path.join(tempfile.mkdtemp(),CHASSIS_TMP_DIRNAME)
+            mlflow.pyfunc.save_model(path=model_directory, python_model=self, conda_env=conda_env, 
+                                    extra_pip_requirements = None if conda_env else [&quot;chassisml=={}&quot;.format(__version__)])
+
+            if fix_env:
+                fix_dependencies(model_directory)
+
+            if arm64:
+                warnings.warn(&quot;ARM64 support is experimental, KServe currently not supported and builds may take a while or fail depending on your required dependencies&quot;)
+                if gpu:
+                    warnings.warn(&quot;ARM64+GPU support tested on Nvidia Jetson Nano&quot;)
+                    fix_dependencies_arm_gpu(model_directory)
+
+            # Compress all files in model directory to send them as a zip.
+            tmppath = tempfile.mkdtemp()
+            zipdir(model_directory,tmppath,MODEL_ZIP_NAME)
+
+            image_name = &quot;-&quot;.join(model_name.translate(str.maketrans(&#39;&#39;, &#39;&#39;, string.punctuation)).lower().split())
+            image_data = {
+                &#39;name&#39;: &quot;{}/{}&quot;.format(registry_user,&quot;{}:{}&quot;.format(image_name,model_version)),
+                &#39;model_name&#39;: model_name,
+                &#39;model_path&#39;: tmppath,
+                &#39;registry_auth&#39;: base64.b64encode(&quot;{}:{}&quot;.format(registry_user,registry_pass).encode(&quot;utf-8&quot;)).decode(&quot;utf-8&quot;),
+                &#39;publish&#39;: True,
+                &#39;gpu&#39;: gpu,
+                &#39;arm64&#39;: arm64
+            }
+
+            if modzy_sample_input_path and modzy_api_key and check_modzy_url(modzy_url):
+                modzy_metadata_path = os.path.join(tmppath,MODZY_YAML_NAME)
+                modzy_data = {
+                    &#39;metadata_path&#39;: modzy_metadata_path,
+                    &#39;sample_input_path&#39;: modzy_sample_input_path,
+                    &#39;deploy&#39;: True,
+                    &#39;api_key&#39;: modzy_api_key,
+                    &#39;modzy_model_id&#39;: modzy_model_id,
+                    &#39;modzy_url&#39;: modzy_url if not modzy_url.endswith(&#39;/api&#39;) else modzy_url[:-4]
+                }
+                write_modzy_yaml(model_name,model_version,modzy_metadata_path,batch_size=self.batch_size,gpu=gpu)
+            else:
+                modzy_data = {}
+
+            with open(&#39;{}/{}&#39;.format(tmppath,MODEL_ZIP_NAME),&#39;rb&#39;) as f:
+                files = [
+                    (&#39;image_data&#39;, json.dumps(image_data)),
+                    (&#39;modzy_data&#39;, json.dumps(modzy_data)),
+                    (&#39;model&#39;, f)
+                ]
+                file_pointers = []
+                for key, file_key in [(&#39;metadata_path&#39;, &#39;modzy_metadata_data&#39;),
+                                (&#39;sample_input_path&#39;, &#39;modzy_sample_input_data&#39;)]:
+                    value = modzy_data.get(key)
+                    if value:
+                        fp = open(value, &#39;rb&#39;)
+                        file_pointers.append(fp)  
+                        files.append((file_key, fp))
+
+                print(&#39;Starting build job... &#39;, end=&#39;&#39;, flush=True)
+                res = requests.post(self.chassis_build_url, files=files)
+                res.raise_for_status()
+            print(&#39;Ok!&#39;)
+
+            for fp in file_pointers:
+                fp.close()
+
+            shutil.rmtree(tmppath)
+            shutil.rmtree(model_directory)
+
+            return res.json()
+
+        except Exception as e:
+            if os.path.exists(tmppath):
+                shutil.rmtree(tmppath)
+            if os.path.exists(model_directory):
+                shutil.rmtree(model_directory)
+            raise(e)
+
+        
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+publish(self, model_name, model_version, registry_user, registry_pass, conda_env=None, fix_env=True, gpu=False, arm64=False, modzy_sample_input_path=None, modzy_api_key=None, modzy_url=None, modzy_model_id=None)
+
+
+
+
+    
+
+      Executes chassis job, which containerizes model, pushes container image to Docker registry, and optionally deploys model to Modzy
+
+Parameters:
+
+  
+    
+      Name
+      Type
+      Description
+      Default
+    
+  
+  
+      
+        model_name
+        str
+        Model name that serves as model's name in Modzy and docker registry repository name. Note: this string cannot include punctuation
+        required
+      
+      
+        model_version
+        str
+        Version of model
+        required
+      
+      
+        registry_user
+        str
+        Docker registry username
+        required
+      
+      
+        registry_pass
+        str
+        Docker registry password
+        required
+      
+      
+        conda_env
+        Union[str, dict]
+        Either filepath to conda.yaml file or dictionary with environment requirements. If not provided, chassis will infer dependency requirements from local environment
+        None
+      
+      
+        fix_env
+        bool
+        Modifies conda or pip-installable packages into list of dependencies to be installed during the container build
+        True
+      
+      
+        gpu
+        bool
+        If True, builds container image that runs on GPU hardware
+        False
+      
+      
+        arm64
+        bool
+        If True, builds container image that runs on ARM64 architecture
+        False
+      
+      
+        modzy_sample_input_path
+        str
+        Filepath to sample input data. Required to deploy model to Modzy
+        None
+      
+      
+        modzy_api_key
+        str
+        Valid Modzy API Key
+        None
+      
+      
+        modzy_url
+        str
+        Valid Modzy instance URL, example: https://my.modzy.com
+        None
+      
+      
+        modzy_model_id
+        str
+        Existing Modzy model identifier, if requesting new version of existing model instead of new model
+        None
+      
+  
+
+Returns:
+
+  
+    
+      Type
+      Description
+    
+  
+  
+    
+      Dict
+      Response to Chassis /build endpoint
+    
+  
+
+Examples:
+    
+      # Create Chassisml model
+chassis_model = chassis_client.create_model(process_fn=process)
+
+# Define Dockerhub credentials
+dockerhub_user = &quot;user&quot;
+dockerhub_pass = &quot;password&quot;
+
+# Publish model to Docker registry
+response = chassis_model.publish(
+    model_name=&quot;Chassisml Regression Model&quot;,
+    model_version=&quot;0.0.1&quot;,
+    registry_user=dockerhub_user,
+    registry_pass=dockerhub_pass,
+)        
+
+
+        
+          Source code in chassisml_sdk/chassisml/chassisml.py
+          def publish(self,model_name,model_version,registry_user,registry_pass,
+            conda_env=None,fix_env=True,gpu=False,arm64=False,
+            modzy_sample_input_path=None,modzy_api_key=None,
+            modzy_url=None,modzy_model_id=None):
+    &#39;&#39;&#39;
+    Executes chassis job, which containerizes model, pushes container image to Docker registry, and optionally deploys model to Modzy
+
+    Args:
+        model_name (str): Model name that serves as model&#39;s name in Modzy and docker registry repository name. **Note**: this string cannot include punctuation
+        model_version (str): Version of model
+        registry_user (str): Docker registry username
+        registry_pass (str): Docker registry password
+        conda_env (Union[str, dict]): Either filepath to conda.yaml file or dictionary with environment requirements. If not provided, chassis will infer dependency requirements from local environment
+        fix_env (bool): Modifies conda or pip-installable packages into list of dependencies to be installed during the container build
+        gpu (bool): If True, builds container image that runs on GPU hardware
+        arm64 (bool): If True, builds container image that runs on ARM64 architecture
+        modzy_sample_input_path (str): Filepath to sample input data. Required to deploy model to Modzy
+        modzy_api_key (str): Valid Modzy API Key
+        modzy_url (str): Valid Modzy instance URL, example: https://my.modzy.com
+        modzy_model_id (str): Existing Modzy model identifier, if requesting new version of existing model instead of new model
+
+    Returns:
+        Dict: Response to Chassis `/build` endpoint
+
+    Examples:
+    ```python
+    # Create Chassisml model
+    chassis_model = chassis_client.create_model(process_fn=process)
+
+    # Define Dockerhub credentials
+    dockerhub_user = &quot;user&quot;
+    dockerhub_pass = &quot;password&quot;
+
+    # Publish model to Docker registry
+    response = chassis_model.publish(
+        model_name=&quot;Chassisml Regression Model&quot;,
+        model_version=&quot;0.0.1&quot;,
+        registry_user=dockerhub_user,
+        registry_pass=dockerhub_pass,
+    )        
+    ```            
+
+    &#39;&#39;&#39;
+
+    if (modzy_sample_input_path or modzy_api_key or modzy_url) and not \
+        (modzy_sample_input_path and modzy_api_key and modzy_url):
+        raise ValueError(&#39;&quot;modzy_sample_input_path&quot;, &quot;modzy_api_key&quot; and &quot;modzy_url&quot; must all be provided to publish to Modzy.&#39;)
+
+    try:
+        model_directory = os.path.join(tempfile.mkdtemp(),CHASSIS_TMP_DIRNAME)
+        mlflow.pyfunc.save_model(path=model_directory, python_model=self, conda_env=conda_env, 
+                                extra_pip_requirements = None if conda_env else [&quot;chassisml=={}&quot;.format(__version__)])
+
+        if fix_env:
+            fix_dependencies(model_directory)
+
+        if arm64:
+            warnings.warn(&quot;ARM64 support is experimental, KServe currently not supported and builds may take a while or fail depending on your required dependencies&quot;)
+            if gpu:
+                warnings.warn(&quot;ARM64+GPU support tested on Nvidia Jetson Nano&quot;)
+                fix_dependencies_arm_gpu(model_directory)
+
+        # Compress all files in model directory to send them as a zip.
+        tmppath = tempfile.mkdtemp()
+        zipdir(model_directory,tmppath,MODEL_ZIP_NAME)
+
+        image_name = &quot;-&quot;.join(model_name.translate(str.maketrans(&#39;&#39;, &#39;&#39;, string.punctuation)).lower().split())
+        image_data = {
+            &#39;name&#39;: &quot;{}/{}&quot;.format(registry_user,&quot;{}:{}&quot;.format(image_name,model_version)),
+            &#39;model_name&#39;: model_name,
+            &#39;model_path&#39;: tmppath,
+            &#39;registry_auth&#39;: base64.b64encode(&quot;{}:{}&quot;.format(registry_user,registry_pass).encode(&quot;utf-8&quot;)).decode(&quot;utf-8&quot;),
+            &#39;publish&#39;: True,
+            &#39;gpu&#39;: gpu,
+            &#39;arm64&#39;: arm64
+        }
+
+        if modzy_sample_input_path and modzy_api_key and check_modzy_url(modzy_url):
+            modzy_metadata_path = os.path.join(tmppath,MODZY_YAML_NAME)
+            modzy_data = {
+                &#39;metadata_path&#39;: modzy_metadata_path,
+                &#39;sample_input_path&#39;: modzy_sample_input_path,
+                &#39;deploy&#39;: True,
+                &#39;api_key&#39;: modzy_api_key,
+                &#39;modzy_model_id&#39;: modzy_model_id,
+                &#39;modzy_url&#39;: modzy_url if not modzy_url.endswith(&#39;/api&#39;) else modzy_url[:-4]
+            }
+            write_modzy_yaml(model_name,model_version,modzy_metadata_path,batch_size=self.batch_size,gpu=gpu)
+        else:
+            modzy_data = {}
+
+        with open(&#39;{}/{}&#39;.format(tmppath,MODEL_ZIP_NAME),&#39;rb&#39;) as f:
+            files = [
+                (&#39;image_data&#39;, json.dumps(image_data)),
+                (&#39;modzy_data&#39;, json.dumps(modzy_data)),
+                (&#39;model&#39;, f)
+            ]
+            file_pointers = []
+            for key, file_key in [(&#39;metadata_path&#39;, &#39;modzy_metadata_data&#39;),
+                            (&#39;sample_input_path&#39;, &#39;modzy_sample_input_data&#39;)]:
+                value = modzy_data.get(key)
+                if value:
+                    fp = open(value, &#39;rb&#39;)
+                    file_pointers.append(fp)  
+                    files.append((file_key, fp))
+
+            print(&#39;Starting build job... &#39;, end=&#39;&#39;, flush=True)
+            res = requests.post(self.chassis_build_url, files=files)
+            res.raise_for_status()
+        print(&#39;Ok!&#39;)
+
+        for fp in file_pointers:
+            fp.close()
+
+        shutil.rmtree(tmppath)
+        shutil.rmtree(model_directory)
+
+        return res.json()
+
+    except Exception as e:
+        if os.path.exists(tmppath):
+            shutil.rmtree(tmppath)
+        if os.path.exists(model_directory):
+            shutil.rmtree(model_directory)
+        raise(e)
+
+        
+    
+
+  
+
+
+
+  
+
+
+
+
+save(self, path, conda_env=None, overwrite=False, fix_env=True, gpu=False, arm64=False)
+
+
+
+
+    
+
+      Saves a copy of ChassisModel to local filepath
+
+Parameters:
+
+  
+    
+      Name
+      Type
+      Description
+      Default
+    
+  
+  
+      
+        path
+        str
+        Filepath to save chassis model as local MLflow model
+        required
+      
+      
+        conda_env
+        Union[str, dict]
+        Either filepath to conda.yaml file or dictionary with environment requirements. If not provided, chassis will infer dependency requirements from local environment
+        None
+      
+      
+        overwrite
+        bool
+        If True, overwrites existing contents of path parameter
+        False
+      
+      
+        gpu
+        bool
+        If True and arm64 is True, modifies dependencies as needed by chassis for ARM64+GPU support
+        False
+      
+      
+        arm64
+        bool
+        If True and gpu is True, modifies dependencies as needed by chassis for ARM64+GPU support
+        False
+      
+  
+
+Returns:
+
+  
+    
+      Type
+      Description
+    
+  
+  
+    
+      None
+      This method does not return an object
+    
+  
+
+Examples:
+    
+      chassis_model = chassis_client.create_model(process_fn=process)
+chassis_model.save(&quot;local_model_directory&quot;)
+
+
+        
+          Source code in chassisml_sdk/chassisml/chassisml.py
+          def save(self,path,conda_env=None,overwrite=False,fix_env=True,gpu=False,arm64=False):
+    &#39;&#39;&#39;
+    Saves a copy of ChassisModel to local filepath
+
+    Args:
+        path (str): Filepath to save chassis model as local MLflow model
+        conda_env (Union[str, dict]): Either filepath to conda.yaml file or dictionary with environment requirements. If not provided, chassis will infer dependency requirements from local environment
+        overwrite (bool): If True, overwrites existing contents of `path` parameter
+        gpu (bool): If True and `arm64` is True, modifies dependencies as needed by chassis for ARM64+GPU support
+        arm64 (bool): If True and `gpu` is True, modifies dependencies as needed by chassis for ARM64+GPU support
+
+    Returns:
+        None: This method does not return an object
+
+    Examples:
+    ```python
+    chassis_model = chassis_client.create_model(process_fn=process)
+    chassis_model.save(&quot;local_model_directory&quot;)
+    ```
+    &#39;&#39;&#39;
+    if overwrite and os.path.exists(path):
+        shutil.rmtree(path)
+    mlflow.pyfunc.save_model(path=path, python_model=self, conda_env=conda_env)
+    if fix_env:
+        fix_dependencies(path)
+    if arm64 and gpu:
+        fix_dependencies_arm_gpu(path)
+
+    print(&quot;Chassis model saved.&quot;)
+
+        
+    
+
+  
+
+
+
+  
+
+
+
+
+test(self, test_input)
+
+
+
+
+    
+
+      Runs a sample inference test on a single input on chassis model locally
+
+Parameters:
+
+  
+    
+      Name
+      Type
+      Description
+      Default
+    
+  
+  
+      
+        test_input
+        Union[str, bytes, BufferedReader]
+        Single sample input data to test model
+        required
+      
+  
+
+Returns:
+
+  
+    
+      Type
+      Description
+    
+  
+  
+    
+      bytes
+      raw model predictions returned by process_fn method
+    
+  
+
+Examples:
+    
+      chassis_model = chassis_client.create_model(process_fn=process)
+sample_filepath = &#39;./sample_data.json&#39;
+results = chassis_model.test(sample_filepath)
+
+
+        
+          Source code in chassisml_sdk/chassisml/chassisml.py
+          def test(self,test_input):
+    &#39;&#39;&#39;
+    Runs a sample inference test on a single input on chassis model locally
+
+    Args:
+        test_input (Union[str, bytes, BufferedReader]): Single sample input data to test model
+
+    Returns:
+        bytes: raw model predictions returned by `process_fn` method
+
+    Examples:
+    ```python
+    chassis_model = chassis_client.create_model(process_fn=process)
+    sample_filepath = &#39;./sample_data.json&#39;
+    results = chassis_model.test(sample_filepath)
+    ```
+    &#39;&#39;&#39;
+    if isinstance(test_input,_io.BufferedReader):
+        result = self.predict(None,test_input.read())
+    elif isinstance(test_input,bytes):
+        result = self.predict(None,test_input)
+    elif isinstance(test_input,str):
+        if os.path.exists(test_input):
+            result = self.predict(None,open(test_input,&#39;rb&#39;).read())
+        else:
+            result = self.predict(None,bytes(test_input,encoding=&#39;utf8&#39;))
+    else:
+        print(&quot;Invalid input. Must be buffered reader, bytes, valid filepath, or text input.&quot;)
+        return False
+    return result
+
+        
+    
+
+  
+
+
+
+  
+
+
+
+
+test_batch(self, test_input)
+
+
+
+
+    
+
+      Takes a single input file, creates a batch of size batch_size defined in ChassisModel.create_model, and runs a batch job against chassis model locally if batch_process_fn is defined.
+
+Parameters:
+
+  
+    
+      Name
+      Type
+      Description
+      Default
+    
+  
+  
+      
+        test_input
+        Union[str, bytes, BufferedReader]
+        Batch of sample input data to test model
+        required
+      
+  
+
+Returns:
+
+  
+    
+      Type
+      Description
+    
+  
+  
+    
+      bytes
+      raw model predictions returned by batch_process_fn method
+    
+  
+
+Examples:
+    
+      chassis_model = chassis_client.create_model(process_fn=process)
+sample_input = sample_filepath = &#39;./sample_data.json&#39;
+results = chassis_model.test_batch(sample_filepath)
+
+
+        
+          Source code in chassisml_sdk/chassisml/chassisml.py
+          def test_batch(self,test_input):
+    &#39;&#39;&#39;
+    Takes a single input file, creates a batch of size `batch_size` defined in `ChassisModel.create_model`, and runs a batch job against chassis model locally if `batch_process_fn` is defined.
+
+    Args:
+        test_input (Union[str, bytes, BufferedReader]): Batch of sample input data to test model
+
+    Returns:
+        bytes: raw model predictions returned by `batch_process_fn` method
+
+    Examples:
+    ```python
+    chassis_model = chassis_client.create_model(process_fn=process)
+    sample_input = sample_filepath = &#39;./sample_data.json&#39;
+    results = chassis_model.test_batch(sample_filepath)
+    ```        
+
+    &#39;&#39;&#39;
+    if not self.batch_input:
+        raise NotImplementedError(&quot;Batch inference not implemented.&quot;)
+
+    if hasattr(self,&#39;batch_predict&#39;):
+        batch_method = self.batch_predict
+    else:
+        batch_method = self.predict
+
+    if isinstance(test_input,_io.BufferedReader):
+        results = batch_method(None,[test_input.read() for _ in range(self.batch_size)])
+    elif isinstance(test_input,bytes):
+        results = batch_method(None,[test_input for _ in range(self.batch_size)])
+    elif isinstance(test_input,str):
+        if os.path.exists(test_input):
+            results = batch_method(None,[open(test_input,&#39;rb&#39;).read() for _ in range(self.batch_size)])
+        else:
+            results = batch_method(None,[bytes(test_input,encoding=&#39;utf8&#39;) for _ in range(self.batch_size)])
+    else:
+        print(&quot;Invalid input. Must be buffered reader, bytes, valid filepath, or text input.&quot;)
+        return False
+    return results
+
+        
+    
+
+  
+
+
+
+  
+
+
+
+
+test_env(self, test_input_path, conda_env=None, fix_env=True)
+
+
+
+
+    
+
+      Runs a sample inference test in new conda environment created on the chassis service side. In other words, a "dry run" of a true chassis job to ensure model code runs within the chassis service.
+NOTE: This method is not available in the publicly-hosted service.
+
+Parameters:
+
+  
+    
+      Name
+      Type
+      Description
+      Default
+    
+  
+  
+      
+        test_input_path
+        str
+        Filepath to sample input data
+        required
+      
+      
+        conda_env
+        str
+        Either filepath to conda.yaml file or dictionary with environment requirements. If not provided, chassis will infer dependency requirements from local environment
+        None
+      
+      
+        fix_env
+        bool
+        Modifies conda or pip-installable packages into list of dependencies to be installed during the container build
+        True
+      
+  
+
+Returns:
+
+  
+    
+      Type
+      Description
+    
+  
+  
+    
+      Dict
+      raw model predictions returned by process_fn or batch_process_fn run from within chassis service
+    
+  
+
+Examples:
+    
+      chassis_model = chassis_client.create_model(process_fn=process)
+sample_filepath = &#39;./sample_data.json&#39;
+results = chassis_model.test_env(sample_filepath)
+
+
+        
+          Source code in chassisml_sdk/chassisml/chassisml.py
+          def test_env(self,test_input_path,conda_env=None,fix_env=True):
+    &#39;&#39;&#39;
+    Runs a sample inference test in new conda environment created on the chassis service side. In other words, a &quot;dry run&quot; of a true chassis job to ensure model code runs within the chassis service.
+
+    **NOTE**: This method is not available in the publicly-hosted service.
+
+    Args:
+        test_input_path (str): Filepath to sample input data
+        conda_env (str): Either filepath to conda.yaml file or dictionary with environment requirements. If not provided, chassis will infer dependency requirements from local environment
+        fix_env (bool): Modifies conda or pip-installable packages into list of dependencies to be installed during the container build
+
+    Returns:
+        Dict: raw model predictions returned by `process_fn` or `batch_process_fn` run from within chassis service
+
+    Examples:
+    ```python
+    chassis_model = chassis_client.create_model(process_fn=process)
+    sample_filepath = &#39;./sample_data.json&#39;
+    results = chassis_model.test_env(sample_filepath)
+    ```        
+
+    &#39;&#39;&#39;
+    model_directory = os.path.join(tempfile.mkdtemp(),CHASSIS_TMP_DIRNAME)
+    mlflow.pyfunc.save_model(path=model_directory, python_model=self, conda_env=conda_env, 
+                            extra_pip_requirements = None if conda_env else [&quot;chassisml=={}&quot;.format(__version__)])
+
+    if fix_env:
+        fix_dependencies(model_directory)
+
+    # Compress all files in model directory to send them as a zip.
+    tmppath = tempfile.mkdtemp()
+    zipdir(model_directory,tmppath,MODEL_ZIP_NAME)
+
+    with open(&#39;{}/{}&#39;.format(tmppath,MODEL_ZIP_NAME),&#39;rb&#39;) as model_f, \
+            open(test_input_path,&#39;rb&#39;) as test_input_f:
+        files = [
+            (&#39;sample_input&#39;, test_input_f),
+            (&#39;model&#39;, model_f)
+        ]
+
+        print(&#39;Starting test job... &#39;, end=&#39;&#39;, flush=True)
+        res = requests.post(self.chassis_test_url, files=files)
+        res.raise_for_status()
+    print(&#39;Ok!&#39;)
+
+    shutil.rmtree(tmppath)
+    shutil.rmtree(model_directory)
+
+    return res.json()
+
+        
+    
+
+  
+
+
+
+
+
+  
+
+    
+
+  
+
+
+
+
+
+
+
+  
+
+    
+
+  
+
+/pip install chassisml:import chassisml
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chassisml_sdk.chassisml.chassisml.ChassisClient.test_OMI_compliance" class="md-nav__link">
     test_OMI_compliance()
   </a>
   
@@ -766,7 +3022,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#chassisml-sdk.chassisml.chassisml.ChassisModel" class="md-nav__link">
+  <a href="#chassisml_sdk.chassisml.chassisml.ChassisModel" class="md-nav__link">
     ChassisModel
   </a>
   
@@ -774,35 +3030,35 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#chassisml-sdk.chassisml.chassisml.ChassisModel.publish" class="md-nav__link">
+  <a href="#chassisml_sdk.chassisml.chassisml.ChassisModel.publish" class="md-nav__link">
     publish()
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#chassisml-sdk.chassisml.chassisml.ChassisModel.save" class="md-nav__link">
+  <a href="#chassisml_sdk.chassisml.chassisml.ChassisModel.save" class="md-nav__link">
     save()
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#chassisml-sdk.chassisml.chassisml.ChassisModel.test" class="md-nav__link">
+  <a href="#chassisml_sdk.chassisml.chassisml.ChassisModel.test" class="md-nav__link">
     test()
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#chassisml-sdk.chassisml.chassisml.ChassisModel.test_batch" class="md-nav__link">
+  <a href="#chassisml_sdk.chassisml.chassisml.ChassisModel.test_batch" class="md-nav__link">
     test_batch()
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#chassisml-sdk.chassisml.chassisml.ChassisModel.test_env" class="md-nav__link">
+  <a href="#chassisml_sdk.chassisml.chassisml.ChassisModel.test_env" class="md-nav__link">
     test_env()
   </a>
   
@@ -960,7 +3216,7 @@
             <article class="md-content__inner md-typeset">
               
                 
-  <a href="https://github.com/modzy/chassis/edit/main/docs/docs/chassisml-sdk-reference.md" title="Edit this page" class="md-content__button md-icon">
+  <a href="https://github.com/modzy/chassis/edit/main/docs/docs/chassisml_sdk-reference.md" title="Edit this page" class="md-content__button md-icon">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
   </a>
 
@@ -1004,7 +3260,7 @@
 
 
 
-<h2 id="chassisml-sdk.chassisml.chassisml.ChassisClient" class="doc doc-heading">
+<h2 id="chassisml_sdk.chassisml.chassisml.ChassisClient" class="doc doc-heading">
         <code>
 ChassisClient        </code>
 
@@ -1035,7 +3291,7 @@ ChassisClient        </code>
   </tbody>
 </table>
         <details class="quote">
-          <summary>Source code in <code>chassisml-sdk/chassisml/chassisml.py</code></summary>
+          <summary>Source code in <code>chassisml_sdk/chassisml/chassisml.py</code></summary>
           <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">class</span> <span class="nc">ChassisClient</span><span class="p">:</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="sd">&quot;&quot;&quot;The Chassis Client object.</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
@@ -1277,6 +3533,37 @@ ChassisClient        </code>
 <a id="__codelineno-0-239" name="__codelineno-0-239" href="#__codelineno-0-239"></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Both batch_process_fn and batch_size must be provided for batch support.&quot;</span><span class="p">)</span>
 <a id="__codelineno-0-240" name="__codelineno-0-240" href="#__codelineno-0-240"></a>
 <a id="__codelineno-0-241" name="__codelineno-0-241" href="#__codelineno-0-241"></a>        <span class="k">return</span> <span class="n">ChassisModel</span><span class="p">(</span><span class="n">process_fn</span><span class="p">,</span><span class="n">batch_process_fn</span><span class="p">,</span><span class="n">batch_size</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="p">)</span>
+<a id="__codelineno-0-242" name="__codelineno-0-242" href="#__codelineno-0-242"></a>
+<a id="__codelineno-0-243" name="__codelineno-0-243" href="#__codelineno-0-243"></a>    <span class="k">def</span> <span class="nf">run_inference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">,</span> <span class="n">container_host</span><span class="o">=</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="n">container_port</span><span class="o">=</span><span class="mi">45000</span><span class="p">):</span>
+<a id="__codelineno-0-244" name="__codelineno-0-244" href="#__codelineno-0-244"></a>        <span class="sd">&#39;&#39;&#39;</span>
+<a id="__codelineno-0-245" name="__codelineno-0-245" href="#__codelineno-0-245"></a><span class="sd">                This is the method you use to submit data to a container chassis has built for inference.</span>
+<a id="__codelineno-0-246" name="__codelineno-0-246" href="#__codelineno-0-246"></a><span class="sd">                it assumes the container has been downloaded from dockerhub and is running somewhere you have access to</span>
+<a id="__codelineno-0-247" name="__codelineno-0-247" href="#__codelineno-0-247"></a>
+<a id="__codelineno-0-248" name="__codelineno-0-248" href="#__codelineno-0-248"></a><span class="sd">                Args:</span>
+<a id="__codelineno-0-249" name="__codelineno-0-249" href="#__codelineno-0-249"></a><span class="sd">                    input_data (json): dictionary of the form {&quot;input&quot;: &lt;binary respresentaion of your data&gt;}</span>
+<a id="__codelineno-0-250" name="__codelineno-0-250" href="#__codelineno-0-250"></a><span class="sd">                    container_host (str): URL where container is running</span>
+<a id="__codelineno-0-251" name="__codelineno-0-251" href="#__codelineno-0-251"></a><span class="sd">                    container_port (int): port that forwards to container&#39;s grpc server</span>
+<a id="__codelineno-0-252" name="__codelineno-0-252" href="#__codelineno-0-252"></a>
+<a id="__codelineno-0-253" name="__codelineno-0-253" href="#__codelineno-0-253"></a><span class="sd">                Examples:</span>
+<a id="__codelineno-0-254" name="__codelineno-0-254" href="#__codelineno-0-254"></a><span class="sd">                # assume that the container is running locally, and that it was started with this docker command</span>
+<a id="__codelineno-0-255" name="__codelineno-0-255" href="#__codelineno-0-255"></a><span class="sd">                #  docker run -it -p 5001:45000 &lt;docker_uname&gt;/&lt;container_name&gt;:&lt;tag_id&gt;</span>
+<a id="__codelineno-0-256" name="__codelineno-0-256" href="#__codelineno-0-256"></a>
+<a id="__codelineno-0-257" name="__codelineno-0-257" href="#__codelineno-0-257"></a><span class="sd">                from chassisml_sdk.chassisml import chassisml</span>
+<a id="__codelineno-0-258" name="__codelineno-0-258" href="#__codelineno-0-258"></a>
+<a id="__codelineno-0-259" name="__codelineno-0-259" href="#__codelineno-0-259"></a><span class="sd">                client = chassisml.ChassisClient()</span>
+<a id="__codelineno-0-260" name="__codelineno-0-260" href="#__codelineno-0-260"></a>
+<a id="__codelineno-0-261" name="__codelineno-0-261" href="#__codelineno-0-261"></a><span class="sd">                input_data = {&quot;input&quot;: b&quot;[[0.0, 0.0, 0.0, 1.0, 12.0, 6.0, 0.0, 0.0, 0.0, 0.0, 0.0, 11.0, 15.0, 2.0, 0.0, 0.0, 0.0, 0.0, 8.0, 16.0, 6.0, 1.0, 2.0, 0.0, 0.0, 4.0, 16.0, 9.0, 1.0, 15.0, 9.0, 0.0, 0.0, 13.0, 15.0, 6.0, 10.0, 16.0, 6.0, 0.0, 0.0, 12.0, 16.0, 16.0, 16.0, 16.0, 1.0, 0.0, 0.0, 1.0, 7.0, 4.0, 14.0, 13.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 14.0, 9.0, 0.0, 0.0], [0.0, 0.0, 8.0, 16.0, 3.0, 0.0, 1.0, 0.0, 0.0, 0.0, 16.0, 14.0, 5.0, 14.0, 12.0, 0.0, 0.0, 0.0, 8.0, 16.0, 16.0, 9.0, 0.0, 0.0, 0.0, 0.0, 3.0, 16.0, 14.0, 1.0, 0.0, 0.0, 0.0, 0.0, 12.0, 16.0, 16.0, 2.0, 0.0, 0.0, 0.0, 0.0, 16.0, 11.0, 16.0, 4.0, 0.0, 0.0, 0.0, 3.0, 16.0, 16.0, 16.0, 6.0, 0.0, 0.0, 0.0, 0.0, 10.0, 16.0, 10.0, 1.0, 0.0, 0.0], [0.0, 0.0, 5.0, 12.0, 8.0, 0.0, 1.0, 0.0, 0.0, 0.0, 11.0, 16.0, 5.0, 13.0, 6.0, 0.0, 0.0, 0.0, 2.0, 15.0, 16.0, 12.0, 1.0, 0.0, 0.0, 0.0, 0.0, 10.0, 16.0, 6.0, 0.0, 0.0, 0.0, 0.0, 1.0, 15.0, 16.0, 7.0, 0.0, 0.0, 0.0, 0.0, 8.0, 16.0, 16.0, 11.0, 0.0, 0.0, 0.0, 0.0, 11.0, 16.0, 16.0, 9.0, 0.0, 0.0, 0.0, 0.0, 6.0, 12.0, 12.0, 3.0, 0.0, 0.0], [0.0, 0.0, 0.0, 3.0, 15.0, 4.0, 0.0, 0.0, 0.0, 0.0, 4.0, 16.0, 12.0, 0.0, 0.0, 0.0, 0.0, 0.0, 12.0, 15.0, 3.0, 4.0, 3.0, 0.0, 0.0, 7.0, 16.0, 5.0, 3.0, 15.0, 8.0, 0.0, 0.0, 13.0, 16.0, 13.0, 15.0, 16.0, 2.0, 0.0, 0.0, 12.0, 16.0, 16.0, 16.0, 13.0, 0.0, 0.0, 0.0, 0.0, 4.0, 5.0, 16.0, 8.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 16.0, 4.0, 0.0, 0.0], [0.0, 0.0, 10.0, 14.0, 8.0, 1.0, 0.0, 0.0, 0.0, 2.0, 16.0, 14.0, 6.0, 1.0, 0.0, 0.0, 0.0, 0.0, 15.0, 15.0, 8.0, 15.0, 0.0, 0.0, 0.0, 0.0, 5.0, 16.0, 16.0, 10.0, 0.0, 0.0, 0.0, 0.0, 12.0, 15.0, 15.0, 12.0, 0.0, 0.0, 0.0, 4.0, 16.0, 6.0, 4.0, 16.0, 6.0, 0.0, 0.0, 8.0, 16.0, 10.0, 8.0, 16.0, 8.0, 0.0, 0.0, 1.0, 8.0, 12.0, 14.0, 12.0, 1.0, 0.0]]&quot;}</span>
+<a id="__codelineno-0-262" name="__codelineno-0-262" href="#__codelineno-0-262"></a><span class="sd">                input_list = [input_data for _ in range(30)]</span>
+<a id="__codelineno-0-263" name="__codelineno-0-263" href="#__codelineno-0-263"></a>
+<a id="__codelineno-0-264" name="__codelineno-0-264" href="#__codelineno-0-264"></a><span class="sd">                print(&quot;single input&quot;)</span>
+<a id="__codelineno-0-265" name="__codelineno-0-265" href="#__codelineno-0-265"></a><span class="sd">                print(client.run_inference(input_data, container_host=&quot;localhost&quot;, container_port=5001))</span>
+<a id="__codelineno-0-266" name="__codelineno-0-266" href="#__codelineno-0-266"></a><span class="sd">                print(&quot;multi inputs&quot;)</span>
+<a id="__codelineno-0-267" name="__codelineno-0-267" href="#__codelineno-0-267"></a><span class="sd">                results = client.run_inference(input_list, container_host=&quot;localhost&quot;, container_port=5002)</span>
+<a id="__codelineno-0-268" name="__codelineno-0-268" href="#__codelineno-0-268"></a><span class="sd">                for x in results:</span>
+<a id="__codelineno-0-269" name="__codelineno-0-269" href="#__codelineno-0-269"></a><span class="sd">                    print(x)</span>
+<a id="__codelineno-0-270" name="__codelineno-0-270" href="#__codelineno-0-270"></a><span class="sd">        &#39;&#39;&#39;</span>
+<a id="__codelineno-0-271" name="__codelineno-0-271" href="#__codelineno-0-271"></a>        <span class="n">model_client</span><span class="o">.</span><span class="n">override_server_URL</span><span class="p">(</span><span class="n">container_host</span><span class="p">,</span> <span class="n">container_port</span><span class="p">)</span>
+<a id="__codelineno-0-272" name="__codelineno-0-272" href="#__codelineno-0-272"></a>        <span class="k">return</span> <span class="n">model_client</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">input_data</span><span class="p">)</span>
 </code></pre></div>
         </details>
 
@@ -1297,7 +3584,7 @@ ChassisClient        </code>
 
 
 
-<h3 id="chassisml-sdk.chassisml.chassisml.ChassisClient.block_until_complete" class="doc doc-heading">
+<h3 id="chassisml_sdk.chassisml.chassisml.ChassisClient.block_until_complete" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">block_until_complete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">poll_interval</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span></code>
 
 
@@ -1375,7 +3662,7 @@ ChassisClient        </code>
 </code></pre></div>
 
         <details class="quote">
-          <summary>Source code in <code>chassisml-sdk/chassisml/chassisml.py</code></summary>
+          <summary>Source code in <code>chassisml_sdk/chassisml/chassisml.py</code></summary>
           <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">def</span> <span class="nf">block_until_complete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">job_id</span><span class="p">,</span><span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">poll_interval</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="sd">&#39;&#39;&#39;</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="sd">    Blocks until Chassis job is complete or timeout is reached. Polls Chassis job API until a result is marked finished.</span>
@@ -1431,7 +3718,7 @@ ChassisClient        </code>
 
 
 
-<h3 id="chassisml-sdk.chassisml.chassisml.ChassisClient.create_model" class="doc doc-heading">
+<h3 id="chassisml_sdk.chassisml.chassisml.ChassisClient.create_model" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">create_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">process_fn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">batch_process_fn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 
@@ -1533,7 +3820,7 @@ ChassisClient        </code>
 </code></pre></div></p>
 
         <details class="quote">
-          <summary>Source code in <code>chassisml-sdk/chassisml/chassisml.py</code></summary>
+          <summary>Source code in <code>chassisml_sdk/chassisml/chassisml.py</code></summary>
           <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">def</span> <span class="nf">create_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">process_fn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">batch_process_fn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">batch_size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="sd">&#39;&#39;&#39;</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="sd">    Builds chassis model locally</span>
@@ -1611,7 +3898,7 @@ ChassisClient        </code>
 
 
 
-<h3 id="chassisml-sdk.chassisml.chassisml.ChassisClient.download_tar" class="doc doc-heading">
+<h3 id="chassisml_sdk.chassisml.chassisml.ChassisClient.download_tar" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">download_tar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">output_filename</span><span class="p">)</span></code>
 
 
@@ -1677,7 +3964,7 @@ ChassisClient        </code>
 </code></pre></div>
 
         <details class="quote">
-          <summary>Source code in <code>chassisml-sdk/chassisml/chassisml.py</code></summary>
+          <summary>Source code in <code>chassisml_sdk/chassisml/chassisml.py</code></summary>
           <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">def</span> <span class="nf">download_tar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">output_filename</span><span class="p">):</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="sd">&#39;&#39;&#39;</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="sd">    Downloads container image as tar archive</span>
@@ -1725,7 +4012,7 @@ ChassisClient        </code>
 
 
 
-<h3 id="chassisml-sdk.chassisml.chassisml.ChassisClient.get_job_status" class="doc doc-heading">
+<h3 id="chassisml_sdk.chassisml.chassisml.ChassisClient.get_job_status" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">get_job_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_id</span><span class="p">)</span></code>
 
 
@@ -1791,7 +4078,7 @@ ChassisClient        </code>
 </code></pre></div>
 
         <details class="quote">
-          <summary>Source code in <code>chassisml-sdk/chassisml/chassisml.py</code></summary>
+          <summary>Source code in <code>chassisml_sdk/chassisml/chassisml.py</code></summary>
           <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">def</span> <span class="nf">get_job_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_id</span><span class="p">):</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="sd">&#39;&#39;&#39;</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="sd">    Checks the status of a chassis job</span>
@@ -1840,7 +4127,108 @@ ChassisClient        </code>
 
 
 
-<h3 id="chassisml-sdk.chassisml.chassisml.ChassisClient.test_OMI_compliance" class="doc doc-heading">
+<h3 id="chassisml_sdk.chassisml.chassisml.ChassisClient.run_inference" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">run_inference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">,</span> <span class="n">container_host</span><span class="o">=</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="n">container_port</span><span class="o">=</span><span class="mi">45000</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>This is the method you use to submit data to a container chassis has built for inference.
+it assumes the container has been downloaded from dockerhub and is running somewhere you have access to</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>input_data</code></td>
+        <td><code>json</code></td>
+        <td><p>dictionary of the form {"input": <binary respresentaion of your data>}</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>container_host</code></td>
+        <td><code>str</code></td>
+        <td><p>URL where container is running</p></td>
+        <td><code>&#39;localhost&#39;</code></td>
+      </tr>
+      <tr>
+        <td><code>container_port</code></td>
+        <td><code>int</code></td>
+        <td><p>port that forwards to container's grpc server</p></td>
+        <td><code>45000</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Examples:</strong></p>
+    
+      <h4 id="chassisml_sdk.chassisml.chassisml.ChassisClient.run_inference--assume-that-the-container-is-running-locally-and-that-it-was-started-with-this-docker-command">assume that the container is running locally, and that it was started with this docker command</h4>
+<h4 id="chassisml_sdk.chassisml.chassisml.ChassisClient.run_inference--docker-run-it-p-500145000">docker run -it -p 5001:45000 <docker_uname>/<container_name>:<tag_id></h4>
+<p>from chassisml_sdk.chassisml import chassisml</p>
+<p>client = chassisml.ChassisClient()</p>
+<p>input_data = {"input": b"[[0.0, 0.0, 0.0, 1.0, 12.0, 6.0, 0.0, 0.0, 0.0, 0.0, 0.0, 11.0, 15.0, 2.0, 0.0, 0.0, 0.0, 0.0, 8.0, 16.0, 6.0, 1.0, 2.0, 0.0, 0.0, 4.0, 16.0, 9.0, 1.0, 15.0, 9.0, 0.0, 0.0, 13.0, 15.0, 6.0, 10.0, 16.0, 6.0, 0.0, 0.0, 12.0, 16.0, 16.0, 16.0, 16.0, 1.0, 0.0, 0.0, 1.0, 7.0, 4.0, 14.0, 13.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 14.0, 9.0, 0.0, 0.0], [0.0, 0.0, 8.0, 16.0, 3.0, 0.0, 1.0, 0.0, 0.0, 0.0, 16.0, 14.0, 5.0, 14.0, 12.0, 0.0, 0.0, 0.0, 8.0, 16.0, 16.0, 9.0, 0.0, 0.0, 0.0, 0.0, 3.0, 16.0, 14.0, 1.0, 0.0, 0.0, 0.0, 0.0, 12.0, 16.0, 16.0, 2.0, 0.0, 0.0, 0.0, 0.0, 16.0, 11.0, 16.0, 4.0, 0.0, 0.0, 0.0, 3.0, 16.0, 16.0, 16.0, 6.0, 0.0, 0.0, 0.0, 0.0, 10.0, 16.0, 10.0, 1.0, 0.0, 0.0], [0.0, 0.0, 5.0, 12.0, 8.0, 0.0, 1.0, 0.0, 0.0, 0.0, 11.0, 16.0, 5.0, 13.0, 6.0, 0.0, 0.0, 0.0, 2.0, 15.0, 16.0, 12.0, 1.0, 0.0, 0.0, 0.0, 0.0, 10.0, 16.0, 6.0, 0.0, 0.0, 0.0, 0.0, 1.0, 15.0, 16.0, 7.0, 0.0, 0.0, 0.0, 0.0, 8.0, 16.0, 16.0, 11.0, 0.0, 0.0, 0.0, 0.0, 11.0, 16.0, 16.0, 9.0, 0.0, 0.0, 0.0, 0.0, 6.0, 12.0, 12.0, 3.0, 0.0, 0.0], [0.0, 0.0, 0.0, 3.0, 15.0, 4.0, 0.0, 0.0, 0.0, 0.0, 4.0, 16.0, 12.0, 0.0, 0.0, 0.0, 0.0, 0.0, 12.0, 15.0, 3.0, 4.0, 3.0, 0.0, 0.0, 7.0, 16.0, 5.0, 3.0, 15.0, 8.0, 0.0, 0.0, 13.0, 16.0, 13.0, 15.0, 16.0, 2.0, 0.0, 0.0, 12.0, 16.0, 16.0, 16.0, 13.0, 0.0, 0.0, 0.0, 0.0, 4.0, 5.0, 16.0, 8.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 16.0, 4.0, 0.0, 0.0], [0.0, 0.0, 10.0, 14.0, 8.0, 1.0, 0.0, 0.0, 0.0, 2.0, 16.0, 14.0, 6.0, 1.0, 0.0, 0.0, 0.0, 0.0, 15.0, 15.0, 8.0, 15.0, 0.0, 0.0, 0.0, 0.0, 5.0, 16.0, 16.0, 10.0, 0.0, 0.0, 0.0, 0.0, 12.0, 15.0, 15.0, 12.0, 0.0, 0.0, 0.0, 4.0, 16.0, 6.0, 4.0, 16.0, 6.0, 0.0, 0.0, 8.0, 16.0, 10.0, 8.0, 16.0, 8.0, 0.0, 0.0, 1.0, 8.0, 12.0, 14.0, 12.0, 1.0, 0.0]]"}
+input_list = [input_data for _ in range(30)]</p>
+<p>print("single input")
+print(client.run_inference(input_data, container_host="localhost", container_port=5001))
+print("multi inputs")
+results = client.run_inference(input_list, container_host="localhost", container_port=5002)
+for x in results:
+    print(x)</p>
+
+        <details class="quote">
+          <summary>Source code in <code>chassisml_sdk/chassisml/chassisml.py</code></summary>
+          <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">def</span> <span class="nf">run_inference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">,</span> <span class="n">container_host</span><span class="o">=</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="n">container_port</span><span class="o">=</span><span class="mi">45000</span><span class="p">):</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="sd">&#39;&#39;&#39;</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="sd">            This is the method you use to submit data to a container chassis has built for inference.</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="sd">            it assumes the container has been downloaded from dockerhub and is running somewhere you have access to</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="sd">            Args:</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="sd">                input_data (json): dictionary of the form {&quot;input&quot;: &lt;binary respresentaion of your data&gt;}</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="sd">                container_host (str): URL where container is running</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="sd">                container_port (int): port that forwards to container&#39;s grpc server</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="sd">            Examples:</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="sd">            # assume that the container is running locally, and that it was started with this docker command</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="sd">            #  docker run -it -p 5001:45000 &lt;docker_uname&gt;/&lt;container_name&gt;:&lt;tag_id&gt;</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="sd">            from chassisml_sdk.chassisml import chassisml</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="sd">            client = chassisml.ChassisClient()</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="sd">            input_data = {&quot;input&quot;: b&quot;[[0.0, 0.0, 0.0, 1.0, 12.0, 6.0, 0.0, 0.0, 0.0, 0.0, 0.0, 11.0, 15.0, 2.0, 0.0, 0.0, 0.0, 0.0, 8.0, 16.0, 6.0, 1.0, 2.0, 0.0, 0.0, 4.0, 16.0, 9.0, 1.0, 15.0, 9.0, 0.0, 0.0, 13.0, 15.0, 6.0, 10.0, 16.0, 6.0, 0.0, 0.0, 12.0, 16.0, 16.0, 16.0, 16.0, 1.0, 0.0, 0.0, 1.0, 7.0, 4.0, 14.0, 13.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 14.0, 9.0, 0.0, 0.0], [0.0, 0.0, 8.0, 16.0, 3.0, 0.0, 1.0, 0.0, 0.0, 0.0, 16.0, 14.0, 5.0, 14.0, 12.0, 0.0, 0.0, 0.0, 8.0, 16.0, 16.0, 9.0, 0.0, 0.0, 0.0, 0.0, 3.0, 16.0, 14.0, 1.0, 0.0, 0.0, 0.0, 0.0, 12.0, 16.0, 16.0, 2.0, 0.0, 0.0, 0.0, 0.0, 16.0, 11.0, 16.0, 4.0, 0.0, 0.0, 0.0, 3.0, 16.0, 16.0, 16.0, 6.0, 0.0, 0.0, 0.0, 0.0, 10.0, 16.0, 10.0, 1.0, 0.0, 0.0], [0.0, 0.0, 5.0, 12.0, 8.0, 0.0, 1.0, 0.0, 0.0, 0.0, 11.0, 16.0, 5.0, 13.0, 6.0, 0.0, 0.0, 0.0, 2.0, 15.0, 16.0, 12.0, 1.0, 0.0, 0.0, 0.0, 0.0, 10.0, 16.0, 6.0, 0.0, 0.0, 0.0, 0.0, 1.0, 15.0, 16.0, 7.0, 0.0, 0.0, 0.0, 0.0, 8.0, 16.0, 16.0, 11.0, 0.0, 0.0, 0.0, 0.0, 11.0, 16.0, 16.0, 9.0, 0.0, 0.0, 0.0, 0.0, 6.0, 12.0, 12.0, 3.0, 0.0, 0.0], [0.0, 0.0, 0.0, 3.0, 15.0, 4.0, 0.0, 0.0, 0.0, 0.0, 4.0, 16.0, 12.0, 0.0, 0.0, 0.0, 0.0, 0.0, 12.0, 15.0, 3.0, 4.0, 3.0, 0.0, 0.0, 7.0, 16.0, 5.0, 3.0, 15.0, 8.0, 0.0, 0.0, 13.0, 16.0, 13.0, 15.0, 16.0, 2.0, 0.0, 0.0, 12.0, 16.0, 16.0, 16.0, 13.0, 0.0, 0.0, 0.0, 0.0, 4.0, 5.0, 16.0, 8.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 16.0, 4.0, 0.0, 0.0], [0.0, 0.0, 10.0, 14.0, 8.0, 1.0, 0.0, 0.0, 0.0, 2.0, 16.0, 14.0, 6.0, 1.0, 0.0, 0.0, 0.0, 0.0, 15.0, 15.0, 8.0, 15.0, 0.0, 0.0, 0.0, 0.0, 5.0, 16.0, 16.0, 10.0, 0.0, 0.0, 0.0, 0.0, 12.0, 15.0, 15.0, 12.0, 0.0, 0.0, 0.0, 4.0, 16.0, 6.0, 4.0, 16.0, 6.0, 0.0, 0.0, 8.0, 16.0, 10.0, 8.0, 16.0, 8.0, 0.0, 0.0, 1.0, 8.0, 12.0, 14.0, 12.0, 1.0, 0.0]]&quot;}</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="sd">            input_list = [input_data for _ in range(30)]</span>
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="sd">            print(&quot;single input&quot;)</span>
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a><span class="sd">            print(client.run_inference(input_data, container_host=&quot;localhost&quot;, container_port=5001))</span>
+<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a><span class="sd">            print(&quot;multi inputs&quot;)</span>
+<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a><span class="sd">            results = client.run_inference(input_list, container_host=&quot;localhost&quot;, container_port=5002)</span>
+<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a><span class="sd">            for x in results:</span>
+<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a><span class="sd">                print(x)</span>
+<a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a><span class="sd">    &#39;&#39;&#39;</span>
+<a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>    <span class="n">model_client</span><span class="o">.</span><span class="n">override_server_URL</span><span class="p">(</span><span class="n">container_host</span><span class="p">,</span> <span class="n">container_port</span><span class="p">)</span>
+<a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>    <span class="k">return</span> <span class="n">model_client</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">input_data</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="chassisml_sdk.chassisml.chassisml.ChassisClient.test_OMI_compliance" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">test_OMI_compliance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_id</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 
@@ -1896,7 +4284,7 @@ ChassisClient        </code>
 </code></pre></div>
 
         <details class="quote">
-          <summary>Source code in <code>chassisml-sdk/chassisml/chassisml.py</code></summary>
+          <summary>Source code in <code>chassisml_sdk/chassisml/chassisml.py</code></summary>
           <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">def</span> <span class="nf">test_OMI_compliance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="sd">&#39;&#39;&#39;</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="sd">    Tests a local image for compliance with the [Open Model Interface Specification](https://openmodel.ml/spec/)</span>
@@ -1965,7 +4353,7 @@ ChassisClient        </code>
 
 
 
-<h2 id="chassisml-sdk.chassisml.chassisml.ChassisModel" class="doc doc-heading">
+<h2 id="chassisml_sdk.chassisml.chassisml.ChassisModel" class="doc doc-heading">
         <code>
 ChassisModel            (<span title="mlflow.pyfunc.model.PythonModel">PythonModel</span>)
         </code>
@@ -2003,7 +4391,7 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
   </tbody>
 </table>
         <details class="quote">
-          <summary>Source code in <code>chassisml-sdk/chassisml/chassisml.py</code></summary>
+          <summary>Source code in <code>chassisml_sdk/chassisml/chassisml.py</code></summary>
           <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">class</span> <span class="nc">ChassisModel</span><span class="p">(</span><span class="n">mlflow</span><span class="o">.</span><span class="n">pyfunc</span><span class="o">.</span><span class="n">PythonModel</span><span class="p">):</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="sd">&quot;&quot;&quot;The Chassis Model object.</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
@@ -2349,7 +4737,7 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
 
 
 
-<h3 id="chassisml-sdk.chassisml.chassisml.ChassisModel.publish" class="doc doc-heading">
+<h3 id="chassisml_sdk.chassisml.chassisml.ChassisModel.publish" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">model_version</span><span class="p">,</span> <span class="n">registry_user</span><span class="p">,</span> <span class="n">registry_pass</span><span class="p">,</span> <span class="n">conda_env</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fix_env</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">gpu</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">arm64</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">modzy_sample_input_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">modzy_api_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">modzy_url</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">modzy_model_id</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 
@@ -2478,7 +4866,7 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
 </code></pre></div>
 
         <details class="quote">
-          <summary>Source code in <code>chassisml-sdk/chassisml/chassisml.py</code></summary>
+          <summary>Source code in <code>chassisml_sdk/chassisml/chassisml.py</code></summary>
           <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">model_name</span><span class="p">,</span><span class="n">model_version</span><span class="p">,</span><span class="n">registry_user</span><span class="p">,</span><span class="n">registry_pass</span><span class="p">,</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>            <span class="n">conda_env</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">fix_env</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">gpu</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">arm64</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>            <span class="n">modzy_sample_input_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">modzy_api_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -2616,7 +5004,7 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
 
 
 
-<h3 id="chassisml-sdk.chassisml.chassisml.ChassisModel.save" class="doc doc-heading">
+<h3 id="chassisml_sdk.chassisml.chassisml.ChassisModel.save" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">conda_env</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fix_env</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">gpu</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">arm64</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
 
 
@@ -2691,7 +5079,7 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
 </code></pre></div>
 
         <details class="quote">
-          <summary>Source code in <code>chassisml-sdk/chassisml/chassisml.py</code></summary>
+          <summary>Source code in <code>chassisml_sdk/chassisml/chassisml.py</code></summary>
           <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">path</span><span class="p">,</span><span class="n">conda_env</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">fix_env</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">gpu</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">arm64</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="sd">&#39;&#39;&#39;</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="sd">    Saves a copy of ChassisModel to local filepath</span>
@@ -2733,7 +5121,7 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
 
 
 
-<h3 id="chassisml-sdk.chassisml.chassisml.ChassisModel.test" class="doc doc-heading">
+<h3 id="chassisml_sdk.chassisml.chassisml.ChassisModel.test" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_input</span><span class="p">)</span></code>
 
 
@@ -2785,7 +5173,7 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
 </code></pre></div>
 
         <details class="quote">
-          <summary>Source code in <code>chassisml-sdk/chassisml/chassisml.py</code></summary>
+          <summary>Source code in <code>chassisml_sdk/chassisml/chassisml.py</code></summary>
           <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">test_input</span><span class="p">):</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="sd">&#39;&#39;&#39;</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="sd">    Runs a sample inference test on a single input on chassis model locally</span>
@@ -2828,7 +5216,7 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
 
 
 
-<h3 id="chassisml-sdk.chassisml.chassisml.ChassisModel.test_batch" class="doc doc-heading">
+<h3 id="chassisml_sdk.chassisml.chassisml.ChassisModel.test_batch" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">test_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_input</span><span class="p">)</span></code>
 
 
@@ -2880,7 +5268,7 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
 </code></pre></div>
 
         <details class="quote">
-          <summary>Source code in <code>chassisml-sdk/chassisml/chassisml.py</code></summary>
+          <summary>Source code in <code>chassisml_sdk/chassisml/chassisml.py</code></summary>
           <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">def</span> <span class="nf">test_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">test_input</span><span class="p">):</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="sd">&#39;&#39;&#39;</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="sd">    Takes a single input file, creates a batch of size `batch_size` defined in `ChassisModel.create_model`, and runs a batch job against chassis model locally if `batch_process_fn` is defined.</span>
@@ -2932,7 +5320,7 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
 
 
 
-<h3 id="chassisml-sdk.chassisml.chassisml.ChassisModel.test_env" class="doc doc-heading">
+<h3 id="chassisml_sdk.chassisml.chassisml.ChassisModel.test_env" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">test_env</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_input_path</span><span class="p">,</span> <span class="n">conda_env</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fix_env</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
 
 
@@ -2997,7 +5385,7 @@ Will wrap user-provided function which takes two arguments: model_input (bytes) 
 </code></pre></div>
 
         <details class="quote">
-          <summary>Source code in <code>chassisml-sdk/chassisml/chassisml.py</code></summary>
+          <summary>Source code in <code>chassisml_sdk/chassisml/chassisml.py</code></summary>
           <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">def</span> <span class="nf">test_env</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">test_input_path</span><span class="p">,</span><span class="n">conda_env</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">fix_env</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="sd">&#39;&#39;&#39;</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="sd">    Runs a sample inference test in new conda environment created on the chassis service side. In other words, a &quot;dry run&quot; of a true chassis job to ensure model code runs within the chassis service.</span>
