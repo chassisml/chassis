@@ -4,7 +4,7 @@ import time
 import shutil
 import docker
 import sys
-sys.path.append('./chassisml-sdk/')
+sys.path.append('./chassisml_sdk/')
 import chassisml
 import logging
 logging.basicConfig(level=logging.INFO, format= '%(levelname)s: %(message)s')

@@ -22,7 +22,7 @@ nav:
       # - Adding Explainability: how-to-guides/explainability.md
   - Reference:
       - Chassisml Service: service-reference.md
-      - Python SDK: chassisml-sdk-reference.md
+      - Python SDK: chassisml_sdk-reference.md
   - Conceptual Guides:
       - Overview: conceptual-guides/overview.md
       - Design & Architecture: conceptual-guides/design.md

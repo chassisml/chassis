@@ -4,7 +4,7 @@ import json
 import pickle
 import time
 import sys
-sys.path.append('./chassisml-sdk/')
+sys.path.append('./chassisml_sdk/')
 import chassisml
 from tests.test_connection import *
 from tests.test_sdk import *
