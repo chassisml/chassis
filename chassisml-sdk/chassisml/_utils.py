@@ -6,6 +6,10 @@ import numpy as np
 from chassisml import __version__
 from packaging import version
 import validators
+import boto3
+import tempfile
+import shutil
+import sys
 
 DEFAULT_MODZY_YAML_DATA = {'specification': '0.4',
         'type': 'grpc',
@@ -78,8 +82,10 @@ def fix_dependencies(model_directory):
                 else:
                     new_conda += line.replace("opencv-python=","opencv-python-headless=")
                     opencv_found = True
+            elif "azureml-widgets" in line:
+                continue
             else:
-                    new_conda += line
+                new_conda += line
 
         opencv_found = False
         for line in pip_lines:
@@ -89,8 +95,10 @@ def fix_dependencies(model_directory):
                 else:
                     new_pip += line.replace("opencv-python=","opencv-python-headless=")
                     opencv_found = True
+            elif "azureml-widgets" in line:
+                continue
             else:
-                    new_pip += line
+                new_pip += line
         
     with open(conda_path,"w") as conda_w, open(pip_path,"w") as pip_w:
         conda_w.write(new_conda)
@@ -137,3 +145,10 @@ def check_modzy_url(modzy_url):
     if not modzy_url[-1].isalpha():
         raise ValueError("Modzy URL must end with alpha char, example: 'https://my.modzy.com'")
     return True
+
+def download_from_s3(bucket,key,access_key,secret_key,output_dir):
+    session = boto3.Session(aws_access_key_id=access_key, aws_secret_access_key=secret_key)
+    s3 = session.resource('s3')
+    output_path = os.path.join(output_dir,os.path.basename(key))
+    s3.Bucket(bucket).download_file(key, output_path)
+    return output_path
