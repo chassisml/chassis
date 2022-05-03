@@ -8,21 +8,35 @@ import json
 import requests
 import urllib.parse
 import tempfile
+import tarfile
 import shutil
 import mlflow
 import base64
 import string
 import numpy as np
 import warnings
+warnings.filterwarnings("ignore")
 from chassisml import __version__
-
+import chassisml.sagemaker as sm
 from .open_model_initiative_checks.open_model_initiative_checks import OMI_check
-from ._utils import zipdir,fix_dependencies,write_modzy_yaml,NumpyEncoder,fix_dependencies_arm_gpu,check_modzy_url
+from ._utils import zipdir,fix_dependencies,write_modzy_yaml,NumpyEncoder,fix_dependencies_arm_gpu,check_modzy_url,download_from_s3
 
 ###########################################
 MODEL_ZIP_NAME = 'model.zip'
 MODZY_YAML_NAME = 'model.yaml'
 CHASSIS_TMP_DIRNAME = 'chassis_tmp'
+
+AZURE_AUTOML_MODEL_PKL_PATH = "outputs/model.pkl"
+
+SAGEMAKER_MODEL_TYPE_MAP = {
+    'image-classification': sm.image_classification.get_process_fn,
+    'object-detection': sm.object_detection.get_process_fn,
+    'factorization-machines-regression': sm.factorization_machines.get_regression_process_fn,
+    'factorization-machines-classification': sm.factorization_machines.get_classification_process_fn,
+    'semantic-segmentation': sm.semantic_segmentation.get_process_fn,
+    'xgboost-classification': sm.xgboost.get_classification_process_fn,
+    'xgboost-regression': sm.xgboost.get_regression_process_fn
+}
 
 routes = {
     'build': '/build',
@@ -281,7 +295,8 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
         try:
             model_directory = os.path.join(tempfile.mkdtemp(),CHASSIS_TMP_DIRNAME)
             mlflow.pyfunc.save_model(path=model_directory, python_model=self, conda_env=conda_env, 
-                                    extra_pip_requirements = None if conda_env else ["chassisml=={}".format(__version__)])
+                                    extra_pip_requirements = None if conda_env else ["mlflow"])
+            #                        extra_pip_requirements = None if conda_env else ["chassisml=={}".format(__version__)])
 
             if fix_env:
                 fix_dependencies(model_directory)
@@ -532,7 +547,7 @@ class ChassisClient:
 
     def create_model(self,process_fn=None,batch_process_fn=None,batch_size=None):
         '''
-        Builds chassis model locally
+        Builds Chassis model locally
 
         Args:
             process_fn (function): Python function that must accept a single piece of input data in raw bytes form. This method is responsible for handling all data preprocessing, executing inference, and returning the processed predictions. Defining additional functions is acceptable as long as they are called within the `process` method
@@ -596,3 +611,91 @@ class ChassisClient:
 
         return ChassisModel(process_fn,batch_process_fn,batch_size,self.base_url)
 
+    def create_model_from_sagemaker(self,bucket,key,s3_access_key,s3_secret_key,model_type,
+                                    ordered_class_list=None):
+        f'''
+        Builds Chassis model from trained SageMaker model artifacts
+
+        Args:
+            bucket (str): S3 bucket name containing model artifacts
+            key (str): Path to model artifacts in bucket
+            s3_access_key (str): S3 access key
+            s3_secret_key (str): S3 secret key
+            model_type (str): Must be one of {SAGEMAKER_MODEL_TYPE_MAP.keys()}
+            ordered_class_list (list): Optional ordered list of class names 
+
+        Returns:
+            ChassisModel: Chassis Model object that can be tested locally and published to a Docker Registry
+        '''
+
+        # validate model type
+        if model_type not in SAGEMAKER_MODEL_TYPE_MAP.keys():
+            raise ValueError(f"Only supported SageMaker model types are {SAGEMAKER_MODEL_TYPE_MAP.keys()}")
+
+        try:
+            # download and untar file
+            tmppath = tempfile.mkdtemp()
+            downloaded_path = download_from_s3(bucket,key,s3_access_key,s3_secret_key,tmppath)
+            weights_tar = tarfile.open(downloaded_path)
+            weights_tar.extractall(tmppath)
+            weights_tar.close()  
+
+            # call appropriate function to get process_func
+            process_fn = SAGEMAKER_MODEL_TYPE_MAP[model_type](tmppath,ordered_class_list=ordered_class_list)
+
+            # rm tmp dir
+            shutil.rmtree(tmppath)
+
+            # create and return chassis model
+            return ChassisModel(process_fn,None,None,self.base_url)
+            
+        except Exception as e:
+            if os.path.exists(tmppath):
+                shutil.rmtree(tmppath)
+            raise(e)
+
+    def create_model_from_azure_automl(self,workspace_name,subscription_id,resource_group,experiment_name,run_id):
+        f'''
+        Builds Chassis model from trained Azure AutoML model
+
+        Args:
+            workspace_name (str): Azure ML workspace name
+            subscription_id (str): Azure ML subscription ID
+            resource_group (str): Azure ML resource group
+            experiment_name (str): Azure ML experiment name
+            run_id (str): Azure ML run id
+
+        Returns:
+            ChassisModel: Chassis Model object that can be tested locally and published to a Docker Registry
+        '''
+
+        from azureml.core import Workspace,Experiment
+        from azureml.core.run import Run
+        import joblib
+        import pandas as pd
+        
+        ws = Workspace.get(name=workspace_name,
+               subscription_id=subscription_id,
+               resource_group=resource_group)
+
+        experiment = Experiment(workspace = ws, name = experiment_name)
+        run = Run(experiment,run_id)
+
+        try:
+            tmppath = tempfile.mkdtemp()
+            run.download_file(AZURE_AUTOML_MODEL_PKL_PATH,tmppath)
+            loaded_model = joblib.load(os.path.join(tmppath,'model.pkl'))
+
+            def process(input_bytes):
+                input_data = pd.read_csv(_io.BytesIO(input_bytes))
+                results = loaded_model.predict(input_data)
+                return list(results)
+
+            shutil.rmtree(tmppath)
+            
+            return ChassisModel(process,None,None,self.base_url)
+
+        except Exception as e:
+            if os.path.exists(tmppath):
+                shutil.rmtree(tmppath)
+            raise(e)
