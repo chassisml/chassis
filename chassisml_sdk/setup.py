@@ -17,7 +17,7 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     packages=find_packages(),
-    python_requires='>=3.6',
+    python_requires='>=3.6,<3.9',
     install_requires=['requests','mlflow','numpy','pyyaml','validators','grpc-requests','grpcio>=1.44.0','docker',
                     'opencv-python-headless','onnxruntime','onnx','mxnet','boto3','xgboost==0.90.0','gluoncv','azureml-core>=1.41.0',
                     'azureml-automl-runtime','pandas'],
