@@ -707,6 +707,7 @@ class ChassisClient:
             if os.path.exists(tmppath):
                 shutil.rmtree(tmppath)
             raise(e)
+            
     def run_inference(self, input_data, container_host="localhost", container_port=45000):
         '''
                 This is the method you use to submit data to a container chassis has built for inference.
