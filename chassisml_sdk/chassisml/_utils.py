@@ -38,7 +38,7 @@ DEFAULT_MODZY_YAML_DATA = {'specification': '0.4',
         'resources': {'memory': {'size': None},
         'cpu': {'count': None},
         'gpu': {'count': None}},
-        'timeout': {'status': '60s', 'run': '60s'},
+        'timeout': {'status': '60s', 'run': '300s'},
         'internal': {'recommended': None, 'experimental': None, 'available': None},
         'features': {'explainable': False, 'adversarialDefense': False}
     }

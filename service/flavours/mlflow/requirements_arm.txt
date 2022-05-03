@@ -1,6 +1,6 @@
 flask
 loguru
-kserve
+# kserve
 
 # Modzy Requirements
 grpcio-tools

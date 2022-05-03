@@ -6,8 +6,8 @@ If you build models using a common machine learning framework and you want a way
 
 Can't find the framework you are looking for? Feel free to fork this repository, add an example or two from your framework of choice, and open a PR. Or come chat with us directly on [Discord](https://discord.gg/tdfXFY2y)!
 
-!!! Requirements
-    *To follow these how-to guides, you must first install the `chassisml` Python SDK and connect to the Chassis service either on your local machine or on chassis.modzy.com within your Python IDE. You also will need an account with [Dockerhub](https://hub.docker.com/signup).* 
+!!! warning "Requirements"
+    *To follow these how-to guides, you must first install the `chassisml` Python SDK and connect to the Chassis service either on your [local machine](../getting-started/deploy-manual.md) or to our [publicly-hosted](../getting-started/deploy-connect.md) instance within your Python IDE. You also will need an account with [Dockerhub](https://hub.docker.com/signup).* 
     
     For help getting started, visit our [Tutorials](https://chassis.ml/tutorials/devops-deploy/) page.
 
@@ -81,7 +81,7 @@ def process(input_bytes):
     return structured_output
 ```
 
-Initialize Chassis Client and create Chassis model. Replace the URL with your Chassis connection. If you followed these [installation instructions](https://chassis.ml/tutorials/devops-deploy/), keep the local host URL as is, but if you are connected to the Modzy-hosted Chassis instance, replace the URL with "https://chassis.modzy.com". 
+Initialize Chassis Client and create Chassis model. Replace the URL with your Chassis connection. If you followed these [installation instructions](https://chassis.ml/tutorials/devops-deploy/), keep the local host URL as is, but if you are connected to the publicly-hosted Chassis instance, replace the URL with the URL you receive after [signing up](https://chassis.modzy.com). 
 
 ```python
 chassis_client = chassisml.ChassisClient("http://localhost:5000")
@@ -97,6 +97,8 @@ print(results)
 ```
 
 Before kicking off the Chassis job, we can test our `ChassisModel` in the environment that will be built within the container. **Note**: Chassis will infer the required packages, functions, or variables required to successfully run inference within the `process` function. This step ensures when the conda environment is created within the Docker container, your model will run.
+
+**NOTE**: `test_env` function not available in [publicly-hosted](../getting-started/deploy-connect.md) service.
 
 ```python
 test_env_result = chassis_model.test_env(sample_filepath)
@@ -181,7 +183,7 @@ def process(input_bytes):
     return structured_results
 ```
 
-Initialize Chassis Client and create Chassis model. Replace the URL with your Chassis connection. If you followed these [installation instructions](https://chassis.ml/tutorials/devops-deploy/), keep the local host URL as is, but if you are connected to the Modzy-hosted Chassis instance, replace the URL with "https://chassis.modzy.com". 
+Initialize Chassis Client and create Chassis model. Replace the URL with your Chassis connection. If you followed these [installation instructions](https://chassis.ml/tutorials/devops-deploy/), keep the local host URL as is, but if you are connected to the publicly-hosted Chassis instance, replace the URL with the URL you receive after [signing up](https://chassis.modzy.com). 
 
 ```python
 chassis_client = chassisml.ChassisClient("http://localhost:5000")
@@ -216,6 +218,8 @@ env = {
 ```
 
 Before kicking off the Chassis job, we can test our `ChassisModel` in the environment that will be built within the container. **Note**: Chassis will infer the required packages, functions, or variables required to successfully run inference within the `process` function. This step ensures when the conda environment is created within the Docker container, your model will run.
+
+**NOTE**: `test_env` function not available in [publicly-hosted](../getting-started/deploy-connect.md) service.
 
 ```python
 test_env_result = chassis_model.test_env(sample_filepath)
@@ -335,7 +339,7 @@ def process(input_bytes):
     return structured_output
 ```
 
-Initialize Chassis Client and create Chassis model. Replace the URL with your Chassis connection. If you followed these [installation instructions](https://chassis.ml/tutorials/devops-deploy/), keep the local host URL as is, but if you are connected to the Modzy-hosted Chassis instance, replace the URL with "https://chassis.modzy.com". 
+Initialize Chassis Client and create Chassis model. Replace the URL with your Chassis connection. If you followed these [installation instructions](https://chassis.ml/tutorials/devops-deploy/), keep the local host URL as is, but if you are connected to the publicly-hosted Chassis instance, replace the URL with the URL you receive after [signing up](https://chassis.modzy.com). 
 
 ```python
 chassis_client = chassisml.ChassisClient("http://localhost:5000")
@@ -351,6 +355,8 @@ print(results)
 ```
 
 Before kicking off the Chassis job, we can test our `ChassisModel` in the environment that will be built within the container. **Note**: Chassis will infer the required packages, functions, or variables required to successfully run inference within the `process` function. This step ensures when the conda environment is created within the Docker container, your model will successfully run.
+
+**NOTE**: `test_env` function not available in [publicly-hosted](../getting-started/deploy-connect.md) service.
 
 ```python
 test_env_result = chassis_model.test_env(sample_filepath)
@@ -447,7 +453,7 @@ def process(input_bytes):
     return structured_output
 ```
 
-Initialize Chassis Client and create Chassis model. Replace the URL with your Chassis connection. If you followed these [installation instructions](https://chassis.ml/tutorials/devops-deploy/), keep the local host URL as is, but if you are connected to the Modzy-hosted Chassis instance, replace the URL with "https://chassis.modzy.com". 
+Initialize Chassis Client and create Chassis model. Replace the URL with your Chassis connection. If you followed these [installation instructions](https://chassis.ml/tutorials/devops-deploy/), keep the local host URL as is, but if you are connected to the publicly-hosted Chassis instance, replace the URL with the URL you receive after [signing up](https://chassis.modzy.com). 
 
 ```python
 chassis_client = chassisml.ChassisClient("http://localhost:5000")
@@ -463,6 +469,8 @@ print(results)
 ```
 
 Before kicking off the Chassis job, we can test our `ChassisModel` in the environment that will be built within the container. **Note**: Chassis will infer the required packages, functions, or variables required to successfully run inference within the `process` function. This step ensures when the conda environment is created within the Docker container, your model will successfully run.
+
+**NOTE**: `test_env` function not available in [publicly-hosted](../getting-started/deploy-connect.md) service.
 
 ```python
 test_env_result = chassis_model.test_env(sample_filepath)
@@ -591,7 +599,7 @@ def process(input_bytes):
     return structured_output
 ```
 
-Initialize Chassis Client and create Chassis model. Replace the URL with your Chassis connection. If you followed these [installation instructions](https://chassis.ml/tutorials/devops-deploy/), keep the local host URL as is, but if you are connected to the Modzy-hosted Chassis instance, replace the URL with "https://chassis.modzy.com". 
+Initialize Chassis Client and create Chassis model. Replace the URL with your Chassis connection. If you followed these [installation instructions](https://chassis.ml/tutorials/devops-deploy/), keep the local host URL as is, but if you are connected to the publicly-hosted Chassis instance, replace the URL with the URL you receive after [signing up](https://chassis.modzy.com). 
 
 ```python
 chassis_client = chassisml.ChassisClient("http://localhost:5000")
@@ -607,6 +615,8 @@ print(results)
 ```
 
 Before kicking off the Chassis job, we can test our `ChassisModel` in the environment that will be built within the container. **Note**: Chassis will infer the required packages, functions, or variables required to successfully run inference within the `process` function. This step ensures when the conda environment is created within the Docker container, your model will successfully run.
+
+**NOTE**: `test_env` function not available in [publicly-hosted](../getting-started/deploy-connect.md) service.
 
 ```python
 test_env_result = chassis_model.test_env(sample_filepath)
@@ -729,7 +739,7 @@ def process(input_bytes):
     return structured_output
 ```
 
-Initialize Chassis Client and create Chassis model. Replace the URL with your Chassis connection. If you followed these [installation instructions](https://chassis.ml/tutorials/devops-deploy/), keep the local host URL as is, but if you are connected to the Modzy-hosted Chassis instance, replace the URL with "https://chassis.modzy.com". 
+Initialize Chassis Client and create Chassis model. Replace the URL with your Chassis connection. If you followed these [installation instructions](https://chassis.ml/tutorials/devops-deploy/), keep the local host URL as is, but if you are connected to the publicly-hosted Chassis instance, replace the URL with the URL you receive after [signing up](https://chassis.modzy.com). 
 
 ```python
 chassis_client = chassisml.ChassisClient("http://localhost:5000")
@@ -745,6 +755,8 @@ print(results)
 ```
 
 Before kicking off the Chassis job, we can test our `ChassisModel` in the environment that will be built within the container. **Note**: Chassis will infer the required packages, functions, or variables required to successfully run inference within the `process` function. This step ensures when the conda environment is created within the Docker container, your model will run.
+
+**NOTE**: `test_env` function not available in [publicly-hosted](../getting-started/deploy-connect.md) service.
 
 ```python
 test_env_result = chassis_model.test_env(sample_filepath)
@@ -863,7 +875,7 @@ def process(input_bytes):
     return structured_result
 ```
 
-Initialize Chassis Client and create Chassis model. Replace the URL with your Chassis connection. If you followed these [installation instructions](https://chassis.ml/tutorials/devops-deploy/), keep the local host URL as is, but if you are connected to the Modzy-hosted Chassis instance, replace the URL with "https://chassis.modzy.com". 
+Initialize Chassis Client and create Chassis model. Replace the URL with your Chassis connection. If you followed these [installation instructions](https://chassis.ml/tutorials/devops-deploy/), keep the local host URL as is, but if you are connected to the publicly-hosted Chassis instance, replace the URL with the URL you receive after [signing up](https://chassis.modzy.com). 
 
 ```python
 chassis_client = chassisml.ChassisClient("http://localhost:5000")
@@ -879,6 +891,8 @@ print(results)
 ```
 
 Before kicking off the Chassis job, we can test our `ChassisModel` in the environment that will be built within the container. **Note**: Chassis will infer the required packages, functions, or variables required to successfully run inference within the `process` function. This step ensures when the conda environment is created within the Docker container, your model will run.
+
+**NOTE**: `test_env` function not available in [publicly-hosted](../getting-started/deploy-connect.md) service.
 
 ```python
 test_env_result = chassis_model.test_env(sample_filepath)
@@ -998,7 +1012,7 @@ def process(input_bytes):
     return structured_output
 ```
 
-Initialize Chassis Client and create Chassis model. Replace the URL with your Chassis connection. If you followed these [installation instructions](https://chassis.ml/tutorials/devops-deploy/), keep the local host URL as is, but if you are connected to the Modzy-hosted Chassis instance, replace the URL with "https://chassis.modzy.com". 
+Initialize Chassis Client and create Chassis model. Replace the URL with your Chassis connection. If you followed these [installation instructions](https://chassis.ml/tutorials/devops-deploy/), keep the local host URL as is, but if you are connected to the publicly-hosted Chassis instance, replace the URL with the URL you receive after [signing up](https://chassis.modzy.com). 
 
 ```python
 chassis_client = chassisml.ChassisClient("http://localhost:5000")
@@ -1014,6 +1028,8 @@ print(results)
 ```
 
 Before kicking off the Chassis job, we can test our `ChassisModel` in the environment that will be built within the container. **Note**: Chassis will infer the required packages, functions, or variables required to successfully run inference within the `process` function. This step ensures when the conda environment is created within the Docker container, your model will run.
+
+**NOTE**: `test_env` function not available in [publicly-hosted](../getting-started/deploy-connect.md) service.
 
 ```python
 test_env_result = chassis_model.test_env(sample_filepath)
