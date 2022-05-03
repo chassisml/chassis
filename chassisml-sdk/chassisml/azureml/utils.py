@@ -5,6 +5,16 @@ import tempfile
 import subprocess
 
 def download_model_artifacts(workspace_name,subscription_id,resource_group,model_name,output_dir):
+    '''
+    Downloads registered Azure ML model artifacts
+
+    Args:
+        workspace_name (str): Azure ML workspace name
+        subscription_id (str): Azure ML subscription ID
+        resource_group (str): Azure ML resource group
+        model_name (str): Azure ML registered model name
+        output_dir (str): Desired local output directory
+    '''
 
     from azureml.core import Workspace,Model
 
@@ -17,6 +27,16 @@ def download_model_artifacts(workspace_name,subscription_id,resource_group,model
     print("Model downloaded.")
 
 def replicate_remote_env(workspace_name,subscription_id,resource_group,remote_env_name,local_env_name=None):
+    '''
+    Replicates remote Azure ML environment locally, requires conda
+
+    Args:
+        workspace_name (str): Azure ML workspace name
+        subscription_id (str): Azure ML subscription ID
+        resource_group (str): Azure ML resource group
+        remote_env_name (str): Azure ML environment name
+        local_env_name (str): Desired local environment name
+    '''
 
     from azureml.core import Workspace,Model
     from azureml.core.environment import Environment
