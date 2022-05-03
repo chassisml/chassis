@@ -14,6 +14,8 @@ import base64
 import string
 import docker
 import warnings
+import secrets
+
 from chassisml import __version__
 
 from .grpc_model.src import model_client
@@ -599,15 +601,15 @@ class ChassisClient:
 
         return ChassisModel(process_fn,batch_process_fn,batch_size,self.base_url)
 
-    def run_inference(self, input_data, container_host="localhost", host_port=45000):
+    def run_inference(self, input_data, container_url="localhost", host_port=45000):
         '''
                 This is the method you use to submit data to a container chassis has built for inference.
                 it assumes the container has been downloaded from dockerhub and is running somewhere you have access to
 
                 Args:
                     input_data (json): dictionary of the form {"input": <binary respresentaion of your data>}
-                    container_host (str): URL where container is running
-                    host_port (int): port that forwards to container's grpc server port
+                    container_url (str): URL where container is running
+                    host_port (int): host port that forwards to container's grpc server port
 
                 Examples:
                 # assume that the container is running locally, and that it was started with this docker command
@@ -621,16 +623,16 @@ class ChassisClient:
                 input_list = [input_data for _ in range(30)]
 
                 print("single input")
-                print(client.run_inference(input_data, container_host="localhost", host_port=5001))
+                print(client.run_inference(input_data, container_url="localhost", host_port=5001))
                 print("multi inputs")
-                results = client.run_inference(input_list, container_host="localhost", host_port=5001)
+                results = client.run_inference(input_list, container_url="localhost", host_port=5001)
                 for x in results:
                     print(x)
         '''
-        model_client.override_server_URL(container_host, host_port)
+        model_client.override_server_URL(container_url, host_port)
         return model_client.run(input_data)
 
-    def docker_start(self, image_id, host_port = 5001, container_host="localhost", container_port=45000, timeout=20):
+    def docker_start(self, image_id, host_port = 5001, container_port=45000, timeout=20):
         '''
                 Creates and starts a container for gRPC server testing.
 
@@ -656,7 +658,7 @@ class ChassisClient:
 
                 container = client.create_container(
                 image=image_id,
-                name="chassis_inference_container",
+                name="chassis_inference_container"+ secrets.token_hex(nbytes=4),
                 ports=[container_port],
                 host_config=client.create_host_config(port_bindings={
                     container_port: host_port
@@ -681,7 +683,7 @@ class ChassisClient:
             return_value = container_id
 
         except Exception as e:
-
+            raise ValueError("wrong arguments passed \n" + str(e) )
             print("Error: Container failed to start with Docker client call\n" + print(e))
 
         return return_value
@@ -723,5 +725,19 @@ class ChassisClient:
         except Exception as e:
             return_value += "\n Error Message: " + str(e)
             print("Error: problem removing the chassis_inference_container. \n if you are sure it is on the system, you should remove it manually.\n" + str(e) +"\n"+ Err_str)
+
+        return return_value
+
+    def docker_infer(self, image_id, input_data, container_url="localhost", host_port=5001, container_port=45000, timeout=20, clean_up=True):
+
+        try:
+            container_id = self.docker_start( image_id, host_port=host_port, container_port=container_port, timeout=timeout)
+            if "Error" in container_id:
+                raise ValueError("container_id wrong")
+            return_value = self.run_inference(input_data, container_url=container_url,  host_port=host_port)
+            if clean_up:
+                self.docker_clean_up(container_id)
+        except Exception as e:
+            return_value = {"results":["Error " + str(e)]}
 
         return return_value
