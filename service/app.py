@@ -356,6 +356,8 @@ def create_job_object(
     kaniko_args = [
         '' if publish else '--no-push',
         f'--destination={image_name}{"" if ":" in image_name else ":latest"}',
+        '--snapshotMode=redo',
+        '--use-new-run',
         f'--build-arg=MODEL_DIR=model-{random_name}',
         f'--build-arg=MODZY_METADATA_PATH={modzy_data.get("modzy_metadata_path") if modzy_data.get("modzy_metadata_path") is not None else "flavours/mlflow/interfaces/modzy/asset_bundle/0.1.0/model.yaml"}',
         f'--build-arg=MODEL_NAME={model_name}',
