@@ -664,7 +664,7 @@ class ChassisClient:
 
     def create_model_from_azure_automl(self,workspace_name,subscription_id,resource_group,experiment_name,run_id):
         f'''
-        Builds Chassis model from trained Azure AutoML model
+        Builds Chassis model from trained Azure AutoML model (only classification and regression are supported)
 
         Args:
             workspace_name (str): Azure ML workspace name
