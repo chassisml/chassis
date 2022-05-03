@@ -44,6 +44,7 @@ ENV INTERFACE ${INTERFACE}
 COPY flavours/${MODEL_CLASS}/requirements_arm.txt .
 
 RUN /opt/miniconda3/envs/chassis-env/bin/pip install --no-cache-dir -r requirements_arm.txt
+RUN /opt/miniconda3/envs/chassis-env/bin/pip install --no-deps chassisml
 
 COPY flavours/${MODEL_CLASS}/app.py .
 COPY flavours/${MODEL_CLASS}/interfaces ./interfaces

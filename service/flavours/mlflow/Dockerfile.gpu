@@ -5,6 +5,8 @@
 FROM nvidia/cuda:11.0-runtime-ubuntu18.04
 
 # Install miniconda
+RUN apt-key del 7fa2af80
+RUN apt-key adv --fetch-keys http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/3bf863cc.pub
 RUN apt-get update && apt-get install -y curl
 RUN curl https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o Miniconda3-latest-Linux-x86_64.sh
 RUN bash Miniconda3-latest-Linux-x86_64.sh -b -p /opt/miniconda3\
@@ -44,6 +46,7 @@ SHELL ["/bin/bash", "-c"]
 COPY flavours/${MODEL_CLASS}/requirements.txt .
 RUN /bin/bash -c "source activate chassis-env \
     && pip install --no-cache-dir -r requirements.txt \
+    && pip install --no-deps chassisml \
     && conda deactivate"
 
 COPY flavours/${MODEL_CLASS}/app.py .

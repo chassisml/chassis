@@ -39,6 +39,7 @@ ENV INTERFACE ${INTERFACE}
 COPY flavours/${MODEL_CLASS}/requirements_arm_gpu.txt .
 
 RUN pip3 install --no-cache-dir -r requirements_arm_gpu.txt
+RUN pip3 install --no-deps chassisml
 
 COPY flavours/${MODEL_CLASS}/app.py .
 COPY flavours/${MODEL_CLASS}/interfaces ./interfaces
