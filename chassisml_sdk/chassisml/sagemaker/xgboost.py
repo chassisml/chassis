@@ -1,4 +1,11 @@
-def get_classification_process_fn(weights_path,ordered_class_list):
+def _is_float(element):
+    try:
+        float(element)
+        return True
+    except ValueError:
+        return False
+
+def get_classification_process_fn(weights_path,**kwargs):
 
     import io
     import os
@@ -9,36 +16,16 @@ def get_classification_process_fn(weights_path,ordered_class_list):
     
     model = pkl.load(open(os.path.join(weights_path,'xgboost-model'), "rb"))
 
-    if ordered_class_list:
-        n_classes = len(ordered_class_list)
-
     def process(input_bytes):
 
-        input_data = pd.read_csv(io.BytesIO(input_bytes))
-
-        try:
-            if not any(input_data.iloc[0].apply(lambda x: isinstance(x, str))):
-                input_data = pd.read_csv(io.BytesIO(input_bytes),header=None)
-
-            X_matrix = xgb.DMatrix(input_data,feature_names=model.feature_names)
-            preds = model.predict(X_matrix, output_margin=True)
-
-        except IndexError:
+        if any(_is_float(item) for item in input_bytes.decode("utf-8").splitlines()[0].split(',')):
             input_data = pd.read_csv(io.BytesIO(input_bytes),header=None)
-            X_matrix = xgb.DMatrix(input_data,feature_names=model.feature_names)
-            preds = model.predict(X_matrix, output_margin=True)
+        else:
+            input_data = pd.read_csv(io.BytesIO(input_bytes))
 
-        if ordered_class_list:
-            if preds[0].shape[0] != n_classes:
-                raise ValueError(f"Length of 'ordered_class_list' ({preds[0].shape[0]}) doesn't match number of model output classes ({n_classes})")
-
-        formatted_preds = {"data":{"results":[]}}
-        for pred in preds:
-            entries = []
-            softmaxed_preds = softmax(pred)
-            for j,score in enumerate(softmaxed_preds):
-                entries.append({'score':score,'class':ordered_class_list[j] if ordered_class_list else j})
-            formatted_preds["data"]["results"].append(sorted(entries,key = lambda x: x["score"],reverse=True))
+        X_matrix = xgb.DMatrix(input_data,feature_names=model.feature_names)
+        preds = model.predict(X_matrix, output_margin=True)
+        formatted_preds = {"data":{"results": preds }}
 
         return formatted_preds
     
@@ -56,16 +43,15 @@ def get_regression_process_fn(weights_path,**kwargs):
     
     def process(input_bytes):
 
-        input_data = pd.read_csv(io.BytesIO(input_bytes))
-
-        if not any(input_data.iloc[0].apply(lambda x: isinstance(x, str))):
+        if any(_is_float(item) for item in input_bytes.decode("utf-8").splitlines()[0].split(',')):
             input_data = pd.read_csv(io.BytesIO(input_bytes),header=None)
+        else:
+            input_data = pd.read_csv(io.BytesIO(input_bytes))
 
-        X_matrix = xgb.DMatrix(input_data,feature_names=model.feature_names)                
+        X_matrix = xgb.DMatrix(input_data,feature_names=model.feature_names)
         preds = model.predict(X_matrix, output_margin=True)
+        formatted_preds = {"data":{"results": preds }}
 
-        formatted_output = {"data":{"results": preds}}
-
-        return formatted_output
+        return formatted_preds
     
     return process
