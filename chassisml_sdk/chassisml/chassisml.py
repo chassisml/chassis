@@ -640,7 +640,7 @@ class ChassisClient:
         model_client.override_server_URL(container_url, host_port)
         return model_client.run(input_data)
 
-    def docker_start(self, image_id, host_port = 5001, container_port=45000, timeout=20, pull_container=False):
+    def docker_start(self, image_id, host_port = 5001, container_port=-1, timeout=20, pull_container=False):
         '''
                 Creates and starts a container for model inference.
 
@@ -669,6 +669,9 @@ class ChassisClient:
                 print("unable to pull container. Is this the correct registry id? "+ image_id)
                 raise ValueError(image_id + " failed to pull from repo. aborting processing")
 
+        #use OMI port by default
+        if container_port == -1:
+            container_port = int(client.inspect_image(image_id)['Config']['Labels']['ml.openmodel.port'])
 
         try:
 
@@ -750,7 +753,7 @@ class ChassisClient:
 
         return return_value
 
-    def docker_infer(self, image_id, input_data, container_url="localhost", host_port=5001, container_port=45000, timeout=20, clean_up=True, pull_container=False):
+    def docker_infer(self, image_id, input_data, container_url="localhost", host_port=5001, container_port=-1, timeout=20, clean_up=True, pull_container=False):
         '''
                         Runs inference on an OMI compliant container. This method checks to see if a container is
                         running and if not starts it. The method then runs inference against the input_data with the
