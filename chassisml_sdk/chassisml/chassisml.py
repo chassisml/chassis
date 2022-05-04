@@ -620,6 +620,7 @@ class ChassisClient:
                                         Failure -> Error codes from processing errors. All errors should container the word "Error."
 
                 Examples:
+                    ```python
                     # assume that the container is running locally, and that it was started with this docker command
                     #  docker run -it -p 5001:45000 <docker_uname>/<container_name>:<tag_id>
 
@@ -773,6 +774,7 @@ class ChassisClient:
                             return_value (str):    Success -> model output as defined in the process function
                                                    Failure -> Error message if any success criteria is missing.
                         Example:
+                            ```python
                             host_port = 5002
                             client = chassisml.ChassisClient()
 
