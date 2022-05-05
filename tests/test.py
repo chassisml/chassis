@@ -25,6 +25,7 @@ from torchvision import transforms
 HOST_URL = "http://localhost:5000" if os.getenv ('CHASSIS_URL') == None else os.getenv ('CHASSIS_URL')
 ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
 UTILS_PATH = os.path.join(ROOT_DIR, "utils")
+print("\nRoot Directory -> ", ROOT_DIR,"\n UTILS_PATH ->", UTILS_PATH,"\n")
 
 
 def assemble_models_dict(hello_world, sklearn, pytorch):
