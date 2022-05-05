@@ -164,7 +164,10 @@ if __name__ == "__main__":
                 transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
             ])        
 
-    device = 'cuda'
+    device = 'cpu'
+    if torch.cuda.is_available():
+        device = 'cuda'
+
     model_pytorch.to(device)
 
     def process_pytorch(input_bytes):
