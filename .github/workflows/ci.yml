@@ -23,9 +23,8 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Setup Repo
         uses: actions/checkout@v2
-        
-      - name: Checkout submodules
-        run: git submodule update --init --recursive
+        with:
+          submodules: recursive 
 
       - name: Setup Environment Variable
         run: |
@@ -55,7 +54,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
+        with:
+          submodules: recursive 
+          
       - name: Set environment variable from secret
         run: export CHASSIS_URL=${{secrets.CHASSIS_URL}}
 
