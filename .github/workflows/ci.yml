@@ -24,8 +24,8 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Setup Environment Variable
-       run: |
-        export CHASSIS_URL=${{secrets.CHASSIS_URL}}
+        run: |
+          export CHASSIS_URL=${{secrets.CHASSIS_URL}}
 
       - name: Set up Python 3.8
         uses: actions/setup-python@v2
