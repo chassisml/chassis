@@ -155,7 +155,7 @@ if __name__ == "__main__":
     model_pytorch = models.resnet50(pretrained=True)
     model_pytorch.eval()
 
-    labels = pickle.load(open('./chassisml-sdk/examples/pytorch/data/imagenet_labels.pkl','rb'))
+    labels = pickle.load(open('./chassisml_sdk/examples/pytorch/data/imagenet_labels.pkl','rb'))
 
     transform = transforms.Compose([
                 transforms.ToPILImage(),
