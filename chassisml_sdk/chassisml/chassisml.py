@@ -605,8 +605,7 @@ class ChassisClient:
 
     def run_inference(self, input_data, container_host="localhost", container_port=45000):
         '''
-        This is the method you use to submit data to a container chassis has built for inference.
-        It assumes the container has been downloaded from dockerhub and is running somewhere you have access to
+        This is the method you use to submit data to a container chassis has built for inference. It assumes the container has been downloaded from dockerhub and is running somewhere you have access to
 
         Args:
             input_data (json): dictionary of the form {"input": <binary respresentaion of your data>}
@@ -614,9 +613,9 @@ class ChassisClient:
             container_port (int): port that forwards to container's grpc server
 
         Examples:
-        # assume that the container is running locally, and that it was started with this docker command
-        #  docker run -it -p 5001:45000 <docker_uname>/<container_name>:<tag_id>
+        Assume that the container is running locally, and that it was started with this docker command `docker run -it -p 5001:45000 <docker_uname>/<container_name>:<tag_id>`
 
+        ```python
         from chassisml_sdk.chassisml import chassisml
 
         client = chassisml.ChassisClient()
@@ -630,6 +629,7 @@ class ChassisClient:
         results = client.run_inference(input_list, container_host="localhost", container_port=5002)
         for x in results:
             print(x)
+        ```
         '''
         model_client.override_server_URL(container_host, container_port)
         return model_client.run(input_data)
