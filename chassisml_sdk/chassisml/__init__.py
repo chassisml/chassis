@@ -4,6 +4,6 @@
 """Chassis Python API Client."""
 
 name = 'chassisml'
-__version__ = '1.3.6'
+__version__ = '1.3.7'
 
 from .chassisml import ChassisClient,ChassisModel
