@@ -21,6 +21,7 @@ LABEL ml.openmodel.port="45000"
 
 WORKDIR /app
 
+RUN apt-get update && apt-get install -y build-essential
 # create env
 ENV CONDA_ENV chassis-env
 #RUN apt-get update && apt-get install -y build-essential
