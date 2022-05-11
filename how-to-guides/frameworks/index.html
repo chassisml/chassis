@@ -1016,7 +1016,7 @@
 </code></pre></div>
 <p>Lastly, publish your model with your Docker credentials.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">dockerhub_user</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">my</span><span class="o">.</span><span class="n">username</span><span class="o">&gt;</span>
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="n">dockerhob_pass</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">my</span><span class="o">.</span><span class="n">password</span><span class="o">&gt;</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="n">dockerhub_pass</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">my</span><span class="o">.</span><span class="n">password</span><span class="o">&gt;</span>
 <a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
 <a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="n">response</span> <span class="o">=</span> <span class="n">chassis_model</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
 <a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>    <span class="n">model_name</span><span class="o">=</span><span class="s2">&quot;PyTorch ResNet50 Image Classification&quot;</span><span class="p">,</span>
@@ -1110,17 +1110,18 @@
 </code></pre></div>
 <p>Lastly, publish your model with your Docker credentials.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="n">dockerhub_user</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">my</span><span class="o">.</span><span class="n">username</span><span class="o">&gt;</span>
-<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="n">dockerhob_pass</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">my</span><span class="o">.</span><span class="n">password</span><span class="o">&gt;</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="n">dockerhub_pass</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">my</span><span class="o">.</span><span class="n">password</span><span class="o">&gt;</span>
 <a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>
 <a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="n">response</span> <span class="o">=</span> <span class="n">chassis_model</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
 <a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>    <span class="n">model_name</span><span class="o">=</span><span class="s2">&quot;Sklearn Logistic Regression Digits Image Classification&quot;</span><span class="p">,</span>
 <a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>    <span class="n">model_version</span><span class="o">=</span><span class="s2">&quot;0.0.1&quot;</span><span class="p">,</span>
 <a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>    <span class="n">registry_user</span><span class="o">=</span><span class="n">dockerhub_user</span><span class="p">,</span>
 <a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>    <span class="n">registry_pass</span><span class="o">=</span><span class="n">dockerhub_pass</span><span class="p">,</span>
-<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="p">)</span>
-<a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a>
-<a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a><span class="n">job_id</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;job_id&#39;</span><span class="p">)</span>
-<a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a><span class="n">final_status</span> <span class="o">=</span> <span class="n">chassis_client</span><span class="o">.</span><span class="n">block_until_complete</span><span class="p">(</span><span class="n">job_id</span><span class="p">)</span>
+<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a>    <span class="n">conda_env</span><span class="o">=</span><span class="n">env</span>
+<a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a><span class="p">)</span>
+<a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a>
+<a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a><span class="n">job_id</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;job_id&#39;</span><span class="p">)</span>
+<a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a><span class="n">final_status</span> <span class="o">=</span> <span class="n">chassis_client</span><span class="o">.</span><span class="n">block_until_complete</span><span class="p">(</span><span class="n">job_id</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="xgboost">XGBoost</h2>
 <p>This guide trains an XGBoost regression model that predicts housing prices based on a series of features in the <a href="https://www.kaggle.com/prasadperera/the-boston-housing-dataset">Boston Housing tabular dataset</a>. </p>
@@ -1218,7 +1219,7 @@
 </code></pre></div>
 <p>Lastly, publish your model with your Docker credentials.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="n">dockerhub_user</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">my</span><span class="o">.</span><span class="n">username</span><span class="o">&gt;</span>
-<a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="n">dockerhob_pass</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">my</span><span class="o">.</span><span class="n">password</span><span class="o">&gt;</span>
+<a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="n">dockerhub_pass</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">my</span><span class="o">.</span><span class="n">password</span><span class="o">&gt;</span>
 <a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>
 <a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a><span class="n">response</span> <span class="o">=</span> <span class="n">chassis_model</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
 <a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a>    <span class="n">model_name</span><span class="o">=</span><span class="s2">&quot;XGBoost Boston Housing Price Predictions&quot;</span><span class="p">,</span>
@@ -1304,7 +1305,7 @@
 </code></pre></div>
 <p>Lastly, publish your model with your Docker credentials.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a><span class="n">dockerhub_user</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">my</span><span class="o">.</span><span class="n">username</span><span class="o">&gt;</span>
-<a id="__codelineno-32-2" name="__codelineno-32-2" href="#__codelineno-32-2"></a><span class="n">dockerhob_pass</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">my</span><span class="o">.</span><span class="n">password</span><span class="o">&gt;</span>
+<a id="__codelineno-32-2" name="__codelineno-32-2" href="#__codelineno-32-2"></a><span class="n">dockerhub_pass</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">my</span><span class="o">.</span><span class="n">password</span><span class="o">&gt;</span>
 <a id="__codelineno-32-3" name="__codelineno-32-3" href="#__codelineno-32-3"></a>
 <a id="__codelineno-32-4" name="__codelineno-32-4" href="#__codelineno-32-4"></a><span class="n">response</span> <span class="o">=</span> <span class="n">chassis_model</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
 <a id="__codelineno-32-5" name="__codelineno-32-5" href="#__codelineno-32-5"></a>    <span class="n">model_name</span><span class="o">=</span><span class="s2">&quot;Chassis LightGBM Breast Cancer Classification&quot;</span><span class="p">,</span>
@@ -1432,7 +1433,7 @@
 </code></pre></div>
 <p>Lastly, publish your model with your Docker credentials.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-42-1" name="__codelineno-42-1" href="#__codelineno-42-1"></a><span class="n">dockerhub_user</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">my</span><span class="o">.</span><span class="n">username</span><span class="o">&gt;</span>
-<a id="__codelineno-42-2" name="__codelineno-42-2" href="#__codelineno-42-2"></a><span class="n">dockerhob_pass</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">my</span><span class="o">.</span><span class="n">password</span><span class="o">&gt;</span>
+<a id="__codelineno-42-2" name="__codelineno-42-2" href="#__codelineno-42-2"></a><span class="n">dockerhub_pass</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">my</span><span class="o">.</span><span class="n">password</span><span class="o">&gt;</span>
 <a id="__codelineno-42-3" name="__codelineno-42-3" href="#__codelineno-42-3"></a>
 <a id="__codelineno-42-4" name="__codelineno-42-4" href="#__codelineno-42-4"></a><span class="n">response</span> <span class="o">=</span> <span class="n">chassis_model</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
 <a id="__codelineno-42-5" name="__codelineno-42-5" href="#__codelineno-42-5"></a>    <span class="n">model_name</span><span class="o">=</span><span class="s2">&quot;Fast AI Salary Prediction&quot;</span><span class="p">,</span>
@@ -1538,7 +1539,7 @@
 </code></pre></div>
 <p>Lastly, publish your model with your Docker credentials.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-52-1" name="__codelineno-52-1" href="#__codelineno-52-1"></a><span class="n">dockerhub_user</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">my</span><span class="o">.</span><span class="n">username</span><span class="o">&gt;</span>
-<a id="__codelineno-52-2" name="__codelineno-52-2" href="#__codelineno-52-2"></a><span class="n">dockerhob_pass</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">my</span><span class="o">.</span><span class="n">password</span><span class="o">&gt;</span>
+<a id="__codelineno-52-2" name="__codelineno-52-2" href="#__codelineno-52-2"></a><span class="n">dockerhub_pass</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">my</span><span class="o">.</span><span class="n">password</span><span class="o">&gt;</span>
 <a id="__codelineno-52-3" name="__codelineno-52-3" href="#__codelineno-52-3"></a>
 <a id="__codelineno-52-4" name="__codelineno-52-4" href="#__codelineno-52-4"></a><span class="n">response</span> <span class="o">=</span> <span class="n">chassis_model</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
 <a id="__codelineno-52-5" name="__codelineno-52-5" href="#__codelineno-52-5"></a>    <span class="n">model_name</span><span class="o">=</span><span class="s2">&quot;MXNET MobileNet Image Classifiction&quot;</span><span class="p">,</span>
@@ -1643,7 +1644,7 @@
 </code></pre></div>
 <p>Lastly, publish your model with your Docker credentials.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-61-1" name="__codelineno-61-1" href="#__codelineno-61-1"></a><span class="n">dockerhub_user</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">my</span><span class="o">.</span><span class="n">username</span><span class="o">&gt;</span>
-<a id="__codelineno-61-2" name="__codelineno-61-2" href="#__codelineno-61-2"></a><span class="n">dockerhob_pass</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">my</span><span class="o">.</span><span class="n">password</span><span class="o">&gt;</span>
+<a id="__codelineno-61-2" name="__codelineno-61-2" href="#__codelineno-61-2"></a><span class="n">dockerhub_pass</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">my</span><span class="o">.</span><span class="n">password</span><span class="o">&gt;</span>
 <a id="__codelineno-61-3" name="__codelineno-61-3" href="#__codelineno-61-3"></a>
 <a id="__codelineno-61-4" name="__codelineno-61-4" href="#__codelineno-61-4"></a><span class="n">response</span> <span class="o">=</span> <span class="n">chassis_model</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
 <a id="__codelineno-61-5" name="__codelineno-61-5" href="#__codelineno-61-5"></a>    <span class="n">model_name</span><span class="o">=</span><span class="s2">&quot;ONNX MobileNet Image Classifiction&quot;</span><span class="p">,</span>
@@ -1751,7 +1752,7 @@
 </code></pre></div>
 <p>Lastly, publish your model with your Docker credentials.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-70-1" name="__codelineno-70-1" href="#__codelineno-70-1"></a><span class="n">dockerhub_user</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">my</span><span class="o">.</span><span class="n">username</span><span class="o">&gt;</span>
-<a id="__codelineno-70-2" name="__codelineno-70-2" href="#__codelineno-70-2"></a><span class="n">dockerhob_pass</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">my</span><span class="o">.</span><span class="n">password</span><span class="o">&gt;</span>
+<a id="__codelineno-70-2" name="__codelineno-70-2" href="#__codelineno-70-2"></a><span class="n">dockerhub_pass</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">my</span><span class="o">.</span><span class="n">password</span><span class="o">&gt;</span>
 <a id="__codelineno-70-3" name="__codelineno-70-3" href="#__codelineno-70-3"></a>
 <a id="__codelineno-70-4" name="__codelineno-70-4" href="#__codelineno-70-4"></a><span class="n">response</span> <span class="o">=</span> <span class="n">chassis_model</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
 <a id="__codelineno-70-5" name="__codelineno-70-5" href="#__codelineno-70-5"></a>    <span class="n">model_name</span><span class="o">=</span><span class="s2">&quot;PMML Random Forest Iris Classification&quot;</span><span class="p">,</span>
