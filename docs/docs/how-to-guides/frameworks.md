@@ -109,7 +109,7 @@ Lastly, publish your model with your Docker credentials.
 
 ```python
 dockerhub_user = <my.username>
-dockerhob_pass = <my.password>
+dockerhub_pass = <my.password>
 
 response = chassis_model.publish(
     model_name="PyTorch ResNet50 Image Classification",
@@ -230,13 +230,14 @@ Lastly, publish your model with your Docker credentials.
 
 ```python
 dockerhub_user = <my.username>
-dockerhob_pass = <my.password>
+dockerhub_pass = <my.password>
 
 response = chassis_model.publish(
     model_name="Sklearn Logistic Regression Digits Image Classification",
     model_version="0.0.1",
     registry_user=dockerhub_user,
     registry_pass=dockerhub_pass,
+    conda_env=env
 )
 
 job_id = response.get('job_id')
@@ -367,7 +368,7 @@ Lastly, publish your model with your Docker credentials.
 
 ```python
 dockerhub_user = <my.username>
-dockerhob_pass = <my.password>
+dockerhub_pass = <my.password>
 
 response = chassis_model.publish(
     model_name="XGBoost Boston Housing Price Predictions",
@@ -481,7 +482,7 @@ Lastly, publish your model with your Docker credentials.
 
 ```python
 dockerhub_user = <my.username>
-dockerhob_pass = <my.password>
+dockerhub_pass = <my.password>
 
 response = chassis_model.publish(
     model_name="Chassis LightGBM Breast Cancer Classification",
@@ -627,7 +628,7 @@ Lastly, publish your model with your Docker credentials.
 
 ```python
 dockerhub_user = <my.username>
-dockerhob_pass = <my.password>
+dockerhub_pass = <my.password>
 
 response = chassis_model.publish(
     model_name="Fast AI Salary Prediction",
@@ -767,7 +768,7 @@ Lastly, publish your model with your Docker credentials.
 
 ```python
 dockerhub_user = <my.username>
-dockerhob_pass = <my.password>
+dockerhub_pass = <my.password>
 
 response = chassis_model.publish(
     model_name="MXNET MobileNet Image Classifiction",
@@ -903,7 +904,7 @@ Lastly, publish your model with your Docker credentials.
 
 ```python
 dockerhub_user = <my.username>
-dockerhob_pass = <my.password>
+dockerhub_pass = <my.password>
 
 response = chassis_model.publish(
     model_name="ONNX MobileNet Image Classifiction",
@@ -1040,7 +1041,7 @@ Lastly, publish your model with your Docker credentials.
 
 ```python
 dockerhub_user = <my.username>
-dockerhob_pass = <my.password>
+dockerhub_pass = <my.password>
 
 response = chassis_model.publish(
     model_name="PMML Random Forest Iris Classification",
