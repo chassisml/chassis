@@ -29,6 +29,11 @@ jobs:
       - name: Setup Environment Variable
         run: |
           export CHASSIS_URL=${{secrets.CHASSIS_URL}}
+          export DOCKER_USER=${{secrets.DOCKER_USER}}
+          export DOCKER_PASS=${{secrets.DOCKER_PASS}}
+          export MODZY_BASE_URL=${{secrets.MODZY_BASE_URL}}
+          export MODZY_API_KEY=${{secrets.MODZY_API_KEY}}
+          
 
       - name: Set up Python 3.8
         uses: actions/setup-python@v2
@@ -72,7 +77,7 @@ jobs:
 
       - name: Test with Chassis specific testing scheme
         run: |
-          python -m tests.test
+          python -m tests.test --ci True
 
   docs:
     runs-on: ubuntu-latest
