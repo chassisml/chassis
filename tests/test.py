@@ -122,10 +122,7 @@ if __name__ == "__main__":
 
     # Train Model
     logistic = LogisticRegression(max_iter=1000)
-    print(
-        "LogisticRegression mean accuracy score: %f"
-        % logistic.fit(X_train, y_train).score(X_test, y_test)
-    )    
+    logistic.fit(X_train, y_train).score(X_test, y_test)
 
     def process_sklearn(input_bytes):
         inputs = np.array(json.loads(input_bytes))
