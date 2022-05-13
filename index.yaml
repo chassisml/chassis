@@ -3,12 +3,12 @@ entries:
   chassis:
   - apiVersion: v2
     appVersion: 0.0.1
-    created: "2022-05-13T17:14:31.070146054Z"
+    created: "2022-05-13T17:23:47.174238983Z"
     description: A Helm chart for Kubernetes
-    digest: b35024667f4ced8bb24656e6864115124e5ecdfe44ac0a0a04df321f63012fb9
+    digest: b4e14a1ead00e7c329926e69ef2bed82308c5a9e20a360fde4df6ac377fa9243
     name: chassis
     type: application
     urls:
     - https://modzy.github.io/chassis/chassis-0.1.0.tgz
     version: 0.1.0
-generated: "2022-05-13T17:14:31.068978338Z"
+generated: "2022-05-13T17:23:47.171285125Z"
