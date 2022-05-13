@@ -267,10 +267,7 @@ if __name__ == "__main__":
         "process": process_pytorch,
         "batch_process": batch_process_pytorch
     }
-    models = assemble_models_dict(hello_world_dict, sklearn_dict, pytorch_dict)
-    
-    # define specific tests and models for CI tests
-    ci_models = [model for model in models if model["short"] in ["hello-world"]]    
+    models = assemble_models_dict(hello_world_dict, sklearn_dict, pytorch_dict)  
     
     ALL_TEST_RESULTS = {}
     # test connection
@@ -278,7 +275,7 @@ if __name__ == "__main__":
     
     if args.ci:
         # test sdk for a subset of all tests 
-        for model in ci_models:
+        for model in models:
             TEST_RESULTS = []
             modzy_creds = {
                 "sample_filepath": model["test_file"],
