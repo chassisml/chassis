@@ -264,7 +264,7 @@ if __name__ == "__main__":
         "process": process_pytorch,
         "batch_process": batch_process_pytorch
     }
-    models = assemble_models_dict(hello_world_dict, sklearn_dict, pytorch_dict)  
+    models = assemble_models_dict(hello_world_dict, sklearn_dict, pytorch_dict)
     
     ALL_TEST_RESULTS = {}
     # test connection
@@ -316,7 +316,7 @@ if __name__ == "__main__":
             ALL_TEST_RESULTS[model["short"]] = {
                 "passed": sum(TEST_RESULTS),
                 "failed": len(TEST_RESULTS) - sum(TEST_RESULTS)
-            }        
+            }       
     else:
         # test sdk for each model 
         for model in models:
@@ -426,7 +426,13 @@ if __name__ == "__main__":
     print("\n")
     logger.info("--------------------- SUMMARY for All Models ---------------------")
     for result in ALL_TEST_RESULTS:
-        logger.info("{} ---- {} PASSED, {} FAILED".format(result, ALL_TEST_RESULTS[result]["passed"], ALL_TEST_RESULTS[result]["failed"]))                
+        logger.info("{} ---- {} PASSED, {} FAILED".format(result, ALL_TEST_RESULTS[result]["passed"], ALL_TEST_RESULTS[result]["failed"]))
+
+    # raise error to ensure CI check "fails" if any errors
+    failed_check = [ALL_TEST_RESULTS[result]["failed"] for result in ALL_TEST_RESULTS]
+    failed = True if sum(failed_check) > 0 else False
+    if failed:
+        raise ValueError("{} Total Failures. Check logs for more information on failed tests".format(sum(failed_check)))                 
     
 
     
