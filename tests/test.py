@@ -265,8 +265,7 @@ if __name__ == "__main__":
         "batch_process": batch_process_pytorch
     }
     models = assemble_models_dict(hello_world_dict, sklearn_dict, pytorch_dict)
-    models = [model for model in models if model["short"] == "hello-world"]
-    
+        
     ALL_TEST_RESULTS = {}
     # test connection
     out = test_can_connect_to_service(HOST_URL, logger, "test_can_connect_to_service")
