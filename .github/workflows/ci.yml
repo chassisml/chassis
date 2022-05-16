@@ -63,7 +63,8 @@ jobs:
       MODZY_BASE_URL: ${{secrets.MODZY_BASE_URL}}
       MODZY_API_KEY: ${{secrets.MODZY_API_KEY}}
     
-    steps:
+    steps:   
+    # new
       - uses: actions/checkout@v2
         with:
           submodules: recursive 
@@ -92,7 +93,7 @@ jobs:
             ${{ runner.os }}-pip-        
 
       - name: Install dependencies
-        run: python3 -m pip install -r ./requirements.txt                      
+        run: python3 -m pip install -r ./tests/requirements.txt                      
 
       - name: Test with Chassis specific testing scheme
         run: |
