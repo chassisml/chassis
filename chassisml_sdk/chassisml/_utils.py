@@ -42,6 +42,7 @@ DEFAULT_MODZY_YAML_DATA = {'specification': '0.4',
         'features': {'explainable': False, 'adversarialDefense': False}
     }
 
+COLAB_REMOVE = {'google-cloud-storage','google-auth','google-colab','google-api-core'}
 ARM_GPU_REMOVE = {'torch','tensorflow','mxnet','scikit-learn','onnx','pandas','scipy','numpy','scikit-learn','opencv'}
 
 class NumpyEncoder(json.JSONEncoder):
@@ -81,8 +82,10 @@ def fix_dependencies(model_directory):
                 else:
                     new_conda += line.replace("opencv-python=","opencv-python-headless=")
                     opencv_found = True
+            elif any(package in line for package in COLAB_REMOVE): 
+                continue
             else:
-                    new_conda += line
+                new_conda += line
 
         opencv_found = False
         for line in pip_lines:
@@ -92,8 +95,10 @@ def fix_dependencies(model_directory):
                 else:
                     new_pip += line.replace("opencv-python=","opencv-python-headless=")
                     opencv_found = True
+            elif any(package in line for package in COLAB_REMOVE): 
+                continue
             else:
-                    new_pip += line
+                new_pip += line
         
     with open(conda_path,"w") as conda_w, open(pip_path,"w") as pip_w:
         conda_w.write(new_conda)

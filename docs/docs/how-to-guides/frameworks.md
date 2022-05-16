@@ -7,7 +7,7 @@ If you build models using a common machine learning framework and you want a way
 Can't find the framework you are looking for? Feel free to fork this repository, add an example or two from your framework of choice, and open a PR. Or come chat with us directly on [Discord](https://discord.gg/tdfXFY2y)!
 
 !!! warning "Requirements"
-    *To follow these how-to guides, you must first install the `chassisml` Python SDK and connect to the Chassis service either on your [local machine](../getting-started/deploy-manual.md) or to our [publicly-hosted](../getting-started/deploy-connect.mdd) instance within your Python IDE. You also will need an account with [Dockerhub](https://hub.docker.com/signup).* 
+    *To follow these how-to guides, you must first install the `chassisml` Python SDK and connect to the Chassis service either on your [local machine](../getting-started/deploy-manual.md) or to our [publicly-hosted](../getting-started/deploy-connect.md) instance within your Python IDE. You also will need an account with [Dockerhub](https://hub.docker.com/signup).* 
     
     For help getting started, visit our [Tutorials](https://chassis.ml/tutorials/devops-deploy/) page.
 
@@ -15,7 +15,7 @@ Can't find the framework you are looking for? Feel free to fork this repository,
 
 This guide builds a simple Image Classification model with a ResNet50 architecture, avaialable directly in PyTorch's [Torvision model library](https://pytorch.org/vision/stable/models.html).
 
-To follow along, you can reference the Jupyter notebook example and data files [here](https://github.com/modzy/chassis/blob/main/chassisml-sdk/examples/pytorch/pytorch_resnet50_image_classification.ipynb).
+To follow along, you can reference the Jupyter notebook example and data files [here](https://github.com/modzy/chassis/blob/main/chassisml_sdk/examples/pytorch/pytorch_resnet50_image_classification.ipynb).
 
 Import required dependencies.
 
@@ -109,7 +109,7 @@ Lastly, publish your model with your Docker credentials.
 
 ```python
 dockerhub_user = <my.username>
-dockerhob_pass = <my.password>
+dockerhub_pass = <my.password>
 
 response = chassis_model.publish(
     model_name="PyTorch ResNet50 Image Classification",
@@ -125,7 +125,7 @@ final_status = chassis_client.block_until_complete(job_id)
 
 This guide trains a Logistic Regression classifier on the [Digits Dataset](https://scikit-learn.org/stable/auto_examples/datasets/plot_digits_last_image.html) and auto-containerizes via the `chassisml` Python SDK. Visit the original classification exercise [here](https://scikit-learn.org/stable/auto_examples/exercises/plot_digits_classification_exercise.html#sphx-glr-auto-examples-exercises-plot-digits-classification-exercise-py).
 
-To follow along, you can reference the Jupyter notebook example and data files [here](https://github.com/modzy/chassis/blob/main/chassisml-sdk/examples/sklearn/sklearn_logreg_image_classification.ipynb).
+To follow along, you can reference the Jupyter notebook example and data files [here](https://github.com/modzy/chassis/blob/main/chassisml_sdk/examples/sklearn/sklearn_logreg_image_classification.ipynb).
 
 Import required dependencies.
 
@@ -230,13 +230,14 @@ Lastly, publish your model with your Docker credentials.
 
 ```python
 dockerhub_user = <my.username>
-dockerhob_pass = <my.password>
+dockerhub_pass = <my.password>
 
 response = chassis_model.publish(
     model_name="Sklearn Logistic Regression Digits Image Classification",
     model_version="0.0.1",
     registry_user=dockerhub_user,
     registry_pass=dockerhub_pass,
+    conda_env=env
 )
 
 job_id = response.get('job_id')
@@ -246,7 +247,7 @@ final_status = chassis_client.block_until_complete(job_id)
 
 This guide trains an XGBoost regression model that predicts housing prices based on a series of features in the [Boston Housing tabular dataset](https://www.kaggle.com/prasadperera/the-boston-housing-dataset). 
 
-To follow along, you can reference the Jupyter notebook example and data files [here](https://github.com/modzy/chassis/blob/main/chassisml-sdk/examples/xgboost/xgboost_house_price_predictions.ipynb).
+To follow along, you can reference the Jupyter notebook example and data files [here](https://github.com/modzy/chassis/blob/main/chassisml_sdk/examples/xgboost/xgboost_house_price_predictions.ipynb).
 
 Import required dependencies.
 
@@ -367,7 +368,7 @@ Lastly, publish your model with your Docker credentials.
 
 ```python
 dockerhub_user = <my.username>
-dockerhob_pass = <my.password>
+dockerhub_pass = <my.password>
 
 response = chassis_model.publish(
     model_name="XGBoost Boston Housing Price Predictions",
@@ -383,7 +384,7 @@ final_status = chassis_client.block_until_complete(job_id)
 
 This guide builds a LightGBM classifier model to predict the likelihood of women being diagnosed with Breast Cancer. This guide was adapted from this [Kaggle notebook](https://www.kaggle.com/prashant111/lightgbm-classifier-in-python). 
 
-To follow along, you can reference the Jupyter notebook example and data files [here](https://github.com/modzy/chassis/blob/main/chassisml-sdk/examples/lightgbm/lightgbm_classification.ipynb).
+To follow along, you can reference the Jupyter notebook example and data files [here](https://github.com/modzy/chassis/blob/main/chassisml_sdk/examples/lightgbm/lightgbm_classification.ipynb).
 
 Import required dependencies.
 
@@ -481,7 +482,7 @@ Lastly, publish your model with your Docker credentials.
 
 ```python
 dockerhub_user = <my.username>
-dockerhob_pass = <my.password>
+dockerhub_pass = <my.password>
 
 response = chassis_model.publish(
     model_name="Chassis LightGBM Breast Cancer Classification",
@@ -497,7 +498,7 @@ final_status = chassis_client.block_until_complete(job_id)
 
 This builds off Fastai's [Tabular training tutorial](https://docs.fast.ai/tutorial.tabular.html), which predicts the income of adults based on various education and socioeconomic factors.  
 
-To follow along, you can reference the Jupyter notebook example and data files [here](https://github.com/modzy/chassis/blob/main/chassisml-sdk/examples/fastai/fastai_tabular_training.ipynb).
+To follow along, you can reference the Jupyter notebook example and data files [here](https://github.com/modzy/chassis/blob/main/chassisml_sdk/examples/fastai/fastai_tabular_training.ipynb).
 
 Import required dependencies.
 
@@ -627,7 +628,7 @@ Lastly, publish your model with your Docker credentials.
 
 ```python
 dockerhub_user = <my.username>
-dockerhob_pass = <my.password>
+dockerhub_pass = <my.password>
 
 response = chassis_model.publish(
     model_name="Fast AI Salary Prediction",
@@ -643,7 +644,7 @@ final_status = chassis_client.block_until_complete(job_id)
 
 This guide leverages the [MXNet framework](https://mxnet.apache.org/versions/1.9.0/) to build a simple Image Classification model with a MobileNet architecture, avaialable directly in MXNet's [Gluon Model Zoo](https://mxnet.apache.org/api/python/docs/api/gluon/model_zoo/index.html). This guide is an adaptation of MXNet's [tutorial](https://mxnet.apache.org/versions/1.6/api/python/docs/tutorials/packages/gluon/image/pretrained_models.html#Loading-the-model) for using pretrained models. 
 
-To follow along, you can reference the Jupyter notebook example and data files [here](https://github.com/modzy/chassis/blob/main/chassisml-sdk/examples/mxnet/mxnet_mobilenet_image_classification.ipynb).
+To follow along, you can reference the Jupyter notebook example and data files [here](https://github.com/modzy/chassis/blob/main/chassisml_sdk/examples/mxnet/mxnet_mobilenet_image_classification.ipynb).
 
 Import required dependencies.
 
@@ -767,7 +768,7 @@ Lastly, publish your model with your Docker credentials.
 
 ```python
 dockerhub_user = <my.username>
-dockerhob_pass = <my.password>
+dockerhub_pass = <my.password>
 
 response = chassis_model.publish(
     model_name="MXNET MobileNet Image Classifiction",
@@ -783,7 +784,7 @@ final_status = chassis_client.block_until_complete(job_id)
 
 This guide leverages the `chassisml` SDK to auto-containerize a pretrained model from the [ONNX Model Zoo](https://github.com/onnx/models/tree/main/vision/classification/mobilenet). 
 
-To follow along, you can reference the Jupyter notebook example and data files [here](https://github.com/modzy/chassis/blob/main/chassisml-sdk/examples/onnx/onnx_mobilenet_image_classification.ipynb).
+To follow along, you can reference the Jupyter notebook example and data files [here](https://github.com/modzy/chassis/blob/main/chassisml_sdk/examples/onnx/onnx_mobilenet_image_classification.ipynb).
 
 Import required dependencies.
 
@@ -903,7 +904,7 @@ Lastly, publish your model with your Docker credentials.
 
 ```python
 dockerhub_user = <my.username>
-dockerhob_pass = <my.password>
+dockerhub_pass = <my.password>
 
 response = chassis_model.publish(
     model_name="ONNX MobileNet Image Classifiction",
@@ -919,7 +920,7 @@ final_status = chassis_client.block_until_complete(job_id)
 
 Predictive Model Markup Language (PMML) is an XML-based model format that is widely accepted and used to save machine learning models. This guide leverages the `chassisml` SDK to auto-containerize a pretrained model from this [PMML Scikit-Learn package model library](https://github.com/iamDecode/sklearn-pmml-model/tree/master/models). 
 
-To follow along, you can reference the Jupyter notebook example and data files [here](https://github.com/modzy/chassis/blob/main/chassisml-sdk/examples/pmml/pmml_iris_forest_classification.ipynb).
+To follow along, you can reference the Jupyter notebook example and data files [here](https://github.com/modzy/chassis/blob/main/chassisml_sdk/examples/pmml/pmml_iris_forest_classification.ipynb).
 
 Import required dependencies.
 
@@ -1040,7 +1041,7 @@ Lastly, publish your model with your Docker credentials.
 
 ```python
 dockerhub_user = <my.username>
-dockerhob_pass = <my.password>
+dockerhub_pass = <my.password>
 
 response = chassis_model.publish(
     model_name="PMML Random Forest Iris Classification",

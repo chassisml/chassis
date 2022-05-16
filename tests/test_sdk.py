@@ -766,13 +766,3 @@ def test_omi_compliance(client, logger, path, test_name="test_omi_compliance"):
 
     return result              
 
-# run test cases
-if __name__ == "__main__":
-    
-    # fixtures used throughout all test cases
-    logger = logging.getLogger(__name__)
-     
-    client = chassisml.ChassisClient(HOST_URL)
-    models = assemble_models_dict()
-
-    # run tests for each model in the models dictionary   
