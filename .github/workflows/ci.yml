@@ -58,6 +58,10 @@ jobs:
     if: true
     env:
       CHASSIS_URL: ${{secrets.CHASSIS_URL}}
+      DOCKER_USER: ${{secrets.DOCKER_USER}}
+      DOCKER_PASS: ${{secrets.DOCKER_PASS}}
+      MODZY_BASE_URL: ${{secrets.MODZY_BASE_URL}}
+      MODZY_API_KEY: ${{secrets.MODZY_API_KEY}}
     
     steps:
       - uses: actions/checkout@v2
