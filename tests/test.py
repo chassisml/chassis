@@ -265,6 +265,7 @@ if __name__ == "__main__":
         "batch_process": batch_process_pytorch
     }
     models = assemble_models_dict(hello_world_dict, sklearn_dict, pytorch_dict)
+    models = [model for model in models if model["short"] == "hello-world"]
     
     ALL_TEST_RESULTS = {}
     # test connection
@@ -290,12 +291,12 @@ if __name__ == "__main__":
             out = test_save_gpu(client, logger, model, UTILS_PATH)               
             TEST_RESULTS.append(out)
            # regular publish
-            out, job = test_publish(client, logger, model, docker_creds)
-            TEST_RESULTS.append(out)
-            out = test_get_job_status(client, logger, job)
-            TEST_RESULTS.append(out)
-            out = test_block_until_complete(client, logger, job)
-            TEST_RESULTS.append(out)
+            # out, job = test_publish(client, logger, model, docker_creds)
+            # TEST_RESULTS.append(out)
+            # out = test_get_job_status(client, logger, job)
+            # TEST_RESULTS.append(out)
+            # out = test_block_until_complete(client, logger, job)
+            # TEST_RESULTS.append(out)
             # publish with deployment to Modzy
             out, job = test_publish_modzy_deploy(client, logger, model, docker_creds, modzy_creds)
             TEST_RESULTS.append(out)
@@ -304,12 +305,12 @@ if __name__ == "__main__":
             out = test_block_until_complete(client, logger, job)
             TEST_RESULTS.append(out)
             # publish with manual env config
-            out, job = test_publish_manual_env_config(client, logger, model, docker_creds)
-            TEST_RESULTS.append(out)
-            out = test_get_job_status(client, logger, job)
-            TEST_RESULTS.append(out)
-            out = test_block_until_complete(client, logger, job)
-            TEST_RESULTS.append(out)                                                  
+            # out, job = test_publish_manual_env_config(client, logger, model, docker_creds)
+            # TEST_RESULTS.append(out)
+            # out = test_get_job_status(client, logger, job)
+            # TEST_RESULTS.append(out)
+            # out = test_block_until_complete(client, logger, job)
+            # TEST_RESULTS.append(out)                                                  
 
             logger.info("--------------------- SUMMARY for Model {} ---------------------".format(model["model_name"]))
             logger.info("{} PASSED, {} FAILED".format(sum(TEST_RESULTS), len(TEST_RESULTS) - sum(TEST_RESULTS)))   

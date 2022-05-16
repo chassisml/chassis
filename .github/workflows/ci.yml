@@ -81,6 +81,10 @@ jobs:
 
       - name: Test with Chassis specific testing scheme
         run: |
+          cd chassisml_sdk/chassisml/
+          git clone https://github.com/modzy/grpc_model.git
+          git clone https://github.com/modzy/model_lib.git
+          cd ../../
           python -m tests.test --ci True
 
   docs:
