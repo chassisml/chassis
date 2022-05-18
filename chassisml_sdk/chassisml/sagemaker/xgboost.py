@@ -1,9 +1,4 @@
-def _is_float(element):
-    try:
-        float(element)
-        return True
-    except ValueError:
-        return False
+from chassisml._utils import is_float
 
 def get_classification_process_fn(weights_path,**kwargs):
 
@@ -18,7 +13,7 @@ def get_classification_process_fn(weights_path,**kwargs):
 
     def process(input_bytes):
 
-        if any(_is_float(item) for item in input_bytes.decode("utf-8").splitlines()[0].split(',')):
+        if any(is_float(item) for item in input_bytes.decode("utf-8").splitlines()[0].split(',')):
             input_data = pd.read_csv(io.BytesIO(input_bytes),header=None)
         else:
             input_data = pd.read_csv(io.BytesIO(input_bytes))
@@ -43,7 +38,7 @@ def get_regression_process_fn(weights_path,**kwargs):
     
     def process(input_bytes):
 
-        if any(_is_float(item) for item in input_bytes.decode("utf-8").splitlines()[0].split(',')):
+        if any(is_float(item) for item in input_bytes.decode("utf-8").splitlines()[0].split(',')):
             input_data = pd.read_csv(io.BytesIO(input_bytes),header=None)
         else:
             input_data = pd.read_csv(io.BytesIO(input_bytes))

@@ -21,7 +21,7 @@ import chassisml.sagemaker as sm
 
 from .grpc_model.src import model_client
 from .open_model_initiative_checks.open_model_initiative_checks import OMI_check
-from ._utils import zipdir,fix_dependencies,write_modzy_yaml,NumpyEncoder,fix_dependencies_arm_gpu,check_modzy_url,download_from_s3
+from ._utils import zipdir,fix_dependencies,write_modzy_yaml,NumpyEncoder,fix_dependencies_arm_gpu,check_modzy_url,download_from_s3,is_float
 
 ###########################################
 MODEL_ZIP_NAME = 'model.zip'
@@ -723,7 +723,10 @@ class ChassisClient:
         loaded_model = mlflow.pyfunc.load_model(mlflow_model_dir)
 
         def process(input_bytes):
-            input_data = pd.read_csv(_io.BytesIO(input_bytes))
+            if any(is_float(item) for item in input_bytes.decode("utf-8").splitlines()[0].split(',')):
+                input_data = pd.read_csv(_io.BytesIO(input_bytes),header=None)
+            else:
+                input_data = pd.read_csv(_io.BytesIO(input_bytes))
             results = loaded_model.predict(input_data)
             return list(results)
         

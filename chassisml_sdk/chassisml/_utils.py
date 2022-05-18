@@ -152,3 +152,10 @@ def download_from_s3(bucket,key,access_key,secret_key,output_dir):
     output_path = os.path.join(output_dir,os.path.basename(key))
     s3.Bucket(bucket).download_file(key, output_path)
     return output_path
+
+def _is_float(element):
+    try:
+        float(element)
+        return True
+    except ValueError:
+        return False
