@@ -14,7 +14,7 @@ def download_registered_model_version(name,version,output_dir,tracking_uri=None,
         tracking_uri (str): MLflow tracking URI
         registry_uri (str): MLflow registry URI
     '''
-    client = MlflowClient(tracking_uri=tracking_uri)
+    client = MlflowClient(tracking_uri=tracking_uri,registry_uri=registry_uri)
     run_id = client.get_model_version(name,version).run_id
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
