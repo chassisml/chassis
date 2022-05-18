@@ -663,7 +663,7 @@ class ChassisClient:
             raise(e)
 
     def create_model_from_azure_automl(self,workspace_name,subscription_id,resource_group,experiment_name,run_id):
-        f'''
+        '''
         Builds Chassis model from trained Azure AutoML model (only classification and regression are supported)
 
         Args:
@@ -707,7 +707,28 @@ class ChassisClient:
             if os.path.exists(tmppath):
                 shutil.rmtree(tmppath)
             raise(e)
-            
+
+    def create_model_from_mlflow(self,mlflow_model_dir):
+        '''
+        Builds Chassis model from MLflow model dir
+
+        Args:
+            mlflow_model_dir (str): Path to MLflow model dir
+
+        Returns:
+            ChassisModel: Chassis Model object that can be tested locally and published to a Docker Registry
+        '''
+        import pandas as pd
+
+        loaded_model = mlflow.pyfunc.load_model(mlflow_model_dir)
+
+        def process(input_bytes):
+            input_data = pd.read_csv(_io.BytesIO(input_bytes))
+            results = loaded_model.predict(input_data)
+            return list(results)
+        
+        return ChassisModel(process,None,None,self.base_url)
+
     def run_inference(self, input_data, container_host="localhost", container_port=45000):
         '''
                 This is the method you use to submit data to a container chassis has built for inference.

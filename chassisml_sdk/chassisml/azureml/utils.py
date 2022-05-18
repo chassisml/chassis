@@ -82,6 +82,7 @@ def replicate_remote_env(workspace_name,subscription_id,resource_group,remote_en
         """
         subprocess.run(add_env_to_ipykernel_cmd, capture_output=True, shell=True, executable='/bin/bash', check=True)
         print(f'New environment "{new_env_name}" added to ipykernel successfully.')
+        print(f'Switch to "{local_env_name}", if you\'re using Jupyter: refresh page, click "Kernel", then "Change Kernel"')
         
         shutil.rmtree(tmppath)
     except Exception as e:
