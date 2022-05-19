@@ -1153,7 +1153,7 @@ Attributes:
             container_id = docker_start(image_id, host_port=host_port, container_port=container_port, timeout=timeout, pull_container=pull_container)
             if &quot;Error&quot; in container_id:
                 raise ValueError(&quot;container_id wrong&quot;)
-            return_value = run_inference(input_data, container_url=container_url,  host_port=host_port)
+            return_value = self.run_inference(input_data, container_url=container_url,  host_port=host_port)
             if clean_up:
                 docker_clean_up(container_id)
         except Exception as e:
@@ -1639,7 +1639,7 @@ for x in results:
         container_id = docker_start(image_id, host_port=host_port, container_port=container_port, timeout=timeout, pull_container=pull_container)
         if &quot;Error&quot; in container_id:
             raise ValueError(&quot;container_id wrong&quot;)
-        return_value = run_inference(input_data, container_url=container_url,  host_port=host_port)
+        return_value = self.run_inference(input_data, container_url=container_url,  host_port=host_port)
         if clean_up:
             docker_clean_up(container_id)
     except Exception as e:
@@ -3855,7 +3855,7 @@ ChassisClient        </code>
 <a id="__codelineno-0-316" name="__codelineno-0-316" href="#__codelineno-0-316"></a>            <span class="n">container_id</span> <span class="o">=</span> <span class="n">docker_start</span><span class="p">(</span><span class="n">image_id</span><span class="p">,</span> <span class="n">host_port</span><span class="o">=</span><span class="n">host_port</span><span class="p">,</span> <span class="n">container_port</span><span class="o">=</span><span class="n">container_port</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">pull_container</span><span class="o">=</span><span class="n">pull_container</span><span class="p">)</span>
 <a id="__codelineno-0-317" name="__codelineno-0-317" href="#__codelineno-0-317"></a>            <span class="k">if</span> <span class="s2">&quot;Error&quot;</span> <span class="ow">in</span> <span class="n">container_id</span><span class="p">:</span>
 <a id="__codelineno-0-318" name="__codelineno-0-318" href="#__codelineno-0-318"></a>                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;container_id wrong&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-319" name="__codelineno-0-319" href="#__codelineno-0-319"></a>            <span class="n">return_value</span> <span class="o">=</span> <span class="n">run_inference</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">container_url</span><span class="o">=</span><span class="n">container_url</span><span class="p">,</span>  <span class="n">host_port</span><span class="o">=</span><span class="n">host_port</span><span class="p">)</span>
+<a id="__codelineno-0-319" name="__codelineno-0-319" href="#__codelineno-0-319"></a>            <span class="n">return_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_inference</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">container_url</span><span class="o">=</span><span class="n">container_url</span><span class="p">,</span>  <span class="n">host_port</span><span class="o">=</span><span class="n">host_port</span><span class="p">)</span>
 <a id="__codelineno-0-320" name="__codelineno-0-320" href="#__codelineno-0-320"></a>            <span class="k">if</span> <span class="n">clean_up</span><span class="p">:</span>
 <a id="__codelineno-0-321" name="__codelineno-0-321" href="#__codelineno-0-321"></a>                <span class="n">docker_clean_up</span><span class="p">(</span><span class="n">container_id</span><span class="p">)</span>
 <a id="__codelineno-0-322" name="__codelineno-0-322" href="#__codelineno-0-322"></a>        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -4341,7 +4341,7 @@ for x in results:
 <a id="__codelineno-0-38" name="__codelineno-0-38" href="#__codelineno-0-38"></a>        <span class="n">container_id</span> <span class="o">=</span> <span class="n">docker_start</span><span class="p">(</span><span class="n">image_id</span><span class="p">,</span> <span class="n">host_port</span><span class="o">=</span><span class="n">host_port</span><span class="p">,</span> <span class="n">container_port</span><span class="o">=</span><span class="n">container_port</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">pull_container</span><span class="o">=</span><span class="n">pull_container</span><span class="p">)</span>
 <a id="__codelineno-0-39" name="__codelineno-0-39" href="#__codelineno-0-39"></a>        <span class="k">if</span> <span class="s2">&quot;Error&quot;</span> <span class="ow">in</span> <span class="n">container_id</span><span class="p">:</span>
 <a id="__codelineno-0-40" name="__codelineno-0-40" href="#__codelineno-0-40"></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;container_id wrong&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-41" name="__codelineno-0-41" href="#__codelineno-0-41"></a>        <span class="n">return_value</span> <span class="o">=</span> <span class="n">run_inference</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">container_url</span><span class="o">=</span><span class="n">container_url</span><span class="p">,</span>  <span class="n">host_port</span><span class="o">=</span><span class="n">host_port</span><span class="p">)</span>
+<a id="__codelineno-0-41" name="__codelineno-0-41" href="#__codelineno-0-41"></a>        <span class="n">return_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_inference</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">container_url</span><span class="o">=</span><span class="n">container_url</span><span class="p">,</span>  <span class="n">host_port</span><span class="o">=</span><span class="n">host_port</span><span class="p">)</span>
 <a id="__codelineno-0-42" name="__codelineno-0-42" href="#__codelineno-0-42"></a>        <span class="k">if</span> <span class="n">clean_up</span><span class="p">:</span>
 <a id="__codelineno-0-43" name="__codelineno-0-43" href="#__codelineno-0-43"></a>            <span class="n">docker_clean_up</span><span class="p">(</span><span class="n">container_id</span><span class="p">)</span>
 <a id="__codelineno-0-44" name="__codelineno-0-44" href="#__codelineno-0-44"></a>    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
