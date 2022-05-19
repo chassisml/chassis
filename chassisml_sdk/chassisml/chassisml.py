@@ -680,7 +680,7 @@ class ChassisClient:
             container_id = docker_start(image_id, host_port=host_port, container_port=container_port, timeout=timeout, pull_container=pull_container)
             if "Error" in container_id:
                 raise ValueError("container_id wrong")
-            return_value = run_inference(input_data, container_url=container_url,  host_port=host_port)
+            return_value = self.run_inference(input_data, container_url=container_url,  host_port=host_port)
             if clean_up:
                 docker_clean_up(container_id)
         except Exception as e:
