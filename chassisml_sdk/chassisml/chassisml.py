@@ -19,7 +19,7 @@ from chassisml import __version__
 
 from .open_model_initiative_checks.open_model_initiative_checks import OMI_check
 from ._utils import zipdir,fix_dependencies,write_modzy_yaml,NumpyEncoder,fix_dependencies_arm_gpu, \
-    check_modzy_url,run_inference,docker_start,docker_clean_up
+    check_modzy_url,docker_start,docker_clean_up
 
 ###########################################
 MODEL_ZIP_NAME = 'model.zip'
