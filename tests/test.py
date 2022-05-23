@@ -22,9 +22,10 @@ import torchvision.models as models
 from torchvision import transforms
 
 # TODO: instantiate HOST_URL in __init__
-HOST_URL = "http://localhost:5000"
+HOST_URL = "http://localhost:5000" if os.getenv('CHASSIS_URL') == None else os.getenv('CHASSIS_URL')
 ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
 UTILS_PATH = os.path.join(ROOT_DIR, "utils")
+print("\nRoot Directory -> ", ROOT_DIR,"\n UTILS_PATH ->", UTILS_PATH,"\n")
 
 
 def assemble_models_dict(hello_world, sklearn, pytorch):
@@ -67,6 +68,12 @@ def assemble_models_dict(hello_world, sklearn, pytorch):
 
 
 if __name__ == "__main__":
+
+    # add optional CI trigger argument
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--ci", default=False, help="If True, only CI-specific tests will run")
+    args = parser.parse_args()
     
     # fixtures used throughout all test cases
     logger = logging.getLogger(__name__)
@@ -115,10 +122,7 @@ if __name__ == "__main__":
 
     # Train Model
     logistic = LogisticRegression(max_iter=1000)
-    print(
-        "LogisticRegression mean accuracy score: %f"
-        % logistic.fit(X_train, y_train).score(X_test, y_test)
-    )    
+    logistic.fit(X_train, y_train).score(X_test, y_test)
 
     def process_sklearn(input_bytes):
         inputs = np.array(json.loads(input_bytes))
@@ -152,10 +156,10 @@ if __name__ == "__main__":
     PyTorch Model
     '''
 
-    model_pytorch = models.resnet50(pretrained=True)
+    model_pytorch = models.resnet50(pretrained=True, progress=False)
     model_pytorch.eval()
 
-    labels = pickle.load(open('./chassisml-sdk/examples/pytorch/data/imagenet_labels.pkl','rb'))
+    labels = pickle.load(open('./chassisml_sdk/examples/pytorch/data/imagenet_labels.pkl','rb'))
 
     transform = transforms.Compose([
                 transforms.ToPILImage(),
@@ -164,7 +168,10 @@ if __name__ == "__main__":
                 transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
             ])        
 
-    device = 'cuda'
+    device = 'cpu'
+    if torch.cuda.is_available():
+        device = 'cuda'
+
     model_pytorch.to(device)
 
     def process_pytorch(input_bytes):
@@ -234,7 +241,7 @@ if __name__ == "__main__":
                 "pip": [
                     "torch",
                     "torchvision",
-                    "opencv-python"
+                    "opencv-python-headless",
                     "numpy",
                     "chassisml"
                 ] 
@@ -258,120 +265,174 @@ if __name__ == "__main__":
         "batch_process": batch_process_pytorch
     }
     models = assemble_models_dict(hello_world_dict, sklearn_dict, pytorch_dict)
-    
+        
     ALL_TEST_RESULTS = {}
     # test connection
     out = test_can_connect_to_service(HOST_URL, logger, "test_can_connect_to_service")
     
-    # test sdk for each model 
-    for model in models:
-        TEST_RESULTS = []
-        modzy_creds = {
-            "sample_filepath": model["test_file"],
-            "modzy_api_key": os.getenv("MODZY_API_KEY"),
-            "modzy_url": os.getenv("MODZY_BASE_URL")
-        }        
-        out = test_create_model(client, logger, model)
-        TEST_RESULTS.append(out)
-        out = test_create_model_with_batch(client, logger, model)    
-        TEST_RESULTS.append(out)
-        out = test_local_test(client, logger, model)
-        TEST_RESULTS.append(out)
-        out = test_local_batch_test(client, logger, model)
-        TEST_RESULTS.append(out)
-        out = test_env_test(client, logger, model)
-        TEST_RESULTS.append(out)
-        out = test_env_test_manual_env_config(client, logger, model)
-        TEST_RESULTS.append(out)
-        out = test_save(client, logger, model, UTILS_PATH)               
-        TEST_RESULTS.append(out)
-        out = test_save_manual_env_config(client, logger, model, UTILS_PATH)               
-        TEST_RESULTS.append(out)
-        out = test_save_gpu(client, logger, model, UTILS_PATH)               
-        TEST_RESULTS.append(out)
-        out = test_save_arm(client, logger, model, UTILS_PATH)                 
-        TEST_RESULTS.append(out)
-        out = test_save_gpu_and_arm(client, logger, model, UTILS_PATH) 
-        TEST_RESULTS.append(out)
-        # regular publish
-        out, job = test_publish(client, logger, model, docker_creds)
-        TEST_RESULTS.append(out)
-        out = test_get_job_status(client, logger, job)
-        TEST_RESULTS.append(out)
-        out = test_block_until_complete(client, logger, job)
-        TEST_RESULTS.append(out)
-        out, path = test_download_tar(client, logger, job, UTILS_PATH)
-        TEST_RESULTS.append(out)
-        out = test_omi_compliance(client, logger, path)
-        TEST_RESULTS.append(out)
-        # publish with deployment to Modzy
-        out, job = test_publish_modzy_deploy(client, logger, model, docker_creds, modzy_creds)
-        TEST_RESULTS.append(out)
-        out = test_get_job_status(client, logger, job)
-        TEST_RESULTS.append(out)
-        out = test_block_until_complete(client, logger, job)
-        TEST_RESULTS.append(out)
-        out, path = test_download_tar(client, logger, job, UTILS_PATH)
-        TEST_RESULTS.append(out)
-        out = test_omi_compliance(client, logger, path)
-        TEST_RESULTS.append(out)
-        # publish with manual env config
-        out, job = test_publish_manual_env_config(client, logger, model, docker_creds)
-        TEST_RESULTS.append(out)
-        out = test_get_job_status(client, logger, job)
-        TEST_RESULTS.append(out)
-        out = test_block_until_complete(client, logger, job)
-        TEST_RESULTS.append(out)
-        out, path = test_download_tar(client, logger, job, UTILS_PATH)
-        TEST_RESULTS.append(out)
-        out = test_omi_compliance(client, logger, path)
-        TEST_RESULTS.append(out)   
-        # publish with GPU
-        out, job = test_publish_gpu(client, logger, model, docker_creds)
-        TEST_RESULTS.append(out)
-        out = test_get_job_status(client, logger, job)
-        TEST_RESULTS.append(out)
-        out = test_block_until_complete(client, logger, job)
-        TEST_RESULTS.append(out)
-        out, path = test_download_tar(client, logger, job, UTILS_PATH)
-        TEST_RESULTS.append(out)
-        out = test_omi_compliance(client, logger, path)
-        TEST_RESULTS.append(out)  
-        # publish with arm
-        out, job = test_publish_arm(client, logger, model, docker_creds)
-        TEST_RESULTS.append(out)
-        out = test_get_job_status(client, logger, job)
-        TEST_RESULTS.append(out)
-        out = test_block_until_complete(client, logger, job)
-        TEST_RESULTS.append(out)
-        out, path = test_download_tar(client, logger, job, UTILS_PATH)
-        TEST_RESULTS.append(out)
-        out = test_omi_compliance(client, logger, path)
-        TEST_RESULTS.append(out) 
-        # publish with arm and GPU
-        out, job = test_publish_gpu_and_arm(client, logger, model, docker_creds)
-        TEST_RESULTS.append(out)
-        out = test_get_job_status(client, logger, job)
-        TEST_RESULTS.append(out)
-        out = test_block_until_complete(client, logger, job)
-        TEST_RESULTS.append(out)
-        out, path = test_download_tar(client, logger, job, UTILS_PATH)
-        TEST_RESULTS.append(out)
-        out = test_omi_compliance(client, logger, path)
-        TEST_RESULTS.append(out)                                                       
+    if args.ci:
+        # test sdk for a subset of all tests 
+        for model in models:
+            TEST_RESULTS = []
+            modzy_creds = {
+                "sample_filepath": model["test_file"],
+                "modzy_api_key": os.getenv("MODZY_API_KEY"),
+                "modzy_url": os.getenv("MODZY_BASE_URL")
+            }        
+            out = test_local_test(client, logger, model)
+            TEST_RESULTS.append(out)
+            out = test_local_batch_test(client, logger, model)
+            TEST_RESULTS.append(out)
+            out = test_save(client, logger, model, UTILS_PATH)               
+            TEST_RESULTS.append(out)
+            out = test_save_manual_env_config(client, logger, model, UTILS_PATH)               
+            TEST_RESULTS.append(out)
+            out = test_save_gpu(client, logger, model, UTILS_PATH)               
+            TEST_RESULTS.append(out)
+           # regular publish
+            out, job = test_publish(client, logger, model, docker_creds)
+            TEST_RESULTS.append(out)
+            out = test_get_job_status(client, logger, job)
+            TEST_RESULTS.append(out)
+            out = test_block_until_complete(client, logger, job)
+            TEST_RESULTS.append(out)
+            # publish with deployment to Modzy
+            out, job = test_publish_modzy_deploy(client, logger, model, docker_creds, modzy_creds)
+            TEST_RESULTS.append(out)
+            out = test_get_job_status(client, logger, job)
+            TEST_RESULTS.append(out)
+            out = test_block_until_complete(client, logger, job)
+            TEST_RESULTS.append(out)
+            # publish with manual env config
+            out, job = test_publish_manual_env_config(client, logger, model, docker_creds)
+            TEST_RESULTS.append(out)
+            out = test_get_job_status(client, logger, job)
+            TEST_RESULTS.append(out)
+            out = test_block_until_complete(client, logger, job)
+            TEST_RESULTS.append(out)                                                  
 
-        logger.info("--------------------- SUMMARY for Model {} ---------------------".format(model["model_name"]))
-        logger.info("{} PASSED, {} FAILED".format(sum(TEST_RESULTS), len(TEST_RESULTS) - sum(TEST_RESULTS)))   
-        ALL_TEST_RESULTS[model["short"]] = {
-            "passed": sum(TEST_RESULTS),
-            "failed": len(TEST_RESULTS) - sum(TEST_RESULTS)
-        }
+            logger.info("--------------------- SUMMARY for Model {} ---------------------".format(model["model_name"]))
+            logger.info("{} PASSED, {} FAILED".format(sum(TEST_RESULTS), len(TEST_RESULTS) - sum(TEST_RESULTS)))   
+            ALL_TEST_RESULTS[model["short"]] = {
+                "passed": sum(TEST_RESULTS),
+                "failed": len(TEST_RESULTS) - sum(TEST_RESULTS)
+            }       
+    else:
+        # test sdk for each model 
+        for model in models:
+            TEST_RESULTS = []
+            modzy_creds = {
+                "sample_filepath": model["test_file"],
+                "modzy_api_key": os.getenv("MODZY_API_KEY"),
+                "modzy_url": os.getenv("MODZY_BASE_URL")
+            }        
+            out = test_create_model(client, logger, model)
+            TEST_RESULTS.append(out)
+            out = test_create_model_with_batch(client, logger, model)    
+            TEST_RESULTS.append(out)
+            out = test_local_test(client, logger, model)
+            TEST_RESULTS.append(out)
+            out = test_local_batch_test(client, logger, model)
+            TEST_RESULTS.append(out)
+            out = test_env_test(client, logger, model)
+            TEST_RESULTS.append(out)
+            out = test_env_test_manual_env_config(client, logger, model)
+            TEST_RESULTS.append(out)
+            out = test_save(client, logger, model, UTILS_PATH)               
+            TEST_RESULTS.append(out)
+            out = test_save_manual_env_config(client, logger, model, UTILS_PATH)               
+            TEST_RESULTS.append(out)
+            out = test_save_gpu(client, logger, model, UTILS_PATH)               
+            TEST_RESULTS.append(out)
+            out = test_save_arm(client, logger, model, UTILS_PATH)                 
+            TEST_RESULTS.append(out)
+            out = test_save_gpu_and_arm(client, logger, model, UTILS_PATH) 
+            TEST_RESULTS.append(out)
+            # regular publish
+            out, job = test_publish(client, logger, model, docker_creds)
+            TEST_RESULTS.append(out)
+            out = test_get_job_status(client, logger, job)
+            TEST_RESULTS.append(out)
+            out = test_block_until_complete(client, logger, job)
+            TEST_RESULTS.append(out)
+            out, path = test_download_tar(client, logger, job, UTILS_PATH)
+            TEST_RESULTS.append(out)
+            out = test_omi_compliance(client, logger, path)
+            TEST_RESULTS.append(out)
+            # publish with deployment to Modzy
+            out, job = test_publish_modzy_deploy(client, logger, model, docker_creds, modzy_creds)
+            TEST_RESULTS.append(out)
+            out = test_get_job_status(client, logger, job)
+            TEST_RESULTS.append(out)
+            out = test_block_until_complete(client, logger, job)
+            TEST_RESULTS.append(out)
+            out, path = test_download_tar(client, logger, job, UTILS_PATH)
+            TEST_RESULTS.append(out)
+            out = test_omi_compliance(client, logger, path)
+            TEST_RESULTS.append(out)
+            # publish with manual env config
+            out, job = test_publish_manual_env_config(client, logger, model, docker_creds)
+            TEST_RESULTS.append(out)
+            out = test_get_job_status(client, logger, job)
+            TEST_RESULTS.append(out)
+            out = test_block_until_complete(client, logger, job)
+            TEST_RESULTS.append(out)
+            out, path = test_download_tar(client, logger, job, UTILS_PATH)
+            TEST_RESULTS.append(out)
+            out = test_omi_compliance(client, logger, path)
+            TEST_RESULTS.append(out)   
+            # publish with GPU
+            out, job = test_publish_gpu(client, logger, model, docker_creds)
+            TEST_RESULTS.append(out)
+            out = test_get_job_status(client, logger, job)
+            TEST_RESULTS.append(out)
+            out = test_block_until_complete(client, logger, job)
+            TEST_RESULTS.append(out)
+            out, path = test_download_tar(client, logger, job, UTILS_PATH)
+            TEST_RESULTS.append(out)
+            out = test_omi_compliance(client, logger, path)
+            TEST_RESULTS.append(out)  
+            # publish with arm
+            out, job = test_publish_arm(client, logger, model, docker_creds)
+            TEST_RESULTS.append(out)
+            out = test_get_job_status(client, logger, job)
+            TEST_RESULTS.append(out)
+            out = test_block_until_complete(client, logger, job)
+            TEST_RESULTS.append(out)
+            out, path = test_download_tar(client, logger, job, UTILS_PATH)
+            TEST_RESULTS.append(out)
+            out = test_omi_compliance(client, logger, path)
+            TEST_RESULTS.append(out) 
+            # publish with arm and GPU
+            out, job = test_publish_gpu_and_arm(client, logger, model, docker_creds)
+            TEST_RESULTS.append(out)
+            out = test_get_job_status(client, logger, job)
+            TEST_RESULTS.append(out)
+            out = test_block_until_complete(client, logger, job)
+            TEST_RESULTS.append(out)
+            out, path = test_download_tar(client, logger, job, UTILS_PATH)
+            TEST_RESULTS.append(out)
+            out = test_omi_compliance(client, logger, path)
+            TEST_RESULTS.append(out)                                                       
+
+            logger.info("--------------------- SUMMARY for Model {} ---------------------".format(model["model_name"]))
+            logger.info("{} PASSED, {} FAILED".format(sum(TEST_RESULTS), len(TEST_RESULTS) - sum(TEST_RESULTS)))   
+            ALL_TEST_RESULTS[model["short"]] = {
+                "passed": sum(TEST_RESULTS),
+                "failed": len(TEST_RESULTS) - sum(TEST_RESULTS)
+            }
 
 
     print("\n")
     logger.info("--------------------- SUMMARY for All Models ---------------------")
     for result in ALL_TEST_RESULTS:
-        logger.info("{} ---- {} PASSED, {} FAILED".format(result, ALL_TEST_RESULTS[result]["passed"], ALL_TEST_RESULTS[result]["failed"]))                
+        logger.info("{} ---- {} PASSED, {} FAILED".format(result, ALL_TEST_RESULTS[result]["passed"], ALL_TEST_RESULTS[result]["failed"]))
+
+    # raise error to ensure CI check "fails" if any errors
+    failed_check = [ALL_TEST_RESULTS[result]["failed"] for result in ALL_TEST_RESULTS]
+    failed = True if sum(failed_check) > 0 else False
+    if failed:
+        raise ValueError("{} Total Failures. Check logs for more information on failed tests".format(sum(failed_check)))                 
     
 
     

@@ -14,5 +14,5 @@ def test_can_connect_to_service(host_url, logger, test_name):
         logger.error(output.stdout.decode())
     return out
 
-if __name__ == "__main__":
-    out = test_can_connect_to_service()
+#if __name__ == "__main__":
+    #out = test_can_connect_to_service()
