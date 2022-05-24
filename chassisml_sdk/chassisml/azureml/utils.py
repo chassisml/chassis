@@ -4,7 +4,8 @@ import shutil
 import tempfile
 import subprocess
 
-def download_model_artifacts(workspace_name,subscription_id,resource_group,model_name,output_dir):
+def download_model_artifacts(tenant_id,service_principal_id,service_principal_password,
+                            workspace_name,subscription_id,resource_group,model_name,output_dir):
     '''
     Downloads registered Azure ML model artifacts
 
@@ -17,16 +18,25 @@ def download_model_artifacts(workspace_name,subscription_id,resource_group,model
     '''
 
     from azureml.core import Workspace,Model
+    from azureml.core.authentication import ServicePrincipalAuthentication
+
+    svc_pr = ServicePrincipalAuthentication(
+            tenant_id=tenant_id,
+            service_principal_id=service_principal_id,
+            service_principal_password=service_principal_password
+        )
 
     ws = Workspace.get(name=workspace_name,
                subscription_id=subscription_id,
-               resource_group=resource_group)
+               resource_group=resource_group,
+               auth=svc_pr)
 
     model = Model(ws, model_name)
     model.download(output_dir)
     print("Model downloaded.")
 
-def replicate_remote_env(workspace_name,subscription_id,resource_group,remote_env_name,local_env_name=None):
+def replicate_remote_env(tenant_id,service_principal_id,service_principal_password,workspace_name,
+                        subscription_id,resource_group,remote_env_name,local_env_name=None):
     '''
     Replicates remote Azure ML environment locally, requires conda
 
@@ -40,12 +50,20 @@ def replicate_remote_env(workspace_name,subscription_id,resource_group,remote_en
 
     from azureml.core import Workspace,Model
     from azureml.core.environment import Environment
+    from azureml.core.authentication import ServicePrincipalAuthentication
 
     #TODO: warn that you need CONDA!!!
 
+    svc_pr = ServicePrincipalAuthentication(
+            tenant_id=tenant_id,
+            service_principal_id=service_principal_id,
+            service_principal_password=service_principal_password
+        )
+
     ws = Workspace.get(name=workspace_name,
                subscription_id=subscription_id,
-               resource_group=resource_group)
+               resource_group=resource_group,
+               auth=svc_pr)
 
     myenv = Environment.get(workspace=ws, name=remote_env_name)
     yaml_data = myenv.python.conda_dependencies.as_dict()

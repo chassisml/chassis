@@ -662,7 +662,8 @@ class ChassisClient:
                 shutil.rmtree(tmppath)
             raise(e)
 
-    def create_model_from_azure_automl(self,workspace_name,subscription_id,resource_group,experiment_name,run_id):
+    def create_model_from_azure_automl(self,tenant_id,service_principal_id,service_principal_password,
+                                workspace_name,subscription_id,resource_group,experiment_name,run_id):
         f'''
         Builds Chassis model from trained Azure AutoML model (only classification and regression are supported)
 
@@ -678,13 +679,21 @@ class ChassisClient:
         '''
 
         from azureml.core import Workspace,Experiment
+        from azureml.core.authentication import ServicePrincipalAuthentication
         from azureml.core.run import Run
         import joblib
         import pandas as pd
+
+        svc_pr = ServicePrincipalAuthentication(
+            tenant_id=tenant_id,
+            service_principal_id=service_principal_id,
+            service_principal_password=service_principal_password
+        )
         
         ws = Workspace.get(name=workspace_name,
                subscription_id=subscription_id,
-               resource_group=resource_group)
+               resource_group=resource_group,
+               auth=svc_pr)
 
         experiment = Experiment(workspace = ws, name = experiment_name)
         run = Run(experiment,run_id)
