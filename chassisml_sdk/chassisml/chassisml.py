@@ -668,6 +668,9 @@ class ChassisClient:
         Builds Chassis model from trained Azure AutoML model (only classification and regression are supported)
 
         Args:
+            tenant_id (str): Azure ML tenant id
+            service_principal_id (str): Azure ML service principal id with access to workspace
+            service_principal_password (str): Azure ML service principal password with access to workspace
             workspace_name (str): Azure ML workspace name
             subscription_id (str): Azure ML subscription ID
             resource_group (str): Azure ML resource group
