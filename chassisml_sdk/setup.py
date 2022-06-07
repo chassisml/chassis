@@ -19,6 +19,6 @@ setup(
     packages=find_packages(),
     python_requires='>=3.6',
     install_requires=['requests','mlflow','numpy','pyyaml','validators','grpc-requests','grpcio>=1.44.0','docker'],
-    url='https://github.com/modzy/chassis/tree/main/chassisml-sdk',
+    url='https://github.com/modzy/chassis/tree/main/chassisml_sdk',
     zip_safe=False,
 )
