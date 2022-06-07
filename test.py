@@ -1,5 +1,4 @@
-
-from chassisml_sdk.chassisml import chassisml
+from chassisml import chassisml
 
 host_port = 5002
 client = chassisml.ChassisClient()
