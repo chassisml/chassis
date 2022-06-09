@@ -381,7 +381,7 @@ def create_job_object(
     modzy_uploader_volume_mounts = []
     kaniko_volume_mounts = [kaniko_credentials_volume_mount]
 
-    base_resources = {"memory": "4Gi", "cpu": "2"}
+    base_resources = {"memory": "8Gi", "cpu": "2"}
     slim_reqs = {"memory": "2Gi", "cpu": "1"}
     kaniko_reqs = client.V1ResourceRequirements(limits=base_resources, requests=base_resources)
     modzy_uploader_reqs = client.V1ResourceRequirements(limits=slim_reqs, requests=slim_reqs)
