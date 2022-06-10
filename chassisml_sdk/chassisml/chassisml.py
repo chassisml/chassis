@@ -652,7 +652,7 @@ class ChassisClient:
             container_port (str): container port the grpc server listens to
             timeout (int): number of seconds to wait for gRPC server to spin up
             clean_up (bool): whether or not to stop and remove the container after inference
-            pull_container(bool): if True pulls missing container from repo
+            pull_container (bool): if True pulls missing container from repo
 
         Returns:
             return_value (str):    Success -> model output as defined in the process function
