@@ -35,7 +35,7 @@ from libcloud.storage.providers import get_driver
 
 load_dotenv()
 
-CHASSIS_DEV = False
+CHASSIS_DEV = True
 WINDOWS = True if os.name == 'nt' else False
 
 HOME_DIR = str(Path.home())
@@ -381,6 +381,11 @@ def create_job_object(
     modzy_uploader_volume_mounts = []
     kaniko_volume_mounts = [kaniko_credentials_volume_mount]
 
+    base_resources = {"memory": "8Gi", "cpu": "2"}
+    slim_reqs = {"memory": "2Gi", "cpu": "1"}
+    kaniko_reqs = client.V1ResourceRequirements(limits=base_resources, requests=base_resources)
+    modzy_uploader_reqs = client.V1ResourceRequirements(limits=slim_reqs, requests=slim_reqs)
+
     if PV_MODE:
         dockerfile = choose_dockerfile(gpu,arm64)
         kaniko_args.extend([f'--dockerfile={DATA_DIR}/flavours/{module_name}/{dockerfile}',f'--context={DATA_DIR}',
@@ -391,6 +396,7 @@ def create_job_object(
             name='kaniko',
             image='gcr.io/kaniko-project/executor:latest',
             volume_mounts=kaniko_volume_mounts,
+            resources=kaniko_reqs,
             args=kaniko_args
         )
 
@@ -433,6 +439,7 @@ def create_job_object(
                 image='gcr.io/kaniko-project/executor:latest',
                 volume_mounts=kaniko_volume_mounts,
                 env=[client.V1EnvVar(name='AWS_REGION', value=AWS_REGION)],
+                resources=kaniko_reqs,
                 args=kaniko_args
             )
         elif MODE=="gs":
@@ -453,6 +460,7 @@ def create_job_object(
                 image='gcr.io/kaniko-project/executor:latest',
                 volume_mounts=kaniko_volume_mounts,
                 env=[client.V1EnvVar(name='GOOGLE_APPLICATION_CREDENTIALS', value='/secret/storage-key.json')],
+                resources=kaniko_reqs,
                 args=kaniko_args
             )
         else:
@@ -469,6 +477,7 @@ def create_job_object(
             client.V1EnvVar(name='JOB_NAME', value=job_name),
             client.V1EnvVar(name='ENVIRONMENT', value=ENVIRONMENT)
         ],
+        resources=modzy_uploader_reqs,
         args=modzy_uploader_args
     )
 
