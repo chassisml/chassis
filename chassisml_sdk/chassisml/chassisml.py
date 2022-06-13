@@ -19,6 +19,10 @@ warnings.filterwarnings("ignore")
 from chassisml import __version__
 import chassisml.sagemaker as sm
 
+import logging
+logger = logging.getLogger("azure.core.pipeline.policies.http_logging_policy")
+logger.setLevel(logging.WARNING)
+
 from .grpc_model.src import model_client
 from .open_model_initiative_checks.open_model_initiative_checks import OMI_check
 from ._utils import zipdir,fix_dependencies,write_modzy_yaml,NumpyEncoder,fix_dependencies_arm_gpu,check_modzy_url,download_from_s3
