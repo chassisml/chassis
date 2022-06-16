@@ -370,17 +370,18 @@ def create_job_object(
         '--build-arg=INTERFACE=modzy',
     ]
 
-    # add proxies for kaniko if they exist assumption is they are environment variables
+    # add proxies for kaniko if they exist. assumption is they are environment variables
     proxylist = ["http_proxy", "HTTP_PROXY", "https_proxy", "HTTPS_PROXY", "no_proxy", "NO_PROXY"]
     presentProxies = []
     for pvalue in proxylist:
         if os.getenv(pvalue) is not None:
+            # proxy information for the Docker build
             kaniko_args.append(f'--build-arg={str.upper(pvalue)}={os.getenv(pvalue)}')
             kaniko_args.append(f'--build-arg={str.lower(pvalue)}={os.getenv(pvalue)}')
+            # proxy information for the kaniko container itself
             presentProxies.append(client.V1EnvVar(name=str.upper(pvalue), value=os.getenv(pvalue)))
             presentProxies.append(client.V1EnvVar(name=str.lower(pvalue), value=os.getenv(pvalue)))
 
-    print(presentProxies,flush=True)
 
     modzy_uploader_args = [
             f'--api_key={modzy_data.get("api_key")}',
@@ -413,6 +414,7 @@ def create_job_object(
             image='gcr.io/kaniko-project/executor:latest',
             volume_mounts=kaniko_volume_mounts,
             resources=kaniko_reqs,
+            env=presentProxies,
             args=kaniko_args
         )
 
@@ -475,7 +477,7 @@ def create_job_object(
                 name='kaniko',
                 image='gcr.io/kaniko-project/executor:latest',
                 volume_mounts=kaniko_volume_mounts,
-                env=[client.V1EnvVar(name='GOOGLE_APPLICATION_CREDENTIALS', value='/secret/storage-key.json')],
+                env=presentProxies + [client.V1EnvVar(name='GOOGLE_APPLICATION_CREDENTIALS', value='/secret/storage-key.json')],
                 resources=kaniko_reqs,
                 args=kaniko_args
             )
@@ -489,7 +491,7 @@ def create_job_object(
         name='modzy-uploader',
         image=MODZY_UPLOADER_REPOSITORY,
         volume_mounts=modzy_uploader_volume_mounts,
-        env=[
+        env=presentProxies + [
             client.V1EnvVar(name='JOB_NAME', value=job_name),
             client.V1EnvVar(name='ENVIRONMENT', value=ENVIRONMENT)
         ],
