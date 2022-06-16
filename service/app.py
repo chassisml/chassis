@@ -71,7 +71,7 @@ if not PV_MODE:
     config.load_incluster_config()
     v1 = client.CoreV1Api()
     secret = v1.read_namespaced_secret("storage-key", ENVIRONMENT).data
-    print("secret"+str(secret),flush=True)
+
 
     if MODE == 'gs':
         # use Google Cloud Storage bucket to transfer build context
@@ -83,8 +83,6 @@ if not PV_MODE:
     elif MODE == 's3':
         # use S3 bucket to transfer build context
         s3_key_lines = base64.b64decode(secret["credentials"]).decode().splitlines()
-        print("s3_keys data")
-        print(s3_key_lines, flush=True)
         s3_creds = {}
         for line in s3_key_lines:
             if "=" in line:
@@ -95,7 +93,7 @@ if not PV_MODE:
         secret_key = s3_creds['aws_secret_access_key']
         storage_driver = get_driver(SUPPORTED_STORAGE_PROVIDERS[MODE])(access_key, secret_key)
         container = storage_driver.get_container(container_name=CONTEXT_BUCKET)
-        print(storage_driver.list_container_objects(container), flush=True)
+
     else:
         raise ValueError("Only allowed modes are: 'pv', 'gs', 's3'")
 
