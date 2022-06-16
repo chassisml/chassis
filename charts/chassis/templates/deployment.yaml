@@ -49,6 +49,14 @@ spec:
               value: {{ .Values.MODE }}
             - name: CONTEXT_BUCKET
               value: {{ .Values.CONTEXT_BUCKET }}
+            - name: HTTP_PROXY
+              value: {{ .Values.HTTP_PROXY }}
+            - name: HTTPS_PROXY
+              value: {{ .Values.HTTPS_PROXY }}
+            - name: NO_PROXY
+              value: {{ .Values.NO_PROXY }}
+
+
           ports:
             - name: http
               containerPort: {{ .Values.PORT }}

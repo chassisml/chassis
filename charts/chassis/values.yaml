@@ -3,23 +3,39 @@
 # Declare variables to be passed into your templates.
 
 # This values are populated from the service .env file.
-PORT: ''
-MOUNT_PATH_DIR: ''
-K_ENVIRONMENT: ''
-K_DATA_VOLUME_NAME: ''
-K_SERVICE_ACCOUNT_NAME: ''
-SERVICE_REPOSITORY: ''
+#SERVICE_REPOSITORY: 'saumild13/gcp-chassis:0.0.17'
+SERVICE_REPOSITORY: 'claytondavisms/chassis-proxy:0.0.2'
 
-MODE: "pv"
-CONTEXT_BUCKET: ""
-CREDENTIALS_FILEPATH: ""
+PORT: "5000"
+MOUNT_PATH_DIR: "/data"
+WORKSPACE_DIR: "workspace"
+K_ENVIRONMENT: "default"
+K_JOB_NAME: "chassis-builder-job"
+K_DATA_VOLUME_NAME: "kaniko-data"
+K_EMPTY_DIR_NAME: "registry-credentials"
+K_INIT_EMPTY_DIR_PATH: "/tmp/credentials"
+K_KANIKO_EMPTY_DIR_PATH: "/kaniko/.docker"
+K_SERVICE_ACCOUNT_NAME: "job-builder"
+
+MODE: "s3"
+CONTEXT_BUCKET: "chassis-contexts"
+CREDENTIALS_FILEPATH: "secrets/credentials"
+
+HTTP_PROXY: "http://10.10.4.109:3128"
+HTTPS_PROXY: "http://10.10.4.109:3128"
+NO_PROXY: "modzy.engineering,10.0.0.0/8"
+
+#HTTP_PROXY: ""
+#HTTPS_PROXY: ""
+#NO_PROXY: ""
 
 replicaCount: 1
 
 image:
   repository: ghcr.io/modzy/chassis-service
   # tag: 0.0.1
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
+  # IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
 
@@ -30,6 +46,7 @@ fullnameOverride: "chassis"
 env:
   - name: foo
     value: bar
+
 
 rbac:
   # Specifies whether RBAC resources should be created
@@ -56,7 +73,7 @@ securityContext: {}
   # runAsUser: 1000
 
 service:
-  type: NodePort
+  type: ClusterIP
 
 ingress:
   enabled: true
@@ -64,7 +81,7 @@ ingress:
     kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
-    - host: chassis.local
+    - host: modzy-kqgqi.modzy.engineering
       http:
         paths:
           - path: /
@@ -92,7 +109,7 @@ resources: {}
   #   memory: 128Mi
 
 autoscaling:
-  enabled: true
+  enabled: false
   minReplicas: 1
   maxReplicas: 3
   targetCPUUtilizationPercentage: 80

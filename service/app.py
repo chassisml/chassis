@@ -35,7 +35,7 @@ from libcloud.storage.providers import get_driver
 
 load_dotenv()
 
-CHASSIS_DEV = True
+CHASSIS_DEV = False
 WINDOWS = True if os.name == 'nt' else False
 
 HOME_DIR = str(Path.home())
@@ -71,6 +71,7 @@ if not PV_MODE:
     config.load_incluster_config()
     v1 = client.CoreV1Api()
     secret = v1.read_namespaced_secret("storage-key", ENVIRONMENT).data
+    print("secret"+str(secret),flush=True)
 
     if MODE == 'gs':
         # use Google Cloud Storage bucket to transfer build context
@@ -82,6 +83,8 @@ if not PV_MODE:
     elif MODE == 's3':
         # use S3 bucket to transfer build context
         s3_key_lines = base64.b64decode(secret["credentials"]).decode().splitlines()
+        print("s3_keys data")
+        print(s3_key_lines, flush=True)
         s3_creds = {}
         for line in s3_key_lines:
             if "=" in line:
@@ -92,6 +95,7 @@ if not PV_MODE:
         secret_key = s3_creds['aws_secret_access_key']
         storage_driver = get_driver(SUPPORTED_STORAGE_PROVIDERS[MODE])(access_key, secret_key)
         container = storage_driver.get_container(container_name=CONTEXT_BUCKET)
+        print(storage_driver.list_container_objects(container), flush=True)
     else:
         raise ValueError("Only allowed modes are: 'pv', 'gs', 's3'")
 
@@ -366,6 +370,18 @@ def create_job_object(
         '--build-arg=INTERFACE=modzy',
     ]
 
+    # add proxies for kaniko if they exist assumption is they are environment variables
+    proxylist = ["http_proxy", "HTTP_PROXY", "https_proxy", "HTTPS_PROXY", "no_proxy", "NO_PROXY"]
+    presentProxies = []
+    for pvalue in proxylist:
+        if os.getenv(pvalue) is not None:
+            kaniko_args.append(f'--build-arg={str.upper(pvalue)}={os.getenv(pvalue)}')
+            kaniko_args.append(f'--build-arg={str.lower(pvalue)}={os.getenv(pvalue)}')
+            presentProxies.append(client.V1EnvVar(name=str.upper(pvalue), value=os.getenv(pvalue)))
+            presentProxies.append(client.V1EnvVar(name=str.lower(pvalue), value=os.getenv(pvalue)))
+
+    print(presentProxies,flush=True)
+
     modzy_uploader_args = [
             f'--api_key={modzy_data.get("api_key")}',
             f'--deploy={True if modzy_data.get("deploy") else ""}',
@@ -438,7 +454,7 @@ def create_job_object(
                 name='kaniko',
                 image='gcr.io/kaniko-project/executor:latest',
                 volume_mounts=kaniko_volume_mounts,
-                env=[client.V1EnvVar(name='AWS_REGION', value=AWS_REGION)],
+                env=presentProxies + [client.V1EnvVar(name='AWS_REGION', value=AWS_REGION)],
                 resources=kaniko_reqs,
                 args=kaniko_args
             )
