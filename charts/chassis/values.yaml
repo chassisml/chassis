@@ -2,106 +2,108 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-# This values are populated from the service .env file.
-PORT: ''
-MOUNT_PATH_DIR: ''
-K_ENVIRONMENT: ''
-K_DATA_VOLUME_NAME: ''
-K_SERVICE_ACCOUNT_NAME: ''
-SERVICE_REPOSITORY: ''
+#proxySettings:
+#  enabled: false
+#  http_proxy: ""
+#  https_proxy: ""
+#  no_proxy: ""
 
-MODE: "pv"
-CONTEXT_BUCKET: ""
-CREDENTIALS_FILEPATH: ""
+storage:
+  # Valid values are "pv", "s3", "gs"
+  provider: pv
+  # This secret should contain keys that match the environment variables that are expected for
+  # each provider's standard SDK.
+  credentialsSecretName: ""
+  bucketName: ""
+  # The following options are only used when "provider" == "pv"
+  hostPath: "/mnt/data"
+  size: 10Gi
+
+# (Optional) If connecting to a Modzy instance, provide the following info.
+modzy:
+  url: ""
+
+registry:
+  # The base URL to the destination registry that Chassis will push final
+  url: "https://registry.hub.docker.com"
+  # The name of a Kubernetes secret of type "dockerconfigjson"
+  credentialsSecretName: ""
 
 replicaCount: 1
 
 image:
   repository: ghcr.io/modzy/chassis-service
-  # tag: 0.0.1
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
 
 imagePullSecrets: []
-nameOverride: "chassis"
-fullnameOverride: "chassis"
-
-env:
-  - name: foo
-    value: bar
-
-rbac:
-  # Specifies whether RBAC resources should be created
-  create: false
+nameOverride: ""
+fullnameOverride: ""
 
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
   # Annotations to add to the service account
   annotations: {}
-  # The name of the service account to use is used from above K_SERVICE_ACCOUNT_NAME value.
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
 
 podAnnotations: {}
 
 podSecurityContext: {}
-  # fsGroup: 2000
+# fsGroup: 2000
 
 securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
+#  capabilities:
+#    drop:
+#      - ALL
+#  readOnlyRootFilesystem: true
+#  runAsNonRoot: true
+#  runAsUser: 1000
 
 service:
-  type: NodePort
+  type: ClusterIP
+  port: 80
 
 ingress:
-  enabled: true
-  annotations:
-    kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
+  enabled: false
+  className: ""
+  annotations: {}
+  # kubernetes.io/ingress.class: nginx
+  # kubernetes.io/tls-acme: "true"
   hosts:
     - host: chassis.local
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: chassis
-                port:
-                  number: 5000
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
   tls: []
-  #  - secretName: chart-example-tls
+  #  - secretName: chassis-tls
   #    hosts:
-  #      - chart-example.local
+  #      - chassis.local
 
 resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+# We usually recommend not to specify default resources and to leave this as a conscious
+# choice for the user. This also increases chances charts run on environments with little
+# resources, such as Minikube. If you do want to specify resources, uncomment the following
+# lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+# limits:
+#   cpu: 100m
+#   memory: 128Mi
+# requests:
+#   cpu: 100m
+#   memory: 128Mi
 
 autoscaling:
-  enabled: true
+  enabled: false
   minReplicas: 1
-  maxReplicas: 3
+  maxReplicas: 100
   targetCPUUtilizationPercentage: 80
-  targetMemoryUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
 
 nodeSelector: {}
 
 tolerations: []
 
 affinity: {}
-
-restartPolicy: OnFailure
