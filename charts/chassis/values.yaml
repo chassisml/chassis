@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 
 # This values are populated from the service .env file.
-#SERVICE_REPOSITORY: 'saumild13/gcp-chassis:0.0.17'
+#SERVICE_REPOSITORY: 'chassis-image:latest'
 SERVICE_REPOSITORY: 'claytondavisms/chassis-proxy:0.0.2'
 
 PORT: "5000"
@@ -17,17 +17,20 @@ K_INIT_EMPTY_DIR_PATH: "/tmp/credentials"
 K_KANIKO_EMPTY_DIR_PATH: "/kaniko/.docker"
 K_SERVICE_ACCOUNT_NAME: "job-builder"
 
-MODE: "s3"
-CONTEXT_BUCKET: "chassis-contexts"
-CREDENTIALS_FILEPATH: "secrets/credentials"
+MODE: "pv"
+CONTEXT_BUCKET: ""
+CREDENTIALS_FILEPATH: ""
 
-HTTP_PROXY: "http://10.10.4.109:3128"
-HTTPS_PROXY: "http://10.10.4.109:3128"
-NO_PROXY: "modzy.engineering,10.0.0.0/8"
+#CONTEXT_BUCKET: "chassis-contexts"
+#CREDENTIALS_FILEPATH: "secrets/credentials"
 
-#HTTP_PROXY: ""
-#HTTPS_PROXY: ""
-#NO_PROXY: ""
+#HTTP_PROXY: "http://10.10.4.109:3128"
+#HTTPS_PROXY: "http://10.10.4.109:3128"
+#NO_PROXY: "modzy.engineering,10.0.0.0/8"
+
+HTTP_PROXY: ""
+HTTPS_PROXY: ""
+NO_PROXY: ""
 
 replicaCount: 1
 
@@ -81,7 +84,8 @@ ingress:
     kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
-    - host: modzy-kqgqi.modzy.engineering
+    #- host: modzy-kqgqi.modzy.engineering
+    - host: localhost
       http:
         paths:
           - path: /
