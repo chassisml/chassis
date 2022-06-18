@@ -40,6 +40,10 @@ spec:
                   fieldPath: metadata.namespace
             - name: MODE
               value: {{ .Values.storage.provider | quote }}
+            - name: STORAGE_CREDENTIALS_SECRET_NAME
+              value: {{ .Values.storage.credentialsSecretName | quote }}
+            - name: STORAGE_BUCKET_NAME
+              value: {{ .Values.storage.bucketName | quote }}
             - name: REGISTRY_URL
               value: {{ .Values.registry.url | quote }}
             - name: REGISTRY_CREDENTIALS_SECRET_NAME
