@@ -25,7 +25,7 @@ modzy:
 
 registry:
   # The base URL to the destination registry that Chassis will push final
-  url: "https://registry.hub.docker.com"
+  url: ""
   # The name of a Kubernetes secret of type "dockerconfigjson"
   credentialsSecretName: ""
 
