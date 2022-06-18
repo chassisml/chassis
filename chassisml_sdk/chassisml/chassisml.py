@@ -234,7 +234,7 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
 
         print("Chassis model saved.")
 
-    def publish(self,model_name,model_version,registry_user,registry_pass,
+    def publish(self,model_name,model_version,registry_user=None,registry_pass=None,
                 conda_env=None,fix_env=True,gpu=False,arm64=False,
                 modzy_sample_input_path=None,modzy_api_key=None,
                 modzy_url=None,modzy_model_id=None):
@@ -278,9 +278,9 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
 
         '''
 
-        if (modzy_sample_input_path or modzy_api_key or modzy_url) and not \
-            (modzy_sample_input_path and modzy_api_key and modzy_url):
-            raise ValueError('"modzy_sample_input_path", "modzy_api_key" and "modzy_url" must all be provided to publish to Modzy.')
+        if (modzy_sample_input_path or modzy_api_key) and not \
+            (modzy_sample_input_path and modzy_api_key):
+            raise ValueError('"modzy_sample_input_path" and "modzy_api_key" must both be provided to publish to Modzy.')
 
         try:
             model_directory = os.path.join(tempfile.mkdtemp(),CHASSIS_TMP_DIRNAME)
@@ -305,13 +305,15 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
                 'name': "{}/{}".format(registry_user,"{}:{}".format(image_name,model_version)),
                 'model_name': model_name,
                 'model_path': tmppath,
-                'registry_auth': base64.b64encode("{}:{}".format(registry_user,registry_pass).encode("utf-8")).decode("utf-8"),
                 'publish': True,
                 'gpu': gpu,
                 'arm64': arm64
             }
 
-            if modzy_sample_input_path and modzy_api_key and check_modzy_url(modzy_url):
+            if registry_user and registry_pass:
+                image_data['registry_auth'] = base64.b64encode("{}:{}".format(registry_user,registry_pass).encode("utf-8")).decode("utf-8")
+
+            if modzy_sample_input_path and modzy_api_key:
                 modzy_metadata_path = os.path.join(tmppath,MODZY_YAML_NAME)
                 modzy_data = {
                     'metadata_path': modzy_metadata_path,
@@ -319,8 +321,9 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
                     'deploy': True,
                     'api_key': modzy_api_key,
                     'modzy_model_id': modzy_model_id,
-                    'modzy_url': modzy_url if not modzy_url.endswith('/api') else modzy_url[:-4]
                 }
+                if modzy_url and check_modzy_url(modzy_url):
+                    modzy_data['modzy_url'] = modzy_url if not modzy_url.endswith('/api') else modzy_url[:-4]
                 write_modzy_yaml(model_name,model_version,modzy_metadata_path,batch_size=self.batch_size,gpu=gpu)
             else:
                 modzy_data = {}
