@@ -35,7 +35,7 @@ from libcloud.storage.providers import get_driver
 
 load_dotenv()
 
-CHASSIS_DEV = True
+CHASSIS_DEV = False
 WINDOWS = True if os.name == 'nt' else False
 
 HOME_DIR = str(Path.home())
@@ -49,14 +49,27 @@ else:
 WORKSPACE_DIR = os.getenv('WORKSPACE_DIR')
 DATA_DIR = f'{MOUNT_PATH_DIR}/{WORKSPACE_DIR}'
 
-ENVIRONMENT = os.getenv('K_ENVIRONMENT')
+ENVIRONMENT = os.getenv('NAMESPACE')
 
 K_DATA_VOLUME_NAME = os.getenv('K_DATA_VOLUME_NAME')
 K_EMPTY_DIR_NAME = os.getenv('K_EMPTY_DIR_NAME')
 K_INIT_EMPTY_DIR_PATH = os.getenv('K_INIT_EMPTY_DIR_PATH')
 K_KANIKO_EMPTY_DIR_PATH = os.getenv('K_KANIKO_EMPTY_DIR_PATH')
-K_SERVICE_ACCOUNT_NAME = "local-job-builder" if CHASSIS_DEV else os.getenv('K_SERVICE_ACCOUNT_NAME')
 K_JOB_NAME = os.getenv('K_JOB_NAME')
+
+config.load_incluster_config()
+v1 = client.CoreV1Api()
+
+REGISTRY_URL = os.getenv('REGISTRY_URL')
+REGISTRY_CREDENTIALS_SECRET_NAME = os.getenv('REGISTRY_CREDENTIALS_SECRET_NAME')
+MODZY_URL = os.getenv('MODZY_URL')
+STORAGE_BUCKET_NAME = os.getenv('STORAGE_BUCKET_NAME')
+STORAGE_CREDENTIALS_SECRET_NAME = os.getenv('STORAGE_CREDENTIALS_SECRET_NAME')
+
+config.load_incluster_config()
+v1 = client.CoreV1Api()
+if REGISTRY_CREDENTIALS_SECRET_NAME:
+    REGISTRY_CREDENTIALS = v1.read_namespaced_secret(REGISTRY_CREDENTIALS_SECRET_NAME, ENVIRONMENT).data[".dockerconfigjson"]
 
 SUPPORTED_STORAGE_PROVIDERS = {
     "s3": Provider.S3,
@@ -70,7 +83,7 @@ if not PV_MODE:
     CONTEXT_BUCKET = os.getenv('CONTEXT_BUCKET')
     config.load_incluster_config()
     v1 = client.CoreV1Api()
-    secret = v1.read_namespaced_secret("storage-key", ENVIRONMENT).data
+    secret = v1.read_namespaced_secret(STORAGE_CREDENTIALS_SECRET_NAME, ENVIRONMENT).data
 
     if MODE == 'gs':
         # use Google Cloud Storage bucket to transfer build context
@@ -78,7 +91,7 @@ if not PV_MODE:
         access_key = storage_key['client_email']
         secret_key = storage_key['private_key']
         storage_driver = get_driver(SUPPORTED_STORAGE_PROVIDERS[MODE])(access_key, secret_key)
-        container = storage_driver.get_container(container_name=CONTEXT_BUCKET)
+        container = storage_driver.get_container(container_name=STORAGE_BUCKET_NAME)
     elif MODE == 's3':
         # use S3 bucket to transfer build context
         s3_key_lines = base64.b64decode(secret["credentials"]).decode().splitlines()
@@ -91,7 +104,7 @@ if not PV_MODE:
         access_key = s3_creds['aws_access_key_id']
         secret_key = s3_creds['aws_secret_access_key']
         storage_driver = get_driver(SUPPORTED_STORAGE_PROVIDERS[MODE])(access_key, secret_key)
-        container = storage_driver.get_container(container_name=CONTEXT_BUCKET)
+        container = storage_driver.get_container(container_name=STORAGE_BUCKET_NAME)
     else:
         raise ValueError("Only allowed modes are: 'pv', 'gs', 's3'")
 
@@ -310,11 +323,19 @@ def create_job_object(
     '''
     job_name = f'{K_JOB_NAME}-{random_name}'
 
-    # credential setup for Docker Hub.
-    # json for holding registry credentials that will access docker hub.
-    # reference: https://github.com/GoogleContainerTools/kaniko#pushing-to-docker-hub
-    registry_credentials = f'{{"auths":{{"https://index.docker.io/v1/":{{"auth":"{registry_auth}"}}}}}}'
-    b64_registry_credentials = base64.b64encode(registry_credentials.encode("utf-8")).decode("utf-8")
+    if registry_auth and not REGISTRY_URL:
+        # credential setup for Docker Hub.
+        # json for holding registry credentials that will access docker hub.
+        # reference: https://github.com/GoogleContainerTools/kaniko#pushing-to-docker-hub
+        registry_credentials = f'{{"auths":{{"https://index.docker.io/v1/":{{"auth":"{registry_auth}"}}}}}}'
+        b64_registry_credentials = base64.b64encode(registry_credentials.encode("utf-8")).decode("utf-8")
+    elif registry_auth and REGISTRY_URL:
+        registry_credentials = f'{{"auths":{{"{REGISTRY_URL}":{{"auth":"{registry_auth}"}}}}}}'
+        b64_registry_credentials = base64.b64encode(registry_credentials.encode("utf-8")).decode("utf-8")
+    elif not registry_auth and not REGISTRY_CREDENTIALS:
+        raise ValueError("No registry credentials provided by user or during Chassis installation.")
+    else:
+        b64_registry_credentials = REGISTRY_CREDENTIALS
 
     # mount path leads to /data
     # this is a mount point. NOT the volume itself.
@@ -355,7 +376,7 @@ def create_job_object(
     # This is the kaniko container used to build the final image.
     kaniko_args = [
         '' if publish else '--no-push',
-        f'--destination={image_name}{"" if ":" in image_name else ":latest"}',
+        f'--destination={REGISTRY_URL}/{image_name}{"" if ":" in image_name else ":latest"}',
         '--snapshotMode=redo',
         '--use-new-run',
         f'--build-arg=MODEL_DIR=model-{random_name}',
@@ -491,7 +512,6 @@ def create_job_object(
         containers_list = [modzy_uploader_container]
 
     pod_spec = client.V1PodSpec(
-        service_account_name=K_SERVICE_ACCOUNT_NAME,
         restart_policy='Never',
         init_containers=init_container_list,
         containers=containers_list,
@@ -881,6 +901,9 @@ def build_image():
     # json string loaded into variable
     modzy_data = json.load(request.files.get('modzy_data') or  {})
     modzy_model_id = modzy_data.get('modzy_model_id')
+
+    if modzy_data and not modzy_data.get('modzy_url'):
+        modzy_data['modzy_url'] = MODZY_URL
 
     # This is a future proofing variable in case we encounter a model that cannot be converted into mlflow.
     # It will remain hardcoded for now.
