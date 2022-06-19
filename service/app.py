@@ -103,7 +103,7 @@ if not PV_MODE:
         for line in s3_key_lines:
             if "=" in line:
                 k,v = line.split("=")
-                s3_creds[k] = v
+                s3_creds[k.strip()] = v.strip()
         AWS_REGION = s3_creds['region']
         access_key = s3_creds['aws_access_key_id']
         secret_key = s3_creds['aws_secret_access_key']
