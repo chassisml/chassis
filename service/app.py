@@ -74,6 +74,8 @@ config.load_incluster_config()
 v1 = client.CoreV1Api()
 if REGISTRY_CREDENTIALS_SECRET_NAME:
     REGISTRY_CREDENTIALS = v1.read_namespaced_secret(REGISTRY_CREDENTIALS_SECRET_NAME, ENVIRONMENT).data[".dockerconfigjson"]
+else:
+    REGISTRY_CREDENTIALS = ""
 
 SUPPORTED_STORAGE_PROVIDERS = {
     "s3": Provider.S3,
@@ -455,7 +457,7 @@ def create_job_object(
 
             kaniko_storage_key_volume = client.V1Volume(
                 name='storage-key',
-                secret=client.V1SecretVolumeSource(secret_name='storage-key')
+                secret=client.V1SecretVolumeSource(secret_name=STORAGE_CREDENTIALS_SECRET_NAME)
             )
 
             kaniko_volume_mounts.append(kaniko_s3_volume_mount)
@@ -475,7 +477,7 @@ def create_job_object(
 
             kaniko_storage_key_volume = client.V1Volume(
                 name='storage-key',
-                secret=client.V1SecretVolumeSource(secret_name='storage-key')
+                secret=client.V1SecretVolumeSource(secret_name=STORAGE_CREDENTIALS_SECRET_NAME)
             )
 
             kaniko_volume_mounts.append(kaniko_gs_volume_mount)
@@ -924,6 +926,9 @@ def build_image():
         dockerfile = choose_dockerfile(gpu,arm64)
         context_uri = upload_context(model, module_name, random_name, modzy_metadata_data, dockerfile)
 
+        if not context_uri:
+            return Response(f"403 Forbidden: Cloud storage credentials could not push to context bucket.",403)
+
     # User can build the image but not deploy it to Modzy. So no input_sample is mandatory.
     # On the other hand, the model.yaml is needed to build the image so proceed with it.
 
@@ -949,6 +954,9 @@ def build_image():
             modzy_uri = None
         else:
             modzy_uri = upload_modzy_files(random_name,modzy_metadata_data,modzy_sample_input_data)
+
+            if not modzy_uri:
+                return Response(f"403 Forbidden: Cloud storage credentials could not push to context bucket.",403)
 
         modzy_metadata_path = extract_modzy_metadata(modzy_metadata_data, module_name, random_name)
         modzy_data['modzy_metadata_path'] = modzy_metadata_path
