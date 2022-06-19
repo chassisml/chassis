@@ -50,8 +50,10 @@ WORKSPACE_DIR = os.getenv('WORKSPACE_DIR')
 DATA_DIR = f'{MOUNT_PATH_DIR}/{WORKSPACE_DIR}'
 
 ENVIRONMENT = os.getenv('NAMESPACE')
+DEPLOYMENT = os.getenv('DEPLOYMENT')
 
 K_DATA_VOLUME_NAME = os.getenv('K_DATA_VOLUME_NAME')
+K_DATA_VOLUME_CLAIM_NAME = os.getenv('K_DATA_VOLUME_CLAIM_NAME')
 K_EMPTY_DIR_NAME = os.getenv('K_EMPTY_DIR_NAME')
 K_INIT_EMPTY_DIR_PATH = os.getenv('K_INIT_EMPTY_DIR_PATH')
 K_KANIKO_EMPTY_DIR_PATH = os.getenv('K_KANIKO_EMPTY_DIR_PATH')
@@ -60,6 +62,8 @@ K_JOB_NAME = os.getenv('K_JOB_NAME')
 config.load_incluster_config()
 v1 = client.CoreV1Api()
 
+DATA_VOLUME_NAME = '-'.join((DEPLOYMENT,K_DATA_VOLUME_NAME))
+DATA_VOLUME_CLAIM_NAME = '-'.join((DEPLOYMENT,K_DATA_VOLUME_CLAIM_NAME))
 REGISTRY_URL = os.getenv('REGISTRY_URL')
 REGISTRY_CREDENTIALS_SECRET_NAME = os.getenv('REGISTRY_CREDENTIALS_SECRET_NAME')
 MODZY_URL = os.getenv('MODZY_URL')
@@ -346,7 +350,7 @@ def create_job_object(
             name="local-volume-code"
         ) if CHASSIS_DEV else client.V1VolumeMount(
             mount_path=MOUNT_PATH_DIR,
-            name=K_DATA_VOLUME_NAME
+            name=DATA_VOLUME_NAME
         )
 
     # This volume will be used by kaniko container to get registry credentials.
@@ -376,7 +380,7 @@ def create_job_object(
     # This is the kaniko container used to build the final image.
     kaniko_args = [
         '' if publish else '--no-push',
-        f'--destination={REGISTRY_URL}/{image_name}{"" if ":" in image_name else ":latest"}',
+        f'--destination={REGISTRY_URL+"/" if REGISTRY_URL else ""}{image_name}{"" if ":" in image_name else ":latest"}',
         '--snapshotMode=redo',
         '--use-new-run',
         f'--build-arg=MODEL_DIR=model-{random_name}',
@@ -425,7 +429,7 @@ def create_job_object(
         data_pv_claim = client.V1PersistentVolumeClaimVolumeSource(
             claim_name="dir-claim-chassis"
         ) if CHASSIS_DEV else client.V1PersistentVolumeClaimVolumeSource(
-            claim_name=K_DATA_VOLUME_NAME
+            claim_name=DATA_VOLUME_CLAIM_NAME
         )
 
         # volume holding data
@@ -433,7 +437,7 @@ def create_job_object(
             name="local-volume-code",
             persistent_volume_claim=data_pv_claim
         ) if CHASSIS_DEV else client.V1Volume(
-            name=K_DATA_VOLUME_NAME,
+            name=DATA_VOLUME_NAME,
             persistent_volume_claim=data_pv_claim
         )
 
