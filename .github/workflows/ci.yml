@@ -159,19 +159,19 @@ jobs:
         run: |
           helm template --debug --set $(echo $(cat service/.env | grep -v '^#') | tr ' ' ',') charts/*
 
-      - name: Override values from service .env
-        run: |
-          # Populate values from .env file to helm values.
-          cat service/.env \
-            | grep -v '^#' \
-            | grep -v '^$' \
-            | while read -r line; do \
-                field=$(echo $line | awk -F= '{ print $1  }'); \
-                value=$(echo $line | awk -F= '{ print $2  }'); \
-                sed -i "s,${field}:.*,${field}: ${value},g" charts/*/values.yaml; \
-              done
-          repo_service=ghcr.io/${{ github.repository }}-service:${{ github.sha }}
-          sed -i "s,SERVICE_REPOSITORY:.*,SERVICE_REPOSITORY: ${repo_service},g" charts/*/values.yaml
+      # - name: Override values from service .env
+      #   run: |
+      #     # Populate values from .env file to helm values.
+      #     cat service/.env \
+      #       | grep -v '^#' \
+      #       | grep -v '^$' \
+      #       | while read -r line; do \
+      #           field=$(echo $line | awk -F= '{ print $1  }'); \
+      #           value=$(echo $line | awk -F= '{ print $2  }'); \
+      #           sed -i "s,${field}:.*,${field}: ${value},g" charts/*/values.yaml; \
+      #         done
+      #     repo_service=ghcr.io/${{ github.repository }}-service:${{ github.sha }}
+      #     sed -i "s,SERVICE_REPOSITORY:.*,SERVICE_REPOSITORY: ${repo_service},g" charts/*/values.yaml
 
       - name: Publish Helm charts
         uses: stefanprodan/helm-gh-pages@master
