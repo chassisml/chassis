@@ -67,7 +67,7 @@ DATA_VOLUME_CLAIM_NAME = '-'.join((DEPLOYMENT,K_DATA_VOLUME_CLAIM_NAME))
 REGISTRY_URL = os.getenv('REGISTRY_URL')
 REGISTRY_CREDENTIALS_SECRET_NAME = os.getenv('REGISTRY_CREDENTIALS_SECRET_NAME')
 MODZY_URL = os.getenv('MODZY_URL')
-STORAGE_BUCKET_NAME = os.getenv('STORAGE_BUCKET_NAME')
+CONTEXT_BUCKET = os.getenv('STORAGE_BUCKET_NAME')
 STORAGE_CREDENTIALS_SECRET_NAME = os.getenv('STORAGE_CREDENTIALS_SECRET_NAME')
 
 config.load_incluster_config()
@@ -86,7 +86,9 @@ MODE = os.getenv('MODE')
 PV_MODE = True if (MODE == "pv" or not MODE) else False
 
 if not PV_MODE:
-    CONTEXT_BUCKET = os.getenv('CONTEXT_BUCKET')
+    if not CONTEXT_BUCKET:
+        raise ValueError("Context bucket must be specified if not using 'pv' mode.")
+        
     config.load_incluster_config()
     v1 = client.CoreV1Api()
     secret = v1.read_namespaced_secret(STORAGE_CREDENTIALS_SECRET_NAME, ENVIRONMENT).data
@@ -97,7 +99,7 @@ if not PV_MODE:
         access_key = storage_key['client_email']
         secret_key = storage_key['private_key']
         storage_driver = get_driver(SUPPORTED_STORAGE_PROVIDERS[MODE])(access_key, secret_key)
-        container = storage_driver.get_container(container_name=STORAGE_BUCKET_NAME)
+        container = storage_driver.get_container(container_name=CONTEXT_BUCKET)
     elif MODE == 's3':
         # use S3 bucket to transfer build context
         s3_key_lines = base64.b64decode(secret["credentials"]).decode().splitlines()
@@ -110,7 +112,7 @@ if not PV_MODE:
         access_key = s3_creds['aws_access_key_id']
         secret_key = s3_creds['aws_secret_access_key']
         storage_driver = get_driver(SUPPORTED_STORAGE_PROVIDERS[MODE])(access_key, secret_key)
-        container = storage_driver.get_container(container_name=STORAGE_BUCKET_NAME)
+        container = storage_driver.get_container(container_name=CONTEXT_BUCKET)
     else:
         raise ValueError("Only allowed modes are: 'pv', 'gs', 's3'")
 
