@@ -463,6 +463,7 @@ def create_job_object(
             )
 
             kaniko_volume_mounts.append(kaniko_s3_volume_mount)
+            modzy_uploader_volume_mounts.append(kaniko_s3_volume_mount)
             init_container_kaniko = client.V1Container(
                 name='kaniko',
                 image='gcr.io/kaniko-project/executor:latest',
@@ -483,7 +484,7 @@ def create_job_object(
             )
 
             kaniko_volume_mounts.append(kaniko_gs_volume_mount)
-
+            modzy_uploader_volume_mounts.append(kaniko_gs_volume_mount)
             init_container_kaniko = client.V1Container(
                 name='kaniko',
                 image='gcr.io/kaniko-project/executor:latest',

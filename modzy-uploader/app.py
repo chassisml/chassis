@@ -59,23 +59,20 @@ routes = {
 }
 
 def download_modzy_data(modzy_uri):
-    config.load_incluster_config()
-    v1 = client.CoreV1Api()
-    storage_secret = v1.read_namespaced_secret("storage-key", ENVIRONMENT).data
     
     provider = modzy_uri.split(':')[0]
     if provider == "gs":
-        gs_key = literal_eval(base64.b64decode(storage_secret["storage-key.json"]).decode())
+        gs_key = json.load(open('/secret/storage_key.json','rb'))
         access_key = gs_key['client_email']
         secret_key = gs_key['private_key']
         storage_driver = get_driver(SUPPORTED_STORAGE_PROVIDERS[provider])(access_key, secret_key)
     elif provider == "s3":
-        s3_key_lines = base64.b64decode(storage_secret["credentials"]).decode().splitlines()
+        s3_key_lines = open('/root/.aws/credentials').read().splitlines()
         s3_creds = {}
         for line in s3_key_lines:
             if "=" in line:
                 k,v = line.split("=")
-                s3_creds[k] = v
+                s3_creds[k.strip()] = v.strip()
         access_key = s3_creds['aws_access_key_id']
         secret_key = s3_creds['aws_secret_access_key']
         storage_driver = get_driver(SUPPORTED_STORAGE_PROVIDERS[provider])(access_key, secret_key)
