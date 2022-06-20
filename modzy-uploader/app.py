@@ -62,7 +62,7 @@ def download_modzy_data(modzy_uri):
     
     provider = modzy_uri.split(':')[0]
     if provider == "gs":
-        gs_key = json.load(open('/secret/storage_key.json','rb'))
+        gs_key = json.load(open('/secret/storage-key.json','rb'))
         access_key = gs_key['client_email']
         secret_key = gs_key['private_key']
         storage_driver = get_driver(SUPPORTED_STORAGE_PROVIDERS[provider])(access_key, secret_key)
