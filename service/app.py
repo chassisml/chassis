@@ -8,6 +8,7 @@ import time
 import yaml
 import requests
 import subprocess
+from urllib.parse import urlparse
 from pathlib import Path
 from modzy.client import ApiClient
 from shutil import rmtree, copytree, copyfile
@@ -65,7 +66,7 @@ v1 = client.CoreV1Api()
 
 DATA_VOLUME_NAME = '-'.join((DEPLOYMENT,K_DATA_VOLUME_NAME))
 DATA_VOLUME_CLAIM_NAME = '-'.join((DEPLOYMENT,K_DATA_VOLUME_CLAIM_NAME))
-REGISTRY_URL = os.getenv('REGISTRY_URL')
+REGISTRY_URI = urlparse(os.getenv('REGISTRY_URL')).hostname
 REGISTRY_CREDENTIALS_SECRET_NAME = os.getenv('REGISTRY_CREDENTIALS_SECRET_NAME')
 MODZY_URL = os.getenv('MODZY_URL')
 CONTEXT_BUCKET = os.getenv('STORAGE_BUCKET_NAME')
@@ -332,14 +333,14 @@ def create_job_object(
     '''
     job_name = f'{K_JOB_NAME}-{random_name}'
 
-    if registry_auth and not REGISTRY_URL:
+    if registry_auth and not REGISTRY_URI:
         # credential setup for Docker Hub.
         # json for holding registry credentials that will access docker hub.
         # reference: https://github.com/GoogleContainerTools/kaniko#pushing-to-docker-hub
         registry_credentials = f'{{"auths":{{"https://index.docker.io/v1/":{{"auth":"{registry_auth}"}}}}}}'
         b64_registry_credentials = base64.b64encode(registry_credentials.encode("utf-8")).decode("utf-8")
-    elif registry_auth and REGISTRY_URL:
-        registry_credentials = f'{{"auths":{{"{REGISTRY_URL}":{{"auth":"{registry_auth}"}}}}}}'
+    elif registry_auth and REGISTRY_URI:
+        registry_credentials = f'{{"auths":{{"{REGISTRY_URI}":{{"auth":"{registry_auth}"}}}}}}'
         b64_registry_credentials = base64.b64encode(registry_credentials.encode("utf-8")).decode("utf-8")
     elif not registry_auth and not REGISTRY_CREDENTIALS:
         raise ValueError("No registry credentials provided by user or during Chassis installation.")
@@ -385,7 +386,7 @@ def create_job_object(
     # This is the kaniko container used to build the final image.
     kaniko_args = [
         '' if publish else '--no-push',
-        f'--destination={REGISTRY_URL+"/" if REGISTRY_URL else ""}{image_name}{"" if ":" in image_name else ":latest"}',
+        f'--destination={REGISTRY_URI+"/" if REGISTRY_URI else ""}{image_name}{"" if ":" in image_name else ":latest"}',
         '--snapshotMode=redo',
         '--use-new-run',
         f'--build-arg=MODEL_DIR=model-{random_name}',
