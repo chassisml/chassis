@@ -302,7 +302,7 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
             
             image_name = "-".join(model_name.translate(str.maketrans('', '', string.punctuation)).lower().split())
             image_data = {
-                'name': "{}/{}".format(registry_user,"{}:{}".format(image_name,model_version)),
+                'name': f"{registry_user+'/' if (registry_user and registry_pass) else ''}{image_name}:{model_version}",
                 'model_name': model_name,
                 'model_path': tmppath,
                 'publish': True,
