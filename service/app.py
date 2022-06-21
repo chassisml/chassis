@@ -58,6 +58,7 @@ K_EMPTY_DIR_NAME = os.getenv('K_EMPTY_DIR_NAME')
 K_INIT_EMPTY_DIR_PATH = os.getenv('K_INIT_EMPTY_DIR_PATH')
 K_KANIKO_EMPTY_DIR_PATH = os.getenv('K_KANIKO_EMPTY_DIR_PATH')
 K_JOB_NAME = os.getenv('K_JOB_NAME')
+K_SERVICE_ACOUNT_NAME = os.getenv('K_SERVICE_ACCOUNT_NAME')
 
 config.load_incluster_config()
 v1 = client.CoreV1Api()
@@ -521,6 +522,7 @@ def create_job_object(
         containers_list = [modzy_uploader_container]
 
     pod_spec = client.V1PodSpec(
+        service_account_name=K_SERVICE_ACOUNT_NAME,
         restart_policy='Never',
         init_containers=init_container_list,
         containers=containers_list,
