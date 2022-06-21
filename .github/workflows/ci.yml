@@ -185,7 +185,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
+        with:
+          submodules: recursive 
+          
       - name: Override modzy-uploader image value in .env file
         run: |
           repo_modzy_uploader=ghcr.io/${{ github.repository }}-modzy-uploader:${{ github.sha }}
