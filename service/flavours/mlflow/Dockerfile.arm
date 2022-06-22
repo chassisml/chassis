@@ -21,8 +21,24 @@ ARG MODEL_CLASS
 ARG INTERFACE
 # This is the model.yaml file.
 ARG MODZY_METADATA_PATH
+#PyPi Repo
+ARG CHASSIS_PYPI_REPO
+#Conda Repo
+ARG CHASSIS_CONDA_CHANNEL_ALIAS
 
 WORKDIR /app
+
+#set Python repos
+RUN mkdir ~/.pip
+RUN echo '[global]' >| ~/.pip/pip.conf
+RUN echo 'index-url = '${CHASSIS_PYPI_REPO} >> ~/.pip/pip.conf
+
+RUN echo 'channels:'>| ~/.condarc
+RUN echo '  - r'>> ~/.condarc
+RUN echo '  - defaults'>> ~/.condarc
+RUN echo 'show_channel_urls: True'>> ~/.condarc
+RUN echo ${CHASSIS_CONDA_CHANNEL_ALIAS} >> ~/.condarc
+
 
 COPY flavours/${MODEL_CLASS}/${MODEL_DIR}/conda.yaml ./conda.yaml
 
