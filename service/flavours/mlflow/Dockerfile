@@ -10,9 +10,12 @@ ARG MODEL_CLASS
 ARG INTERFACE
 # This is the model.yaml file.
 ARG MODZY_METADATA_PATH
+#PyPi Repo
+ARG PYPI_REPO
+#Conda Repo
+ARG CONDA_THANNEL_ALIAS
 
 #OMI Annotations
-
 LABEL ml.openmodel.interfaces=["${INTERFACE}"]
 LABEL ml.openml.model_name="${MODEL_NAME}"
 LABEL ml.openmodel.protocols=[["v2"]]
@@ -22,6 +25,18 @@ LABEL ml.openmodel.port="45000"
 WORKDIR /app
 
 RUN apt-get update && apt-get install -y build-essential cmake
+
+#set Python repos
+RUN mkdir ~/.pip
+RUN echo '[global]' >| ~/.pip/pip.conf
+RUN echo 'index-url = '${PYPI_REPO} >> ~/.pip/pip.conf
+
+RUN echo 'channels:'>| ~/.condarc
+RUN echo '  - r'>> ~/.condarc
+RUN echo '  - defaults'>> ~/.condarc
+RUN echo 'show_channel_urls: True'>> ~/.condarc
+RUN echo ${CONDA_THANNEL_ALIAS} >> ~/.condarc
+
 # create env
 ENV CONDA_ENV chassis-env
 

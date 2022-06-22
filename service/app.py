@@ -35,7 +35,7 @@ from libcloud.storage.providers import get_driver
 
 load_dotenv()
 
-CHASSIS_DEV = False
+CHASSIS_DEV = True
 WINDOWS = True if os.name == 'nt' else False
 
 HOME_DIR = str(Path.home())
@@ -364,6 +364,9 @@ def create_job_object(
         f'--build-arg=MODEL_CLASS={module_name}',
         # Modzy is the default interface.
         '--build-arg=INTERFACE=modzy',
+        f'--build-arg=PYPI_REPO={os.getenv("PYPI_REPO") if os.getenv("PYPI_REPO") is not None else "https://pypi.org/simple"}',
+        f'--build-arg=CONDA_THANNEL_ALIAS={os.getenv("CONDA_CHANNEL_ALIAS") if os.getenv("CONDA_CHANNEL_ALIAS") is not None else "channel_alias: https://conda.anaconda.org/"}',
+
     ]
 
     modzy_uploader_args = [
