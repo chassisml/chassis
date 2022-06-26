@@ -386,7 +386,7 @@ def create_job_object(
     # This is the kaniko container used to build the final image.
     kaniko_args = [
         '' if publish else '--no-push',
-        f'--destination={REGISTRY_URI+"/" if REGISTRY_URI else ""}{image_name}{"" if ":" in image_name else ":latest"}',
+        f'--destination={REGISTRY_URI+"/" if REGISTRY_URI else ""}{"modzy-internal/" if MODZY_URL else ""}{image_name}{"" if ":" in image_name else ":latest"}',
         '--snapshotMode=redo',
         '--use-new-run',
         f'--build-arg=MODEL_DIR=model-{random_name}',
@@ -567,7 +567,7 @@ def create_job(api_instance, job):
         namespace=ENVIRONMENT)
     logger.info(f'Pod created. Status={str(api_response.status)}')
 
-async def delete_credentials_secret(random_name):
+async def clean_up(random_name,webhook=None):
     '''
     This async utility method waits for the job to complete and then deletes the secret containing the user's registry credentials
     
@@ -582,6 +582,10 @@ async def delete_credentials_secret(random_name):
         status = get_job_status(f'{K_JOB_NAME}-{random_name}')
         if status['status']['failed'] or status['status']['succeeded']:
             v1.delete_namespaced_secret(namespace=ENVIRONMENT,name=f'{random_name}-creds')
+
+            if webhook:
+                requests.post(webhook,json=status)
+
             break
         time.sleep(5)
 
@@ -598,7 +602,8 @@ def run_kaniko(
         arm64=False,
         context_uri=None,
         modzy_uri=None,
-        modzy_model_id=None
+        modzy_model_id=None,
+        webhook=None
 ):
     '''
     This utility method creates and launches a job object that uses Kaniko to create the desired image during the `/build` process.
@@ -635,7 +640,7 @@ def run_kaniko(
 
         loop = asyncio.new_event_loop()
         threading.Thread(target=loop.run_forever).start()
-        asyncio.run_coroutine_threadsafe(delete_credentials_secret(random_name),loop)
+        asyncio.run_coroutine_threadsafe(clean_up(random_name,webhook),loop)
 
     except Exception as err:
         logger.error(str(err))
@@ -904,6 +909,7 @@ def build_image():
     publish = image_data.get('publish', False)
     publish = True if publish else ''
     registry_auth = image_data.get('registry_auth')
+    webhook = image_data.get('webhook')
 
     # retrieve binary representations for all three variables
     model = request.files.get('model')
@@ -986,7 +992,8 @@ def build_image():
         arm64,
         context_uri,
         modzy_uri,
-        modzy_model_id
+        modzy_model_id,
+        webhook
     )
 
     if error:

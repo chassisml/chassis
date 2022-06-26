@@ -13,6 +13,7 @@ import mlflow
 import base64
 import string
 import warnings
+import validators
 
 from .grpc_model.src import model_client
 from chassisml import __version__
@@ -237,7 +238,7 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
     def publish(self,model_name,model_version,registry_user=None,registry_pass=None,
                 conda_env=None,fix_env=True,gpu=False,arm64=False,
                 modzy_sample_input_path=None,modzy_api_key=None,
-                modzy_url=None,modzy_model_id=None):
+                modzy_url=None,modzy_model_id=None,webhook=None):
         '''
         Executes chassis job, which containerizes model, pushes container image to Docker registry, and optionally deploys model to Modzy
 
@@ -254,6 +255,7 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
             modzy_api_key (str): Valid Modzy API Key
             modzy_url (str): Valid Modzy instance URL, example: https://my.modzy.com
             modzy_model_id (str): Existing Modzy model identifier, if requesting new version of existing model instead of new model
+            webhook (str): Optional webhook for Chassis service to update status
 
         Returns:
             Dict: Response to Chassis `/build` endpoint
@@ -282,6 +284,9 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
             (modzy_sample_input_path and modzy_api_key):
             raise ValueError('"modzy_sample_input_path" and "modzy_api_key" must both be provided to publish to Modzy.')
 
+        if webhook and not validators.url(webhook):
+            raise ValueError("Provided webhook is not a valid URL")
+
         try:
             model_directory = os.path.join(tempfile.mkdtemp(),CHASSIS_TMP_DIRNAME)
             mlflow.pyfunc.save_model(path=model_directory, python_model=self, conda_env=conda_env, 
@@ -307,7 +312,8 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
                 'model_path': tmppath,
                 'publish': True,
                 'gpu': gpu,
-                'arm64': arm64
+                'arm64': arm64,
+                'webhook': webhook
             }
 
             if registry_user and registry_pass:
