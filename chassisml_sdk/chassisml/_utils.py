@@ -126,7 +126,7 @@ def fix_dependencies_arm_gpu(model_directory):
                 pip_w.write(line)
                 pip_w.write('\n')
 
-def write_modzy_yaml(model_name,model_version,output_path,batch_size=None,gpu=False):
+def write_metadata_yaml(model_name,model_version,output_path,batch_size=None,gpu=False):
     yaml_data = DEFAULT_MODZY_YAML_DATA
     yaml_data['name'] = model_name
     yaml_data['version'] = model_version
@@ -136,15 +136,6 @@ def write_modzy_yaml(model_name,model_version,output_path,batch_size=None,gpu=Fa
         yaml_data['resources']['gpu']['count'] = 1
     with open(output_path,'w',encoding = "utf-8") as f:
         f.write(yaml.dump(yaml_data))
-
-def check_modzy_url(modzy_url):
-    if not validators.url(modzy_url):
-        raise ValueError("Provided Modzy URL is not a valid URL")
-    if not modzy_url.startswith('https://'):
-        raise ValueError("Modzy URL must start with 'https://', example: 'https://my.modzy.com'")
-    if not modzy_url[-1].isalpha():
-        raise ValueError("Modzy URL must end with alpha char, example: 'https://my.modzy.com'")
-    return True
 
 def docker_start(image_id,host_port = 5001,container_port=None,timeout=20,pull_container=False):
     '''

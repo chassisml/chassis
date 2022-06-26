@@ -19,12 +19,12 @@ from .grpc_model.src import model_client
 from chassisml import __version__
 
 from .open_model_initiative_checks.open_model_initiative_checks import OMI_check
-from ._utils import zipdir,fix_dependencies,write_modzy_yaml,NumpyEncoder,fix_dependencies_arm_gpu, \
-    check_modzy_url,docker_start,docker_clean_up
+from ._utils import zipdir,fix_dependencies,write_metadata_yaml,NumpyEncoder,fix_dependencies_arm_gpu, \
+    docker_start,docker_clean_up
 
 ###########################################
 MODEL_ZIP_NAME = 'model.zip'
-MODZY_YAML_NAME = 'model.yaml'
+YAML_NAME = 'model.yaml'
 CHASSIS_TMP_DIRNAME = 'chassis_tmp'
 
 routes = {
@@ -237,13 +237,12 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
 
     def publish(self,model_name,model_version,registry_user=None,registry_pass=None,
                 conda_env=None,fix_env=True,gpu=False,arm64=False,
-                modzy_sample_input_path=None,modzy_api_key=None,
-                modzy_url=None,modzy_model_id=None,webhook=None):
+                webhook=None):
         '''
-        Executes chassis job, which containerizes model, pushes container image to Docker registry, and optionally deploys model to Modzy
+        Executes chassis job, which containerizes model and pushes container image to Docker registry.
 
         Args:
-            model_name (str): Model name that serves as model's name in Modzy and docker registry repository name. **Note**: this string cannot include punctuation
+            model_name (str): Model name that serves as model's name and docker registry repository name. **Note**: this string cannot include punctuation
             model_version (str): Version of model
             registry_user (str): Docker registry username
             registry_pass (str): Docker registry password
@@ -251,10 +250,6 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
             fix_env (bool): Modifies conda or pip-installable packages into list of dependencies to be installed during the container build
             gpu (bool): If True, builds container image that runs on GPU hardware
             arm64 (bool): If True, builds container image that runs on ARM64 architecture
-            modzy_sample_input_path (str): Filepath to sample input data. Required to deploy model to Modzy
-            modzy_api_key (str): Valid Modzy API Key
-            modzy_url (str): Valid Modzy instance URL, example: https://my.modzy.com
-            modzy_model_id (str): Existing Modzy model identifier, if requesting new version of existing model instead of new model
             webhook (str): Optional webhook for Chassis service to update status
 
         Returns:
@@ -279,10 +274,6 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
         ```            
 
         '''
-
-        if (modzy_sample_input_path or modzy_api_key) and not \
-            (modzy_sample_input_path and modzy_api_key):
-            raise ValueError('"modzy_sample_input_path" and "modzy_api_key" must both be provided to publish to Modzy.')
 
         if webhook and not validators.url(webhook):
             raise ValueError("Provided webhook is not a valid URL")
@@ -319,43 +310,24 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
             if registry_user and registry_pass:
                 image_data['registry_auth'] = base64.b64encode("{}:{}".format(registry_user,registry_pass).encode("utf-8")).decode("utf-8")
 
-            if modzy_sample_input_path and modzy_api_key:
-                modzy_metadata_path = os.path.join(tmppath,MODZY_YAML_NAME)
-                modzy_data = {
-                    'metadata_path': modzy_metadata_path,
-                    'sample_input_path': modzy_sample_input_path,
-                    'deploy': True,
-                    'api_key': modzy_api_key,
-                    'modzy_model_id': modzy_model_id,
-                }
-                if modzy_url and check_modzy_url(modzy_url):
-                    modzy_data['modzy_url'] = modzy_url if not modzy_url.endswith('/api') else modzy_url[:-4]
-                write_modzy_yaml(model_name,model_version,modzy_metadata_path,batch_size=self.batch_size,gpu=gpu)
-            else:
-                modzy_data = {}
+            metadata_path = os.path.join(tmppath,YAML_NAME)
+            write_metadata_yaml(model_name,model_version,metadata_path,batch_size=self.batch_size,gpu=gpu)
 
             with open('{}/{}'.format(tmppath,MODEL_ZIP_NAME),'rb') as f:
                 files = [
                     ('image_data', json.dumps(image_data)),
-                    ('modzy_data', json.dumps(modzy_data)),
                     ('model', f)
                 ]
-                file_pointers = []
-                for key, file_key in [('metadata_path', 'modzy_metadata_data'),
-                                ('sample_input_path', 'modzy_sample_input_data')]:
-                    value = modzy_data.get(key)
-                    if value:
-                        fp = open(value, 'rb')
-                        file_pointers.append(fp)  
-                        files.append((file_key, fp))
+
+                fp = open(metadata_path, 'rb')
+                files.append(('metadata_data', fp))
 
                 print('Starting build job... ', end='', flush=True)
                 res = requests.post(self.chassis_build_url, files=files)
                 res.raise_for_status()
             print('Ok!')
 
-            for fp in file_pointers:
-                fp.close()
+            fp.close()
 
             shutil.rmtree(tmppath)
             shutil.rmtree(model_directory)
