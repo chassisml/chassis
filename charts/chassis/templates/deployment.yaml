@@ -50,8 +50,6 @@ spec:
               value: {{ .Values.registry.url | quote }}
             - name: REGISTRY_CREDENTIALS_SECRET_NAME
               value: {{ .Values.registry.credentialsSecretName | quote }}
-            - name: MODZY_URL
-              value: {{ .Values.modzy.url | quote }}
 {{/*          {{- if .Values.proxySettings.enabled }}*/}}
 {{/*            - name: http_proxy*/}}
 {{/*              value: {{ .Values.proxySettings.http_proxy | quote }}*/}}
