@@ -19,10 +19,6 @@ storage:
   hostPath: "/mnt/data"
   size: 10Gi
 
-# (Optional) If connecting to a Modzy instance, provide the following info.
-modzy:
-  url: ""
-
 registry:
   # The base URL to the destination registry that Chassis will push final
   url: ""
