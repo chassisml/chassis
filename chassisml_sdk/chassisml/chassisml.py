@@ -411,6 +411,42 @@ class ChassisClient:
         data = res.json()
         return data
 
+    def get_job_logs(self, job_id):
+        '''
+        Checks the status of a chassis job
+
+        Args:
+            job_id (str): Chassis job identifier generated from `ChassisModel.publish` method
+        
+        Returns:
+            Dict: JSON Chassis job status
+
+        Examples:
+        ```python
+        # Create Chassisml model
+        chassis_model = chassis_client.create_model(process_fn=process)
+
+        # Define Dockerhub credentials
+        dockerhub_user = "user"
+        dockerhub_pass = "password"
+
+        # Publish model to Docker registry
+        response = chassis_model.publish(
+            model_name="Chassisml Regression Model",
+            model_version="0.0.1",
+            registry_user=dockerhub_user,
+            registry_pass=dockerhub_pass,
+        ) 
+
+        job_id = response.get('job_id')
+        job_status = chassis_client.get_job_logs(job_id)
+        ```
+
+        '''
+        route = f'{urllib.parse.urljoin(self.base_url, routes["job"])}/{job_id}/logs'
+        res = requests.get(route)
+        return res.text
+
     def block_until_complete(self,job_id,timeout=None,poll_interval=5):
         '''
         Blocks until Chassis job is complete or timeout is reached. Polls Chassis job API until a result is marked finished.
