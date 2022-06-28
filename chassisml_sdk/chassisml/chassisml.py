@@ -46,7 +46,7 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
         chassis_build_url (str): The build url for the Chassis API.
     """
 
-    def __init__(self,process_fn,batch_process_fn,batch_size,chassis_base_url):      
+    def __init__(self,process_fn,batch_process_fn,batch_size,chassis_base_url,chassis_auth_header):      
         
         if process_fn and batch_process_fn:
             if not batch_size:
@@ -71,6 +71,7 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
 
         self.chassis_build_url = urllib.parse.urljoin(chassis_base_url, routes['build'])
         self.chassis_test_url = urllib.parse.urljoin(chassis_base_url, routes['test'])
+        self.chassis_auth_header = chassis_auth_header
 
     def _gen_predict_method(self,process_fn,batch=False,batch_to_single=False):
         def predict(_,model_input):
@@ -196,7 +197,10 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
             ]
 
             print('Starting test job... ', end='', flush=True)
-            res = requests.post(self.chassis_test_url, files=files)
+            if self.chassis_auth_header:
+                res = requests.post(self.chassis_test_url, files=files, headers={'Authorization': self.chassis_auth_header})
+            else:
+                res = requests.post(self.chassis_test_url, files=files)
             res.raise_for_status()
         print('Ok!')
 
@@ -237,7 +241,7 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
 
     def publish(self,model_name,model_version,registry_user=None,registry_pass=None,
                 conda_env=None,fix_env=True,gpu=False,arm64=False,
-                webhook=None):
+                sample_input_path=None,webhook=None):
         '''
         Executes chassis job, which containerizes model and pushes container image to Docker registry.
 
@@ -250,6 +254,7 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
             fix_env (bool): Modifies conda or pip-installable packages into list of dependencies to be installed during the container build
             gpu (bool): If True, builds container image that runs on GPU hardware
             arm64 (bool): If True, builds container image that runs on ARM64 architecture
+            sample_input_path (str): Optional filepath to sample input data
             webhook (str): Optional webhook for Chassis service to update status
 
         Returns:
@@ -319,15 +324,27 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
                     ('model', f)
                 ]
 
-                fp = open(metadata_path, 'rb')
-                files.append(('metadata_data', fp))
+                file_pointers = []
+
+                meta_fp = open(metadata_path, 'rb')
+                files.append(('metadata_data', meta_fp))
+                file_pointers.append(meta_fp)
+
+                if sample_input_path:
+                    sample_fp = open(sample_input_path, 'rb')
+                    files.append(('sample_input', sample_fp))
+                    file_pointers.append(sample_fp)
 
                 print('Starting build job... ', end='', flush=True)
-                res = requests.post(self.chassis_build_url, files=files)
+                if self.chassis_auth_header:
+                    res = requests.post(self.chassis_build_url, files=files, headers={'Authorization': self.chassis_auth_header})
+                else:
+                    res = requests.post(self.chassis_build_url, files=files)
                 res.raise_for_status()
             print('Ok!')
 
-            fp.close()
+            for fp in file_pointers:
+                fp.close()
 
             shutil.rmtree(tmppath)
             shutil.rmtree(model_directory)
@@ -350,10 +367,12 @@ class ChassisClient:
 
     Attributes:
         base_url (str): The base url for the API.
+        auth_header (str): Optional authorization header to be included with all requests.
     """
 
-    def __init__(self,base_url='http://localhost:5000'):
+    def __init__(self,base_url='http://localhost:5000',auth_header=None):
         self.base_url = base_url
+        self.auth_header = auth_header
 
     def get_job_status(self, job_id):
         '''
@@ -388,7 +407,10 @@ class ChassisClient:
 
         '''
         route = f'{urllib.parse.urljoin(self.base_url, routes["job"])}/{job_id}'
-        res = requests.get(route)
+        if self.auth_header:
+            res = requests.get(route,headers={'Authorization': self.auth_header})
+        else:
+            res = requests.get(route)
         data = res.json()
         return data
 
@@ -464,7 +486,11 @@ class ChassisClient:
         ```
         '''
         url = f'{urllib.parse.urljoin(self.base_url, routes["job"])}/{job_id}/download-tar'
-        r = requests.get(url)
+        
+        if self.auth_header:
+            r = requests.get(url,headers={'Authorization': self.auth_header})
+        else:
+            r = requests.get(url)
 
         if r.status_code == 200:
             with open(output_filename, 'wb') as f:
@@ -583,7 +609,7 @@ class ChassisClient:
         if (batch_process_fn and not batch_size) or (batch_size and not batch_process_fn):
             raise ValueError("Both batch_process_fn and batch_size must be provided for batch support.")
 
-        return ChassisModel(process_fn,batch_process_fn,batch_size,self.base_url)
+        return ChassisModel(process_fn,batch_process_fn,batch_size,self.base_url,self.auth_header)
 
     def run_inference(self,input_data,container_url="localhost",host_port=45000):
         '''
