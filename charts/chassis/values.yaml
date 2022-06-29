@@ -24,6 +24,8 @@ registry:
   url: ""
   # The name of a Kubernetes secret of type "dockerconfigjson"
   credentialsSecretName: ""
+  # Optional prefix to be applied to image repositories created by Chassis
+  repositoryPrefix: ""
 
 replicaCount: 1
 
