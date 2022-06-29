@@ -65,6 +65,7 @@ DATA_VOLUME_NAME = '-'.join((DEPLOYMENT,K_DATA_VOLUME_NAME))
 DATA_VOLUME_CLAIM_NAME = '-'.join((DEPLOYMENT,K_DATA_VOLUME_CLAIM_NAME))
 REGISTRY_URI = urlparse(os.getenv('REGISTRY_URL')).hostname
 REGISTRY_CREDENTIALS_SECRET_NAME = os.getenv('REGISTRY_CREDENTIALS_SECRET_NAME')
+REPOSITORY_PREFIX = os.getenv('REPOSITORY_PREFIX').lstrip('/')
 CONTEXT_BUCKET = os.getenv('STORAGE_BUCKET_NAME')
 STORAGE_CREDENTIALS_SECRET_NAME = os.getenv('STORAGE_CREDENTIALS_SECRET_NAME')
 
@@ -377,7 +378,7 @@ def create_job_object(
     # This is the kaniko container used to build the final image.
     kaniko_args = [
         '' if publish else '--no-push',
-        f'--destination={REGISTRY_URI+"/" if REGISTRY_URI else ""}{image_name}{"" if ":" in image_name else ":latest"}',
+        f'--destination={REGISTRY_URI+"/" if REGISTRY_URI else ""}{REPOSITORY_PREFIX}{image_name}{"" if ":" in image_name else ":latest"}',
         '--snapshotMode=redo',
         '--use-new-run',
         f'--build-arg=MODEL_DIR=model-{random_name}',
