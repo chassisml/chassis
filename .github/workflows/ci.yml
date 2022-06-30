@@ -186,11 +186,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Override modzy-uploader image value in .env file
-        run: |
-          repo_modzy_uploader=ghcr.io/${{ github.repository }}-modzy-uploader:${{ github.sha }}
-          echo "MODZY_UPLOADER_REPOSITORY=${repo_modzy_uploader}" >> service/.env
-
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
         with:
@@ -207,11 +202,3 @@ jobs:
             ghcr.io/${{ github.repository }}-service:${{ github.sha }}
             ghcr.io/${{ github.repository }}-service:latest
 
-      - name: Build and push Modzy uploader
-        uses: docker/build-push-action@v2
-        with:
-          context: ./modzy-uploader
-          push: true
-          tags: |
-            ghcr.io/${{ github.repository }}-modzy-uploader:${{ github.sha }}
-            ghcr.io/${{ github.repository }}-modzy-uploader:latest
