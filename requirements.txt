@@ -1,7 +1,7 @@
 retry
 chassisml
 apache-libcloud
-flask>=2.0.2
+flask==2.0.3
 requests>=2.27.1
 kubernetes>=21.7.0
 grpc-requests>=0.1.0
