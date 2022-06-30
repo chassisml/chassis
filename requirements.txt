@@ -21,4 +21,4 @@ numpy>=1.22.0
 pandas>=1.4.0
 python-dotenv>=0.19.2
 validators>=0.18.2
-protobuf~=3.20.1
+protobuf~=3.19.4
