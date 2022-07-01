@@ -1,7 +1,7 @@
 # Connect to Hosted Service
 
 !!! success "Welcome!"
-     Connecting to this service eliminates the need for you to manually deploy and stand up a private Kubernetes cluster. We take care of that for you! This page will allow you to connect and start using Chassis right away.  
+     Connecting to this service eliminates the need for you to deploy and stand up a private Kubernetes cluster. Each chassis build job run on our hosted service has enough resources to containerize even the most memory intensive ML models (up to 8GB RAM and 2 CPUs). Follow the instructions on this page to connect and get started using Chassis right away.  
 
 ## Download Chassis SDK
 
