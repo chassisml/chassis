@@ -8,7 +8,7 @@
 - Provide the MLOps community [documentation](https://chassis.ml/) and [usage](https://github.com/modzy/chassis/tree/main/chassisml-sdk/examples) examples accessible to Data Scientists and DevOps engineers of all skill levels
 
 ## Overview
-
+ 
 Chassis converts AI Models into containers that can be run anywhere e.g. converts a Sklearn Random forrest classifier into a Docker container that can be run locally by a docker deamon, on [KServe](https://www.kubeflow.org/docs/external-add-ons/kserve/kserve/), or via [Modzy](http://www.modzy.com).
 
 Chassis runs as a Kubernetes service that can be [deployed](https://chassis.ml/tutorials/devops-deploy/) into your preferred cluster using Chassis-provided Helm charts. Chassis works by making a series of reasonable assumptions related to the resources needed for production inference with standard AI/ML models. The Chassis service then uses those assumptions to programmatically carry out the DevOps steps required to wrap your AI/ML model into a production level Docker image before uploading it to dockerhub for you to use. 
