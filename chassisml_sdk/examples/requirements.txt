@@ -1,4 +1,3 @@
-modzy-sdk>=0.6.0
 chassisml==1.1.2
 cloudpickle==2.0.0
 ipykernel==6.6.0
