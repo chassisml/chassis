@@ -30,90 +30,6 @@ from libcloud.storage.types import Provider
 from requests.exceptions import ConnectionError
 from libcloud.storage.providers import get_driver
 
-###########################################
-
-load_dotenv()
-
-CHASSIS_DEV = False
-WINDOWS = True if os.name == 'nt' else False
-
-HOME_DIR = str(Path.home())
-
-if CHASSIS_DEV:
-    MOUNT_PATH_DIR = "/"+ str(os.path.join(HOME_DIR,".chassis_data"))[3:].replace("\\", "/") if WINDOWS else os.path.join(HOME_DIR,".chassis_data")
-else:
-    MOUNT_PATH_DIR =  os.getenv('MOUNT_PATH_DIR')
-
-WORKSPACE_DIR = os.getenv('WORKSPACE_DIR')
-DATA_DIR = f'{MOUNT_PATH_DIR}/{WORKSPACE_DIR}'
-
-ENVIRONMENT = os.getenv('NAMESPACE')
-DEPLOYMENT = os.getenv('DEPLOYMENT')
-
-K_DATA_VOLUME_NAME = os.getenv('K_DATA_VOLUME_NAME')
-K_DATA_VOLUME_CLAIM_NAME = os.getenv('K_DATA_VOLUME_CLAIM_NAME')
-K_EMPTY_DIR_NAME = os.getenv('K_EMPTY_DIR_NAME')
-K_INIT_EMPTY_DIR_PATH = os.getenv('K_INIT_EMPTY_DIR_PATH')
-K_KANIKO_EMPTY_DIR_PATH = os.getenv('K_KANIKO_EMPTY_DIR_PATH')
-K_JOB_NAME = os.getenv('K_JOB_NAME')
-K_SERVICE_ACOUNT_NAME = os.getenv('K_SERVICE_ACCOUNT_NAME')
-
-config.load_incluster_config()
-v1 = client.CoreV1Api()
-
-DATA_VOLUME_NAME = '-'.join((DEPLOYMENT,K_DATA_VOLUME_NAME))
-DATA_VOLUME_CLAIM_NAME = '-'.join((DEPLOYMENT,K_DATA_VOLUME_CLAIM_NAME))
-REGISTRY_URI = urlparse(os.getenv('REGISTRY_URL')).hostname
-REGISTRY_CREDENTIALS_SECRET_NAME = os.getenv('REGISTRY_CREDENTIALS_SECRET_NAME')
-REPOSITORY_PREFIX = os.getenv('REPOSITORY_PREFIX').lstrip('/')
-CONTEXT_BUCKET = os.getenv('STORAGE_BUCKET_NAME')
-STORAGE_CREDENTIALS_SECRET_NAME = os.getenv('STORAGE_CREDENTIALS_SECRET_NAME')
-
-config.load_incluster_config()
-v1 = client.CoreV1Api()
-if REGISTRY_CREDENTIALS_SECRET_NAME:
-    REGISTRY_CREDENTIALS = v1.read_namespaced_secret(REGISTRY_CREDENTIALS_SECRET_NAME, ENVIRONMENT).data[".dockerconfigjson"]
-else:
-    REGISTRY_CREDENTIALS = ""
-
-SUPPORTED_STORAGE_PROVIDERS = {
-    "s3": Provider.S3,
-    "gs": Provider.GOOGLE_STORAGE
-}
-
-MODE = os.getenv('MODE')
-PV_MODE = True if (MODE == "pv" or not MODE) else False
-
-if not PV_MODE:
-    if not CONTEXT_BUCKET:
-        raise ValueError("Context bucket must be specified if not using 'pv' mode.")
-        
-    config.load_incluster_config()
-    v1 = client.CoreV1Api()
-    secret = v1.read_namespaced_secret(STORAGE_CREDENTIALS_SECRET_NAME, ENVIRONMENT).data
-
-    if MODE == 'gs':
-        # use Google Cloud Storage bucket to transfer build context
-        storage_key = literal_eval(base64.b64decode(secret["storage-key.json"]).decode())
-        access_key = storage_key['client_email']
-        secret_key = storage_key['private_key']
-        storage_driver = get_driver(SUPPORTED_STORAGE_PROVIDERS[MODE])(access_key, secret_key)
-        container = storage_driver.get_container(container_name=CONTEXT_BUCKET)
-    elif MODE == 's3':
-        # use S3 bucket to transfer build context
-        s3_key_lines = base64.b64decode(secret["credentials"]).decode().splitlines()
-        s3_creds = {}
-        for line in s3_key_lines:
-            if "=" in line:
-                k,v = line.split("=")
-                s3_creds[k.strip()] = v.strip()
-        AWS_REGION = s3_creds['region']
-        access_key = s3_creds['aws_access_key_id']
-        secret_key = s3_creds['aws_secret_access_key']
-        storage_driver = get_driver(SUPPORTED_STORAGE_PROVIDERS[MODE])(access_key, secret_key)
-        container = storage_driver.get_container(container_name=CONTEXT_BUCKET)
-    else:
-        raise ValueError("Only allowed modes are: 'pv', 'gs', 's3'")
 
 ###########################################
 def create_dev_environment():
@@ -986,6 +902,92 @@ def create_app():
 ###########################################
 
 if __name__ == '__main__':
+    ###########################################
+
+    load_dotenv()
+
+    CHASSIS_DEV = False
+    WINDOWS = True if os.name == 'nt' else False
+
+    HOME_DIR = str(Path.home())
+
+    if CHASSIS_DEV:
+        MOUNT_PATH_DIR = "/" + str(os.path.join(HOME_DIR, ".chassis_data"))[3:].replace("\\",
+                                                                                        "/") if WINDOWS else os.path.join(
+            HOME_DIR, ".chassis_data")
+    else:
+        MOUNT_PATH_DIR = os.getenv('MOUNT_PATH_DIR')
+
+    WORKSPACE_DIR = os.getenv('WORKSPACE_DIR')
+    DATA_DIR = f'{MOUNT_PATH_DIR}/{WORKSPACE_DIR}'
+
+    ENVIRONMENT = os.getenv('NAMESPACE')
+    DEPLOYMENT = os.getenv('DEPLOYMENT')
+
+    K_DATA_VOLUME_NAME = os.getenv('K_DATA_VOLUME_NAME')
+    K_DATA_VOLUME_CLAIM_NAME = os.getenv('K_DATA_VOLUME_CLAIM_NAME')
+    K_EMPTY_DIR_NAME = os.getenv('K_EMPTY_DIR_NAME')
+    K_INIT_EMPTY_DIR_PATH = os.getenv('K_INIT_EMPTY_DIR_PATH')
+    K_KANIKO_EMPTY_DIR_PATH = os.getenv('K_KANIKO_EMPTY_DIR_PATH')
+    K_JOB_NAME = os.getenv('K_JOB_NAME')
+    K_SERVICE_ACOUNT_NAME = os.getenv('K_SERVICE_ACCOUNT_NAME')
+
+
+    config.load_incluster_config()
+    v1 = client.CoreV1Api()
+    DATA_VOLUME_NAME = '-'.join((DEPLOYMENT, K_DATA_VOLUME_NAME))
+    DATA_VOLUME_CLAIM_NAME = '-'.join((DEPLOYMENT, K_DATA_VOLUME_CLAIM_NAME))
+    REGISTRY_URI = urlparse(os.getenv('REGISTRY_URL')).hostname
+    REGISTRY_CREDENTIALS_SECRET_NAME = os.getenv('REGISTRY_CREDENTIALS_SECRET_NAME')
+    REPOSITORY_PREFIX = os.getenv('REPOSITORY_PREFIX').lstrip('/')
+    CONTEXT_BUCKET = os.getenv('STORAGE_BUCKET_NAME')
+    STORAGE_CREDENTIALS_SECRET_NAME = os.getenv('STORAGE_CREDENTIALS_SECRET_NAME')
+
+    if REGISTRY_CREDENTIALS_SECRET_NAME:
+        REGISTRY_CREDENTIALS = v1.read_namespaced_secret(REGISTRY_CREDENTIALS_SECRET_NAME, ENVIRONMENT).data[
+            ".dockerconfigjson"]
+    else:
+        REGISTRY_CREDENTIALS = ""
+
+    SUPPORTED_STORAGE_PROVIDERS = {
+        "s3": Provider.S3,
+        "gs": Provider.GOOGLE_STORAGE
+    }
+
+    MODE = os.getenv('MODE')
+    PV_MODE = True if (MODE == "pv" or not MODE) else False
+
+    if not PV_MODE:
+        if not CONTEXT_BUCKET:
+            raise ValueError("Context bucket must be specified if not using 'pv' mode.")
+
+        config.load_incluster_config()
+        v1 = client.CoreV1Api()
+        secret = v1.read_namespaced_secret(STORAGE_CREDENTIALS_SECRET_NAME, ENVIRONMENT).data
+
+        if MODE == 'gs':
+            # use Google Cloud Storage bucket to transfer build context
+            storage_key = literal_eval(base64.b64decode(secret["storage-key.json"]).decode())
+            access_key = storage_key['client_email']
+            secret_key = storage_key['private_key']
+            storage_driver = get_driver(SUPPORTED_STORAGE_PROVIDERS[MODE])(access_key, secret_key)
+            container = storage_driver.get_container(container_name=CONTEXT_BUCKET)
+        elif MODE == 's3':
+            # use S3 bucket to transfer build context
+            s3_key_lines = base64.b64decode(secret["credentials"]).decode().splitlines()
+            s3_creds = {}
+            for line in s3_key_lines:
+                if "=" in line:
+                    k, v = line.split("=")
+                    s3_creds[k.strip()] = v.strip()
+            AWS_REGION = s3_creds['region']
+            access_key = s3_creds['aws_access_key_id']
+            secret_key = s3_creds['aws_secret_access_key']
+            storage_driver = get_driver(SUPPORTED_STORAGE_PROVIDERS[MODE])(access_key, secret_key)
+            container = storage_driver.get_container(container_name=CONTEXT_BUCKET)
+        else:
+            raise ValueError("Only allowed modes are: 'pv', 'gs', 's3'")
+
     port = int(os.environ.get('PORT', 5000))
 
     if PV_MODE:
