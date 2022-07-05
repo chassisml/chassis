@@ -9,4 +9,3 @@ python-dotenv
 apache-libcloud
 cryptography==36.0.1
 retry
-modzy-sdk
