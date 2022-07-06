@@ -6,7 +6,7 @@ FROM nvidia/cuda:11.0-runtime-ubuntu20.04
 
 # Install miniconda
 RUN rm /etc/apt/sources.list.d/cuda.list
-RUN apt-get update && apt-get install -y curl
+RUN apt-get update && apt-get install -y curl build-essential
 RUN curl https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o Miniconda3-latest-Linux-x86_64.sh
 RUN bash Miniconda3-latest-Linux-x86_64.sh -b -p /opt/miniconda3\
     && rm -f Miniconda3-latest-Linux-x86_64.sh
