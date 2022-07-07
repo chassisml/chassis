@@ -14,6 +14,7 @@ import base64
 import string
 import warnings
 import validators
+from packaging import version
 
 from .grpc_model.src import model_client
 from chassisml import __version__
@@ -379,6 +380,20 @@ class ChassisClient:
         self.auth_header = auth_header
         self.ssl_verification = ssl_verification
 
+        if self.auth_header:
+            res = requests.get(base_url,headers={'Authorization': self.auth_header},verify=self.ssl_verification)
+        else:
+            res = requests.get(base_url,verify=self.ssl_verification)
+
+        version_route = os.path.join(base_url,'version')
+        if self.auth_header:
+            res = requests.get(version_route,headers={'Authorization': self.auth_header},verify=self.ssl_verification)
+        else:
+            res = requests.get(version_route,verify=self.ssl_verification)
+
+        parsed_version = version.parse(res.text)
+        if parsed_version < version.Version('1.0.0'):
+            warnings.warn("Chassis service version should be >=1.0.0 for compatibility with this SDK version, things may not work as expected. Please update the service.")
 
     def get_job_status(self, job_id):
         '''
@@ -420,6 +435,40 @@ class ChassisClient:
 
         data = res.json()
         return data
+
+    def get_job_logs(self, job_id):
+        '''
+        Checks the status of a chassis job
+        Args:
+            job_id (str): Chassis job identifier generated from `ChassisModel.publish` method
+        
+        Returns:
+            Dict: JSON Chassis job status
+        Examples:
+        ```python
+        # Create Chassisml model
+        chassis_model = chassis_client.create_model(process_fn=process)
+        # Define Dockerhub credentials
+        dockerhub_user = "user"
+        dockerhub_pass = "password"
+        # Publish model to Docker registry
+        response = chassis_model.publish(
+            model_name="Chassisml Regression Model",
+            model_version="0.0.1",
+            registry_user=dockerhub_user,
+            registry_pass=dockerhub_pass,
+        ) 
+        job_id = response.get('job_id')
+        job_status = chassis_client.get_job_logs(job_id)
+        ```
+        '''
+        route = f'{urllib.parse.urljoin(self.base_url, routes["job"])}/{job_id}/logs'
+        if self.auth_header:
+            res = requests.get(route,headers={'Authorization': self.auth_header},verify=self.ssl_verification)
+        else:
+            res = requests.get(route,verify=self.ssl_verification)
+        res.raise_for_status()
+        return res.text
 
     def block_until_complete(self,job_id,timeout=None,poll_interval=5):
         '''
