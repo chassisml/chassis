@@ -595,7 +595,7 @@ def upload_context(model, module_name, random_name, metadata_data, dockerfile):
             filepath = os.path.join(tmp_dir, filename)
             tar.add(filepath, arcname=filename)
 
-    object_name = f'context-{random_name}.tar.gz'
+    object_name = f'chassis/context-{random_name}.tar.gz'
     try:
         obj = storage_driver.upload_object(file_path=tar_path,container=container,object_name=object_name)
     except Exception as e:
@@ -976,7 +976,7 @@ if __name__ == '__main__':
     DATA_VOLUME_CLAIM_NAME = '-'.join((DEPLOYMENT, K_DATA_VOLUME_CLAIM_NAME))
     REGISTRY_URI = urlparse(os.getenv('REGISTRY_URL')).hostname
     REGISTRY_CREDENTIALS_SECRET_NAME = os.getenv('REGISTRY_CREDENTIALS_SECRET_NAME')
-    REPOSITORY_PREFIX = os.getenv('REPOSITORY_PREFIX').lstrip('/')
+    REPOSITORY_PREFIX = os.path.join(os.getenv('REPOSITORY_PREFIX').lstrip('/'),'')
     CONTEXT_BUCKET = os.getenv('STORAGE_BUCKET_NAME')
     STORAGE_CREDENTIALS_SECRET_NAME = os.getenv('STORAGE_CREDENTIALS_SECRET_NAME')
 
