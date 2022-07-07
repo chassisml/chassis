@@ -44,9 +44,10 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
         predict (function): MLflow pyfunc compatible predict function. 
             Will wrap user-provided function which takes two arguments: model_input (bytes) and model_context (dict).
         chassis_build_url (str): The build url for the Chassis API.
+        ssl_verification (Union[str, bool]): Can be path to certificate to use during requests to service, True (use verification), or False (don't use verification).
     """
 
-    def __init__(self,process_fn,batch_process_fn,batch_size,chassis_base_url,chassis_auth_header):      
+    def __init__(self,process_fn,batch_process_fn,batch_size,chassis_base_url,chassis_auth_header,ssl_verification):      
         
         if process_fn and batch_process_fn:
             if not batch_size:
@@ -72,6 +73,7 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
         self.chassis_build_url = urllib.parse.urljoin(chassis_base_url, routes['build'])
         self.chassis_test_url = urllib.parse.urljoin(chassis_base_url, routes['test'])
         self.chassis_auth_header = chassis_auth_header
+        self.ssl_verification = ssl_verification
 
     def _gen_predict_method(self,process_fn,batch=False,batch_to_single=False):
         def predict(_,model_input):
@@ -198,9 +200,9 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
 
             print('Starting test job... ', end='', flush=True)
             if self.chassis_auth_header:
-                res = requests.post(self.chassis_test_url, files=files, headers={'Authorization': self.chassis_auth_header})
+                res = requests.post(self.chassis_test_url, files=files, headers={'Authorization': self.chassis_auth_header}, verify=self.ssl_verification)
             else:
-                res = requests.post(self.chassis_test_url, files=files)
+                res = requests.post(self.chassis_test_url, files=files, verify=self.ssl_verification)
             res.raise_for_status()
         print('Ok!')
 
@@ -337,9 +339,10 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
 
                 print('Starting build job... ', end='', flush=True)
                 if self.chassis_auth_header:
-                    res = requests.post(self.chassis_build_url, files=files, headers={'Authorization': self.chassis_auth_header})
+                    res = requests.post(self.chassis_build_url, files=files, headers={'Authorization': self.chassis_auth_header}, verify=self.ssl_verification)
                 else:
-                    res = requests.post(self.chassis_build_url, files=files)
+                    res = requests.post(self.chassis_build_url, files=files, verify=self.ssl_verification)
+
                 res.raise_for_status()
             print('Ok!')
 
@@ -368,11 +371,14 @@ class ChassisClient:
     Attributes:
         base_url (str): The base url for the API.
         auth_header (str): Optional authorization header to be included with all requests.
+        ssl_verification (Union[str, bool]): Can be path to certificate to use during requests to service, True (use verification), or False (don't use verification).
     """
 
-    def __init__(self,base_url='http://localhost:5000',auth_header=None):
+    def __init__(self,base_url='http://localhost:5000',auth_header=None,ssl_verification=True):
         self.base_url = base_url
         self.auth_header = auth_header
+        self.ssl_verification = ssl_verification
+
 
     def get_job_status(self, job_id):
         '''
@@ -408,9 +414,10 @@ class ChassisClient:
         '''
         route = f'{urllib.parse.urljoin(self.base_url, routes["job"])}/{job_id}'
         if self.auth_header:
-            res = requests.get(route,headers={'Authorization': self.auth_header})
+            res = requests.get(route,headers={'Authorization': self.auth_header},verify=self.ssl_verification)
         else:
-            res = requests.get(route)
+            res = requests.get(route,verify=self.ssl_verification)
+
         data = res.json()
         return data
 
@@ -488,9 +495,10 @@ class ChassisClient:
         url = f'{urllib.parse.urljoin(self.base_url, routes["job"])}/{job_id}/download-tar'
         
         if self.auth_header:
-            r = requests.get(url,headers={'Authorization': self.auth_header})
+            r = requests.get(url,headers={'Authorization': self.auth_header},verify=self.ssl_verification)
         else:
-            r = requests.get(url)
+            r = requests.get(url,verify=self.ssl_verification)
+
 
         if r.status_code == 200:
             with open(output_filename, 'wb') as f:
@@ -609,7 +617,7 @@ class ChassisClient:
         if (batch_process_fn and not batch_size) or (batch_size and not batch_process_fn):
             raise ValueError("Both batch_process_fn and batch_size must be provided for batch support.")
 
-        return ChassisModel(process_fn,batch_process_fn,batch_size,self.base_url,self.auth_header)
+        return ChassisModel(process_fn,batch_process_fn,batch_size,self.base_url,self.auth_header,self.ssl_verification)
 
     def run_inference(self,input_data,container_url="localhost",host_port=45000):
         '''
