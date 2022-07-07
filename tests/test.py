@@ -273,12 +273,7 @@ if __name__ == "__main__":
     if args.ci:
         # test sdk for a subset of all tests 
         for model in models:
-            TEST_RESULTS = []
-            modzy_creds = {
-                "sample_filepath": model["test_file"],
-                "modzy_api_key": os.getenv("MODZY_API_KEY"),
-                "modzy_url": os.getenv("MODZY_BASE_URL")
-            }        
+            TEST_RESULTS = []  
             out = test_local_test(client, logger, model)
             TEST_RESULTS.append(out)
             out = test_local_batch_test(client, logger, model)
@@ -295,9 +290,6 @@ if __name__ == "__main__":
             out = test_get_job_status(client, logger, job)
             TEST_RESULTS.append(out)
             out = test_block_until_complete(client, logger, job)
-            TEST_RESULTS.append(out)
-            # publish with deployment to Modzy
-            out, job = test_publish_modzy_deploy(client, logger, model, docker_creds, modzy_creds)
             TEST_RESULTS.append(out)
             out = test_get_job_status(client, logger, job)
             TEST_RESULTS.append(out)
@@ -320,12 +312,7 @@ if __name__ == "__main__":
     else:
         # test sdk for each model 
         for model in models:
-            TEST_RESULTS = []
-            modzy_creds = {
-                "sample_filepath": model["test_file"],
-                "modzy_api_key": os.getenv("MODZY_API_KEY"),
-                "modzy_url": os.getenv("MODZY_BASE_URL")
-            }        
+            TEST_RESULTS = []    
             out = test_create_model(client, logger, model)
             TEST_RESULTS.append(out)
             out = test_create_model_with_batch(client, logger, model)    
@@ -358,9 +345,6 @@ if __name__ == "__main__":
             out, path = test_download_tar(client, logger, job, UTILS_PATH)
             TEST_RESULTS.append(out)
             out = test_omi_compliance(client, logger, path)
-            TEST_RESULTS.append(out)
-            # publish with deployment to Modzy
-            out, job = test_publish_modzy_deploy(client, logger, model, docker_creds, modzy_creds)
             TEST_RESULTS.append(out)
             out = test_get_job_status(client, logger, job)
             TEST_RESULTS.append(out)

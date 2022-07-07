@@ -13,17 +13,19 @@ import mlflow
 import base64
 import string
 import warnings
+import validators
+from packaging import version
 
 from .grpc_model.src import model_client
 from chassisml import __version__
 
 from .open_model_initiative_checks.open_model_initiative_checks import OMI_check
-from ._utils import zipdir,fix_dependencies,write_modzy_yaml,NumpyEncoder,fix_dependencies_arm_gpu, \
-    check_modzy_url,docker_start,docker_clean_up
+from ._utils import zipdir,fix_dependencies,write_metadata_yaml,NumpyEncoder,fix_dependencies_arm_gpu, \
+    docker_start,docker_clean_up
 
 ###########################################
 MODEL_ZIP_NAME = 'model.zip'
-MODZY_YAML_NAME = 'model.yaml'
+YAML_NAME = 'model.yaml'
 CHASSIS_TMP_DIRNAME = 'chassis_tmp'
 
 routes = {
@@ -46,7 +48,7 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
         ssl_verification (Union[str, bool]): Can be path to certificate to use during requests to service, True (use verification), or False (don't use verification).
     """
 
-    def __init__(self,process_fn,batch_process_fn,batch_size,chassis_base_url,ssl_verification):      
+    def __init__(self,process_fn,batch_process_fn,batch_size,chassis_base_url,chassis_auth_header,ssl_verification):      
         
         if process_fn and batch_process_fn:
             if not batch_size:
@@ -71,6 +73,7 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
 
         self.chassis_build_url = urllib.parse.urljoin(chassis_base_url, routes['build'])
         self.chassis_test_url = urllib.parse.urljoin(chassis_base_url, routes['test'])
+        self.chassis_auth_header = chassis_auth_header
         self.ssl_verification = ssl_verification
 
     def _gen_predict_method(self,process_fn,batch=False,batch_to_single=False):
@@ -197,7 +200,10 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
             ]
 
             print('Starting test job... ', end='', flush=True)
-            res = requests.post(self.chassis_test_url, files=files, verify=self.ssl_verification)
+            if self.chassis_auth_header:
+                res = requests.post(self.chassis_test_url, files=files, headers={'Authorization': self.chassis_auth_header}, verify=self.ssl_verification)
+            else:
+                res = requests.post(self.chassis_test_url, files=files, verify=self.ssl_verification)
             res.raise_for_status()
         print('Ok!')
 
@@ -236,15 +242,14 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
 
         print("Chassis model saved.")
 
-    def publish(self,model_name,model_version,registry_user,registry_pass,
+    def publish(self,model_name,model_version,registry_user=None,registry_pass=None,
                 conda_env=None,fix_env=True,gpu=False,arm64=False,
-                modzy_sample_input_path=None,modzy_api_key=None,
-                modzy_url=None,modzy_model_id=None):
+                sample_input_path=None,webhook=None):
         '''
-        Executes chassis job, which containerizes model, pushes container image to Docker registry, and optionally deploys model to Modzy
+        Executes chassis job, which containerizes model and pushes container image to Docker registry.
 
         Args:
-            model_name (str): Model name that serves as model's name in Modzy and docker registry repository name. **Note**: this string cannot include punctuation
+            model_name (str): Model name that serves as model's name and docker registry repository name. **Note**: this string cannot include punctuation
             model_version (str): Version of model
             registry_user (str): Docker registry username
             registry_pass (str): Docker registry password
@@ -252,10 +257,8 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
             fix_env (bool): Modifies conda or pip-installable packages into list of dependencies to be installed during the container build
             gpu (bool): If True, builds container image that runs on GPU hardware
             arm64 (bool): If True, builds container image that runs on ARM64 architecture
-            modzy_sample_input_path (str): Filepath to sample input data. Required to deploy model to Modzy
-            modzy_api_key (str): Valid Modzy API Key
-            modzy_url (str): Valid Modzy instance URL, example: https://my.modzy.com
-            modzy_model_id (str): Existing Modzy model identifier, if requesting new version of existing model instead of new model
+            sample_input_path (str): Optional filepath to sample input data
+            webhook (str): Optional webhook for Chassis service to update status
 
         Returns:
             Dict: Response to Chassis `/build` endpoint
@@ -280,9 +283,8 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
 
         '''
 
-        if (modzy_sample_input_path or modzy_api_key or modzy_url) and not \
-            (modzy_sample_input_path and modzy_api_key and modzy_url):
-            raise ValueError('"modzy_sample_input_path", "modzy_api_key" and "modzy_url" must all be provided to publish to Modzy.')
+        if webhook and not validators.url(webhook):
+            raise ValueError("Provided webhook is not a valid URL")
 
         try:
             model_directory = os.path.join(tempfile.mkdtemp(),CHASSIS_TMP_DIRNAME)
@@ -304,46 +306,44 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
             
             image_name = "-".join(model_name.translate(str.maketrans('', '', string.punctuation)).lower().split())
             image_data = {
-                'name': "{}/{}".format(registry_user,"{}:{}".format(image_name,model_version)),
+                'name': f"{registry_user+'/' if (registry_user and registry_pass) else ''}{image_name}:{model_version}",
                 'model_name': model_name,
                 'model_path': tmppath,
-                'registry_auth': base64.b64encode("{}:{}".format(registry_user,registry_pass).encode("utf-8")).decode("utf-8"),
                 'publish': True,
                 'gpu': gpu,
-                'arm64': arm64
+                'arm64': arm64,
+                'webhook': webhook
             }
 
-            if modzy_sample_input_path and modzy_api_key and check_modzy_url(modzy_url):
-                modzy_metadata_path = os.path.join(tmppath,MODZY_YAML_NAME)
-                modzy_data = {
-                    'metadata_path': modzy_metadata_path,
-                    'sample_input_path': modzy_sample_input_path,
-                    'deploy': True,
-                    'api_key': modzy_api_key,
-                    'modzy_model_id': modzy_model_id,
-                    'modzy_url': modzy_url if not modzy_url.endswith('/api') else modzy_url[:-4]
-                }
-                write_modzy_yaml(model_name,model_version,modzy_metadata_path,batch_size=self.batch_size,gpu=gpu)
-            else:
-                modzy_data = {}
+            if registry_user and registry_pass:
+                image_data['registry_auth'] = base64.b64encode("{}:{}".format(registry_user,registry_pass).encode("utf-8")).decode("utf-8")
+
+            metadata_path = os.path.join(tmppath,YAML_NAME)
+            write_metadata_yaml(model_name,model_version,metadata_path,batch_size=self.batch_size,gpu=gpu)
 
             with open('{}/{}'.format(tmppath,MODEL_ZIP_NAME),'rb') as f:
                 files = [
                     ('image_data', json.dumps(image_data)),
-                    ('modzy_data', json.dumps(modzy_data)),
                     ('model', f)
                 ]
+
                 file_pointers = []
-                for key, file_key in [('metadata_path', 'modzy_metadata_data'),
-                                ('sample_input_path', 'modzy_sample_input_data')]:
-                    value = modzy_data.get(key)
-                    if value:
-                        fp = open(value, 'rb')
-                        file_pointers.append(fp)  
-                        files.append((file_key, fp))
+
+                meta_fp = open(metadata_path, 'rb')
+                files.append(('metadata_data', meta_fp))
+                file_pointers.append(meta_fp)
+
+                if sample_input_path:
+                    sample_fp = open(sample_input_path, 'rb')
+                    files.append(('sample_input', sample_fp))
+                    file_pointers.append(sample_fp)
 
                 print('Starting build job... ', end='', flush=True)
-                res = requests.post(self.chassis_build_url, files=files, verify=self.ssl_verification)
+                if self.chassis_auth_header:
+                    res = requests.post(self.chassis_build_url, files=files, headers={'Authorization': self.chassis_auth_header}, verify=self.ssl_verification)
+                else:
+                    res = requests.post(self.chassis_build_url, files=files, verify=self.ssl_verification)
+
                 res.raise_for_status()
             print('Ok!')
 
@@ -371,12 +371,29 @@ class ChassisClient:
 
     Attributes:
         base_url (str): The base url for the API.
+        auth_header (str): Optional authorization header to be included with all requests.
         ssl_verification (Union[str, bool]): Can be path to certificate to use during requests to service, True (use verification), or False (don't use verification).
     """
 
-    def __init__(self,base_url='http://localhost:5000',ssl_verification=True):
+    def __init__(self,base_url='http://localhost:5000',auth_header=None,ssl_verification=True):
         self.base_url = base_url
+        self.auth_header = auth_header
         self.ssl_verification = ssl_verification
+
+        if self.auth_header:
+            res = requests.get(base_url,headers={'Authorization': self.auth_header},verify=self.ssl_verification)
+        else:
+            res = requests.get(base_url,verify=self.ssl_verification)
+
+        version_route = os.path.join(base_url,'version')
+        if self.auth_header:
+            res = requests.get(version_route,headers={'Authorization': self.auth_header},verify=self.ssl_verification)
+        else:
+            res = requests.get(version_route,verify=self.ssl_verification)
+
+        parsed_version = version.parse(res.text)
+        if parsed_version < version.Version('1.0.0'):
+            warnings.warn("Chassis service version should be >=1.0.0 for compatibility with this SDK version, things may not work as expected. Please update the service.")
 
     def get_job_status(self, job_id):
         '''
@@ -411,9 +428,47 @@ class ChassisClient:
 
         '''
         route = f'{urllib.parse.urljoin(self.base_url, routes["job"])}/{job_id}'
-        res = requests.get(route,verify=self.ssl_verification)
+        if self.auth_header:
+            res = requests.get(route,headers={'Authorization': self.auth_header},verify=self.ssl_verification)
+        else:
+            res = requests.get(route,verify=self.ssl_verification)
+
         data = res.json()
         return data
+
+    def get_job_logs(self, job_id):
+        '''
+        Checks the status of a chassis job
+        Args:
+            job_id (str): Chassis job identifier generated from `ChassisModel.publish` method
+        
+        Returns:
+            Dict: JSON Chassis job status
+        Examples:
+        ```python
+        # Create Chassisml model
+        chassis_model = chassis_client.create_model(process_fn=process)
+        # Define Dockerhub credentials
+        dockerhub_user = "user"
+        dockerhub_pass = "password"
+        # Publish model to Docker registry
+        response = chassis_model.publish(
+            model_name="Chassisml Regression Model",
+            model_version="0.0.1",
+            registry_user=dockerhub_user,
+            registry_pass=dockerhub_pass,
+        ) 
+        job_id = response.get('job_id')
+        job_status = chassis_client.get_job_logs(job_id)
+        ```
+        '''
+        route = f'{urllib.parse.urljoin(self.base_url, routes["job"])}/{job_id}/logs'
+        if self.auth_header:
+            res = requests.get(route,headers={'Authorization': self.auth_header},verify=self.ssl_verification)
+        else:
+            res = requests.get(route,verify=self.ssl_verification)
+        res.raise_for_status()
+        return res.text
 
     def block_until_complete(self,job_id,timeout=None,poll_interval=5):
         '''
@@ -487,7 +542,12 @@ class ChassisClient:
         ```
         '''
         url = f'{urllib.parse.urljoin(self.base_url, routes["job"])}/{job_id}/download-tar'
-        r = requests.get(url,verify=self.ssl_verification)
+        
+        if self.auth_header:
+            r = requests.get(url,headers={'Authorization': self.auth_header},verify=self.ssl_verification)
+        else:
+            r = requests.get(url,verify=self.ssl_verification)
+
 
         if r.status_code == 200:
             with open(output_filename, 'wb') as f:
@@ -606,7 +666,7 @@ class ChassisClient:
         if (batch_process_fn and not batch_size) or (batch_size and not batch_process_fn):
             raise ValueError("Both batch_process_fn and batch_size must be provided for batch support.")
 
-        return ChassisModel(process_fn,batch_process_fn,batch_size,self.base_url,ssl_verification=self.ssl_verification)
+        return ChassisModel(process_fn,batch_process_fn,batch_size,self.base_url,self.auth_header,self.ssl_verification)
 
     def run_inference(self,input_data,container_url="localhost",host_port=45000):
         '''

@@ -14,7 +14,6 @@ nav:
       - tutorials/ds-connect.md
       - tutorials/ds-postman.md
       - tutorials/ds-deploy.md
-      - tutorials/ds-deploy-modzy.md
   - How-to Guides:
       - Model Containers by Framework: how-to-guides/frameworks.md
       - Arm Support: how-to-guides/arm-support.md

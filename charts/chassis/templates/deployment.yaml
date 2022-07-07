@@ -27,31 +27,48 @@ spec:
       serviceAccountName: {{ include "chassis.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      {{ if eq .Values.MODE "pv" }}
-      volumes:
-        - name: {{ .Values.K_DATA_VOLUME_NAME }}
-          persistentVolumeClaim:
-            claimName: {{ .Values.K_DATA_VOLUME_NAME }}
-      {{ end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.SERVICE_REPOSITORY }}"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          {{ if eq .Values.MODE "pv" }}
-          volumeMounts:
-            - mountPath: {{ .Values.MOUNT_PATH_DIR }}
-              name: {{ .Values.K_DATA_VOLUME_NAME }}
-          {{ end }}
           env:
+            - name: DEPLOYMENT
+              value: {{ include "chassis.fullname" . }}
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
             - name: MODE
-              value: {{ .Values.MODE }}
-            - name: CONTEXT_BUCKET
-              value: {{ .Values.CONTEXT_BUCKET }}
+              value: {{ .Values.storage.provider | quote }}
+            - name: STORAGE_CREDENTIALS_SECRET_NAME
+              value: {{ .Values.storage.credentialsSecretName | quote }}
+            - name: STORAGE_BUCKET_NAME
+              value: {{ .Values.storage.bucketName | quote }}
+            - name: REGISTRY_URL
+              value: {{ .Values.registry.url | quote }}
+            - name: REGISTRY_CREDENTIALS_SECRET_NAME
+              value: {{ .Values.registry.credentialsSecretName | quote }}
+            - name: REPOSITORY_PREFIX
+              value: {{ .Values.registry.repositoryPrefix | quote }}
+{{/*          {{- if .Values.proxySettings.enabled }}*/}}
+{{/*            - name: http_proxy*/}}
+{{/*              value: {{ .Values.proxySettings.http_proxy | quote }}*/}}
+{{/*            - name: HTTP_PROXY*/}}
+{{/*              value: {{ .Values.proxySettings.http_proxy | quote }}*/}}
+{{/*            - name: https_proxy*/}}
+{{/*              value: {{ .Values.proxySettings.https_proxy | quote }}*/}}
+{{/*            - name: HTTPS_PROXY*/}}
+{{/*              value: {{ .Values.proxySettings.https_proxy | quote }}*/}}
+{{/*            - name: no_proxy*/}}
+{{/*              value: {{ .Values.proxySettings.no_proxy | quote }}*/}}
+{{/*            - name: NO_PROXY*/}}
+{{/*              value: {{ .Values.proxySettings.no_proxy | quote }}*/}}
+{{/*          {{- end }}*/}}
           ports:
             - name: http
-              containerPort: {{ .Values.PORT }}
+              containerPort: 5000
               protocol: TCP
           livenessProbe:
             httpGet:
@@ -63,6 +80,13 @@ spec:
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: "/tmp"
+              name: cache
+            {{- if eq .Values.storage.provider "pv" }}
+            - mountPath: "/data"
+              name: kaniko-data
+            {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -75,3 +99,11 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      volumes:
+        - name: cache
+          emptyDir: {}
+        {{- if eq .Values.storage.provider "pv" }}
+        - name: kaniko-data
+          persistentVolumeClaim:
+            claimName: {{ include "chassis.fullname" . }}-kaniko-data-pvc
+        {{- end }}

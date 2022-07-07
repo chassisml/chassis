@@ -37,7 +37,7 @@ Common labels
 helm.sh/chart: {{ include "chassis.chart" . }}
 {{ include "chassis.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | trunc 63 | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
@@ -55,8 +55,8 @@ Create the name of the service account to use
 */}}
 {{- define "chassis.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "chassis.fullname" .) .Values.K_SERVICE_ACCOUNT_NAME }}
+{{- default (include "chassis.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
-{{- default "default" .Values.K_SERVICE_ACCOUNT_NAME }}
+{{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}

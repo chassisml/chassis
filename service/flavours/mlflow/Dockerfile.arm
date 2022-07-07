@@ -2,7 +2,7 @@
 # - flavours
 #   - mlflow
 
-FROM balenalib/aarch64-ubuntu-python:3-latest-build
+FROM balenalib/aarch64-ubuntu-python:3-latest-build-20220513
 
 RUN [ "cross-build-start" ]
 

@@ -14,8 +14,6 @@ This subdirectory contains the test suite for Chassisml, and this page provides 
 
 **Before starting the test suite you must first define the following Environment Variables**
 
-MODZY_API_KEY
-MODZY_BASE_URL
 DOCKER_USER
 DOCKER_PASS
 

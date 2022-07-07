@@ -498,44 +498,7 @@ def test_publish(client, logger, model, credentials, test_name="test_publish"):
     if list(result.keys())[0] == "error":
         output = 0
 
-    return output, result
-
-def test_publish_modzy_deploy(client, logger, model, credentials, modzy_info, test_name="test_publish_modzy_deploy"):
-    print("\n")
-    logger.info("------- Publish Model Test Deploy to Modzy -------")
-    job_id = {}
-    logger.info("Creating {} model".format(model["model_name"]))
-    chassis_model = client.create_model(process_fn=model["process_fn"])
-    try:
-        response = chassis_model.publish(
-            model_name=model["model_name"],
-            model_version=model["model_version"],
-            registry_user=credentials["user"],
-            registry_pass=credentials["pass"],
-            modzy_sample_input_path=modzy_info["sample_filepath"],
-            modzy_api_key=modzy_info["modzy_api_key"],
-            modzy_url=modzy_info["modzy_url"]                                
-        )
-        logger.info(response)
-        if response["error"]:
-            logger.info(" ******** FAILED - test:{}, model:{}".format(test_name, model["model_name"]))
-            logger.error(response)
-            result = {"error": response, "model": model["model_name"]}
-        else:
-            logger.info(" ******** PASSED - test:{}, model:{}".format(test_name, model["model_name"]))
-            job_id["model"] = model["model_name"]
-            job_id["job_id"] = response.get("job_id")
-            result = job_id                
-    except Exception as e:
-        result = {"error": e, "model": model["model_name"]}
-        logger.error("Error with {} model: {}".format(model["model_name"], e))
-
-    # determine number of errors produced
-    output = 1
-    if list(result.keys())[0] == "error":
-        output = 0
-
-    return output, result    
+    return output, result  
 
 def test_publish_manual_env_config(client, logger, model, credentials, test_name="test_publish_manual_env_config"):
     print("\n")

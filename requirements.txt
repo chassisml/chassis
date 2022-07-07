@@ -16,7 +16,6 @@ mkdocs-material==8.1.6
 mkdocs-material-extensions==1.0.3
 mkdocstrings==0.17.0
 mlflow==1.27.0
-modzy-sdk==0.7.1
 numpy==1.23.0
 pandas==1.4.3
 python-dotenv==0.20.0
