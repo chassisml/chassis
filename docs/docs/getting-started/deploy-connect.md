@@ -13,7 +13,7 @@ pip install chassisml
 
 ## Get Chassis Connection URL
 
-[Sign up](https://chassis.modzy.com){ .md-button .md-button--primary} for the publicly-hosted service.
+[Sign up](https://modzy.com/chassis-ml-sign-up/){ .md-button .md-button--primary} for the publicly-hosted service.
 
 Next, when you receive your connection link, use the URL and `ChassisClient` object to establish connection to the running service. The information you receive will look something like this:
 

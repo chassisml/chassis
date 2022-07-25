@@ -50,7 +50,7 @@ def process(input_bytes):
 
 ### Initialize Client and Create Chassis Model
 
-**NOTE**: Depending on how you connect to the service, you will need to identify the URL on which the service is running and can be accessed. If you are connecting to the publicly-hosted version, make sure to **[sign up](https://chassis.modzy.com)** to access this URL. Otherwise if you are deploying manually and connecting to a locally running instance, your URL will look something like *http://localhost:5000*.
+**NOTE**: Depending on how you connect to the service, you will need to identify the URL on which the service is running and can be accessed. If you are connecting to the publicly-hosted version, make sure to **[sign up](https://modzy.com/chassis-ml-sign-up/)** to access this URL. Otherwise if you are deploying manually and connecting to a locally running instance, your URL will look something like *http://localhost:5000*.
 
 Once you have this URL, replace ```<chassis-instance-url>``` in the below line with your URL.
 

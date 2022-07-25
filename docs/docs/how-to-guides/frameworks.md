@@ -81,7 +81,7 @@ def process(input_bytes):
     return structured_output
 ```
 
-Initialize Chassis Client and create Chassis model. Replace the URL with your Chassis connection. If you followed these [installation instructions](https://chassis.ml/tutorials/devops-deploy/), keep the local host URL as is, but if you are connected to the publicly-hosted Chassis instance, replace the URL with the URL you receive after [signing up](https://chassis.modzy.com). 
+Initialize Chassis Client and create Chassis model. Replace the URL with your Chassis connection. If you followed these [installation instructions](https://chassis.ml/tutorials/devops-deploy/), keep the local host URL as is, but if you are connected to the publicly-hosted Chassis instance, replace the URL with the URL you receive after [signing up](https://modzy.com/chassis-ml-sign-up/). 
 
 ```python
 chassis_client = chassisml.ChassisClient("http://localhost:5000")
@@ -183,7 +183,7 @@ def process(input_bytes):
     return structured_results
 ```
 
-Initialize Chassis Client and create Chassis model. Replace the URL with your Chassis connection. If you followed these [installation instructions](https://chassis.ml/tutorials/devops-deploy/), keep the local host URL as is, but if you are connected to the publicly-hosted Chassis instance, replace the URL with the URL you receive after [signing up](https://chassis.modzy.com). 
+Initialize Chassis Client and create Chassis model. Replace the URL with your Chassis connection. If you followed these [installation instructions](https://chassis.ml/tutorials/devops-deploy/), keep the local host URL as is, but if you are connected to the publicly-hosted Chassis instance, replace the URL with the URL you receive after [signing up](https://modzy.com/chassis-ml-sign-up/). 
 
 ```python
 chassis_client = chassisml.ChassisClient("http://localhost:5000")
@@ -340,7 +340,7 @@ def process(input_bytes):
     return structured_output
 ```
 
-Initialize Chassis Client and create Chassis model. Replace the URL with your Chassis connection. If you followed these [installation instructions](https://chassis.ml/tutorials/devops-deploy/), keep the local host URL as is, but if you are connected to the publicly-hosted Chassis instance, replace the URL with the URL you receive after [signing up](https://chassis.modzy.com). 
+Initialize Chassis Client and create Chassis model. Replace the URL with your Chassis connection. If you followed these [installation instructions](https://chassis.ml/tutorials/devops-deploy/), keep the local host URL as is, but if you are connected to the publicly-hosted Chassis instance, replace the URL with the URL you receive after [signing up](https://modzy.com/chassis-ml-sign-up/). 
 
 ```python
 chassis_client = chassisml.ChassisClient("http://localhost:5000")
@@ -454,7 +454,7 @@ def process(input_bytes):
     return structured_output
 ```
 
-Initialize Chassis Client and create Chassis model. Replace the URL with your Chassis connection. If you followed these [installation instructions](https://chassis.ml/tutorials/devops-deploy/), keep the local host URL as is, but if you are connected to the publicly-hosted Chassis instance, replace the URL with the URL you receive after [signing up](https://chassis.modzy.com). 
+Initialize Chassis Client and create Chassis model. Replace the URL with your Chassis connection. If you followed these [installation instructions](https://chassis.ml/tutorials/devops-deploy/), keep the local host URL as is, but if you are connected to the publicly-hosted Chassis instance, replace the URL with the URL you receive after [signing up](https://modzy.com/chassis-ml-sign-up/). 
 
 ```python
 chassis_client = chassisml.ChassisClient("http://localhost:5000")
@@ -600,7 +600,7 @@ def process(input_bytes):
     return structured_output
 ```
 
-Initialize Chassis Client and create Chassis model. Replace the URL with your Chassis connection. If you followed these [installation instructions](https://chassis.ml/tutorials/devops-deploy/), keep the local host URL as is, but if you are connected to the publicly-hosted Chassis instance, replace the URL with the URL you receive after [signing up](https://chassis.modzy.com). 
+Initialize Chassis Client and create Chassis model. Replace the URL with your Chassis connection. If you followed these [installation instructions](https://chassis.ml/tutorials/devops-deploy/), keep the local host URL as is, but if you are connected to the publicly-hosted Chassis instance, replace the URL with the URL you receive after [signing up](https://modzy.com/chassis-ml-sign-up/). 
 
 ```python
 chassis_client = chassisml.ChassisClient("http://localhost:5000")
@@ -740,7 +740,7 @@ def process(input_bytes):
     return structured_output
 ```
 
-Initialize Chassis Client and create Chassis model. Replace the URL with your Chassis connection. If you followed these [installation instructions](https://chassis.ml/tutorials/devops-deploy/), keep the local host URL as is, but if you are connected to the publicly-hosted Chassis instance, replace the URL with the URL you receive after [signing up](https://chassis.modzy.com). 
+Initialize Chassis Client and create Chassis model. Replace the URL with your Chassis connection. If you followed these [installation instructions](https://chassis.ml/tutorials/devops-deploy/), keep the local host URL as is, but if you are connected to the publicly-hosted Chassis instance, replace the URL with the URL you receive after [signing up](https://modzy.com/chassis-ml-sign-up/). 
 
 ```python
 chassis_client = chassisml.ChassisClient("http://localhost:5000")
@@ -876,7 +876,7 @@ def process(input_bytes):
     return structured_result
 ```
 
-Initialize Chassis Client and create Chassis model. Replace the URL with your Chassis connection. If you followed these [installation instructions](https://chassis.ml/tutorials/devops-deploy/), keep the local host URL as is, but if you are connected to the publicly-hosted Chassis instance, replace the URL with the URL you receive after [signing up](https://chassis.modzy.com). 
+Initialize Chassis Client and create Chassis model. Replace the URL with your Chassis connection. If you followed these [installation instructions](https://chassis.ml/tutorials/devops-deploy/), keep the local host URL as is, but if you are connected to the publicly-hosted Chassis instance, replace the URL with the URL you receive after [signing up](https://modzy.com/chassis-ml-sign-up/). 
 
 ```python
 chassis_client = chassisml.ChassisClient("http://localhost:5000")
@@ -1013,7 +1013,7 @@ def process(input_bytes):
     return structured_output
 ```
 
-Initialize Chassis Client and create Chassis model. Replace the URL with your Chassis connection. If you followed these [installation instructions](https://chassis.ml/tutorials/devops-deploy/), keep the local host URL as is, but if you are connected to the publicly-hosted Chassis instance, replace the URL with the URL you receive after [signing up](https://chassis.modzy.com). 
+Initialize Chassis Client and create Chassis model. Replace the URL with your Chassis connection. If you followed these [installation instructions](https://chassis.ml/tutorials/devops-deploy/), keep the local host URL as is, but if you are connected to the publicly-hosted Chassis instance, replace the URL with the URL you receive after [signing up](https://modzy.com/chassis-ml-sign-up/). 
 
 ```python
 chassis_client = chassisml.ChassisClient("http://localhost:5000")
