@@ -900,14 +900,14 @@
 <table>
 <thead>
 <tr>
-<th align="center">Easy to Connect</th>
-<th align="center">Requires Installation</th>
+<th style="text-align: center;">Easy to Connect</th>
+<th style="text-align: center;">Requires Installation</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td align="center">Quickest and easiest way to start using Chassis. <br> No DevOps experience required. <br><br> <em>Preferred</em> <br><br> <a class="button-styling primary-button" href="getting-started/deploy-connect/">Connect to Chassis Service    <span class="twemoji icon-color"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.4 7.5c.8.8.8 2.1 0 2.8l-2.8 2.8-7.8-7.8 2.8-2.8c.8-.8 2.1-.8 2.8 0l1.8 1.8 3-3 1.4 1.4-3 3 1.8 1.8m-5.8 5.8-1.4-1.4-2.8 2.8-2.1-2.1 2.8-2.8-1.4-1.4-2.8 2.8-1.5-1.4-2.8 2.8c-.8.8-.8 2.1 0 2.8l1.8 1.8-4 4 1.4 1.4 4-4 1.8 1.8c.8.8 2.1.8 2.8 0l2.8-2.8-1.4-1.4 2.8-2.9z"/></svg></span></a> <br><br></td>
-<td align="center">More involved installation. <br> Requires a moderate understanding of <br> Kubernetes, Helm, and Docker. <br><br><br> <a class="button-styling" href="getting-started/deploy-manual/">Install Chassis on Your Machine   <span class="twemoji icon-color"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M7.47 10.78a.75.75 0 0 0 1.06 0l3.75-3.75a.75.75 0 0 0-1.06-1.06L8.75 8.44V1.75a.75.75 0 0 0-1.5 0v6.69L4.78 5.97a.75.75 0 0 0-1.06 1.06l3.75 3.75zM3.75 13a.75.75 0 0 0 0 1.5h8.5a.75.75 0 0 0 0-1.5h-8.5z"/></svg></span></a> <br><br></td>
+<td style="text-align: center;">Quickest and easiest way to start using Chassis. <br> No DevOps experience required. <br><br> <em>Preferred</em> <br><br> <a class="button-styling primary-button" href="getting-started/deploy-connect/">Connect to Chassis Service    <span class="twemoji icon-color"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.4 7.5c.8.8.8 2.1 0 2.8l-2.8 2.8-7.8-7.8 2.8-2.8c.8-.8 2.1-.8 2.8 0l1.8 1.8 3-3 1.4 1.4-3 3 1.8 1.8m-5.8 5.8-1.4-1.4-2.8 2.8-2.1-2.1 2.8-2.8-1.4-1.4-2.8 2.8-1.5-1.4-2.8 2.8c-.8.8-.8 2.1 0 2.8l1.8 1.8-4 4 1.4 1.4 4-4 1.8 1.8c.8.8 2.1.8 2.8 0l2.8-2.8-1.4-1.4 2.8-2.9z"/></svg></span></a> <br><br></td>
+<td style="text-align: center;">More involved installation. <br> Requires a moderate understanding of <br> Kubernetes, Helm, and Docker. <br><br><br> <a class="button-styling" href="getting-started/deploy-manual/">Install Chassis on Your Machine   <span class="twemoji icon-color"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M7.47 10.78a.75.75 0 0 0 1.06 0l3.75-3.75a.75.75 0 0 0-1.06-1.06L8.75 8.44V1.75a.75.75 0 0 0-1.5 0v6.69L4.78 5.97a.75.75 0 0 0-1.06 1.06l3.75 3.75zM3.75 13a.75.75 0 0 0 0 1.5h8.5a.75.75 0 0 0 0-1.5h-8.5z"/></svg></span></a> <br><br></td>
 </tr>
 </tbody>
 </table>
@@ -936,7 +936,7 @@
 <a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>  <span class="k">return</span> <span class="n">formatted_results</span>
 </code></pre></div>
 <h3 id="initialize-client-and-create-chassis-model">Initialize Client and Create Chassis Model</h3>
-<p><strong>NOTE</strong>: Depending on how you connect to the service, you will need to identify the URL on which the service is running and can be accessed. If you are connecting to the publicly-hosted version, make sure to <strong><a href="https://chassis.modzy.com">sign up</a></strong> to access this URL. Otherwise if you are deploying manually and connecting to a locally running instance, your URL will look something like <em>http://localhost:5000</em>.</p>
+<p><strong>NOTE</strong>: Depending on how you connect to the service, you will need to identify the URL on which the service is running and can be accessed. If you are connecting to the publicly-hosted version, make sure to <strong><a href="https://modzy.com/chassis-ml-sign-up/">sign up</a></strong> to access this URL. Otherwise if you are deploying manually and connecting to a locally running instance, your URL will look something like <em>http://localhost:5000</em>.</p>
 <p>Once you have this URL, replace <code>&lt;chassis-instance-url&gt;</code> in the below line with your URL.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">chassis_client</span> <span class="o">=</span> <span class="n">chassisml</span><span class="o">.</span><span class="n">ChassisClient</span><span class="p">(</span><span class="s2">&quot;&lt;chassis-instance-url&gt;&quot;</span><span class="p">)</span>
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="n">chassis_model</span> <span class="o">=</span> <span class="n">chassis_client</span><span class="o">.</span><span class="n">create_model</span><span class="p">(</span><span class="n">process_fn</span><span class="o">=</span><span class="n">process</span><span class="p">)</span>
