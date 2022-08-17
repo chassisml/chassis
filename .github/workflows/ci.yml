@@ -18,22 +18,18 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
-
+    env:
+      CHASSIS_URL: ${{secrets.CHASSIS_URL}}
+      DOCKER_USER: ${{secrets.DOCKER_USER}}
+      DOCKER_PASS: ${{secrets.DOCKER_PASS}}
+      MODZY_BASE_URL: ${{secrets.MODZY_BASE_URL}}
+      MODZY_API_KEY: ${{secrets.MODZY_API_KEY}}
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Setup Repo
         uses: actions/checkout@v2
         with:
           submodules: recursive 
-
-      - name: Setup Environment Variable
-        run: |
-          export CHASSIS_URL=${{secrets.CHASSIS_URL}}
-          export DOCKER_USER=${{secrets.DOCKER_USER}}
-          export DOCKER_PASS=${{secrets.DOCKER_PASS}}
-          export MODZY_BASE_URL=${{secrets.MODZY_BASE_URL}}
-          export MODZY_API_KEY=${{secrets.MODZY_API_KEY}}
-          
 
       - name: Set up Python 3.8
         uses: actions/setup-python@v2
@@ -185,6 +181,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: recursive
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
