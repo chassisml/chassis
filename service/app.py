@@ -320,7 +320,7 @@ def create_job_object(
 
         init_container_kaniko = client.V1Container(
             name='kaniko',
-            image='gcr.io/kaniko-project/executor:latest',
+            image='gcr.io/kaniko-project/executor:1.8.1',
             volume_mounts=kaniko_volume_mounts,
             resources=kaniko_reqs,
             args=kaniko_args
@@ -359,7 +359,7 @@ def create_job_object(
             kaniko_volume_mounts.append(kaniko_s3_volume_mount)
             init_container_kaniko = client.V1Container(
                 name='kaniko',
-                image='gcr.io/kaniko-project/executor:latest',
+                image='gcr.io/kaniko-project/executor:1.8.1',
                 volume_mounts=kaniko_volume_mounts,
                 env=[client.V1EnvVar(name='AWS_REGION', value=AWS_REGION)],
                 resources=kaniko_reqs,
@@ -379,7 +379,7 @@ def create_job_object(
             kaniko_volume_mounts.append(kaniko_gs_volume_mount)
             init_container_kaniko = client.V1Container(
                 name='kaniko',
-                image='gcr.io/kaniko-project/executor:latest',
+                image='gcr.io/kaniko-project/executor:1.8.1',
                 volume_mounts=kaniko_volume_mounts,
                 env=[client.V1EnvVar(name='GOOGLE_APPLICATION_CREDENTIALS', value='/secret/storage-key.json')],
                 resources=kaniko_reqs,
