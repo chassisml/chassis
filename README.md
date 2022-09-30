@@ -1,6 +1,18 @@
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/modzy/chassis/CI?logo=github)
+<div align="center">
 
-![Chassis logo](https://github.com/modzy/chassis/blob/main/docs/docs/images/chassis-logo.png)
+![chassis-banner-v1.2.png](https://github.com/modzy/chassis/blob/feat/readme-overhaul/chassis%20banner%20v1.2.png)
+
+![GitHub contributors](https://img.shields.io/github/contributors/modzy/chassis?logo=GitHub&style=flat)
+![GitHub last commit](https://img.shields.io/github/last-commit/modzy/chassis?logo=GitHub&style=flat)
+![GitHub issues](https://img.shields.io/github/issues-raw/modzy/chassis?logo=github&style=flat)
+![GitHub](https://img.shields.io/github/license/modzy/chassis?logo=apache&style=flat)
+
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/modzy/chassis/CI?logo=github)
+![PyPI](https://img.shields.io/pypi/v/chassisml?logo=pypi&style=flat)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/chassisml?logo=pypi&style=flat)
+
+</div>
+
 
 # Containerizing your models easily
 
