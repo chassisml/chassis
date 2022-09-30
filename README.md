@@ -1,3 +1,5 @@
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/modzy/chassis/CI?logo=github)
+
 ![Chassis logo](https://github.com/modzy/chassis/blob/main/docs/docs/images/chassis-logo.png)
 
 # Containerizing your models easily
