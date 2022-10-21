@@ -13,48 +13,83 @@
 
 </div>
 
+* **Simple service for model serving** 
+* **Stores containers on Docker Hub** or your container registry of choice
+* **Serve models with your favorite server** including Kubernets, Docker, Kserve, and Modzy
 
-# Containerizing your models easily
 
-## Goals
- 
-- Provide the MLOps community with a simple way to convert AI/ML models written in standard AI/ML frameworks into [OMI](https://www.openmodel.ml) compliant containers that can run anywhere
-- Provide the MLOps community [documentation](https://chassis.ml/) and [usage](https://github.com/modzy/chassis/tree/main/chassisml_sdk/examples) examples accessible to Data Scientists and DevOps engineers of all skill levels
+## Installation
 
-## Overview
- 
-Chassis converts AI Models into containers that can be run anywhere e.g. converts a Sklearn Random forrest classifier into a Docker container that can be run locally by a docker deamon, on [KServe](https://www.kubeflow.org/docs/external-add-ons/kserve/kserve/), or via [Modzy](http://www.modzy.com).
+### Use free public instance
+Get started quickly by signing-up for a free publicly service at: https://www.modzy.com/chassis-ml-sign-up/
 
-Chassis runs as a Kubernetes service that can be [deployed](https://chassis.ml/getting-started/deploy-manual/) into your preferred cluster using Chassis-provided Helm charts. Chassis works by making a series of reasonable assumptions related to the resources needed for production inference with standard AI/ML models. The Chassis service then uses those assumptions to programmatically carry out the DevOps steps required to wrap your AI/ML model into a production level Docker image before uploading it to dockerhub for you to use. 
+After signing up, you'll receive a URL to this free instance that looks something like
 
-Interacting with Chassis is most easily accomplaished through the officially supported [Python SDK](https://pypi.org/project/chassisml/); however, Chassis's RESTful API architecture allows for any modern program to access chassis through HTTP requests.
+`https://chassis-xxxxxxxxxx.modzy.com`
+## Usage/Examples
 
-Chassis's development and usage paradigms are governed by 3 principles:
+### Set Up Environment
+Create your workspace environment, open a Jupyter Notebook or other Python editor, and install the Chassisml SDK.
 
-**Simple**
 
-- No DevOps knowledge needed
-- Just make a request to build your image using the python SDK
-- Small set of dependencies: mlflow, flask
-- Supports multiple deployment platforms
+```python
+pip install chassisml
+```
 
-**Fast**
+### Load Your Model
+Train your model or load your pre-trained model into memory (`.pth`, `.pkl`, `.h5`, `.joblib`, or other file format - all model types and formats are supported!).
+```python
+model = framework.load("path/to/model.file")
+```
 
-- Start building the image as soon as you make the request
-- Automatically upload the image to Docker Hub
-- Images are production level and ready to be deployed
+### Write Process Function
+The process function will use your model to perform any required preprocessing and inference execution on the incoming input_bytes data.
 
-**Secure**
+```python
+def process(input_bytes):
+  # preprocess
+  data = preprocess(input_bytes)
 
-- Using [Kaniko](https://github.com/GoogleContainerTools/kaniko/) to securely build the image
+  # run inference
+  predictions = model.predict(data)
 
-## Getting Started
+  # post process predictions
+  formatted_results = postprocess(predictions)
 
-Follow one of our tutorials to easily get started and see how Chassis works:
+  return formatted_results
+```
+### Initialize Client and Create Chassis Model
 
-- [Install with Helm](https://chassis.ml/getting-started/deploy-manual/) into a Cluster
-- [Build an image](https://chassis.ml/tutorials/ds-connect/)
-- [Deploy to KServe](https://chassis.ml/tutorials/ds-deploy/) the built image
+```python
+chassis_client = chassisml.ChassisClient("<chassis-instance-url>")
+chassis_model = chassis_client.create_model(process_fn=process)
+```
+
+### Publish Chassis Model
+```python
+response = chassis_model.publish(
+    model_name="Sample ML Model",
+    model_version="0.0.1",
+    registry_user=dockerhub_user,
+    registry_pass=dockerhub_pass,
+) 
+```
+
+## Documentation
+
+📘 [Full Docs](https://chassis.mln)
+
+☁️ [Full Install Tutorial](https://chassis.ml/getting-started/deploy-manual/)
+
+🧑‍🏫 [Model Deployment Tutorial](https://chassis.ml/tutorials/ds-connect/)
+
+
+## Support
+
+Join the `#chassisml` channel on [Modzy's Discord Server](https://discord.gg/eW4kHSm3Z5) where our maintainers meet to plan changes and improvements.
+
+We also have a `#chassis-model-builder` Slack channel on the [MLOps.community Slack](https://go.mlops.community/slack)!
+
 
 ## Contributors
 
