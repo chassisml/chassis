@@ -19,14 +19,18 @@
 * <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/grpc.svg" /> **Adds a gRPC API** when you serve your models on Kubernetes, Docker, Kserve, and/or Modzy
 
 
-## Installation
+## Installing the service
 
-### Use free public instance
-Get started quickly by signing-up for a free publicly service at: https://www.modzy.com/chassis-ml-sign-up/
+### Use free public chassis service
+Get started quickly by signing-up for a free publicly-hosted service at: https://www.modzy.com/chassis-ml-sign-up/
 
 After signing up, you'll receive a URL to this free instance that looks something like
 
 `https://chassis-xxxxxxxxxx.modzy.com`
+
+### Private installation
+Full installation tutorial via <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/docker.svg" /> Docker and <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/helm.svg" /> HELM can be found here: https://chassis.ml/getting-started/deploy-manual/
+
 ## Usage/Examples
 
 ### Set Up Environment
@@ -76,14 +80,32 @@ response = chassis_model.publish(
 ) 
 ```
 
+## Features
+
+- Creates "baked-in" container images for ML models
+- Adds gRPC inference API to any ML model
+- Saves model images to any container registry including Docker Hub
+- Supports model serving on Kserve, Modzy, or Docker/K8s
+- Supports CPUs and GPUs
+- Optional GPU batch processing mode
+- Supports Lime, SHAP explainability
+- Cross-compiles to both ARM and x86
+- [OCI](https://opencontainers.org) and [OMI](https://openmodel.ml) compliant
+
 ## Documentation
 
 📘 [Full Docs](https://chassis.mln)
 
 ☁️ [Full Install Tutorial](https://chassis.ml/getting-started/deploy-manual/)
 
-🧑‍🏫 [Model Deployment Tutorial](https://chassis.ml/tutorials/ds-connect/)
+🧑‍🏫 [Model Packaging Tutorial](https://chassis.ml/tutorials/ds-connect/)
 
+Framework-specific Guides:
+|  |  |  |  |  |
+|---|---|---|---|---|
+| <!-- JSDelivr --> <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/pytorch.svg" /> [Pytorch](https://chassis.ml/how-to-guides/frameworks/#pytorch) | <!-- JSDelivr --> <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/scikitlearn.svg" /> [SciKit-Learn](https://chassis.ml/how-to-guides/frameworks/#scikit-learn) | <!-- JSDelivr --> <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/onnx.svg" /> [ONNX](https://chassis.ml/how-to-guides/frameworks/#onnx) | <!-- JSDelivr --> <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/keras.svg" />  [Keras](https://chassis.ml/how-to-guides/frameworks/#tensorflow-keras) | <!-- JSDelivr --> <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/tensorflow.svg" />  [Tensorflow](https://chassis.ml/how-to-guides/frameworks/#tensorflow-keras) |
+| [spaCy](https://chassis.ml/how-to-guides/frameworks/#spacy) | <!-- JSDelivr --> <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/apachespark.svg" />  [Spark MLlib](https://chassis.ml/how-to-guides/frameworks/#spark-mllib) | [XGBoost](https://chassis.ml/how-to-guides/frameworks/#xgboost) | [LightGBM](https://chassis.ml/how-to-guides/frameworks/#lightgbm) | [Fastai](https://chassis.ml/how-to-guides/frameworks/#fastai) |
+| [MXNet](https://chassis.ml/how-to-guides/frameworks/#mxnet) | [PMML](https://chassis.ml/how-to-guides/frameworks/#pmml) |  |  |  |
 
 ## Support
 
