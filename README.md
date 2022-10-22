@@ -13,9 +13,10 @@
 
 </div>
 
-* **Simple service for model serving** 
-* **Stores containers on Docker Hub** or your container registry of choice
-* **Serve models with your favorite server** including Kubernets, Docker, Kserve, and Modzy
+<!-- JSDelivr -->
+* <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/opencontainersinitiative.svg" /> **Creates ML-friendly container images for your models** that comply with OCI and OMI specs
+* <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/docker.svg" /> **Stores ML model containers on Docker Hub** or your container registry of choice
+* <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/grpc.svg" /> **Adds a gRPC API** when you serve your models on Kubernetes, Docker, Kserve, and/or Modzy
 
 
 ## Installation
@@ -43,7 +44,7 @@ model = framework.load("path/to/model.file")
 ```
 
 ### Write Process Function
-The process function will use your model to perform any required preprocessing and inference execution on the incoming input_bytes data.
+The process function will use your model to perform any required preprocessing and inference execution on the incoming `input_bytes` data.
 
 ```python
 def process(input_bytes):
@@ -93,4 +94,11 @@ We also have a `#chassis-model-builder` Slack channel on the [MLOps.community Sl
 
 ## Contributors
 
-A full list of contributors, which includes individuals that have contributed entries, can be found [here](https://github.com/modzy/chassis/graphs/contributors).
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
