@@ -279,11 +279,15 @@
   
 
 
-  <li class="md-tabs__item">
-    <a href="../../get-involved/" class="md-tabs__link">
-      Get Involved
-    </a>
-  </li>
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../common-errors/" class="md-tabs__link">
+        Community
+      </a>
+    </li>
+  
 
       
         
@@ -558,8 +562,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#required-variables" class="md-nav__link">
-    Required variables
+  <a href="#define-required-variables" class="md-nav__link">
+    Define required variables
   </a>
   
 </li>
@@ -567,6 +571,13 @@
         <li class="md-nav__item">
   <a href="#deploy-the-model" class="md-nav__link">
     Deploy the model
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deploy-from-private-docker-registry" class="md-nav__link">
+    Deploy from Private Docker Registry
   </a>
   
 </li>
@@ -662,6 +673,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../../how-to-guides/common-data-types/" class="md-nav__link">
+        Common Data Types Support
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../how-to-guides/arm-support/" class="md-nav__link">
         Arm Support
       </a>
@@ -678,6 +703,20 @@
     <li class="md-nav__item">
       <a href="../../how-to-guides/gpu-support/" class="md-nav__link">
         GPU Support
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to-guides/private-registry/" class="md-nav__link">
+        Private Docker Registry Support
       </a>
     </li>
   
@@ -849,10 +888,57 @@
   
   
   
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" data-md-state="indeterminate" type="checkbox" id="__nav_7" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7">
+          Community
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Community" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          Community
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../common-errors/" class="md-nav__link">
+        FAQs
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
     <li class="md-nav__item">
       <a href="../../get-involved/" class="md-nav__link">
         Get Involved
       </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
     </li>
   
 
@@ -905,7 +991,7 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>curl -s <span class="s2">&quot;https://raw.githubusercontent.com/kserve/kserve/release-0.7/hack/quick_install.sh&quot;</span> <span class="p">|</span> bash
 </code></pre></div></li>
 </ul>
-<h2 id="required-variables">Required variables</h2>
+<h2 id="define-required-variables">Define required variables</h2>
 <p>There are some environment variables that must be defined for KServe to work:</p>
 <ul>
 <li>INTERFACE: kserve</li>
@@ -915,7 +1001,7 @@
 </ul>
 <h2 id="deploy-the-model">Deploy the model</h2>
 <p>For this tutorial, we will use the Chassis-generated container image uploaded as <code>bmunday131/sklearn-digits</code>. To deploy to KServe, we will use the <a href="https://github.com/modzy/chassis/blob/main/service/flavours/mlflow/interfaces/kfserving/custom_v1.yaml">file</a> that defines the <code>InferenceService</code> for the protocol v1 of KServe.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;serving.kserve.io/v1beta1&quot;</span><span class="w"></span>
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;serving.kserve.io/v1beta1&quot;</span><span class="w"></span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;InferenceService&quot;</span><span class="w"></span>
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
 <a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">chassisml-sklearn-demo</span><span class="w"></span>
@@ -938,130 +1024,169 @@
 <a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span><span class="w"></span>
 <a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="w">          </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span><span class="w"></span>
 </code></pre></div>
-<p>In this case, the variable <code>MODEL_NAME</code> should not be necessary since it's defined when creating the image.</p>
+In this case, the variable <code>MODEL_NAME</code> should not be necessary since it is defined when creating the image.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>kubectl apply -f custom_v1.yaml
 </code></pre></div>
 <p>This should output a success message.</p>
+<h2 id="deploy-from-private-docker-registry"><em>Deploy from Private Docker Registry</em></h2>
+<p>In the above example, we deploy a public container image, which means we do not need to define credentials to pull the image. If, however, you set up Chassis to push container images to a private registry, you will need to add a few lines to your yaml file.</p>
+<p>First, create a Kubernetes <code>imagePullSecrets</code> object that contains your credentials as a list of secrets. </p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>kubectl create secret docker-registry &lt;registry-credential-secrets&gt; <span class="se">\</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>  --docker-server<span class="o">=</span>&lt;private-registry-url&gt; <span class="se">\</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>  --docker-email<span class="o">=</span>&lt;private-registry-email&gt; <span class="se">\</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>  --docker-username<span class="o">=</span>&lt;private-registry-user&gt; <span class="se">\</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>  --docker-password<span class="o">=</span>&lt;private-registry-password&gt;
+</code></pre></div>
+<p>Visit <a href="https://kubernetes.io/docs/tasks/configmap-secret/managing-secret-using-kubectl/">Managing Secrets using kubectl</a> for more details.</p>
+<p>Next, add the following lines to your yaml file:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;serving.kserve.io/v1beta1&quot;</span><span class="w"></span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;InferenceService&quot;</span><span class="w"></span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">chassisml-sklearn-demo</span><span class="w"></span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">  </span><span class="nt">predictor</span><span class="p">:</span><span class="w"></span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">    </span><span class="nt">imagePullSecrets</span><span class="p">:</span><span class="w"></span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;registry-credential-secrets&gt;</span><span class="w"></span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">    </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bmunday131/sklearn-digits:0.0.1</span><span class="w"></span>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">chassisml-sklearn-demo-container</span><span class="w"></span>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="w">      </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span><span class="w"></span>
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="w">      </span><span class="nt">env</span><span class="p">:</span><span class="w"></span>
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">INTERFACE</span><span class="w"></span>
+<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="w">          </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kserve</span><span class="w"></span>
+<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">HTTP_PORT</span><span class="w"></span>
+<a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a><span class="w">          </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;8080&quot;</span><span class="w"></span>
+<a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PROTOCOL</span><span class="w"></span>
+<a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a><span class="w">          </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
+<a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MODEL_NAME</span><span class="w"></span>
+<a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a><span class="w">          </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">digits</span><span class="w"></span>
+<a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a><span class="w">      </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
+<a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span><span class="w"></span>
+<a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a><span class="w">          </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span><span class="w"></span>
+</code></pre></div>
+<p>Finally, apply your changes:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>kubectl apply -f custom_v1.yaml
+</code></pre></div>
 <h2 id="define-required-variables-to-query-the-pod">Define required variables to query the pod</h2>
 <p>This is needed in order to be able to communicate with the deployed image.</p>
 <p>The <code>SERVICE_NAME</code> must match the name defined in the <code>metadata.name</code> of the <code>InferenceService</code> created above.</p>
 <p>The <code>MODEL_NAME</code> must match the name of your model. It can be defined by the data scientist when <a href="https://chassis.ml/tutorials/ds-connect/">making the request against <code>Chassis</code> service</a> or overwritten in the <code>InferenceService</code> as defined above.</p>
 <p>Mac:
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>minikube tunnel
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="c1"># in another terminal:</span>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="nb">export</span> <span class="nv">INGRESS_HOST</span><span class="o">=</span>localhost
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="nb">export</span> <span class="nv">INGRESS_PORT</span><span class="o">=</span><span class="m">80</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>minikube tunnel
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="c1"># in another terminal:</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="nb">export</span> <span class="nv">INGRESS_HOST</span><span class="o">=</span>localhost
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="nb">export</span> <span class="nv">INGRESS_PORT</span><span class="o">=</span><span class="m">80</span>
 </code></pre></div></p>
 <p>Linux:
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nb">export</span> <span class="nv">INGRESS_HOST</span><span class="o">=</span><span class="k">$(</span>minikube ip<span class="k">)</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nb">export</span> <span class="nv">INGRESS_PORT</span><span class="o">=</span><span class="k">$(</span>kubectl -n istio-system get service istio-ingressgateway -o <span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.spec.ports[?(@.name==&quot;http2&quot;)].nodePort}&#39;</span><span class="k">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nb">export</span> <span class="nv">INGRESS_HOST</span><span class="o">=</span><span class="k">$(</span>minikube ip<span class="k">)</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="nb">export</span> <span class="nv">INGRESS_PORT</span><span class="o">=</span><span class="k">$(</span>kubectl -n istio-system get service istio-ingressgateway -o <span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.spec.ports[?(@.name==&quot;http2&quot;)].nodePort}&#39;</span><span class="k">)</span>
 </code></pre></div></p>
 <p>Mac or Linux:
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nb">export</span> <span class="nv">SERVICE_NAME</span><span class="o">=</span>chassisml-sklearn-demo
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="nb">export</span> <span class="nv">MODEL_NAME</span><span class="o">=</span>digits
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="nb">export</span> <span class="nv">SERVICE_HOSTNAME</span><span class="o">=</span><span class="k">$(</span>kubectl get inferenceservice <span class="si">${</span><span class="nv">SERVICE_NAME</span><span class="si">}</span> -o <span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.status.url}&#39;</span> <span class="p">|</span> cut -d <span class="s2">&quot;/&quot;</span> -f <span class="m">3</span><span class="k">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nb">export</span> <span class="nv">SERVICE_NAME</span><span class="o">=</span>chassisml-sklearn-demo
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="nb">export</span> <span class="nv">MODEL_NAME</span><span class="o">=</span>digits
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="nb">export</span> <span class="nv">SERVICE_HOSTNAME</span><span class="o">=</span><span class="k">$(</span>kubectl get inferenceservice <span class="si">${</span><span class="nv">SERVICE_NAME</span><span class="si">}</span> -o <span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.status.url}&#39;</span> <span class="p">|</span> cut -d <span class="s2">&quot;/&quot;</span> -f <span class="m">3</span><span class="k">)</span>
 </code></pre></div></p>
 <h2 id="query-the-model">Query the model</h2>
 <p>Please note that you must base64 encode each input instance. For example:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">import</span> <span class="nn">json</span>
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="kn">import</span> <span class="nn">base64</span> <span class="k">as</span> <span class="nn">b64</span>
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="n">instances</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">],[</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">]]</span>
-<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="n">input_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;instances&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">b64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">instances</span><span class="p">]}</span>
-<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">input_dict</span><span class="p">,</span><span class="nb">open</span><span class="p">(</span><span class="s1">&#39;kserve_input.json&#39;</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">))</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kn">import</span> <span class="nn">json</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="kn">import</span> <span class="nn">base64</span> <span class="k">as</span> <span class="nn">b64</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="n">instances</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">],[</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">]]</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="n">input_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;instances&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">b64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">instances</span><span class="p">]}</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">input_dict</span><span class="p">,</span><span class="nb">open</span><span class="p">(</span><span class="s1">&#39;kserve_input.json&#39;</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">))</span>
 </code></pre></div>
 <p>Now you can just make a request to predict some data. Take into account that you must download <a href="https://github.com/modzy/chassis/blob/main/service/flavours/mlflow/interfaces/kserve/inputsv1.json"><code>inputsv1.json</code></a> before making the request. </p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>curl -H <span class="s2">&quot;Host: </span><span class="si">${</span><span class="nv">SERVICE_HOSTNAME</span><span class="si">}</span><span class="s2">&quot;</span> <span class="s2">&quot;http://</span><span class="si">${</span><span class="nv">INGRESS_HOST</span><span class="si">}</span><span class="s2">:</span><span class="si">${</span><span class="nv">INGRESS_PORT</span><span class="si">}</span><span class="s2">/v1/models/</span><span class="si">${</span><span class="nv">MODEL_NAME</span><span class="si">}</span><span class="s2">:predict&quot;</span> -d@inputsv1.json <span class="p">|</span> jq
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>curl -H <span class="s2">&quot;Host: </span><span class="si">${</span><span class="nv">SERVICE_HOSTNAME</span><span class="si">}</span><span class="s2">&quot;</span> <span class="s2">&quot;http://</span><span class="si">${</span><span class="nv">INGRESS_HOST</span><span class="si">}</span><span class="s2">:</span><span class="si">${</span><span class="nv">INGRESS_PORT</span><span class="si">}</span><span class="s2">/v1/models/</span><span class="si">${</span><span class="nv">MODEL_NAME</span><span class="si">}</span><span class="s2">:predict&quot;</span> -d@inputsv1.json <span class="p">|</span> jq
 </code></pre></div>
 <p>The output should be similar to this:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="p">{</span><span class="w"></span>
-<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">  </span><span class="nt">&quot;predictions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
-<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">    </span><span class="p">{</span><span class="w"></span>
-<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">      </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">        </span><span class="nt">&quot;drift&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
-<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">        </span><span class="nt">&quot;explanation&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
-<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">        </span><span class="nt">&quot;result&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">          </span><span class="nt">&quot;classPredictions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
-<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="w">            </span><span class="p">{</span><span class="w"></span>
-<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="w">              </span><span class="nt">&quot;class&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;4&quot;</span><span class="p">,</span><span class="w"></span>
-<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="w">              </span><span class="nt">&quot;score&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1&quot;</span><span class="w"></span>
-<a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="w">            </span><span class="p">}</span><span class="w"></span>
-<a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a><span class="w">          </span><span class="p">]</span><span class="w"></span>
-<a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a><span class="w">        </span><span class="p">}</span><span class="w"></span>
-<a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a><span class="w">      </span><span class="p">}</span><span class="w"></span>
-<a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a><span class="w">    </span><span class="p">},</span><span class="w"></span>
-<a id="__codelineno-8-17" name="__codelineno-8-17" href="#__codelineno-8-17"></a><span class="w">    </span><span class="p">{</span><span class="w"></span>
-<a id="__codelineno-8-18" name="__codelineno-8-18" href="#__codelineno-8-18"></a><span class="w">      </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<a id="__codelineno-8-19" name="__codelineno-8-19" href="#__codelineno-8-19"></a><span class="w">        </span><span class="nt">&quot;drift&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
-<a id="__codelineno-8-20" name="__codelineno-8-20" href="#__codelineno-8-20"></a><span class="w">        </span><span class="nt">&quot;explanation&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
-<a id="__codelineno-8-21" name="__codelineno-8-21" href="#__codelineno-8-21"></a><span class="w">        </span><span class="nt">&quot;result&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<a id="__codelineno-8-22" name="__codelineno-8-22" href="#__codelineno-8-22"></a><span class="w">          </span><span class="nt">&quot;classPredictions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
-<a id="__codelineno-8-23" name="__codelineno-8-23" href="#__codelineno-8-23"></a><span class="w">            </span><span class="p">{</span><span class="w"></span>
-<a id="__codelineno-8-24" name="__codelineno-8-24" href="#__codelineno-8-24"></a><span class="w">              </span><span class="nt">&quot;class&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;8&quot;</span><span class="p">,</span><span class="w"></span>
-<a id="__codelineno-8-25" name="__codelineno-8-25" href="#__codelineno-8-25"></a><span class="w">              </span><span class="nt">&quot;score&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1&quot;</span><span class="w"></span>
-<a id="__codelineno-8-26" name="__codelineno-8-26" href="#__codelineno-8-26"></a><span class="w">            </span><span class="p">}</span><span class="w"></span>
-<a id="__codelineno-8-27" name="__codelineno-8-27" href="#__codelineno-8-27"></a><span class="w">          </span><span class="p">]</span><span class="w"></span>
-<a id="__codelineno-8-28" name="__codelineno-8-28" href="#__codelineno-8-28"></a><span class="w">        </span><span class="p">}</span><span class="w"></span>
-<a id="__codelineno-8-29" name="__codelineno-8-29" href="#__codelineno-8-29"></a><span class="w">      </span><span class="p">}</span><span class="w"></span>
-<a id="__codelineno-8-30" name="__codelineno-8-30" href="#__codelineno-8-30"></a><span class="w">    </span><span class="p">},</span><span class="w"></span>
-<a id="__codelineno-8-31" name="__codelineno-8-31" href="#__codelineno-8-31"></a><span class="w">    </span><span class="p">{</span><span class="w"></span>
-<a id="__codelineno-8-32" name="__codelineno-8-32" href="#__codelineno-8-32"></a><span class="w">      </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<a id="__codelineno-8-33" name="__codelineno-8-33" href="#__codelineno-8-33"></a><span class="w">        </span><span class="nt">&quot;drift&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
-<a id="__codelineno-8-34" name="__codelineno-8-34" href="#__codelineno-8-34"></a><span class="w">        </span><span class="nt">&quot;explanation&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
-<a id="__codelineno-8-35" name="__codelineno-8-35" href="#__codelineno-8-35"></a><span class="w">        </span><span class="nt">&quot;result&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<a id="__codelineno-8-36" name="__codelineno-8-36" href="#__codelineno-8-36"></a><span class="w">          </span><span class="nt">&quot;classPredictions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
-<a id="__codelineno-8-37" name="__codelineno-8-37" href="#__codelineno-8-37"></a><span class="w">            </span><span class="p">{</span><span class="w"></span>
-<a id="__codelineno-8-38" name="__codelineno-8-38" href="#__codelineno-8-38"></a><span class="w">              </span><span class="nt">&quot;class&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;8&quot;</span><span class="p">,</span><span class="w"></span>
-<a id="__codelineno-8-39" name="__codelineno-8-39" href="#__codelineno-8-39"></a><span class="w">              </span><span class="nt">&quot;score&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1&quot;</span><span class="w"></span>
-<a id="__codelineno-8-40" name="__codelineno-8-40" href="#__codelineno-8-40"></a><span class="w">            </span><span class="p">}</span><span class="w"></span>
-<a id="__codelineno-8-41" name="__codelineno-8-41" href="#__codelineno-8-41"></a><span class="w">          </span><span class="p">]</span><span class="w"></span>
-<a id="__codelineno-8-42" name="__codelineno-8-42" href="#__codelineno-8-42"></a><span class="w">        </span><span class="p">}</span><span class="w"></span>
-<a id="__codelineno-8-43" name="__codelineno-8-43" href="#__codelineno-8-43"></a><span class="w">      </span><span class="p">}</span><span class="w"></span>
-<a id="__codelineno-8-44" name="__codelineno-8-44" href="#__codelineno-8-44"></a><span class="w">    </span><span class="p">},</span><span class="w"></span>
-<a id="__codelineno-8-45" name="__codelineno-8-45" href="#__codelineno-8-45"></a><span class="w">    </span><span class="p">{</span><span class="w"></span>
-<a id="__codelineno-8-46" name="__codelineno-8-46" href="#__codelineno-8-46"></a><span class="w">      </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<a id="__codelineno-8-47" name="__codelineno-8-47" href="#__codelineno-8-47"></a><span class="w">        </span><span class="nt">&quot;drift&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
-<a id="__codelineno-8-48" name="__codelineno-8-48" href="#__codelineno-8-48"></a><span class="w">        </span><span class="nt">&quot;explanation&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
-<a id="__codelineno-8-49" name="__codelineno-8-49" href="#__codelineno-8-49"></a><span class="w">        </span><span class="nt">&quot;result&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<a id="__codelineno-8-50" name="__codelineno-8-50" href="#__codelineno-8-50"></a><span class="w">          </span><span class="nt">&quot;classPredictions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
-<a id="__codelineno-8-51" name="__codelineno-8-51" href="#__codelineno-8-51"></a><span class="w">            </span><span class="p">{</span><span class="w"></span>
-<a id="__codelineno-8-52" name="__codelineno-8-52" href="#__codelineno-8-52"></a><span class="w">              </span><span class="nt">&quot;class&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;4&quot;</span><span class="p">,</span><span class="w"></span>
-<a id="__codelineno-8-53" name="__codelineno-8-53" href="#__codelineno-8-53"></a><span class="w">              </span><span class="nt">&quot;score&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1&quot;</span><span class="w"></span>
-<a id="__codelineno-8-54" name="__codelineno-8-54" href="#__codelineno-8-54"></a><span class="w">            </span><span class="p">}</span><span class="w"></span>
-<a id="__codelineno-8-55" name="__codelineno-8-55" href="#__codelineno-8-55"></a><span class="w">          </span><span class="p">]</span><span class="w"></span>
-<a id="__codelineno-8-56" name="__codelineno-8-56" href="#__codelineno-8-56"></a><span class="w">        </span><span class="p">}</span><span class="w"></span>
-<a id="__codelineno-8-57" name="__codelineno-8-57" href="#__codelineno-8-57"></a><span class="w">      </span><span class="p">}</span><span class="w"></span>
-<a id="__codelineno-8-58" name="__codelineno-8-58" href="#__codelineno-8-58"></a><span class="w">    </span><span class="p">},</span><span class="w"></span>
-<a id="__codelineno-8-59" name="__codelineno-8-59" href="#__codelineno-8-59"></a><span class="w">    </span><span class="p">{</span><span class="w"></span>
-<a id="__codelineno-8-60" name="__codelineno-8-60" href="#__codelineno-8-60"></a><span class="w">      </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<a id="__codelineno-8-61" name="__codelineno-8-61" href="#__codelineno-8-61"></a><span class="w">        </span><span class="nt">&quot;drift&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
-<a id="__codelineno-8-62" name="__codelineno-8-62" href="#__codelineno-8-62"></a><span class="w">        </span><span class="nt">&quot;explanation&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
-<a id="__codelineno-8-63" name="__codelineno-8-63" href="#__codelineno-8-63"></a><span class="w">        </span><span class="nt">&quot;result&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<a id="__codelineno-8-64" name="__codelineno-8-64" href="#__codelineno-8-64"></a><span class="w">          </span><span class="nt">&quot;classPredictions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
-<a id="__codelineno-8-65" name="__codelineno-8-65" href="#__codelineno-8-65"></a><span class="w">            </span><span class="p">{</span><span class="w"></span>
-<a id="__codelineno-8-66" name="__codelineno-8-66" href="#__codelineno-8-66"></a><span class="w">              </span><span class="nt">&quot;class&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;8&quot;</span><span class="p">,</span><span class="w"></span>
-<a id="__codelineno-8-67" name="__codelineno-8-67" href="#__codelineno-8-67"></a><span class="w">              </span><span class="nt">&quot;score&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1&quot;</span><span class="w"></span>
-<a id="__codelineno-8-68" name="__codelineno-8-68" href="#__codelineno-8-68"></a><span class="w">            </span><span class="p">}</span><span class="w"></span>
-<a id="__codelineno-8-69" name="__codelineno-8-69" href="#__codelineno-8-69"></a><span class="w">          </span><span class="p">]</span><span class="w"></span>
-<a id="__codelineno-8-70" name="__codelineno-8-70" href="#__codelineno-8-70"></a><span class="w">        </span><span class="p">}</span><span class="w"></span>
-<a id="__codelineno-8-71" name="__codelineno-8-71" href="#__codelineno-8-71"></a><span class="w">      </span><span class="p">}</span><span class="w"></span>
-<a id="__codelineno-8-72" name="__codelineno-8-72" href="#__codelineno-8-72"></a><span class="w">    </span><span class="p">}</span><span class="w"></span>
-<a id="__codelineno-8-73" name="__codelineno-8-73" href="#__codelineno-8-73"></a><span class="w">  </span><span class="p">]</span><span class="w"></span>
-<a id="__codelineno-8-74" name="__codelineno-8-74" href="#__codelineno-8-74"></a><span class="p">}</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="p">{</span><span class="w"></span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">  </span><span class="nt">&quot;predictions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">    </span><span class="p">{</span><span class="w"></span>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">      </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="w">        </span><span class="nt">&quot;drift&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="w">        </span><span class="nt">&quot;explanation&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="w">        </span><span class="nt">&quot;result&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="w">          </span><span class="nt">&quot;classPredictions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="w">            </span><span class="p">{</span><span class="w"></span>
+<a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="w">              </span><span class="nt">&quot;class&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;4&quot;</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a><span class="w">              </span><span class="nt">&quot;score&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1&quot;</span><span class="w"></span>
+<a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a><span class="w">            </span><span class="p">}</span><span class="w"></span>
+<a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a><span class="w">          </span><span class="p">]</span><span class="w"></span>
+<a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a><span class="w">        </span><span class="p">}</span><span class="w"></span>
+<a id="__codelineno-11-15" name="__codelineno-11-15" href="#__codelineno-11-15"></a><span class="w">      </span><span class="p">}</span><span class="w"></span>
+<a id="__codelineno-11-16" name="__codelineno-11-16" href="#__codelineno-11-16"></a><span class="w">    </span><span class="p">},</span><span class="w"></span>
+<a id="__codelineno-11-17" name="__codelineno-11-17" href="#__codelineno-11-17"></a><span class="w">    </span><span class="p">{</span><span class="w"></span>
+<a id="__codelineno-11-18" name="__codelineno-11-18" href="#__codelineno-11-18"></a><span class="w">      </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<a id="__codelineno-11-19" name="__codelineno-11-19" href="#__codelineno-11-19"></a><span class="w">        </span><span class="nt">&quot;drift&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-11-20" name="__codelineno-11-20" href="#__codelineno-11-20"></a><span class="w">        </span><span class="nt">&quot;explanation&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-11-21" name="__codelineno-11-21" href="#__codelineno-11-21"></a><span class="w">        </span><span class="nt">&quot;result&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<a id="__codelineno-11-22" name="__codelineno-11-22" href="#__codelineno-11-22"></a><span class="w">          </span><span class="nt">&quot;classPredictions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<a id="__codelineno-11-23" name="__codelineno-11-23" href="#__codelineno-11-23"></a><span class="w">            </span><span class="p">{</span><span class="w"></span>
+<a id="__codelineno-11-24" name="__codelineno-11-24" href="#__codelineno-11-24"></a><span class="w">              </span><span class="nt">&quot;class&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;8&quot;</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-11-25" name="__codelineno-11-25" href="#__codelineno-11-25"></a><span class="w">              </span><span class="nt">&quot;score&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1&quot;</span><span class="w"></span>
+<a id="__codelineno-11-26" name="__codelineno-11-26" href="#__codelineno-11-26"></a><span class="w">            </span><span class="p">}</span><span class="w"></span>
+<a id="__codelineno-11-27" name="__codelineno-11-27" href="#__codelineno-11-27"></a><span class="w">          </span><span class="p">]</span><span class="w"></span>
+<a id="__codelineno-11-28" name="__codelineno-11-28" href="#__codelineno-11-28"></a><span class="w">        </span><span class="p">}</span><span class="w"></span>
+<a id="__codelineno-11-29" name="__codelineno-11-29" href="#__codelineno-11-29"></a><span class="w">      </span><span class="p">}</span><span class="w"></span>
+<a id="__codelineno-11-30" name="__codelineno-11-30" href="#__codelineno-11-30"></a><span class="w">    </span><span class="p">},</span><span class="w"></span>
+<a id="__codelineno-11-31" name="__codelineno-11-31" href="#__codelineno-11-31"></a><span class="w">    </span><span class="p">{</span><span class="w"></span>
+<a id="__codelineno-11-32" name="__codelineno-11-32" href="#__codelineno-11-32"></a><span class="w">      </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<a id="__codelineno-11-33" name="__codelineno-11-33" href="#__codelineno-11-33"></a><span class="w">        </span><span class="nt">&quot;drift&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-11-34" name="__codelineno-11-34" href="#__codelineno-11-34"></a><span class="w">        </span><span class="nt">&quot;explanation&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-11-35" name="__codelineno-11-35" href="#__codelineno-11-35"></a><span class="w">        </span><span class="nt">&quot;result&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<a id="__codelineno-11-36" name="__codelineno-11-36" href="#__codelineno-11-36"></a><span class="w">          </span><span class="nt">&quot;classPredictions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<a id="__codelineno-11-37" name="__codelineno-11-37" href="#__codelineno-11-37"></a><span class="w">            </span><span class="p">{</span><span class="w"></span>
+<a id="__codelineno-11-38" name="__codelineno-11-38" href="#__codelineno-11-38"></a><span class="w">              </span><span class="nt">&quot;class&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;8&quot;</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-11-39" name="__codelineno-11-39" href="#__codelineno-11-39"></a><span class="w">              </span><span class="nt">&quot;score&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1&quot;</span><span class="w"></span>
+<a id="__codelineno-11-40" name="__codelineno-11-40" href="#__codelineno-11-40"></a><span class="w">            </span><span class="p">}</span><span class="w"></span>
+<a id="__codelineno-11-41" name="__codelineno-11-41" href="#__codelineno-11-41"></a><span class="w">          </span><span class="p">]</span><span class="w"></span>
+<a id="__codelineno-11-42" name="__codelineno-11-42" href="#__codelineno-11-42"></a><span class="w">        </span><span class="p">}</span><span class="w"></span>
+<a id="__codelineno-11-43" name="__codelineno-11-43" href="#__codelineno-11-43"></a><span class="w">      </span><span class="p">}</span><span class="w"></span>
+<a id="__codelineno-11-44" name="__codelineno-11-44" href="#__codelineno-11-44"></a><span class="w">    </span><span class="p">},</span><span class="w"></span>
+<a id="__codelineno-11-45" name="__codelineno-11-45" href="#__codelineno-11-45"></a><span class="w">    </span><span class="p">{</span><span class="w"></span>
+<a id="__codelineno-11-46" name="__codelineno-11-46" href="#__codelineno-11-46"></a><span class="w">      </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<a id="__codelineno-11-47" name="__codelineno-11-47" href="#__codelineno-11-47"></a><span class="w">        </span><span class="nt">&quot;drift&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-11-48" name="__codelineno-11-48" href="#__codelineno-11-48"></a><span class="w">        </span><span class="nt">&quot;explanation&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-11-49" name="__codelineno-11-49" href="#__codelineno-11-49"></a><span class="w">        </span><span class="nt">&quot;result&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<a id="__codelineno-11-50" name="__codelineno-11-50" href="#__codelineno-11-50"></a><span class="w">          </span><span class="nt">&quot;classPredictions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<a id="__codelineno-11-51" name="__codelineno-11-51" href="#__codelineno-11-51"></a><span class="w">            </span><span class="p">{</span><span class="w"></span>
+<a id="__codelineno-11-52" name="__codelineno-11-52" href="#__codelineno-11-52"></a><span class="w">              </span><span class="nt">&quot;class&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;4&quot;</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-11-53" name="__codelineno-11-53" href="#__codelineno-11-53"></a><span class="w">              </span><span class="nt">&quot;score&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1&quot;</span><span class="w"></span>
+<a id="__codelineno-11-54" name="__codelineno-11-54" href="#__codelineno-11-54"></a><span class="w">            </span><span class="p">}</span><span class="w"></span>
+<a id="__codelineno-11-55" name="__codelineno-11-55" href="#__codelineno-11-55"></a><span class="w">          </span><span class="p">]</span><span class="w"></span>
+<a id="__codelineno-11-56" name="__codelineno-11-56" href="#__codelineno-11-56"></a><span class="w">        </span><span class="p">}</span><span class="w"></span>
+<a id="__codelineno-11-57" name="__codelineno-11-57" href="#__codelineno-11-57"></a><span class="w">      </span><span class="p">}</span><span class="w"></span>
+<a id="__codelineno-11-58" name="__codelineno-11-58" href="#__codelineno-11-58"></a><span class="w">    </span><span class="p">},</span><span class="w"></span>
+<a id="__codelineno-11-59" name="__codelineno-11-59" href="#__codelineno-11-59"></a><span class="w">    </span><span class="p">{</span><span class="w"></span>
+<a id="__codelineno-11-60" name="__codelineno-11-60" href="#__codelineno-11-60"></a><span class="w">      </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<a id="__codelineno-11-61" name="__codelineno-11-61" href="#__codelineno-11-61"></a><span class="w">        </span><span class="nt">&quot;drift&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-11-62" name="__codelineno-11-62" href="#__codelineno-11-62"></a><span class="w">        </span><span class="nt">&quot;explanation&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-11-63" name="__codelineno-11-63" href="#__codelineno-11-63"></a><span class="w">        </span><span class="nt">&quot;result&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<a id="__codelineno-11-64" name="__codelineno-11-64" href="#__codelineno-11-64"></a><span class="w">          </span><span class="nt">&quot;classPredictions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<a id="__codelineno-11-65" name="__codelineno-11-65" href="#__codelineno-11-65"></a><span class="w">            </span><span class="p">{</span><span class="w"></span>
+<a id="__codelineno-11-66" name="__codelineno-11-66" href="#__codelineno-11-66"></a><span class="w">              </span><span class="nt">&quot;class&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;8&quot;</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-11-67" name="__codelineno-11-67" href="#__codelineno-11-67"></a><span class="w">              </span><span class="nt">&quot;score&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1&quot;</span><span class="w"></span>
+<a id="__codelineno-11-68" name="__codelineno-11-68" href="#__codelineno-11-68"></a><span class="w">            </span><span class="p">}</span><span class="w"></span>
+<a id="__codelineno-11-69" name="__codelineno-11-69" href="#__codelineno-11-69"></a><span class="w">          </span><span class="p">]</span><span class="w"></span>
+<a id="__codelineno-11-70" name="__codelineno-11-70" href="#__codelineno-11-70"></a><span class="w">        </span><span class="p">}</span><span class="w"></span>
+<a id="__codelineno-11-71" name="__codelineno-11-71" href="#__codelineno-11-71"></a><span class="w">      </span><span class="p">}</span><span class="w"></span>
+<a id="__codelineno-11-72" name="__codelineno-11-72" href="#__codelineno-11-72"></a><span class="w">    </span><span class="p">}</span><span class="w"></span>
+<a id="__codelineno-11-73" name="__codelineno-11-73" href="#__codelineno-11-73"></a><span class="w">  </span><span class="p">]</span><span class="w"></span>
+<a id="__codelineno-11-74" name="__codelineno-11-74" href="#__codelineno-11-74"></a><span class="p">}</span><span class="w"></span>
 </code></pre></div>
 <p>In this case, the data was prepared for the protocol v1, but we can deploy
 the image using the protocol v2 and make the request using the <a href="https://github.com/modzy/chassis/blob/main/service/flavours/mlflow/interfaces/kserve/inputsv2.json">data for v2</a>.</p>
 <h2 id="deploy-the-model-locally">Deploy the model locally</h2>
 <p>The model can also be deployed locally:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>docker run --rm -p <span class="m">8080</span>:8080 <span class="se">\</span>
-<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>-e <span class="nv">INTERFACE</span><span class="o">=</span>kserve <span class="se">\</span>
-<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>-e <span class="nv">HTTP_PORT</span><span class="o">=</span><span class="m">8080</span> <span class="se">\</span>
-<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>-e <span class="nv">PROTOCOL</span><span class="o">=</span>v2 <span class="se">\</span>
-<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>-e <span class="nv">MODEL_NAME</span><span class="o">=</span>digits <span class="se">\</span>
-<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>carmilso/chassisml-sklearn-demo:latest
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>docker run --rm -p <span class="m">8080</span>:8080 <span class="se">\</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>-e <span class="nv">INTERFACE</span><span class="o">=</span>kserve <span class="se">\</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>-e <span class="nv">HTTP_PORT</span><span class="o">=</span><span class="m">8080</span> <span class="se">\</span>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>-e <span class="nv">PROTOCOL</span><span class="o">=</span>v2 <span class="se">\</span>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>-e <span class="nv">MODEL_NAME</span><span class="o">=</span>digits <span class="se">\</span>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>carmilso/chassisml-sklearn-demo:latest
 </code></pre></div>
 <p>So we can query it this way. Take into account that you must download <a href="https://github.com/modzy/chassis/blob/main/service/flavours/mlflow/interfaces/kserve/inputsv2.json"><code>inputsv2.json</code></a> before making the request:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>curl localhost:8080/v2/models/digits/infer -d@inputsv2.json
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>curl localhost:8080/v2/models/digits/infer -d@inputsv2.json
 </code></pre></div>
 <h2 id="tutorial-in-action">Tutorial in Action</h2>
 <p>Follow along as we walk through this tutorial step by step!</p>
@@ -1198,7 +1323,7 @@ the image using the protocol v2 and make the request using the <a href="https://
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.expand", "navigation.tabs", "navigation.top", "toc.integrate"], "search": "../../assets/javascripts/workers/search.22074ed6.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.expand", "navigation.tabs", "navigation.top", "toc.integrate", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.22074ed6.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.1514a9a0.min.js"></script>

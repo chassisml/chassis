@@ -279,11 +279,15 @@
   
 
 
-  <li class="md-tabs__item">
-    <a href="../../get-involved/" class="md-tabs__link">
-      Get Involved
-    </a>
-  </li>
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../common-errors/" class="md-tabs__link">
+        Community
+      </a>
+    </li>
+  
 
       
         
@@ -491,6 +495,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#configure-private-docker-registry-settings-optional" class="md-nav__link">
+    Configure private Docker registry settings (Optional)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#install-chassis-service" class="md-nav__link">
     Install Chassis service
   </a>
@@ -670,6 +681,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../../how-to-guides/common-data-types/" class="md-nav__link">
+        Common Data Types Support
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../how-to-guides/arm-support/" class="md-nav__link">
         Arm Support
       </a>
@@ -686,6 +711,20 @@
     <li class="md-nav__item">
       <a href="../../how-to-guides/gpu-support/" class="md-nav__link">
         GPU Support
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to-guides/private-registry/" class="md-nav__link">
+        Private Docker Registry Support
       </a>
     </li>
   
@@ -857,10 +896,57 @@
   
   
   
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" data-md-state="indeterminate" type="checkbox" id="__nav_7" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7">
+          Community
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Community" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          Community
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../common-errors/" class="md-nav__link">
+        FAQs
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
     <li class="md-nav__item">
       <a href="../../get-involved/" class="md-nav__link">
         Get Involved
       </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
     </li>
   
 
@@ -919,6 +1005,7 @@
 </li>
 <li>Install <a href="https://helm.sh/docs/intro/install/">Helm</a></li>
 </ul>
+<p><em>Note: If you prefer to use Minikube for your Kubernetes distribution, make sure it can access the internet. Otherwise, your Chassis build jobs will fail.</em></p>
 <h2 id="enable-kubernetes">Enable Kubernetes</h2>
 <p>Follow <a href="https://docs.docker.com/desktop/kubernetes/">these</a> instructions to enable Kubernetes in Docker Desktop.</p>
 <h2 id="add-the-helm-repository">Add the Helm repository</h2>
@@ -927,39 +1014,72 @@
 <p>After that we just need to update the Helm repos to fetch <code>Chassis</code> data.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>helm repo update
 </code></pre></div>
+<h2 id="configure-private-docker-registry-settings-optional">Configure private Docker registry settings <em>(Optional)</em></h2>
+<p>By default, installing the Chassis service will push all container images to a <em>public</em> Docker Hub account, which requires you to have valid credentials. If instead you have access to a private Docker registry, you can add a few lines of configuration before installing the <code>Chassis</code> service using helm. <em>Note: only <a href="https://docs.docker.com/registry/spec/api/">HTTP API v2</a> compliant Docker registries are supported.</em></p>
+<p><strong>1. Generate Kuberentes secret containing registry credentials</strong></p>
+<p>We first need to generate a Kubernetes secret of type <code>dockerconfigjson</code> that contains Docker registry credentials with push/pull permissions.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>kubectl create secret docker-registry &lt;registry-secret-name&gt; <span class="se">\</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>  --docker-server<span class="o">=</span>&lt;private-registry-url&gt; <span class="se">\</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>  --docker-email<span class="o">=</span>&lt;private-registry-email&gt; <span class="se">\</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>  --docker-username<span class="o">=</span>&lt;private-registry-user&gt; <span class="se">\</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>  --docker-password<span class="o">=</span>&lt;private-registry-password&gt;
+</code></pre></div>
+<p>Visit <a href="https://kubernetes.io/docs/tasks/configmap-secret/managing-secret-using-kubectl/">Managing Secrets using kubectl</a> for more details.</p>
+<p><strong>2. Create Values File for Helm Chart</strong></p>
+<p>Next, we will create a <code>values.yml</code> file to modify a few of the default values in the Chassis helm chart. This is where you can specify the base URL of your private registry and provide the name of the secret generated in the previous step. </p>
+<div class="highlight"><span class="filename">values.yml</span><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nt">registry</span><span class="p">:</span><span class="w"></span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;https://my-private-registry.com&quot;</span><span class="w"></span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span><span class="nt">credentialsSecretName</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&lt;registry-secret-name&gt;&quot;</span><span class="w"></span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">  </span><span class="nt">repositoryPrefix</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w"></span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="nt">image</span><span class="p">:</span><span class="w"></span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">  </span><span class="nt">pullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span><span class="w"></span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">  </span><span class="nt">tag</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1f20586e050416239b055faa18baf35ce5707a32&quot;</span><span class="w"> </span><span class="c1"># Commit hash for latest version of Chassis service</span><span class="w"></span>
+</code></pre></div>
+<p>For more details and different registry examples, visit the <a href="../../how-to-guides/private-registry/">Private Registry Support guide</a>.</p>
 <h2 id="install-chassis-service">Install <code>Chassis</code> service</h2>
 <p>Now we just need to install <code>Chassis</code> as normal using Helm.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>helm install chassis chassis/chassis
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Public Docker Hub (default)</label><label for="__tabbed_1_2">Private Registry</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>helm install chassis chassis/chassis
 </code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>helm install chassis chassis/chassis -f values.yaml
+</code></pre></div>
+</div>
+</div>
+</div>
 <h2 id="check-the-installation">Check the installation</h2>
 <p>After having installed the service we can check that the <code>Chassis</code> service is correctly deployed.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>kubectl get svc/chassis
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>kubectl get svc/chassis
 </code></pre></div>
 <p>Then you should see an output similar to this.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>NAME      TYPE       CLUSTER-IP       EXTERNAL-IP   PORT<span class="o">(</span>S<span class="o">)</span>          AGE
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>chassis   NodePort   <span class="m">10</span>.106.209.207   &lt;none&gt;        <span class="m">5000</span>:30496/TCP   15s
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>NAME      TYPE       CLUSTER-IP       EXTERNAL-IP   PORT<span class="o">(</span>S<span class="o">)</span>          AGE
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>chassis   NodePort   <span class="m">10</span>.106.209.207   &lt;none&gt;        <span class="m">5000</span>:30496/TCP   15s
 </code></pre></div>
 <p>We can also check that the pod that runs the service is correctly running.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>kubectl get pods
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>kubectl get pods
 </code></pre></div>
 <p>Where we should find our pod listed.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>NAME                       READY   STATUS    RESTARTS   AGE
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="o">(</span>...<span class="o">)</span>
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>chassis-5c574d459c-rclx9   <span class="m">1</span>/1     Running   <span class="m">0</span>          22s
-<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="o">(</span>...<span class="o">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>NAME                       READY   STATUS    RESTARTS   AGE
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="o">(</span>...<span class="o">)</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>chassis-5c574d459c-rclx9   <span class="m">1</span>/1     Running   <span class="m">0</span>          22s
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="o">(</span>...<span class="o">)</span>
 </code></pre></div>
 <h3 id="query-the-service">Query the service</h3>
 <p>To conclude, we may want to query the service just to see that it answers as we expect.</p>
 <p>To do that, we need to port forward the service.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>kubectl port-forward svc/chassis <span class="m">5000</span>:5000
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>kubectl port-forward svc/chassis <span class="m">5000</span>:5000
 </code></pre></div>
 <p>Now that we have access to the service we can query it.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>curl localhost:5000
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>curl localhost:5000
 </code></pre></div>
 <p>Which should output an alive message.</p>
 <h2 id="begin-using-the-service">Begin Using the Service</h2>
 <p>Congratulations, you have now successfully deployed the service in a private Kubernetes cluster. To get started, make sure you set up a <a href="https://realpython.com/what-is-pip/#using-pip-in-a-python-virtual-environment">Python virtual enviornment</a> and install the <code>chassisml</code> SDK.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>pip install chassisml
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>pip install chassisml
 </code></pre></div>
 <p>For more resources, check out our <a href="../../tutorials/ds-connect/">tutorials</a> and <a href="../../how-to-guides/frameworks/">how-to guides</a></p>
 
@@ -1071,7 +1191,7 @@
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.expand", "navigation.tabs", "navigation.top", "toc.integrate"], "search": "../../assets/javascripts/workers/search.22074ed6.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.expand", "navigation.tabs", "navigation.top", "toc.integrate", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.22074ed6.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.1514a9a0.min.js"></script>
