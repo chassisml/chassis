@@ -14,15 +14,15 @@
 </div>
 
 <!-- JSDelivr -->
-* <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/opencontainersinitiative.svg" /> **Creates ML-friendly container images for your models** that comply with OCI and OMI specs
+* <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/opencontainersinitiative.svg" /> **Creates production ML container images for your models** that comply with OCI and OMI specs
 * <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/docker.svg" /> **Stores ML model containers on Docker Hub** or your container registry of choice
-* <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/grpc.svg" /> **Adds a gRPC API** when you serve your models on Kubernetes, Docker, Kserve, and/or Modzy
+* <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/grpc.svg" /> **Adds a gRPC API** for model serving on Kubernetes, Docker, Kserve, and/or Modzy
 
 
 ## Installing the service
 
 ### Use free public chassis service
-Get started quickly by signing-up for a free publicly-hosted service at: https://www.modzy.com/chassis-ml-sign-up/
+Get started quickly by signing up for a free publicly-hosted service at: https://www.modzy.com/chassis-ml-sign-up/
 
 After signing up, you'll receive a URL to this free instance that looks something like
 
@@ -81,6 +81,7 @@ response = chassis_model.publish(
 ```
 
 ## Features
+Chassis is a Kubernetes service that is accessible via a Python library that automatically converts Python code and ML models into production containers. Full feature list below:
 
 - Creates "baked-in" container images for ML models
 - Adds gRPC inference API to any ML model
@@ -94,7 +95,7 @@ response = chassis_model.publish(
 
 ## Documentation
 
-📘 [Full Docs](https://chassis.mln)
+📘 [Full Docs](https://chassis.ml)
 
 ☁️ [Full Install Tutorial](https://chassis.ml/getting-started/deploy-manual/)
 
