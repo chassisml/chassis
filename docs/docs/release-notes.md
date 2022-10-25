@@ -1,5 +1,12 @@
 # Release Notes
 
+## v1.4.5
+*July 2022*
+v1.4.5 release of Chassis inlcudes:
+
+* Support for private docker registry configuration
+* Removal of automatic model deployment to Modzy
+
 ## v1.0.0
 *March 2022*
 
