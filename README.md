@@ -1,6 +1,6 @@
 <div align="center">
 
-![chassis-banner-v1.2.png](https://github.com/modzy/chassis/blob/feat/readme-overhaul/chassis%20banner%20v1.2.png)
+![chassis-banner-v1.2.png]((https://raw.githubusercontent.com/modzy/chassis/main/chassis%20banner%20v1.2.png)
 
 ![GitHub contributors](https://img.shields.io/github/contributors/modzy/chassis?logo=GitHub&style=flat)
 ![GitHub last commit](https://img.shields.io/github/last-commit/modzy/chassis?logo=GitHub&style=flat)
