@@ -60,6 +60,19 @@
         "tutorial",
         "ideas"
       ]
+    },
+    {
+      "login": "lukemarsden",
+      "name": "lukemarsden",
+      "avatar_url": "https://avatars.githubusercontent.com/u/264658?v=4",
+      "profile": "https://github.com/lukemarsden",
+      "contributions": [
+        "doc",
+        "projectManagement",
+        "ideas",
+        "talk",
+        "video"
+      ]
     }
   ],
   "contributorsPerLine": 7,
