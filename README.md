@@ -125,6 +125,7 @@ We also have a `#chassis-model-builder` Slack channel on the [MLOps.community Sl
     <tr>
       <td align="center"><a href="https://github.com/bmunday3"><img src="https://avatars.githubusercontent.com/u/99284020?v=4?s=100" width="100px;" alt="Bradley Munday"/><br /><sub><b>Bradley Munday</b></sub></a><br /><a href="https://github.com/modzy/chassis/commits?author=bmunday3" title="Code">💻</a></td>
       <td align="center"><a href="https://github.com/caradoxical"><img src="https://avatars.githubusercontent.com/u/1461827?v=4?s=100" width="100px;" alt="Seth Clark"/><br /><sub><b>Seth Clark</b></sub></a><br /><a href="#content-caradoxical" title="Content">🖋</a> <a href="https://github.com/modzy/chassis/commits?author=caradoxical" title="Documentation">📖</a> <a href="#projectManagement-caradoxical" title="Project Management">📆</a></td>
+      <td align="center"><a href="https://github.com/DataScienceDeconstructed"><img src="https://avatars.githubusercontent.com/u/34408482?v=4?s=100" width="100px;" alt="Clayton Davis"/><br /><sub><b>Clayton Davis</b></sub></a><br /><a href="https://github.com/modzy/chassis/commits?author=DataScienceDeconstructed" title="Code">💻</a> <a href="https://github.com/modzy/chassis/commits?author=DataScienceDeconstructed" title="Documentation">📖</a> <a href="#ideas-DataScienceDeconstructed" title="Ideas, Planning, & Feedback">🤔</a> <a href="#projectManagement-DataScienceDeconstructed" title="Project Management">📆</a></td>
     </tr>
   </tbody>
 </table>
