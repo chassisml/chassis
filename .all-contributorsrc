@@ -37,6 +37,17 @@
         "ideas",
         "projectManagement"
       ]
+    },
+    {
+      "login": "n8mellis",
+      "name": "Nathan Mellis",
+      "avatar_url": "https://avatars.githubusercontent.com/u/39227?v=4",
+      "profile": "http://n8mellis.net",
+      "contributions": [
+        "ideas",
+        "infra",
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
