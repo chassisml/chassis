@@ -14,6 +14,17 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "caradoxical",
+      "name": "Seth Clark",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1461827?v=4",
+      "profile": "https://github.com/caradoxical",
+      "contributions": [
+        "content",
+        "doc",
+        "projectManagement"
+      ]
     }
   ],
   "contributorsPerLine": 7,
