@@ -1,0 +1,15 @@
+apiVersion: v1
+entries:
+  chassis:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2022-10-27T19:33:57.145066516Z"
+    description: Chassis turns machine learning models into portable container images
+      that can run just about anywhere.
+    digest: c21b11f24e300b471ac2d530ebc2d20cd391e8bab20c203037bffdc04f03a81f
+    name: chassis
+    type: application
+    urls:
+    - https://modzy.github.io/chassis/chassis-1.0.0.tgz
+    version: 1.0.0
+generated: "2022-10-27T19:33:57.144294109Z"
