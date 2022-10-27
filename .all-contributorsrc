@@ -72,6 +72,15 @@
         "ideas",
         "talk",
         "video"
+              ]
+    },
+    {
+      "login": "carmilso",
+      "name": "Carlos Millán Soler",
+      "avatar_url": "https://avatars.githubusercontent.com/u/7313231?v=4",
+      "profile": "https://carmilso.com",
+      "contributions": [
+        "code"
       ]
     }
   ],
