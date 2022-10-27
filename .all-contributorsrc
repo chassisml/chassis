@@ -48,6 +48,18 @@
         "infra",
         "code"
       ]
+    },
+    {
+      "login": "saumil-d",
+      "name": "saumil-d",
+      "avatar_url": "https://avatars.githubusercontent.com/u/83971510?v=4",
+      "profile": "https://github.com/saumil-d",
+      "contributions": [
+        "code",
+        "doc",
+        "tutorial",
+        "ideas"
+      ]
     }
   ],
   "contributorsPerLine": 7,
