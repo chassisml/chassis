@@ -16,7 +16,7 @@
 <!-- JSDelivr -->
 * <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/opencontainersinitiative.svg" /> **Creates production ML container images for your models** that comply with OCI and OMI specs
 * <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/docker.svg" /> **Stores ML model containers on Docker Hub** or your container registry of choice
-* <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/grpc.svg" /> **Adds a gRPC API** for model serving on Kubernetes, Docker, Kserve, and/or Modzy
+* <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/linuxfoundation.svg" /> **Adds a gRPC API** for model serving on Kubernetes, Docker, Kserve, and/or Modzy
 
 
 ## Installing the service
