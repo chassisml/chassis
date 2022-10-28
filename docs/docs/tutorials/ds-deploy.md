@@ -12,7 +12,7 @@
 curl -s "https://raw.githubusercontent.com/kserve/kserve/release-0.7/hack/quick_install.sh" | bash
 ```
 
-## Required variables
+## Define required variables
 
 There are some environment variables that must be defined for KServe to work:
 
@@ -49,14 +49,64 @@ spec:
         - containerPort: 8080
           protocol: TCP
 ```
-
-In this case, the variable `MODEL_NAME` should not be necessary since it's defined when creating the image.
+In this case, the variable `MODEL_NAME` should not be necessary since it is defined when creating the image.
 
 ```bash
 kubectl apply -f custom_v1.yaml
 ```
 
 This should output a success message.
+
+## *Deploy from Private Docker Registry*
+
+In the above example, we deploy a public container image, which means we do not need to define credentials to pull the image. If, however, you set up Chassis to push container images to a private registry, you will need to add a few lines to your yaml file.
+
+First, create a Kubernetes `imagePullSecrets` object that contains your credentials as a list of secrets. 
+
+```bash
+kubectl create secret docker-registry <registry-credential-secrets> \
+  --docker-server=<private-registry-url> \
+  --docker-email=<private-registry-email> \
+  --docker-username=<private-registry-user> \
+  --docker-password=<private-registry-password>
+```
+
+Visit [Managing Secrets using kubectl](https://kubernetes.io/docs/tasks/configmap-secret/managing-secret-using-kubectl/) for more details.
+
+Next, add the following lines to your yaml file:
+
+```yaml
+apiVersion: "serving.kserve.io/v1beta1"
+kind: "InferenceService"
+metadata:
+  name: chassisml-sklearn-demo
+spec:
+  predictor:
+    imagePullSecrets:
+    - name: <registry-credential-secrets>
+    containers:
+    - image: bmunday131/sklearn-digits:0.0.1
+      name: chassisml-sklearn-demo-container
+      imagePullPolicy: IfNotPresent
+      env:
+        - name: INTERFACE
+          value: kserve
+        - name: HTTP_PORT
+          value: "8080"
+        - name: PROTOCOL
+          value: v1
+        - name: MODEL_NAME
+          value: digits
+      ports:
+        - containerPort: 8080
+          protocol: TCP
+```
+
+Finally, apply your changes:
+
+```bash
+kubectl apply -f custom_v1.yaml
+```
 
 ## Define required variables to query the pod
 

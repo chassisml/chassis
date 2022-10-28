@@ -17,6 +17,101 @@
         "maintenance",
         "question"
       ]
+    },
+    {
+      "login": "caradoxical",
+      "name": "Seth Clark",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1461827?v=4",
+      "profile": "https://github.com/caradoxical",
+      "contributions": [
+        "content",
+        "doc",
+        "projectManagement"
+      ]
+    },
+    {
+      "login": "DataScienceDeconstructed",
+      "name": "Clayton Davis",
+      "avatar_url": "https://avatars.githubusercontent.com/u/34408482?v=4",
+      "profile": "https://github.com/DataScienceDeconstructed",
+      "contributions": [
+        "code",
+        "doc",
+        "ideas",
+        "projectManagement"
+      ]
+    },
+    {
+      "login": "n8mellis",
+      "name": "Nathan Mellis",
+      "avatar_url": "https://avatars.githubusercontent.com/u/39227?v=4",
+      "profile": "http://n8mellis.net",
+      "contributions": [
+        "ideas",
+        "infra",
+        "code"
+      ]
+    },
+    {
+      "login": "saumil-d",
+      "name": "saumil-d",
+      "avatar_url": "https://avatars.githubusercontent.com/u/83971510?v=4",
+      "profile": "https://github.com/saumil-d",
+      "contributions": [
+        "code",
+        "doc",
+        "tutorial",
+        "ideas"
+      ]
+    },
+    {
+      "login": "lukemarsden",
+      "name": "lukemarsden",
+      "avatar_url": "https://avatars.githubusercontent.com/u/264658?v=4",
+      "profile": "https://github.com/lukemarsden",
+      "contributions": [
+        "doc",
+        "projectManagement",
+        "ideas",
+        "talk",
+        "video"
+              ]
+    },
+    {
+      "login": "carmilso",
+      "name": "Carlos Millán Soler",
+      "avatar_url": "https://avatars.githubusercontent.com/u/7313231?v=4",
+      "profile": "https://carmilso.com",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "DHolmanCoding",
+      "name": "Douglas Holman",
+      "avatar_url": "https://avatars.githubusercontent.com/u/35512326?v=4",
+      "profile": "https://www.linkedin.com/in/douglas-holman/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "philwinder",
+      "name": "Phil Winder",
+      "avatar_url": "https://avatars.githubusercontent.com/u/8793723?v=4",
+      "profile": "https://github.com/philwinder",
+      "contributions": [
+        "ideas"
+      ]
+    },
+    {
+      "login": "sonejah21",
+      "name": "Sonja Hall",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5269893?v=4",
+      "profile": "https://github.com/sonejah21",
+      "contributions": [
+        "design"
+      ]
     }
   ],
   "contributorsPerLine": 7,

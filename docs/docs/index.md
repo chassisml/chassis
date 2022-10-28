@@ -12,7 +12,8 @@ Turn your machine learning models into portable container images that can run ju
 
 ## How it Works
 
-After connecting to the Chassis service, your workflow will involve a few simple steps: 
+After connecting to the Chassis service, your workflow will involve a few simple steps outlined below.
+**NOTE**: The code snippet examples in each step are simply pseudo code to demonstrate the concepts and generalized workflow of an end user. For example, when loading your model, `framework.load` will not work out of the box. Replace this with your ML framework's proper syntax.    
 
 ### Set Up Environment
 

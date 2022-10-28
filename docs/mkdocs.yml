@@ -16,9 +16,11 @@ nav:
       - tutorials/ds-deploy.md
   - How-to Guides:
       - Model Containers by Framework: how-to-guides/frameworks.md
+      - Common Data Types Support: how-to-guides/common-data-types.md
       - Arm Support: how-to-guides/arm-support.md
       - GPU Support: how-to-guides/gpu-support.md
       # - Adding Explainability: how-to-guides/explainability.md
+      - Private Docker Registry Support: how-to-guides/private-registry.md
   - Reference:
       - Chassisml Service: service-reference.md
       - Python SDK: chassisml_sdk-reference.md
@@ -27,7 +29,9 @@ nav:
       - Design & Architecture: conceptual-guides/design.md
       - gRPC: conceptual-guides/grpc.md
       - Containers: conceptual-guides/containers.md
-  - Get Involved: get-involved.md
+  - Community:
+      - FAQs: common-errors.md
+      - Get Involved: get-involved.md
   - Release Notes: release-notes.md
 theme:
   name: material
@@ -40,6 +44,7 @@ theme:
     - navigation.tabs
     - navigation.top
     - toc.integrate
+    - content.tabs.link
 plugins:
   - search
   - mkdocstrings:
@@ -66,6 +71,8 @@ markdown_extensions:
   - pymdownx.emoji:
       emoji_index: !!python/name:materialx.emoji.twemoji
       emoji_generator: !!python/name:materialx.emoji.to_svg
+  - pymdownx.tabbed:
+      alternate_style: true       
 repo_url: https://github.com/modzy/chassis
 repo_name: modzy/chassis
 edit_uri: edit/main/docs/docs/

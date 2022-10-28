@@ -15,6 +15,8 @@
         * If you get a permissions error, follow instructions [here](https://docs.docker.com/engine/install/linux-postinstall/)
 * Install [Helm](https://helm.sh/docs/intro/install/)
 
+*Note: If you prefer to use Minikube for your Kubernetes distribution, make sure it can access the internet. Otherwise, your Chassis build jobs will fail.*
+
 ## Enable Kubernetes
 
 Follow [these](https://docs.docker.com/desktop/kubernetes/) instructions to enable Kubernetes in Docker Desktop.
@@ -31,13 +33,58 @@ After that we just need to update the Helm repos to fetch `Chassis` data.
 helm repo update
 ```
 
+## Configure private Docker registry settings *(Optional)*
+
+By default, installing the Chassis service will push all container images to a *public* Docker Hub account, which requires you to have valid credentials. If instead you have access to a private Docker registry, you can add a few lines of configuration before installing the `Chassis` service using helm. *Note: only [HTTP API v2](https://docs.docker.com/registry/spec/api/) compliant Docker registries are supported.*
+
+**1. Generate Kuberentes secret containing registry credentials**
+
+We first need to generate a Kubernetes secret of type `dockerconfigjson` that contains Docker registry credentials with push/pull permissions.
+
+```bash
+kubectl create secret docker-registry <registry-secret-name> \
+  --docker-server=<private-registry-url> \
+  --docker-email=<private-registry-email> \
+  --docker-username=<private-registry-user> \
+  --docker-password=<private-registry-password>
+```
+
+Visit [Managing Secrets using kubectl](https://kubernetes.io/docs/tasks/configmap-secret/managing-secret-using-kubectl/) for more details.
+
+**2. Create Values File for Helm Chart**
+
+Next, we will create a `values.yml` file to modify a few of the default values in the Chassis helm chart. This is where you can specify the base URL of your private registry and provide the name of the secret generated in the previous step. 
+
+``` yaml title="values.yml"
+registry:
+  url: "https://my-private-registry.com"
+  credentialsSecretName: "<registry-secret-name>"
+  repositoryPrefix: ""
+
+image:
+  pullPolicy: IfNotPresent
+  tag: "1f20586e050416239b055faa18baf35ce5707a32" # Commit hash for latest version of Chassis service
+```
+
+For more details and different registry examples, visit the [Private Registry Support guide](../how-to-guides/private-registry.md).
+
 ## Install `Chassis` service
 
 Now we just need to install `Chassis` as normal using Helm.
 
-```bash
-helm install chassis chassis/chassis
-```
+=== "Public Docker Hub (default)"
+
+    ``` bash
+    helm install chassis chassis/chassis
+    ```
+
+=== "Private Registry"
+
+    ``` bash
+    helm install chassis chassis/chassis -f values.yaml
+    ```
+
+
 
 ## Check the installation
 

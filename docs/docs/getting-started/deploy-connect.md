@@ -26,3 +26,6 @@ chassis_client = chassisml.ChassisClient("https://chassis-xxxxxxxxxx.modzy.com")
 With your environment set up and connection URL in hand, you can now start to integrate the service into your MLOps pipelines. 
 
 Check out this [example](https://github.com/modzy/chassis/blob/main/chassisml_sdk/examples/sklearn/sklearn_svm_image_classification_public_hosted.ipynb) to follow along and see Chassis in action. Just insert your URL into the aforementioned client connection and you're well on your way. 
+
+!!! warning "Docker Hub Account Required"
+     The publicly-hosted Chassis service *will only push container images to Docker Hub*. If you prefer to configure Chassis to build and push model containers to a private registry, follow the [Private Docker Registry Support](../how-to-guides/private-registry.md) guide for setup instructions.  
