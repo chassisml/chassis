@@ -13,25 +13,26 @@
 
 </div>
 
+## What is Chassis?
+Chassis turns ML models into containerized prediction APIs that run nearly anywhere.
+
+<div align="center">
+
+<img src="https://raw.githubusercontent.com/modzy/chassis/main/docs/docs/images/what-is-chassis.png" alt="what-is-chassis-diagram" width="650"/>
+
+</div>
+
+### Benefits
 <!-- JSDelivr -->
-* <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/opencontainersinitiative.svg" /> **Creates production ML container images for your models** that comply with OCI and OMI specs
-* <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/docker.svg" /> **Stores ML model containers on Docker Hub** or your container registry of choice
-* <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/linuxfoundation.svg" /> **Adds a gRPC API** for model serving on Kubernetes, Docker, Kserve, and/or Modzy
+* <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/docker.svg" /> Turns models into containers, automatically
+* <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/linuxfoundation.svg" /> Adds gRPC API routes for interacting with models
+* <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/kubernetes.svg" /> Runs anywhere containers can run including Kubernetes, Docker, Kserve, and Modzy
+* <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/docker.svg" /> Ships containers to Docker Hub and other registries
+* <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/intel.svg" /> Natively compiles to both x86 and ARM CPUs
+* <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/nvidia.svg" /> Runs on GPUs and supports GPU batch processing
+* <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/arm.svg" /> Great for edge AI since all dependencies are bundled together
 
-
-## Installing the service
-
-### Use free public chassis service
-Get started quickly by signing up for a free publicly-hosted service at: https://www.modzy.com/chassis-ml-sign-up/
-
-After signing up, you'll receive a URL to this free instance that looks something like
-
-`https://chassis-xxxxxxxxxx.modzy.com`
-
-### Private installation
-Full installation tutorial via <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/docker.svg" /> Docker and <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/helm.svg" /> HELM can be found here: https://chassis.ml/getting-started/deploy-manual/
-
-## Usage/Examples
+## Getting Started with Chassis
 
 ### Set Up Environment
 Create your workspace environment, open a Jupyter Notebook or other Python editor, and install the Chassisml SDK.
@@ -80,20 +81,7 @@ response = chassis_model.publish(
 ) 
 ```
 
-## Features
-Chassis is a Kubernetes service that is accessible via a Python library that automatically converts Python code and ML models into production containers. Full feature list below:
-
-- Creates "baked-in" container images for ML models
-- Adds gRPC inference API to any ML model
-- Saves model images to any container registry including Docker Hub
-- Supports model serving on Kserve, Modzy, or Docker/K8s
-- Supports CPUs and GPUs
-- Optional GPU batch processing mode
-- Supports Lime, SHAP explainability
-- Cross-compiles to both ARM and x86
-- [OCI](https://opencontainers.org) and [OMI](https://openmodel.ml) compliant
-
-## Documentation
+## Docs
 
 📘 [Full Docs](https://chassis.ml)
 
