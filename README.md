@@ -1,6 +1,7 @@
 <div align="center">
 
-![chassis-banner-v1.2.png](https://raw.githubusercontent.com/modzy/chassis/main/chassis%20banner%20v1.2.png)
+<!-- ![chassis-banner-v1.3.png](https://raw.githubusercontent.com/modzy/chassis/main/chassis-banner-v1.3.png) -->
+![chassis-banner-v1.3.png](./chassis-banner-v1.3.png)
 
 ![GitHub contributors](https://img.shields.io/github/contributors/modzy/chassis?logo=GitHub&style=flat)
 ![GitHub last commit](https://img.shields.io/github/last-commit/modzy/chassis?logo=GitHub&style=flat)
@@ -11,77 +12,144 @@
 ![PyPI](https://img.shields.io/pypi/v/chassisml?logo=pypi&style=flat)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/chassisml?logo=pypi&style=flat)
 
+<h2 align="center">
+  <a href="https://chassis.ml">Docs</a>
+  <span> | </span>
+  <a href="https://discord.gg/anSeEj8ARg">Discord</a> (#chassisml)
+  <span> | </span>
+  <a href="https://go.mlops.community/slack">Slack</a> (#chassis-model-builder)
+  
+</h2>
+
+<br>
+
 </div>
 
-## What is Chassis?
-Chassis turns ML models into containerized prediction APIs that run nearly anywhere.
-
+# What is Chassis?
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/modzy/chassis/main/docs/docs/images/what-is-chassis.png" alt="what-is-chassis-diagram" width="650"/>
+<!-- <img src="https://raw.githubusercontent.com/modzy/chassis/main/docs/docs/images/what-is-chassis.png" alt="what-is-chassis-diagram" width="650"/> -->
+
+<img src="./docs/docs/images/what-is-chassis.png" alt="what-is-chassis-diagram" width="650"/>
+
+<br>
 
 </div>
+
+Chassis is an open-source project that turns ML models into containerized prediction APIs in just minutes. We built this tool for Data Scientists, Machine Learning Engineers, and DevOps teams who need an easier way to automatically build containers out of *any* model and ship them to production.
+
+Chassis picks up right where your training code leaves off and builds containers for a variety of target architectures. This means that after completing a single Chassis job, you can run your models in the cloud, on-prem, or on a fleet of edge devices (Raspberry Pi, NVIDIA Jetson Nano, Intel NUC, etc.).
 
 ### Benefits
 <!-- JSDelivr -->
-* <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/docker.svg" /> Turns models into containers, automatically
-* <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/linuxfoundation.svg" /> Adds gRPC API routes for interacting with models
-* <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/kubernetes.svg" /> Runs anywhere containers can run including Kubernetes, Docker, Kserve, and Modzy
-* <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/docker.svg" /> Ships containers to Docker Hub and other registries
-* <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/intel.svg" /> Natively compiles to both x86 and ARM CPUs
-* <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/nvidia.svg" /> Runs on GPUs and supports GPU batch processing
-* <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/arm.svg" /> Great for edge AI since all dependencies are bundled together
+<!-- * <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/docker.svg" /> Turns models into containers, automatically -->
+<!-- * <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/linuxfoundation.svg" /> Exposes gRPC servers as easy-to-use APIs
+* <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/kubernetes.svg" /> Builds interoperable containers that can run on Kubernetes, Docker, KServe, and Modzy
+* <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/docker.svg" /> Ships containers to Docker Hub or preferred registry
+* <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/intel.svg" /> Natively compiles containers for both x86 and ARM processors
+* <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/nvidia.svg" /> Includes GPU batch processing support
+* <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/arm.svg" /> Great for edge AI with all dependencies bundled together -->
 
-## Getting Started with Chassis
+* <img height="16" width="16" src="https://cdn.simpleicons.org/docker/0092DF" /> Turns models into containers, automatically
+* <img height="16" width="16" src="https://cdn.simpleicons.org/linuxfoundation/0092DF" /> Exposes gRPC servers as easy-to-use APIs
+* <img height="16" width="16" src="https://cdn.simpleicons.org/kubernetes/0092DF" /> Builds interoperable containers that can run on Kubernetes, Docker, KServe, and Modzy
+* <img height="16" width="16" src="https://cdn.simpleicons.org/docker/0092DF" /> Ships containers to Docker Hub or other preferred container registry
+* <img height="16" width="16" src="https://cdn.simpleicons.org/intel/0092DF" /> Natively compiles containers for both x86 and ARM processors
+* <img height="16" width="16" src="https://cdn.simpleicons.org/nvidia/0092DF" /> Includes GPU batch processing support
+* <img height="16" width="16" src="https://cdn.simpleicons.org/arm/0092DF" /> Great for edge AI with all dependencies bundled together
 
-### Set Up Environment
-Create your workspace environment, open a Jupyter Notebook or other Python editor, and install the Chassisml SDK.
+<!-- <br>
 
+* <img height="16" width="16" src="https://cdn.simpleicons.org/docker/B73643" /> Turns models into containers, automatically
+* <img height="16" width="16" src="https://cdn.simpleicons.org/linuxfoundation/B73643" /> Exposes gRPC servers as easy-to-use APIs
+* <img height="16" width="16" src="https://cdn.simpleicons.org/kubernetes/B73643" /> Builds interoperable containers that can run on Kubernetes, Docker, KServe, and Modzy
+* <img height="16" width="16" src="https://cdn.simpleicons.org/docker/B73643" /> Ships containers to Docker Hub or preferred registry
+* <img height="16" width="16" src="https://cdn.simpleicons.org/intel/B73643" /> Natively compiles containers for both x86 and ARM processors
+* <img height="16" width="16" src="https://cdn.simpleicons.org/nvidia/B73643" /> Includes GPU batch processing support
+* <img height="16" width="16" src="https://cdn.simpleicons.org/arm/B73643" /> Great for edge AI with all dependencies bundled together
 
-```python
+<br>
+
+* <img height="16" width="16" src="https://cdn.simpleicons.org/docker/BFD9BF" /> Turns models into containers, automatically
+* <img height="16" width="16" src="https://cdn.simpleicons.org/linuxfoundation/BFD9BF" /> Exposes gRPC servers as easy-to-use APIs
+* <img height="16" width="16" src="https://cdn.simpleicons.org/kubernetes/BFD9BF" /> Builds interoperable containers that can run on Kubernetes, Docker, KServe, and Modzy
+* <img height="16" width="16" src="https://cdn.simpleicons.org/docker/BFD9BF" /> Ships containers to Docker Hub or preferred registry
+* <img height="16" width="16" src="https://cdn.simpleicons.org/intel/BFD9BF" /> Natively compiles containers for both x86 and ARM processors
+* <img height="16" width="16" src="https://cdn.simpleicons.org/nvidia/BFD9BF" /> Includes GPU batch processing support
+* <img height="16" width="16" src="https://cdn.simpleicons.org/arm/BFD9BF" /> Great for edge AI with all dependencies bundled together -->
+
+# Getting Started
+
+## Installation
+Install Chassis on your machine or in a virtual environment via [PyPi](https://pypi.org/project/chassisml/):
+
+```bash
 pip install chassisml
 ```
 
-### Load Your Model
-Train your model or load your pre-trained model into memory (`.pth`, `.pkl`, `.h5`, `.joblib`, or other file format - all model types and formats are supported!).
-```python
-model = framework.load("path/to/model.file")
+Check out our full [Getting Started](https://chassis.ml/getting-started/deploy-connect/) guide for more installation details.
+
+## Quick Example
+Chassis makes it easy to create production ML containers in minutes. Follow this example to build your first container from a simple Scikit-learn classifier.
+
+> **Note**: To follow along with the example code below, you must create a free [Docker Hub](https://hub.docker.com/signup) account if you do not already have one. We also recommend setting up a virtual environment to run the below code. Chassis currently supports Python 3.6 >.
+
+Open a local Python environment (Jupyter notebook or preferred IDE), and install additional requirements.
+
+```bash
+pip install scikit-learn
 ```
 
-### Write Process Function
-The process function will use your model to perform any required preprocessing and inference execution on the incoming `input_bytes` data.
-
+Then, simply copy and execute this example code into your Python editor.
 ```python
+import json
+import pickle
+import chassisml
+import numpy as np
+
+# load model
+model = pickle.load(open("getting-started/model.pkl", "rb"))
+
+# define process function
 def process(input_bytes):
-  # preprocess
-  data = preprocess(input_bytes)
+    inputs = np.array(json.loads(input_bytes))
+    inference_results = model.predict(inputs)
+    structured_results = []
+    for inference_result in inference_results:
+        structured_output = {
+            "data": {
+                "result": {"classPredictions": [{"class": str(inference_result), "score": str(1)}]}
+            }
+        }
+        structured_results.append(structured_output)
+    return structured_results
 
-  # run inference
-  predictions = model.predict(data)
+# connect to Chassis client
+chassis_client = chassisml.ChassisClient("https://chassis.app.modzy.com/")
 
-  # post process predictions
-  formatted_results = postprocess(predictions)
-
-  return formatted_results
-```
-### Initialize Client and Create Chassis Model
-
-```python
-chassis_client = chassisml.ChassisClient("<chassis-instance-url>")
+# create Chassis model
 chassis_model = chassis_client.create_model(process_fn=process)
-```
 
-### Publish Chassis Model
-```python
+# test Chassis model
+sample_filepath = 'getting-started/digits_sample.json'
+results = chassis_model.test(sample_filepath)
+print(results)
+
+# publish model to Dockerhub
 response = chassis_model.publish(
-    model_name="Sample ML Model",
+    model_name="My First Chassis Model",
     model_version="0.0.1",
-    registry_user=dockerhub_user,
-    registry_pass=dockerhub_pass,
-) 
+    registry_user="<insert-Docker Hub username>",
+    registry_pass="<insert-Docker Hub password>"
+)
+
+# wait for job to complete and print result
+job_id = response.get('job_id')
+final_status = chassis_client.block_until_complete(job_id)
+print(final_status)
 ```
 
-## Docs
+# Docs
 
 📘 [Full Docs](https://chassis.ml)
 
@@ -89,14 +157,14 @@ response = chassis_model.publish(
 
 🧑‍🏫 [Model Packaging Tutorial](https://chassis.ml/tutorials/ds-connect/)
 
-Framework-specific Guides:
+Framework-specific examples:
 |  |  |  |  |  |
 |---|---|---|---|---|
-| <!-- JSDelivr --> <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/pytorch.svg" /> [Pytorch](https://chassis.ml/how-to-guides/frameworks/#pytorch) | <!-- JSDelivr --> <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/scikitlearn.svg" /> [SciKit-Learn](https://chassis.ml/how-to-guides/frameworks/#scikit-learn) | <!-- JSDelivr --> <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/onnx.svg" /> [ONNX](https://chassis.ml/how-to-guides/frameworks/#onnx) | <!-- JSDelivr --> <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/keras.svg" />  [Keras](https://chassis.ml/how-to-guides/frameworks/#tensorflow-keras) | <!-- JSDelivr --> <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/tensorflow.svg" />  [Tensorflow](https://chassis.ml/how-to-guides/frameworks/#tensorflow-keras) |
-| [spaCy](https://chassis.ml/how-to-guides/frameworks/#spacy) | <!-- JSDelivr --> <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/apachespark.svg" />  [Spark MLlib](https://chassis.ml/how-to-guides/frameworks/#spark-mllib) | [XGBoost](https://chassis.ml/how-to-guides/frameworks/#xgboost) | [LightGBM](https://chassis.ml/how-to-guides/frameworks/#lightgbm) | [Fastai](https://chassis.ml/how-to-guides/frameworks/#fastai) |
+| <!-- JSDelivr --> <img height="16" width="16" src="https://cdn.simpleicons.org/pytorch" /> [Pytorch](https://chassis.ml/how-to-guides/frameworks/#pytorch) | <!-- JSDelivr --> <img height="16" width="16" src="https://cdn.simpleicons.org/scikitlearn" /> [SciKit-Learn](https://chassis.ml/how-to-guides/frameworks/#scikit-learn) | <!-- JSDelivr --> <img height="16" width="16" src="https://cdn.simpleicons.org/onnx" /> [ONNX](https://chassis.ml/how-to-guides/frameworks/#onnx) | <!-- JSDelivr --> <img height="16" width="16" src="https://cdn.simpleicons.org/keras" />  [Keras](https://chassis.ml/how-to-guides/frameworks/#tensorflow-keras) | <!-- JSDelivr --> <img height="16" width="16" src="https://cdn.simpleicons.org/tensorflow" />  [Tensorflow](https://chassis.ml/how-to-guides/frameworks/#tensorflow-keras) |
+| [spaCy](https://chassis.ml/how-to-guides/frameworks/#spacy) | <!-- JSDelivr --> <img height="16" width="16" src="https://cdn.simpleicons.org/apachespark" />  [Spark MLlib](https://chassis.ml/how-to-guides/frameworks/#spark-mllib) | [XGBoost](https://chassis.ml/how-to-guides/frameworks/#xgboost) | [LightGBM](https://chassis.ml/how-to-guides/frameworks/#lightgbm) | [Fastai](https://chassis.ml/how-to-guides/frameworks/#fastai) |
 | [MXNet](https://chassis.ml/how-to-guides/frameworks/#mxnet) | [PMML](https://chassis.ml/how-to-guides/frameworks/#pmml) |  |  |  |
 
-## Support
+# Support
 
 Join the `#chassisml` channel on [Modzy's Discord Server](https://discord.gg/eW4kHSm3Z5) where our maintainers meet to plan changes and improvements.
 
