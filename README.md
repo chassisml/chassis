@@ -12,14 +12,14 @@
 ![PyPI](https://img.shields.io/pypi/v/chassisml?logo=pypi&style=flat)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/chassisml?logo=pypi&style=flat)
 
-<h2 align="center">
+<h3 align="center">
   <a href="https://chassis.ml">Docs</a>
   <span> | </span>
   <a href="https://discord.gg/anSeEj8ARg">Discord</a> (#chassisml)
   <span> | </span>
   <a href="https://go.mlops.community/slack">Slack</a> (#chassis-model-builder)
   
-</h2>
+</h3>
 
 <br>
 
@@ -90,7 +90,7 @@ pip install chassisml
 Check out our full [Getting Started](https://chassis.ml/getting-started/deploy-connect/) guide for more installation details.
 
 ## Quick Example
-Chassis makes it easy to create production ML containers in minutes. Follow this example to build your first container from a simple Scikit-learn classifier.
+Follow this example to build your first container from a simple Scikit-learn classifier.
 
 > **Note**: To follow along with the example code below, you must create a free [Docker Hub](https://hub.docker.com/signup) account if you do not already have one. We also recommend setting up a virtual environment to run the below code. Chassis currently supports Python 3.6 >.
 
