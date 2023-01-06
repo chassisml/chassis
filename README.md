@@ -14,9 +14,9 @@
 
 <h3 align="center">
   <a href="https://chassis.ml">Docs</a>
-  <span> | </span>
+  <span> · </span>
   <a href="https://discord.gg/anSeEj8ARg">Discord</a> (#chassisml)
-  <span> | </span>
+  <span> · </span>
   <a href="https://go.mlops.community/slack">Slack</a> (#chassis-model-builder)
   
 </h3>
