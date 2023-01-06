@@ -21,8 +21,6 @@
   
 </h3>
 
-<br>
-
 </div>
 
 # What is Chassis?
