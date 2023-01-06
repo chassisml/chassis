@@ -14,14 +14,12 @@
 
 <h3 align="center">
   <a href="https://chassis.ml">Docs</a>
-  <span> | </span>
+  <span> · </span>
   <a href="https://discord.gg/anSeEj8ARg">Discord</a> (#chassisml)
-  <span> | </span>
+  <span> · </span>
   <a href="https://go.mlops.community/slack">Slack</a> (#chassis-model-builder)
   
 </h3>
-
-<br>
 
 </div>
 
@@ -40,7 +38,7 @@ Chassis is an open-source project that turns ML models into containerized predic
 
 Chassis picks up right where your training code leaves off and builds containers for a variety of target architectures. This means that after completing a single Chassis job, you can run your models in the cloud, on-prem, or on a fleet of edge devices (Raspberry Pi, NVIDIA Jetson Nano, Intel NUC, etc.).
 
-### Benefits
+## Benefits
 <!-- JSDelivr -->
 <!-- * <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/docker.svg" /> Turns models into containers, automatically -->
 <!-- * <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/linuxfoundation.svg" /> Exposes gRPC servers as easy-to-use APIs
