@@ -134,8 +134,8 @@ results = chassis_model.test(sample_filepath)
 print(results)
 
 # publish model to Dockerhub
-docker_user = "<insert-Docker Hub username>"
-docker_pass = "<insert-Docker Hub password>"
+docker_user = "<insert Docker Hub username>"
+docker_pass = "<insert Docker Hub password>"
 model_name = "My First Chassis Model"
 
 response = chassis_model.publish(
