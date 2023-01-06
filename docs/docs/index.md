@@ -1,3 +1,11 @@
+<!-- ---
+template: home.html
+title: Material for MkDocs
+---
+
+Welcome to Material for MkDocs. -->
+
+
 ![Chassis logo](images/chassis-positive.png){: style="width:200px; margin-bottom:10px;" }
 
 # Build ML Model Containers. Automatically.

@@ -136,17 +136,24 @@ results = chassis_model.test(sample_filepath)
 print(results)
 
 # publish model to Dockerhub
+docker_user = "<insert-Docker Hub username>"
+docker_pass = "<insert-Docker Hub password>"
+model_name = "My First Chassis Model"
+
 response = chassis_model.publish(
-    model_name="My First Chassis Model",
+    model_name=model_name,
     model_version="0.0.1",
-    registry_user="<insert-Docker Hub username>",
-    registry_pass="<insert-Docker Hub password>"
+    registry_user=docker_user,
+    registry_pass=docker_pass
 )
 
 # wait for job to complete and print result
 job_id = response.get('job_id')
 final_status = chassis_client.block_until_complete(job_id)
-print(final_status)
+if final_status['status']['succeeded'] == 1:
+    print("Job Completed. View your new container image here: https://hub.docker.com/repository/docker/{}/{}".format(docker_user, "-".join(model_name.lower().split(" "))))
+else:
+    print("Job Failed. See logs below:\n\n{}".format(final_status['logs']))
 ```
 
 # Docs
