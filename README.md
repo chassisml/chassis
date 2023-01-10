@@ -39,15 +39,6 @@ Chassis is an open-source project that turns ML models into containerized predic
 Chassis picks up right where your training code leaves off and builds containers for a variety of target architectures. This means that after completing a single Chassis job, you can run your models in the cloud, on-prem, or on a fleet of edge devices (Raspberry Pi, NVIDIA Jetson Nano, Intel NUC, etc.).
 
 ## Benefits
-<!-- JSDelivr -->
-<!-- * <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/docker.svg" /> Turns models into containers, automatically -->
-<!-- * <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/linuxfoundation.svg" /> Exposes gRPC servers as easy-to-use APIs
-* <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/kubernetes.svg" /> Builds interoperable containers that can run on Kubernetes, Docker, KServe, and Modzy
-* <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/docker.svg" /> Ships containers to Docker Hub or preferred registry
-* <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/intel.svg" /> Natively compiles containers for both x86 and ARM processors
-* <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/nvidia.svg" /> Includes GPU batch processing support
-* <img height="16" width="16" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/arm.svg" /> Great for edge AI with all dependencies bundled together -->
-
 * <img height="16" width="16" src="https://cdn.simpleicons.org/docker/0092DF" /> Turns models into containers, automatically
 * <img height="16" width="16" src="https://cdn.simpleicons.org/linuxfoundation/0092DF" /> Exposes gRPC servers as easy-to-use APIs
 * <img height="16" width="16" src="https://cdn.simpleicons.org/kubernetes/0092DF" /> Builds interoperable containers that can run on Kubernetes, Docker, KServe, and Modzy
@@ -56,44 +47,21 @@ Chassis picks up right where your training code leaves off and builds containers
 * <img height="16" width="16" src="https://cdn.simpleicons.org/nvidia/0092DF" /> Includes GPU batch processing support
 * <img height="16" width="16" src="https://cdn.simpleicons.org/arm/0092DF" /> Great for edge AI with all dependencies bundled together
 
-<!-- <br>
-
-* <img height="16" width="16" src="https://cdn.simpleicons.org/docker/B73643" /> Turns models into containers, automatically
-* <img height="16" width="16" src="https://cdn.simpleicons.org/linuxfoundation/B73643" /> Exposes gRPC servers as easy-to-use APIs
-* <img height="16" width="16" src="https://cdn.simpleicons.org/kubernetes/B73643" /> Builds interoperable containers that can run on Kubernetes, Docker, KServe, and Modzy
-* <img height="16" width="16" src="https://cdn.simpleicons.org/docker/B73643" /> Ships containers to Docker Hub or preferred registry
-* <img height="16" width="16" src="https://cdn.simpleicons.org/intel/B73643" /> Natively compiles containers for both x86 and ARM processors
-* <img height="16" width="16" src="https://cdn.simpleicons.org/nvidia/B73643" /> Includes GPU batch processing support
-* <img height="16" width="16" src="https://cdn.simpleicons.org/arm/B73643" /> Great for edge AI with all dependencies bundled together
-
-<br>
-
-* <img height="16" width="16" src="https://cdn.simpleicons.org/docker/BFD9BF" /> Turns models into containers, automatically
-* <img height="16" width="16" src="https://cdn.simpleicons.org/linuxfoundation/BFD9BF" /> Exposes gRPC servers as easy-to-use APIs
-* <img height="16" width="16" src="https://cdn.simpleicons.org/kubernetes/BFD9BF" /> Builds interoperable containers that can run on Kubernetes, Docker, KServe, and Modzy
-* <img height="16" width="16" src="https://cdn.simpleicons.org/docker/BFD9BF" /> Ships containers to Docker Hub or preferred registry
-* <img height="16" width="16" src="https://cdn.simpleicons.org/intel/BFD9BF" /> Natively compiles containers for both x86 and ARM processors
-* <img height="16" width="16" src="https://cdn.simpleicons.org/nvidia/BFD9BF" /> Includes GPU batch processing support
-* <img height="16" width="16" src="https://cdn.simpleicons.org/arm/BFD9BF" /> Great for edge AI with all dependencies bundled together -->
-
-# Getting Started
-
-## Installation
+# Installation
 Install Chassis on your machine or in a virtual environment via [PyPi](https://pypi.org/project/chassisml/):
 
 ```bash
 pip install chassisml
 ```
 
-Check out our full [Getting Started](https://chassis.ml/getting-started/deploy-connect/) guide for more details.
+Check out our full [installation](https://chassis.ml/getting-started/deploy-connect/) guide for more details.
 
-## Quick Example
-To get started right away, clone this repository to your workspace to follow our quick start example.
+# Try it out
+Follow these steps to build your first model container (*estimated time: 5 minutes*)
 
-```bash
-git clone https://github.com/modzy/chassis.git
-```
-Next, follow this [Quick Example](./getting-started/README.md) to build your first model container in just a few minutes (*estimated time: 5 minutes*).
+1. Clone this repository into your environment: `git clone https://github.com/modzy/chassis.git`
+2. Create virtual environment and install [Jupyter](https://jupyter.org/install)
+3. Open and run our [Quick Start Example](./getting-started/Getting%20Started%20with%20Chassis.ipynb) notebook
 
 # Docs
 
