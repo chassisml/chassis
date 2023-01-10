@@ -11,19 +11,17 @@ To get started, make sure you set up a [Python virtual enviornment](https://real
 pip install chassisml
 ```
 
-## Get Chassis Connection URL
+## Initialize Chassis Client with Hosted Service
 
-[Sign up](https://modzy.com/chassis-ml-sign-up/){ .md-button .md-button--primary} for the publicly-hosted service.
-
-Next, when you receive your connection link, use the URL and `ChassisClient` object to establish connection to the running service. The information you receive will look something like this:
+You can connect to the publicly-hosted Kubernetes service through this URL: **`https://chassis.app.modzy.com`** 
 
 ```python
-chassis_client = chassisml.ChassisClient("https://chassis-xxxxxxxxxx.modzy.com")
+chassis_client = chassisml.ChassisClient("https://chassis.app.modzy.com")
 ```
 
 ## Begin Using Chassis
 
-With your environment set up and connection URL in hand, you can now start to integrate the service into your MLOps pipelines. 
+With your environment set up and successful connection, you can now start to integrate the service into your MLOps pipelines. 
 
 Check out this [example](https://github.com/modzy/chassis/blob/main/chassisml_sdk/examples/sklearn/sklearn_svm_image_classification_public_hosted.ipynb) to follow along and see Chassis in action. Just insert your URL into the aforementioned client connection and you're well on your way. 
 

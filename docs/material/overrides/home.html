@@ -1,0 +1,45 @@
+{#-
+  This file was automatically generated - do not edit
+-#}
+{% extends "main.html" %}
+{% block tabs %}
+
+<!-- Top Section (containing slogan and picture) -->
+{{ super() }}
+<style>.md-header{position:initial}.md-main__inner{margin:0}.md-content{display:none}@media screen and (min-width:60em){.md-sidebar--secondary{display:none}}@media screen and (min-width:76.25em){.md-sidebar--primary{display:none}}</style>
+<section class="mdx-container">
+  <div class="md-grid md-typeset">
+    <div class="mdx-hero">
+      <div class="mdx-hero__image">
+        <img
+          src="images/chassis-hero-dark-background.png" 
+          alt="" 
+          width="1182" 
+          height="841" 
+          draggable="false"
+        >
+      </div>
+      <div class="mdx-hero__content">
+        <h1>Building ML Model Containers,
+          <span style="color: #0092E0"><strong>Automatically</strong></span> 
+        </h1>
+        <p>Convert ML models into containerized prediction APIs in just minutes, and run them 
+          <span style="color: #0092E0"><strong>anywhere</strong></span> 
+          - in the Cloud, On-Prem, or at the Edge</p>
+        <a href="{{ page.next_page.url | url }}" title="{{ page.next_page.title | e }}" class="md-button md-button--primary">
+          Get Started
+        </a>
+        <a href="https://discord.gg/anSeEj8ARg" title="Join Community" class="md-button">
+          Join Community
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+{% block content %}{% endblock %}
+{% block footer %}{% endblock %}
+
+
+
