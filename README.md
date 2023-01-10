@@ -93,7 +93,7 @@ To get started right away, clone this repository to your workspace to follow our
 ```bash
 git clone https://github.com/modzy/chassis.git
 ```
-Next, follow this [**Quick Example**](./getting-started/README.md) to build your first model container in just a few minutes (*estimated time: 5 minutes*).
+Next, follow this [Quick Example](./getting-started/README.md) to build your first model container in just a few minutes (*estimated time: 5 minutes*).
 
 # Docs
 
