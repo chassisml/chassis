@@ -101,7 +101,7 @@ Next, follow this [**Quick Example**](./getting-started/README.md) to build your
 
 ☁️ [Full Install Tutorial](https://chassis.ml/getting-started/deploy-manual/)
 
-🧑‍🏫 [Model Packaging Tutorial](https://chassis.ml/tutorials/ds-connect/)
+🧑‍🏫 [Container Build Tutorial](https://chassis.ml/tutorials/ds-connect/)
 
 Framework-specific examples:
 |  |  |  |  |  |
