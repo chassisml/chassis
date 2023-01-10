@@ -88,7 +88,7 @@ pip install chassisml
 Check out our full [Getting Started](https://chassis.ml/getting-started/deploy-connect/) guide for more details.
 
 ## Quick Example
-To get started right away and build your first container, clone this repository to your workspace.
+To get started right away, clone this repository to your workspace to follow our quick start example.
 
 ```bash
 git clone https://github.com/modzy/chassis.git
