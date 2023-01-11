@@ -26,7 +26,7 @@ import chassisml
 import numpy as np
 
 # load model
-model = pickle.load(open("getting-started/model.pkl", "rb"))
+model = pickle.load(open("./model.pkl", "rb"))
 
 # define process function
 def process(input_bytes):
@@ -49,7 +49,7 @@ chassis_client = chassisml.ChassisClient("https://chassis.app.modzy.com/")
 chassis_model = chassis_client.create_model(process_fn=process)
 
 # test Chassis model
-sample_filepath = 'getting-started/digits_sample.json'
+sample_filepath = './digits_sample.json'
 results = chassis_model.test(sample_filepath)
 print(results)
 
