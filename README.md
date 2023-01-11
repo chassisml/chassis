@@ -71,9 +71,8 @@ For more details, check out our [Getting Started](./getting-started/README.md) p
 
 🧑‍🏫 [Container Build Tutorial](https://chassis.ml/tutorials/ds-connect/)
 
-*Note: *
-
-☁️ [Full Install Tutorial](https://chassis.ml/getting-started/deploy-manual/)
+☁️ [Full Service Install](https://chassis.ml/getting-started/deploy-manual/)
+- Note: If you would like to stand up your own private instance of the Chassis service, follow these instructions. All you need is [Helm](https://helm.sh/docs/intro/install/) and [Docker](https://www.docker.com/products/docker-desktop/)!
 
 
 Framework-specific examples:
