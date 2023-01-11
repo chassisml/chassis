@@ -10,10 +10,10 @@
 
 ## Install required dependencies
 
-* Install [Docker Desktop](https://docs.docker.com/get-docker/)
+- [X] Install [Docker Desktop](https://docs.docker.com/get-docker/)
     * Try to run `docker ps`
         * If you get a permissions error, follow instructions [here](https://docs.docker.com/engine/install/linux-postinstall/)
-* Install [Helm](https://helm.sh/docs/intro/install/)
+- [X] Install [Helm](https://helm.sh/docs/intro/install/)
 
 *Note: If you prefer to use Minikube for your Kubernetes distribution, make sure it can access the internet. Otherwise, your Chassis build jobs will fail.*
 

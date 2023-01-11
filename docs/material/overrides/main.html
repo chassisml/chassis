@@ -4,10 +4,13 @@
 {% extends "base.html" %}
 {% block extrahead %}
   <link rel="stylesheet" href="{{ 'assets/stylesheets/custom.9097afc2.min.css' | url }}">
+  <link rel="stylesheet" href="{{ 'assets/stylesheets/code-snippet.css' | url }}">
 {% endblock %}
 {% block announce %}
   <a href="https://discord.gg/anSeEj8ARg">
-    For updates join the <strong>#chassisml</strong> channel on 
+    For updates join the 
+    <span style="color: #7289da">#chassisml</span> 
+    channel on 
     <span class="twemoji discord">
       {% include ".icons/fontawesome/brands/discord.svg" %}
     </span>
@@ -17,4 +20,6 @@
 {% block scripts %}
   {{ super() }}
   <script src="{{ 'assets/javascripts/custom.b6ec88ce.min.js' | url }}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
 {% endblock %}

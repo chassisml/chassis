@@ -4,10 +4,10 @@
 
 ## Install Required Dependencies
 
-* Install [Docker Desktop](https://docs.docker.com/get-docker/)
+- [X] Install [Docker Desktop](https://docs.docker.com/get-docker/)
     * Try to run `docker ps`
         * If you get a permissions error, follow instructions [here](https://docs.docker.com/engine/install/linux-postinstall/)
-* Install KServe:
+- [X] Install KServe:
 ```bash
 curl -s "https://raw.githubusercontent.com/kserve/kserve/release-0.7/hack/quick_install.sh" | bash
 ```

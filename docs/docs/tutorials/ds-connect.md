@@ -4,10 +4,10 @@
 
 In this tutorial, we will:
 
-* Connect to the Chassis service with the Python SDK
-* Load our model into memory (model can be saved as a file to be loaded or trained and loaded from scratch)
-* Define a `process` function for inferencing
-* Submit a job request to the Chassis service
+- [X] Connect to the Chassis service with the Python SDK
+- [X] Load our model into memory (model can be saved as a file to be loaded or trained and loaded from scratch)
+- [X] Define a `process` function for inferencing
+- [X] Submit a job request to the Chassis service
 
 After completing these steps, we will have a new container image uploaded to Docker Hub that we will be able to use locally or deploy to a serving platform of our choice.
 

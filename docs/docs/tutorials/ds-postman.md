@@ -11,11 +11,11 @@ After building a container with Chassisml, there are several ways to interact wi
 
 ### Install Required Dependencies
 
-* Install [Docker](https://docs.docker.com/get-docker/)
+- [X] Install [Docker](https://docs.docker.com/get-docker/)
     * Open a terminal on your machine, and try to run `docker ps`
         * If you get a permissions error, follow instructions [here](https://docs.docker.com/engine/install/linux-postinstall/)
-* Install [Postman](https://www.postman.com/downloads/)
-* Download [proto file](https://github.com/modzy/chassis/blob/main/service/flavours/mlflow/interfaces/modzy/protos/model2_template/model.proto)
+- [X] Install [Postman](https://www.postman.com/downloads/)
+- [X] Download [proto file](https://github.com/modzy/chassis/blob/main/service/flavours/mlflow/interfaces/modzy/protos/model2_template/model.proto)
 
 ### Download Sample Container
 

@@ -21,6 +21,10 @@
     color:#00E676
 }
 
+.md-typeset .arrow {
+    color:#B7C5FD
+}
+
 .md-typeset .mdx-video {
     width: auto
 }
@@ -132,13 +136,13 @@
 
 .mdx-container {
     height: 800px;
-    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1123 258'><path d='M1124,2c0,0 0,256 0,256l-1125,0l0,-48c0,0 16,5 55,5c116,0 197,-92 325,-92c121,0 114,46 254,46c140,0 214,-167 572,-166Z' style='fill: hsla(0, 0%, 100%, 1)' /></svg>") no-repeat bottom, linear-gradient(to bottom, var(--md-primary-fg-color) 5%, #fff 99%, var(--md-default-bg-color) 99%);
+    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1123 258'><path d='M1124,2c0,0 0,256 0,256l-1125,0l0,-48c0,0 16,5 55,5c116,0 197,-92 325,-92c121,0 114,46 254,46c140,0 214,-167 572,-166Z' style='fill: hsla(0, 0%, 100%, 1)' /></svg>") no-repeat bottom, linear-gradient(to bottom, var(--md-primary-fg-color), #2e303e);
     padding-top: 1rem
 }
-
+/* 
 [data-md-color-scheme=slate] .mdx-container {
     background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1123 258'><path d='M1124,2c0,0 0,256 0,256l-1125,0l0,-48c0,0 16,5 55,5c116,0 197,-92 325,-92c121,0 114,46 254,46c140,0 214,-167 572,-166Z' style='fill: hsla(232, 15%, 21%, 1)' /></svg>") no-repeat bottom, linear-gradient(to bottom, var(--md-primary-fg-color), #ffffff 99%, var(--md-default-bg-color) 99%)
-}
+} */
 
 .mdx-hero {
     color: var(--md-primary-bg-color);
@@ -149,12 +153,6 @@
     color: currentcolor;
     font-weight: 700;
     margin-bottom: 1rem
-}
-
-.mdx-container-2 {
-    padding: 0rem;
-    background-color: white;
-    margin-bottom: 0px;
 }
 
 @media screen and (max-width:29.9375em) {
@@ -186,6 +184,8 @@
         /* transform: translateX(4rem);
         width: 38rem; */
         padding-right: 2.5rem;
+        /* margin-left: 25px; */
+        margin-top: 50px;
     }
 }
 
@@ -195,22 +195,90 @@
     }
 }
 
+.mdx-container-2 {
+    padding: 0rem;
+    background-color: white;
+    margin-bottom: 0px;
+}
+
 .mdx-hero__image-2 {
-    max-width: 55%;
-    max-height: 55%;
+    margin-top: 100px;
+    margin-bottom: 100px;
+    margin-right: 50px;
+    max-width: 50%;
+    max-height: 50%;
     order: 1;
     padding-right: 0.5rem;
     padding-left: 0rem;
-    padding-top: 10px;
-    padding-bottom: 10px;
+    /* padding-top: 5px;
+    padding-bottom: 5px; */
     float: left;
 }
 
 .mdx-hero__content-2 {
-    margin-left: 50px;
+    margin-top: 110px;
+    margin-bottom: 175px;
+    margin-left: 30px;
     justify-content: left;
     color: var(--md-primary-fg-color);
-    font-family: Roboto;
+    /* font-family: Roboto; */
+    font-weight: 300;
+    padding: 0 0px;
+    padding-bottom: 40px;
+    word-break: break-word;
+    float: right;
+}
+
+.mdx-container-3 {
+    padding: 0rem;
+    /* background-color: var(--md-primary-fg-color); */
+    background: linear-gradient(to bottom, #2e303e, var(--md-primary-fg-color));
+    margin-bottom: 100px;
+}
+/* 
+.mdx-hero__content-3 h1 {
+    color: currentcolor;
+    font-weight: 700;
+    margin-bottom: 1rem    
+} */
+
+/* .mdx-hero__codesnippet {
+
+} */
+
+.mdx-hero__content-3t {
+    margin-top: 175px;
+    /* margin-bottom: 20px; */
+    /* margin-left: 30px; */
+    color: white;
+    /* font-family: Arial, Helvetica, sans-serif; */
+    font-weight: 300;
+    padding: 0 0px;
+    padding-bottom: 5px;
+    word-break: break-word;
+    float: top;
+}
+
+.mdx-hero__content-3a {
+    /* margin-top: 100px; */
+    margin-bottom: 100px;
+    margin-right: 30px;
+    color: white;
+    /* font-family: Arial, Helvetica, sans-serif; */
+    font-weight: 300;
+    padding: 0 0px;
+    padding-bottom: 40px;
+    word-break: break-word;
+    float: left;
+}
+
+.mdx-hero__content-3b {
+    margin-top: 25px;
+    margin-bottom: 100px;
+    margin-left: 30px;
+    /* margin-right: 30px; */
+    color: white;
+    /* font-family: Arial, Helvetica, sans-serif; */
     font-weight: 300;
     padding: 0 0px;
     padding-bottom: 40px;
@@ -226,9 +294,12 @@
 
 .mdx-hero .md-button:focus,
 .mdx-hero .md-button:hover {
-    background-color: var(--md-accent-fg-color);
+    /* background-color: var(--md-accent-fg-color);
     border-color: var(--md-accent-fg-color);
-    color: var(--md-accent-bg-color)
+    color: var(--md-accent-bg-color); */
+    background-color: #0092E0;
+    border-color: #0092E0;    
+    color: #fff
 }
 
 .mdx-hero .md-button--primary {

@@ -34,14 +34,14 @@
 
 </div>
 
-Chassis is an open-source project that turns ML models into containerized prediction APIs in just minutes. We built this tool for Data Scientists, Machine Learning Engineers, and DevOps teams who need an easier way to automatically build containers out of *any* model and ship them to production.
+Chassis is an open-source project that turns ML models into containerized prediction APIs in just minutes. We built this tool for Data Scientists, Machine Learning Engineers, and DevOps teams who need an easier way to automatically build ML model containers and ship them to production.
 
 Chassis picks up right where your training code leaves off and builds containers for a variety of target architectures. This means that after completing a single Chassis job, you can run your models in the cloud, on-prem, or on a fleet of edge devices (Raspberry Pi, NVIDIA Jetson Nano, Intel NUC, etc.).
 
 ## Benefits
 * <img height="16" width="16" src="https://cdn.simpleicons.org/docker/0092DF" /> Turns models into containers, automatically
 * <img height="16" width="16" src="https://cdn.simpleicons.org/linuxfoundation/0092DF" /> Exposes gRPC servers as easy-to-use APIs
-* <img height="16" width="16" src="https://cdn.simpleicons.org/kubernetes/0092DF" /> Builds interoperable containers that can run on Kubernetes, Docker, KServe, and Modzy
+* <img height="16" width="16" src="https://cdn.simpleicons.org/kubernetes/0092DF" /> Builds portable Docker containers that can run on KServe and Modzy
 * <img height="16" width="16" src="https://cdn.simpleicons.org/docker/0092DF" /> Ships containers to Docker Hub or other preferred container registry
 * <img height="16" width="16" src="https://cdn.simpleicons.org/intel/0092DF" /> Natively compiles containers for both x86 and ARM processors
 * <img height="16" width="16" src="https://cdn.simpleicons.org/nvidia/0092DF" /> Includes GPU batch processing support
@@ -63,13 +63,18 @@ Follow these steps to build your first model container (*estimated time: 5 minut
 2. Create virtual environment and install [Jupyter](https://jupyter.org/install)
 3. Open and run our [Quick Start Example](./getting-started/Getting%20Started%20with%20Chassis.ipynb) notebook
 
+For more details, check out our [Getting Started](./getting-started/README.md) page.
+
 # Docs
 
 📘 [Full Docs](https://chassis.ml)
 
+🧑‍🏫 [Container Build Tutorial](https://chassis.ml/tutorials/ds-connect/)
+
+*Note: *
+
 ☁️ [Full Install Tutorial](https://chassis.ml/getting-started/deploy-manual/)
 
-🧑‍🏫 [Container Build Tutorial](https://chassis.ml/tutorials/ds-connect/)
 
 Framework-specific examples:
 |  |  |  |  |  |
