@@ -40,12 +40,12 @@ Chassis picks up right where your training code leaves off and builds containers
 
 ## Benefits
 * <img height="16" width="16" src="https://cdn.simpleicons.org/docker/0092DF" /> Turns models into containers, automatically
-* <img height="16" width="16" src="https://cdn.simpleicons.org/linuxfoundation/0092DF" /> Exposes gRPC servers as easy-to-use APIs
-* <img height="16" width="16" src="https://cdn.simpleicons.org/kubernetes/0092DF" /> Builds portable Docker containers that can run anywhere
-* <img height="16" width="16" src="https://cdn.simpleicons.org/docker/0092DF" /> Ships containers to Docker Hub or other preferred container registry
-* <img height="16" width="16" src="https://cdn.simpleicons.org/intel/0092DF" /> Natively compiles containers for both x86 and ARM processors
-* <img height="16" width="16" src="https://cdn.simpleicons.org/nvidia/0092DF" /> Includes GPU batch processing support
-* <img height="16" width="16" src="https://cdn.simpleicons.org/arm/0092DF" /> Great for edge AI with all dependencies bundled together
+* <img height="16" width="16" src="https://cdn.simpleicons.org/linuxfoundation/0092DF" /> Creates easy-to-use prediction APIs
+* <img height="16" width="16" src="https://cdn.simpleicons.org/kubernetes/0092DF" /> Containers can run on Modzy, KServe (v1), and more
+* <img height="16" width="16" src="https://cdn.simpleicons.org/docker/0092DF" /> Connects to Docker Hub and other registries
+* <img height="16" width="16" src="https://cdn.simpleicons.org/intel/0092DF" /> Compiles for both x86 and ARM processors
+* <img height="16" width="16" src="https://cdn.simpleicons.org/nvidia/0092DF" /> Supports GPU batch processing
+* <img height="16" width="16" src="https://cdn.simpleicons.org/arm/0092DF" /> No missing dependencies, perfect for edge AI
 
 # Installation
 Install Chassis on your machine or in a virtual environment via [PyPi](https://pypi.org/project/chassisml/):

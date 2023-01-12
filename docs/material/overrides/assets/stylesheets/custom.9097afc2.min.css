@@ -25,6 +25,10 @@
     color:#B7C5FD
 }
 
+.md-typeset .git {
+    color:#fff
+}
+
 .md-typeset .mdx-video {
     width: auto
 }
@@ -297,8 +301,10 @@
     /* background-color: var(--md-accent-fg-color);
     border-color: var(--md-accent-fg-color);
     color: var(--md-accent-bg-color); */
-    background-color: #0092E0;
-    border-color: #0092E0;    
+    /* background-color: #0092E0;
+    border-color: #0092E0; */
+    background-color: #B7C5FD;
+    border-color: #B7C5FD;        
     color: #fff
 }
 

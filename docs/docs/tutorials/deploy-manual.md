@@ -1,4 +1,4 @@
-# Deploy Service Manually
+# Install Service Manually
 
 <!-- TODO: add link to google colab notebook -->
 
@@ -6,7 +6,7 @@
     Before following this guide, note that you can connect to the Chassis service in one of two ways:
     
     1. Continue following this guide to install the Chassis service locally on a private Kubernetes cluster
-    2. Bypass this guide and follow the [instructions](deploy-connect.md) to connect to our [publicly-hosted](https://modzy.com/chassis-ml-sign-up/) and free instance of the service 
+    2. Bypass this guide and follow the [instructions](../getting-started/getting-started.md) to connect to our [publicly-hosted](https://modzy.com/chassis-ml-sign-up/) and free instance of the service 
 
 ## Install required dependencies
 

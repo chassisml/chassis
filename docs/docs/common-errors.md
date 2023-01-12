@@ -4,7 +4,7 @@
 
 **Does Chassis only build and push *public* container images to Docker Hub?**
 
-No, as a configuration step before you install the Chassis helm charts, you can set up a private Docker registry that Chassis will use as the destination to push all container images. However, note that this is only available if you set up Chassis manually. Follow our [manual install](./getting-started/deploy-manual.md) and [private registry support](./how-to-guides/private-registry.md) guides for more details.  
+No, as a configuration step before you install the Chassis helm charts, you can set up a private Docker registry that Chassis will use as the destination to push all container images. However, note that this is only available if you set up Chassis manually. Follow our [manual install](./tutorials/deploy-manual.md) and [private registry support](./how-to-guides/private-registry.md) guides for more details.  
 
 **Why am I getting an OOM error in Kubernetes when I run a Chassis job?**
 

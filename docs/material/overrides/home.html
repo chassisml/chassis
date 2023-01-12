@@ -76,32 +76,32 @@
           <span class="twemoji check">
             {% include ".icons/fontawesome/solid/circle-check.svg" %}
           </span>           
-          Exposes gRPC servers as easy-to-use APIs
+          Creates easy-to-use prediction APIs
           <br>
           <span class="twemoji check">
             {% include ".icons/fontawesome/solid/circle-check.svg" %}
           </span>           
-          Builds portable Docker containers that can run on KServe and Modzy
+          Containers can run on Modzy, KServe (v1), and more
           <br>
           <span class="twemoji check">
             {% include ".icons/fontawesome/solid/circle-check.svg" %}
           </span>           
-          Ships containers to Docker Hub or other preferred container registry
+          Connects to Docker Hub and other registries
           <br>
           <span class="twemoji check">
             {% include ".icons/fontawesome/solid/circle-check.svg" %}
           </span>           
-          Natively compiles containers for both x86 and ARM processors
+          Compiles for both x86 and ARM processors
           <br>
           <span class="twemoji check">
             {% include ".icons/fontawesome/solid/circle-check.svg" %}
           </span>           
-          Includes GPU batch processing support
+          Supports GPU batch processing
           <br>
           <span class="twemoji check">
             {% include ".icons/fontawesome/solid/circle-check.svg" %}
           </span>           
-          Great for edge AI with all dependencies bundled together
+          No missing dependencies, perfect for edge AI
         </p>
       </div>
     </div>
@@ -129,45 +129,37 @@
             {% include ".icons/fontawesome/solid/arrow-right.svg" %}
           </span>
           <strong>Chassis SDK</strong>: The Chassis Python package enables you to interact with the Chassis service. Download via <a href="https://pypi.org/project/chassisml/" style="color:#B7C5FD">PyPi</a>: <code>pip install chassisml</code>
-          <br>
+          <br><br>
           <span class="twemoji arrow">
             {% include ".icons/fontawesome/solid/arrow-right.svg" %}
           </span>          
           <strong>Python model</strong>: Bring your model trained with your favorite Python ML framework (Scikit-learn, PyTorch, Tensorflow, or any framework you use!) 
-          <br>
+          <br><br>
           <span class="twemoji arrow">
             {% include ".icons/fontawesome/solid/arrow-right.svg" %}
           </span>
           <strong>Registry Credentials</strong>: Chassis will build a container image and push it to your preferred registry, so make sure you either have a Docker Hub account or credentials to your private container registry. You can create a free <a href="https://hub.docker.com/signup" style="color:#B7C5FD">Docker Hub</a> account today if you need one!                     
         </p>
-        <h2>
-          <span style="color: #B7C5FD"><strong>Resources:</strong></span>
-        </h2>
-        <p>
-          <span class="twemoji arrow">
-            {% include ".icons/fontawesome/solid/arrow-right.svg" %}
-          </span>
-          <a href="https://github.com/modzy/chassis/blob/main/getting-started/Getting%20Started%20with%20Chassis.ipynb" style="color:#B7C5FD"><strong>Quick Start Example</strong></a>: This notebook gives you everything you need to execute a Chassis job and build your first model in less than 5 minutes!          
-          <br>
-          <span class="twemoji arrow">
-            {% include ".icons/fontawesome/solid/arrow-right.svg" %}
-          </span>
-          <a href="https://chassis.ml/how-to-guides/frameworks/" style="color:#B7C5FD"><strong>Examples by Framework</strong></a>: Check out these how-to guides that provide examples of many common ML frameworks          
-          <br>
-          <span class="twemoji arrow">
-            {% include ".icons/fontawesome/solid/arrow-right.svg" %}
-          </span>
-          <a href="https://chassis.ml/how-to-guides/frameworks/" style="color:#B7C5FD"><strong>Manual Installation Guide</strong></a>: Chassis is a Kubernetes service and can be connected to via Modzy's publicly-hosted version. Or, you may choose stand up the service yourself in your own Kubernetes cluster. This guide provides detailed instructions.          
-        </p>        
+        <br>
+        <a href="{{ page.next_page.url | url }}" title="{{ page.next_page.title | e }}" class="md-button md-button--primary">
+          Get Started
+        </a>     
+        <a href="https://github.com/modzy/chassis/tree/main/getting-started" title="github-getting-started" class="md-button">
+          <span class="twemoji git">
+            {% include ".icons/fontawesome/brands/github.svg" %}
+          </span>          
+          GitHub
+        </a>           
       </div>
       <div class="mdx-hero__content-3b">
         <pre><code class="python">
 import chassisml
 '''
-The below two imports are pseudo code to 
-demonstrate the general workflow. Substitute 
-with your own Python framework and any 
-revelant utility methods. 
+NOTE: The below code snippet is pseudo code that
+intends to demonstrate the general workflow when 
+using Chassis and will not execute as is. Substitute
+with your own Python framework, any revelant utility 
+methods, and syntax specific to your model. 
 '''
 import framework 
 import preprocess, postprocess

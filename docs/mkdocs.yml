@@ -18,6 +18,7 @@ theme:
   logo: images/chassis-symbol-negative.png
   favicon: images/chassis-symbol.png
   features:
+    - navigation.footer
     - navigation.expand
     - navigation.tabs
     - navigation.top
@@ -83,10 +84,9 @@ markdown_extensions:
 nav:
   - Home: index.md
   - Getting Started:
-      - Installation:
-          - getting-started/deploy-connect.md
-          - getting-started/deploy-manual.md
+      - getting-started/getting-started.md
   - Tutorials:
+      - tutorials/deploy-manual.md
       - tutorials/ds-connect.md
       - tutorials/ds-postman.md
       - tutorials/ds-deploy.md
