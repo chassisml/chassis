@@ -28,7 +28,7 @@
 
 <!-- <img src="https://raw.githubusercontent.com/modzy/chassis/main/docs/docs/images/what-is-chassis.png" alt="what-is-chassis-diagram" width="650"/> -->
 
-<img src="./docs/docs/images/what-is-chassis.png" alt="what-is-chassis-diagram" width="650"/>
+<img src="./docs/docs/images/what-is-chassis.png" alt="what-is-chassis-diagram" width="600"/>
 
 <br>
 
@@ -45,7 +45,7 @@ Chassis picks up right where your training code leaves off and builds containers
 * <img height="16" width="16" src="https://cdn.simpleicons.org/docker/0092DF" /> Connects to Docker Hub and other registries
 * <img height="16" width="16" src="https://cdn.simpleicons.org/intel/0092DF" /> Compiles for both x86 and ARM processors
 * <img height="16" width="16" src="https://cdn.simpleicons.org/nvidia/0092DF" /> Supports GPU batch processing
-* <img height="16" width="16" src="https://cdn.simpleicons.org/arm/0092DF" /> No missing dependencies, perfect for edge AI
+* <img height="16" width="16" src="https://cdn.simpleicons.org/pypi/0092DF" /> No missing dependencies, perfect for edge AI
 
 # Installation
 Install Chassis on your machine or in a virtual environment via [PyPi](https://pypi.org/project/chassisml/):
