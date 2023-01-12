@@ -4,10 +4,10 @@
 
 In this tutorial, we will:
 
-* Connect to the Chassis service with the Python SDK
-* Load our model into memory (model can be saved as a file to be loaded or trained and loaded from scratch)
-* Define a `process` function for inferencing
-* Submit a job request to the Chassis service
+- [X] Connect to the Chassis service with the Python SDK
+- [X] Load our model into memory (model can be saved as a file to be loaded or trained and loaded from scratch)
+- [X] Define a `process` function for inferencing
+- [X] Submit a job request to the Chassis service
 
 After completing these steps, we will have a new container image uploaded to Docker Hub that we will be able to use locally or deploy to a serving platform of our choice.
 
@@ -80,7 +80,7 @@ def process(input_bytes):
 
 The process function can call other functions if needed. 
 
-Next, we initialize our Chassis client, which we'll use to communicate with the Chassis service. Here, we assume our instance of Chassis is [running locally](../getting-started/deploy-manual.md) on port 5000:
+Next, we initialize our Chassis client, which we'll use to communicate with the Chassis service. Here, we assume our instance of Chassis is [running locally](../tutorials/deploy-manual.md) on port 5000:
 
 ```python
 chassis_client = chassisml.ChassisClient("http://localhost:5000")
@@ -88,7 +88,7 @@ chassis_client = chassisml.ChassisClient("http://localhost:5000")
 
 Now let's create a Chassis model with our process function, test it locally with a local input file, and then also test the creation of the environment and the execution of the model with a sample input file within that created environment (this will occur within the Chassis service):
 
-**NOTE**: `test_env` function not available in [publicly-hosted](../getting-started/deploy-connect.md) service.
+**NOTE**: `test_env` function not available in [publicly-hosted](../getting-started/getting-started.md) service.
 
 ```python
 # create Chassis model

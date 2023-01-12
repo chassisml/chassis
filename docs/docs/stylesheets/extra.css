@@ -1,6 +1,6 @@
 [data-md-color-scheme="chassis"] {
   /* Sets the primary color (i.e., background of top nav) */
-  --md-primary-fg-color: #11284f;
+  --md-primary-fg-color: rgb(17, 40, 80);
 
   /* Sets the links color */
   --md-typeset-a-color: #046aa5;

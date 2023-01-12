@@ -1,16 +1,92 @@
+# project info
 site_name: Chassis
+
+# repository
+repo_url: https://github.com/modzy/chassis
+repo_name: modzy/chassis
+edit_uri: edit/main/docs/docs/
+
+# copyright
+copyright: Copyright &copy; 2023 Modzy
+
+# config
+theme:
+  name: material
+  custom_dir: material/overrides
+  palette:
+    scheme: chassis
+  logo: images/chassis-symbol-negative.png
+  favicon: images/chassis-symbol.png
+  features:
+    - navigation.footer
+    - navigation.expand
+    - navigation.tabs
+    - navigation.top
+    - toc.integrate
+    - content.tabs.link
+
+# plugins
+plugins:
+  - search:
+      separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
+  - minify:
+      minify_html: true      
+  - mkdocstrings:
+      handlers:
+        python:
+          setup_commands:
+            - import sys 
+            - sys.path.append('../')
+            - sys.path.append('../service/')
+          selection:
+            new_path_syntax: true
+            docstring_style: "google" 
+          rendering:
+            show_category_heading: no
+
+# customization
+extra_css:
+  - stylesheets/extra.css
+extra:
+  analytics:
+    provider: google
+    property: G-4NVL0DTGZ4
+  generator: false
+  social:
+    - icon: fontawesome/brands/discord
+      link: https://discord.gg/eW4kHSm3Z5
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/chassisml/
+    - icon: fontawesome/brands/slack
+      link: https://join.slack.com/t/mlops-community/shared_invite/zt-10jopsclv-sny902l2GOFdElU2blfACg
+    - icon: fontawesome/brands/github
+      link: https://github.com/modzy/chassis
+
+# extensions
+markdown_extensions:
+  - attr_list
+  - md_in_html
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - pymdownx.snippets
+  - pymdownx.inlinehilite
+  - admonition
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - pymdownx.tabbed:
+      alternate_style: true    
+  - pymdownx.tasklist:
+      custom_checkbox: true      
+
 nav:
-  - index.md
-  # - landing/connect.md
-  # - connect.md
-  # - Home:
-  #     - connect.md
-  #     - index.md
+  - Home: index.md
   - Getting Started:
-      - Installation:
-          - getting-started/deploy-connect.md
-          - getting-started/deploy-manual.md
+      - getting-started/getting-started.md
   - Tutorials:
+      - tutorials/deploy-manual.md
       - tutorials/ds-connect.md
       - tutorials/ds-postman.md
       - tutorials/ds-deploy.md
@@ -33,64 +109,9 @@ nav:
       - FAQs: common-errors.md
       - Get Involved: get-involved.md
   - Release Notes: release-notes.md
-theme:
-  name: material
-  palette:
-    scheme: chassis
-  logo: images/chassis-symbol-negative.png
-  favicon: images/chassis-symbol.png
-  features:
-    - navigation.expand
-    - navigation.tabs
-    - navigation.top
-    - toc.integrate
-    - content.tabs.link
-plugins:
-  - search
-  - mkdocstrings:
-      handlers:
-        python:
-          setup_commands:
-            - import sys 
-            - sys.path.append('../')
-            - sys.path.append('../service/')
-          selection:
-            new_path_syntax: true
-            docstring_style: "google" 
-          rendering:
-            show_category_heading: no
-markdown_extensions:
-  - attr_list
-  - pymdownx.details
-  - pymdownx.highlight:
-      anchor_linenums: true
-  - pymdownx.superfences
-  - pymdownx.snippets
-  - pymdownx.inlinehilite
-  - admonition
-  - pymdownx.emoji:
-      emoji_index: !!python/name:materialx.emoji.twemoji
-      emoji_generator: !!python/name:materialx.emoji.to_svg
-  - pymdownx.tabbed:
-      alternate_style: true       
-repo_url: https://github.com/modzy/chassis
-repo_name: modzy/chassis
-edit_uri: edit/main/docs/docs/
-extra_css:
-  - stylesheets/extra.css
-extra:
-  analytics:
-    provider: google
-    property: G-4NVL0DTGZ4
-  generator: false
-  social:
-    - icon: fontawesome/brands/discord
-      link: https://discord.gg/eW4kHSm3Z5
-    - icon: fontawesome/brands/python
-      link: https://pypi.org/project/chassisml/
-    - icon: fontawesome/brands/slack
-      link: https://join.slack.com/t/mlops-community/shared_invite/zt-10jopsclv-sny902l2GOFdElU2blfACg
-    - icon: fontawesome/brands/github
-      link: https://github.com/modzy/chassis
-copyright: Copyright &copy; 2022 Modzy
+
+
+   
+
+
 # use_directory_controls: false

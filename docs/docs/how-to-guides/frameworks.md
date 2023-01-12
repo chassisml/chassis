@@ -7,7 +7,7 @@ If you build models using a common machine learning framework and you want a way
 Can't find the framework you are looking for? Feel free to fork this repository, add an example or two from your framework of choice, and open a PR. Or come chat with us directly on [Discord](https://discord.gg/tdfXFY2y)!
 
 !!! warning "Requirements"
-    *To follow these how-to guides, you must first install the `chassisml` Python SDK and connect to the Chassis service either on your [local machine](../getting-started/deploy-manual.md) or to our [publicly-hosted](../getting-started/deploy-connect.md) instance within your Python IDE. You also will need an account with [Dockerhub](https://hub.docker.com/signup).* 
+    *To follow these how-to guides, you must first install the `chassisml` Python SDK and connect to the Chassis service either on your [local machine](../tutorials/deploy-manual.md) or to our [publicly-hosted](../getting-started/getting-started.md) instance within your Python IDE. You also will need an account with [Dockerhub](https://hub.docker.com/signup).* 
     
     For help getting started, visit our [Tutorials](https://chassis.ml/tutorials/devops-deploy/) page.
 
@@ -98,7 +98,7 @@ print(results)
 
 Before kicking off the Chassis job, we can test our `ChassisModel` in the environment that will be built within the container. **Note**: Chassis will infer the required packages, functions, or variables required to successfully run inference within the `process` function. This step ensures when the conda environment is created within the Docker container, your model will run.
 
-**NOTE**: `test_env` function not available in [publicly-hosted](../getting-started/deploy-connect.md) service.
+**NOTE**: `test_env` function not available in [publicly-hosted](../getting-started/getting-started.md) service.
 
 ```python
 test_env_result = chassis_model.test_env(sample_filepath)
@@ -219,7 +219,7 @@ env = {
 
 Before kicking off the Chassis job, we can test our `ChassisModel` in the environment that will be built within the container. **Note**: Chassis will infer the required packages, functions, or variables required to successfully run inference within the `process` function. This step ensures when the conda environment is created within the Docker container, your model will run.
 
-**NOTE**: `test_env` function not available in [publicly-hosted](../getting-started/deploy-connect.md) service.
+**NOTE**: `test_env` function not available in [publicly-hosted](../getting-started/getting-started.md) service.
 
 ```python
 test_env_result = chassis_model.test_env(sample_filepath)
@@ -357,7 +357,7 @@ print(results)
 
 Before kicking off the Chassis job, we can test our `ChassisModel` in the environment that will be built within the container. **Note**: Chassis will infer the required packages, functions, or variables required to successfully run inference within the `process` function. This step ensures when the conda environment is created within the Docker container, your model will successfully run.
 
-**NOTE**: `test_env` function not available in [publicly-hosted](../getting-started/deploy-connect.md) service.
+**NOTE**: `test_env` function not available in [publicly-hosted](../getting-started/getting-started.md) service.
 
 ```python
 test_env_result = chassis_model.test_env(sample_filepath)
@@ -471,7 +471,7 @@ print(results)
 
 Before kicking off the Chassis job, we can test our `ChassisModel` in the environment that will be built within the container. **Note**: Chassis will infer the required packages, functions, or variables required to successfully run inference within the `process` function. This step ensures when the conda environment is created within the Docker container, your model will successfully run.
 
-**NOTE**: `test_env` function not available in [publicly-hosted](../getting-started/deploy-connect.md) service.
+**NOTE**: `test_env` function not available in [publicly-hosted](../getting-started/getting-started.md) service.
 
 ```python
 test_env_result = chassis_model.test_env(sample_filepath)
@@ -617,7 +617,7 @@ print(results)
 
 Before kicking off the Chassis job, we can test our `ChassisModel` in the environment that will be built within the container. **Note**: Chassis will infer the required packages, functions, or variables required to successfully run inference within the `process` function. This step ensures when the conda environment is created within the Docker container, your model will successfully run.
 
-**NOTE**: `test_env` function not available in [publicly-hosted](../getting-started/deploy-connect.md) service.
+**NOTE**: `test_env` function not available in [publicly-hosted](../getting-started/getting-started.md) service.
 
 ```python
 test_env_result = chassis_model.test_env(sample_filepath)
@@ -757,7 +757,7 @@ print(results)
 
 Before kicking off the Chassis job, we can test our `ChassisModel` in the environment that will be built within the container. **Note**: Chassis will infer the required packages, functions, or variables required to successfully run inference within the `process` function. This step ensures when the conda environment is created within the Docker container, your model will run.
 
-**NOTE**: `test_env` function not available in [publicly-hosted](../getting-started/deploy-connect.md) service.
+**NOTE**: `test_env` function not available in [publicly-hosted](../getting-started/getting-started.md) service.
 
 ```python
 test_env_result = chassis_model.test_env(sample_filepath)
@@ -893,7 +893,7 @@ print(results)
 
 Before kicking off the Chassis job, we can test our `ChassisModel` in the environment that will be built within the container. **Note**: Chassis will infer the required packages, functions, or variables required to successfully run inference within the `process` function. This step ensures when the conda environment is created within the Docker container, your model will run.
 
-**NOTE**: `test_env` function not available in [publicly-hosted](../getting-started/deploy-connect.md) service.
+**NOTE**: `test_env` function not available in [publicly-hosted](../getting-started/getting-started.md) service.
 
 ```python
 test_env_result = chassis_model.test_env(sample_filepath)
@@ -1030,7 +1030,7 @@ print(results)
 
 Before kicking off the Chassis job, we can test our `ChassisModel` in the environment that will be built within the container. **Note**: Chassis will infer the required packages, functions, or variables required to successfully run inference within the `process` function. This step ensures when the conda environment is created within the Docker container, your model will run.
 
-**NOTE**: `test_env` function not available in [publicly-hosted](../getting-started/deploy-connect.md) service.
+**NOTE**: `test_env` function not available in [publicly-hosted](../getting-started/getting-started.md) service.
 
 ```python
 test_env_result = chassis_model.test_env(sample_filepath)

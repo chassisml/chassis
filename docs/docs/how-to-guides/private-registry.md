@@ -101,6 +101,6 @@ Now, we just need to use our newly generated `values.yml` file to install the Ch
 helm install chassis chassis/chassis -f values.yml
 ```
 
-Visit this [Installation guide](../getting-started/deploy-manual.md) for full installation details.
+Visit this [Installation guide](../tutorials/deploy-manual.md) for full installation details.
 
 
