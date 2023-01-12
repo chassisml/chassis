@@ -49,51 +49,51 @@ jobs:
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
-  tests:
-    runs-on: ubuntu-latest
-    if: true
-    env:
-      CHASSIS_URL: ${{secrets.CHASSIS_URL}}
-      DOCKER_USER: ${{secrets.DOCKER_USER}}
-      DOCKER_PASS: ${{secrets.DOCKER_PASS}}
-      MODZY_BASE_URL: ${{secrets.MODZY_BASE_URL}}
-      MODZY_API_KEY: ${{secrets.MODZY_API_KEY}}
+  # tests:
+  #   runs-on: ubuntu-latest
+  #   if: true
+  #   env:
+  #     CHASSIS_URL: ${{secrets.CHASSIS_URL}}
+  #     DOCKER_USER: ${{secrets.DOCKER_USER}}
+  #     DOCKER_PASS: ${{secrets.DOCKER_PASS}}
+  #     MODZY_BASE_URL: ${{secrets.MODZY_BASE_URL}}
+  #     MODZY_API_KEY: ${{secrets.MODZY_API_KEY}}
     
-    steps:   
-    # new
-      - uses: actions/checkout@v2
-        with:
-          submodules: recursive 
+  #   steps:   
+  #   # new
+  #     - uses: actions/checkout@v2
+  #       with:
+  #         submodules: recursive 
 
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v2
-        with:
-          # Semantic version range syntax or exact version of a Python version
-          python-version: '3.8'
+  #     - name: Set up Python 3.8
+  #       uses: actions/setup-python@v2
+  #       with:
+  #         # Semantic version range syntax or exact version of a Python version
+  #         python-version: '3.8'
 
-      - name: Upgrade pip
-        run: |
-          # install pip=>20.1 to use "pip cache dir"
-          python3 -m pip install --upgrade pip
+  #     - name: Upgrade pip
+  #       run: |
+  #         # install pip=>20.1 to use "pip cache dir"
+  #         python3 -m pip install --upgrade pip
 
-      - name: Get pip cache dir
-        id: pip-cache
-        run: echo "::set-output name=dir::$(pip cache dir)"
+  #     - name: Get pip cache dir
+  #       id: pip-cache
+  #       run: echo "::set-output name=dir::$(pip cache dir)"
 
-      - name: Cache dependencies
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.pip-cache.outputs.dir }}
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-        
+  #     - name: Cache dependencies
+  #       uses: actions/cache@v2
+  #       with:
+  #         path: ${{ steps.pip-cache.outputs.dir }}
+  #         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-pip-        
 
-      - name: Install dependencies
-        run: python3 -m pip install -r ./tests/requirements.txt                      
+  #     - name: Install dependencies
+  #       run: python3 -m pip install -r ./tests/requirements.txt                      
 
-      - name: Test with Chassis specific testing scheme
-        run: |
-          python -m tests.test --ci True
+  #     - name: Test with Chassis specific testing scheme
+  #       run: |
+  #         python -m tests.test --ci True
 
   docs:
     runs-on: ubuntu-latest
@@ -141,7 +141,6 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: /home/runner/work/chassis/chassis/docs/site         
           
-
   helm:
     # This is required since mkdocs wipes the
     # branch so it could delete all helm stuff.

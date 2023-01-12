@@ -1,6 +1,6 @@
 ---
 template: home.html 
-title: Chassis
+title: # Appears next to "Chassis -" on tab
 ---
 
 Welcome to Chassis.
