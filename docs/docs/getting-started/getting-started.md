@@ -36,13 +36,13 @@ Finally, create a file in the `./getting-started/` directory called `example.py`
 ```python
 import json
 import pickle
-import chassisml
+import chassisml # (1)
 import numpy as np
 
-# load model
+# load model # (2)
 model = pickle.load(open("./model.pkl", "rb"))
 
-# define process function
+# define process function # (3)
 def process(input_bytes):
     inputs = np.array(json.loads(input_bytes))
     inference_results = model.predict(inputs)
@@ -56,18 +56,18 @@ def process(input_bytes):
         structured_results.append(structured_output)
     return structured_results
 
-# connect to Chassis client
+# connect to Chassis client # (4)
 chassis_client = chassisml.ChassisClient("https://chassis.app.modzy.com/")
 
-# create Chassis model
+# create Chassis model # (5)
 chassis_model = chassis_client.create_model(process_fn=process)
 
-# test Chassis model
+# test Chassis model # (6)
 sample_filepath = './digits_sample.json'
 results = chassis_model.test(sample_filepath)
 print(results)
 
-# publish model to Dockerhub
+# publish model to Dockerhub # (7)
 docker_user = "<insert-Docker Hub username>"
 docker_pass = "<insert-Docker Hub password>"
 model_name = "My First Chassis Model"
@@ -77,9 +77,9 @@ response = chassis_model.publish(
     model_version="0.0.1",
     registry_user=docker_user,
     registry_pass=docker_pass
-)
+) # (8)
 
-# wait for job to complete and print result
+# wait for job to complete and print result # (9)
 job_id = response.get('job_id')
 final_status = chassis_client.block_until_complete(job_id)
 if final_status['status']['succeeded'] == 1:
@@ -87,6 +87,16 @@ if final_status['status']['succeeded'] == 1:
 else:
     print("Job Failed. See logs below:\n\n{}".format(final_status['logs']))
 ```
+
+1. First, we will import the Chassis SDK. If you have not already done so, make sure you install it via PyPi: `pip install chassisml`
+2. Next, we will load our model. For this example, we have a pre-trained Scikit-learn classifier saved as a pickle file (`./model.pkl`). When integrating Chassis into your own code, this can be done however you load your model. It could be loaded from a pickle file, checkpoint file, multiple configuration files, etc. The *key* is that you load your model into memory so it can be accessed in the below `process` function. 
+3. Here, we will define our `process` function, which you can think of as an inference function for your model. This function can access objects loaded into memory (e.g., `model` loaded above), and the only requirement is it must convert input data in raw bytes form to the data type your model expects. See this [guide](../how-to-guides/common-data-types.md) for help on converting common data types. In this example, we process the raw bytes data using `numpy` and `json`, pass this processed data through to our model for predictions (`model.predict`), and perform some postprocessing to return the results in a human-readable manner. You can customize this function based on your model and preferences.    
+4. Here, we will connect to the publicly-hosted Chassis service.
+5. Now, we will simply create a `ChassisModel` object directly from our process function. See the [reference docs](../chassisml_sdk-reference.md#chassisml-python-sdk.chassisml.chassisml.ChassisClient.create_model) for more details on this method.
+6. Before kicking off the Chassis job, we can test our `ChassisModel` object by passing through a sample data path.
+7. Here is where you will need to add in your own Docker Hub credentials for the `docker_user` and `docker_pass` variables. Chassis will use these credentials when the container image is built and it is time to push it to a container registry.
+8. Finally, kick off the Chassis job. If you follow this example code as-is, this execution should take 4-5 minutes to complete. To see more parameter options for this method, view the [reference docs](../chassisml_sdk-reference.md#chassisml-python-sdk.chassisml.chassisml.ChassisModel.publish)
+9. After a successful Chassis job, these next few lines of code will check the final status of your job and print your the URL to your newly-built container!
 
 Next, run your script.
 

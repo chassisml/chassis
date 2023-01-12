@@ -24,6 +24,8 @@ theme:
     - navigation.top
     - toc.integrate
     - content.tabs.link
+    - content.code.copy
+    - content.code.annotate
 
 # plugins
 plugins:
