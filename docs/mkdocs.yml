@@ -19,6 +19,7 @@ theme:
   favicon: images/chassis-symbol.png
   features:
     - navigation.footer
+    - navigation.header
     - navigation.expand
     - navigation.tabs
     - navigation.top

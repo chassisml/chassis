@@ -450,7 +450,7 @@ h3 {
 }
 
 .light-accent{
-    color:#B7C5FD
+    color:#B7C5FD !important;
 }
 
 .mdx-hero .md-button:focus,
