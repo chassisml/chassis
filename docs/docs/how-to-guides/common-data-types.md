@@ -6,70 +6,89 @@ When using Chassis, you must define a `process` function that serves as your mod
 
 ## Text
 
-### Bytes Decoding
-``` python
-text = input_bytes.decode()
-```
+=== "Bytes Decoding"
 
-### Corresponding `Process` Function
-```python
-def process(input_bytes):
+    ``` python
     text = input_bytes.decode()
-    '''
-    Perform processing and inference on text
-    '''
-    return output
-```
+    ```
+
+=== "Process Function"
+
+    ```python
+    def process(input_bytes):
+        text = input_bytes.decode()
+        '''
+        Perform processing and inference on text
+        '''
+        return output
+    ```
 
 ## Imagery
 
-### Bytes Decoding
 *OpenCV*
-```py
-import cv2
-import numpy as np
-img = cv2.imdecode(np.frombuffer(input_bytes, np.uint8), -1)
-img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-```
+=== "Bytes Decoding"
+
+    ```python
+    import cv2
+    import numpy as np
+    img = cv2.imdecode(np.frombuffer(input_bytes, np.uint8), -1)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    ```
+
+=== "Process Function"
+
+    ```python
+    def process(input_bytes):
+        img = cv2.imdecode(np.frombuffer(input_bytes, np.uint8), -1)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        '''
+        Perform processing and inference on img
+        '''
+        return output
+    ```
 
 *Pillow*
-```py
-import io
-from PIL import Image
-img = Image.open(io.BytesIO(input_bytes)).convert("RGB")
-```
+=== "Bytes Decoding"
+
+    ```python
+    import io
+    from PIL import Image
+    img = Image.open(io.BytesIO(input_bytes)).convert("RGB")
+    ```
+
+=== "Process Function"
+
+    ```python
+    def process(input_bytes):
+        img = Image.open(io.BytesIO(input_bytes)).convert("RGB")
+        '''
+        Perform processing and inference on img
+        '''
+        return output
+    ```
 
 See also:
 
 * [Native PyTorch function](https://pytorch.org/docs/stable/generated/torch.frombuffer.html)
 * [Native Tensorflow function](https://www.tensorflow.org/api_docs/python/tf/io/decode_raw)
 
-### Corresponding `Process` Function
-```python
-def process(input_bytes):
-    img = cv2.imdecode(np.frombuffer(input_bytes, np.uint8), -1)
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    '''
-    Perform processing and inference on img
-    '''
-    return output
-```
-
 ## Tabular
 
-### Bytes Decoding
-```python
-from io import StringIO
-import pandas as pd
-input_table = pd.read_csv(StringIO(str(input_bytes, "utf-8")))
-```
+=== "Bytes Decoding"
 
-### Corresponding `Process` Function
-```python
-def process(input_bytes):
+    ```python
+    from io import StringIO
+    import pandas as pd
     input_table = pd.read_csv(StringIO(str(input_bytes, "utf-8")))
-    '''
-    Perform processing and inference on input_table
-    '''
-    return output
-```
+    ```
+
+=== "Process Function"
+
+    ```python
+    def process(input_bytes):
+        input_table = pd.read_csv(StringIO(str(input_bytes, "utf-8")))
+        '''
+        Perform processing and inference on input_table
+        '''
+        return output
+    ```
