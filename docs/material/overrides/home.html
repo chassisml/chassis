@@ -5,7 +5,7 @@
 {% block tabs %}
 
 
-<!-- Top Section (containing slogan and picture) -->
+<!-- Hero section -->
 {{ super() }}
 <style>.md-header{position:initial}.md-main__inner{margin:0}.md-content{display:none}@media screen and (min-width:60em){.md-sidebar--secondary{display:none}}@media screen and (min-width:76.25em){.md-sidebar--primary{display:none}}</style>
 <section class="mdx-container">
@@ -14,18 +14,16 @@
       <div class="mdx-hero__image">
         <img
           src="images/chassis-hero-dark-background-purple.png" 
-          alt="" 
-          width="1182" 
-          height="841" 
+          alt="Diagram of different python machine learning packages passing through a laptop, resulting in a docker container, which is sent to run on edge, on-prem, and cloud servers."
           draggable="false"
         >
       </div>
       <div class="mdx-hero__content">
         <h1>Build ML Model Containers,
-          <span style="color: #B7C5FD"><strong>Automatically</strong></span> 
+          <span class="light-accent"><strong>Automatically</strong></span> 
         </h1>
         <p>Package ML models into containerized prediction APIs in just minutes, and run them 
-          <span style="color: #B7C5FD"><strong>anywhere</strong></span> 
+          <span class="light-accent"><strong>anywhere</strong></span> 
           - in the Cloud, On-Prem, or at the Edge</p>
         <a href="{{ page.next_page.url | url }}" title="{{ page.next_page.title | e }}" class="md-button md-button--primary">
           Get Started
@@ -38,20 +36,18 @@
   </div>
 </section>
 
-<!-- Second Section - What is Chassis? -->
+<!-- What is Chassis? -->
 <section class="mdx-container-2">
   <div class="md-grid md-typeset">
     <div class="mdx-hero__image-2">
       <img 
         src="images/chassis-architecture-infra-whitebackground.png"
-        alt=""
-        width="2506" 
-        height="1413"
+        alt="Diagram of chassis containers running Modzy, Docker, Kubernetes, and Kserve."
       >
     </div>
     <div class="mdx-hero">
       <div class="mdx-hero__content-2">
-        <h1 id="what-is-chassis">What is Chassis?</h1>
+        <h2>What is Chassis?</h2>
         <p>
           Chassis is an open-source project that automatically turns your ML models into production containers. 
           <br><br>
@@ -108,12 +104,12 @@
   </div>
 </section>
 
-<!-- Third Section - Get started today -->
+<!-- Getting started -->
 <section class="mdx-container-3">
   <div class="md-grid md-typeset">
     <div class="mdx-hero">
       <div class="mdx-hero__content-3t">
-        <h1 id="get-started">Getting Started</h1>
+        <h2>Getting Started</h2>
         <p>
           Getting started with Chassis is as easy as installing a Python package and incorporating a few lines of code into your existing workflow. Follow these short steps to start building your first ML container in just minutes! 
         </p> 
@@ -121,14 +117,14 @@
     </div>
     <div class="mdx-hero">
       <div class="mdx-hero__content-3a">        
-        <h2>
-          <span style="color: #B7C5FD"><strong>What you will need:</strong></span>
-        </h2>
+        <h3>
+          What you will need:
+        </h3>
         <p>
           <span class="twemoji arrow">
             {% include ".icons/fontawesome/solid/arrow-right.svg" %}
           </span>
-          <strong>Chassis SDK</strong>: The Chassis Python package enables you to interact with the Chassis service. Download via <a href="https://pypi.org/project/chassisml/" style="color:#B7C5FD">PyPi</a>: <code>pip install chassisml</code>
+          <strong>Chassis SDK</strong>: The Chassis Python package enables you to interact with the Chassis service. Download via <a href="https://pypi.org/project/chassisml/" class="light-accent">PyPi</a>: <code>pip install chassisml</code>
           <br><br>
           <span class="twemoji arrow">
             {% include ".icons/fontawesome/solid/arrow-right.svg" %}
@@ -138,7 +134,7 @@
           <span class="twemoji arrow">
             {% include ".icons/fontawesome/solid/arrow-right.svg" %}
           </span>
-          <strong>Registry Credentials</strong>: Chassis will build a container image and push it to your preferred registry, so make sure you either have a Docker Hub account or credentials to your private container registry. You can create a free <a href="https://hub.docker.com/signup" style="color:#B7C5FD">Docker Hub</a> account today if you need one!                     
+          <strong>Registry Credentials</strong>: Chassis will build a container image and push it to your preferred registry, so make sure you either have a Docker Hub account or credentials to your private container registry. You can create a free <a href="https://hub.docker.com/signup" class="light-accent">Docker Hub</a> account today if you need one!                     
         </p>
         <br>
         <a href="{{ page.next_page.url | url }}" title="{{ page.next_page.title | e }}" class="md-button md-button--primary">
@@ -151,54 +147,51 @@
           GitHub
         </a>           
       </div>
-      <div class="mdx-hero__content-3b">
-        <pre><code class="python">
-import chassisml
-'''
-NOTE: The below code snippet is pseudo code that
-intends to demonstrate the general workflow when 
-using Chassis and will not execute as is. Substitute
-with your own Python framework, any revelant utility 
-methods, and syntax specific to your model. 
-'''
-import framework 
-import preprocess, postprocess
+      <div class="mdx-hero__codeblock">
+        <div class="demo-highlight"><pre><span></span>
+          <span class="kn">import</span> <span class="nn">chassisml</span>
 
-# load model
-model = framework.load("path/to/model/file")
-
-# define process function and create model
-def process(input_bytes):
-    # preprocess data
-    data = preprocess(input_bytes)
-    # perform inference
-    predictions = model.predict(data)
-    # process output
-    output = postprocess(predictions)
-    return output
-
-# connect to Chassis, create and publish model
-chassis_client = chassisml.ChassisClient("https://chassis.app.modzy.com")
-chassis_model = chassis_client.create_model(process_fn=process)
-
-# publish model to Docker registry
-response = chassis_model.publish(
-    model_name="My First Chassis Model!",
-    model_version="0.0.1",
-    registry_user="insert-dockerhub-username",
-    registry_pass="insert-dockerhub-password",
-) 
-          </code></pre>        
+          <span class="c1"># NOTE: The below code snippet is pseudo code that</span>
+          <span class="c1"># intends to demonstrate the general workflow when </span>
+          <span class="c1"># using Chassis and will not execute as is. Substitute</span>
+          <span class="c1"># with your own Python framework, any revelant utility </span>
+          <span class="c1"># methods, and syntax specific to your model. </span>
+          
+          <span class="kn">import</span> <span class="nn">framework</span> 
+          <span class="kn">import</span> <span class="nn">preprocess</span><span class="o">,</span> <span class="nn">postprocess</span>
+          
+          <span class="c1"># load model</span>
+          <span class="n">model</span> <span class="o">=</span> <span class="n">framework</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">"path/to/model/file"</span><span class="p">)</span>
+          
+          <span class="c1"># define process function and create model</span>
+          <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="n">input_bytes</span><span class="p">):</span>
+              <span class="c1"># preprocess data</span>
+              <span class="n">data</span> <span class="o">=</span> <span class="n">preprocess</span><span class="p">(</span><span class="n">input_bytes</span><span class="p">)</span>
+              <span class="c1"># perform inference</span>
+              <span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+              <span class="c1"># process output</span>
+              <span class="n">output</span> <span class="o">=</span> <span class="n">postprocess</span><span class="p">(</span><span class="n">predictions</span><span class="p">)</span>
+              <span class="k">return</span> <span class="n">output</span>
+          
+          <span class="c1"># connect to Chassis, create and publish model</span>
+          <span class="n">chassis_client</span> <span class="o">=</span> <span class="n">chassisml</span><span class="o">.</span><span class="n">ChassisClient</span><span class="p">(</span><span class="s2">"https://chassis.app.modzy.com"</span><span class="p">)</span>
+          <span class="n">chassis_model</span> <span class="o">=</span> <span class="n">chassis_client</span><span class="o">.</span><span class="n">create_model</span><span class="p">(</span><span class="n">process_fn</span><span class="o">=</span><span class="n">process</span><span class="p">)</span>
+          
+          <span class="c1"># publish model to Docker registry</span>
+          <span class="n">response</span> <span class="o">=</span> <span class="n">chassis_model</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
+              <span class="n">model_name</span><span class="o">=</span><span class="s2">"My First Chassis Model!"</span><span class="p">,</span>
+              <span class="n">model_version</span><span class="o">=</span><span class="s2">"0.0.1"</span><span class="p">,</span>
+              <span class="n">registry_user</span><span class="o">=</span><span class="s2">"insert-dockerhub-username"</span><span class="p">,</span>
+              <span class="n">registry_pass</span><span class="o">=</span><span class="s2">"insert-dockerhub-password"</span><span class="p">,</span>
+          <span class="p">)</span>
+          </pre></div>
       </div>
     </div>
   </div>
-
 </section>
 
 
 {% endblock %}
-{% block content %}{% endblock %}
-{% block footer %}{% endblock %}
 
 
 
