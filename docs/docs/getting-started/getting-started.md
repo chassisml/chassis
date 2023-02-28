@@ -76,10 +76,11 @@ response = chassis_model.publish(
     model_name=model_name,
     model_version="0.0.1",
     registry_user=docker_user,
-    registry_pass=docker_pass
-) # (8)
+    registry_pass=docker_pass,
+    arm64=False # (8)
+) # (9)
 
-# wait for job to complete and print result # (9)
+# wait for job to complete and print result # (10)
 job_id = response.get('job_id')
 final_status = chassis_client.block_until_complete(job_id)
 if final_status['status']['succeeded'] == 1:
@@ -95,8 +96,9 @@ else:
 5. Now, we will simply create a `ChassisModel` object directly from our process function. See the [reference docs](../chassisml_sdk-reference.md#chassisml-python-sdk.chassisml.chassisml.ChassisClient.create_model) for more details on this method.
 6. Before kicking off the Chassis job, we can test our `ChassisModel` object by passing through a sample data path.
 7. Here is where you will need to add in your own Docker Hub credentials for the `docker_user` and `docker_pass` variables. Chassis will use these credentials when the container image is built and it is time to push it to a container registry.
-8. Finally, kick off the Chassis job. If you follow this example code as-is, this execution should take 4-5 minutes to complete. To see more parameter options for this method, view the [reference docs](../chassisml_sdk-reference.md#chassisml-python-sdk.chassisml.chassisml.ChassisModel.publish)
-9. After a successful Chassis job, these next few lines of code will check the final status of your job and print your the URL to your newly-built container!
+8. Chassis can build containers that compile for both AMD and ARM chipsets. By default, the `arm64` flag is set to False, but if changed to True in this line, the resulting container will be able to run on any device with an ARM 64 chip. 
+9. Finally, kick off the Chassis job. If you follow this example code as-is, this execution should take 4-5 minutes to complete. To see more parameter options for this method, view the [reference docs](../chassisml_sdk-reference.md#chassisml-python-sdk.chassisml.chassisml.ChassisModel.publish)
+10. After a successful Chassis job, these next few lines of code will check the final status of your job and print your the URL to your newly-built container!
 
 Next, run your script.
 
