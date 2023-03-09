@@ -19,7 +19,6 @@ from packaging import version
 from .grpc_model.src import model_client
 from chassisml import __version__
 
-from .open_model_initiative_checks.open_model_initiative_checks import OMI_check
 from ._utils import zipdir,fix_dependencies,write_metadata_yaml,NumpyEncoder,fix_dependencies_arm_gpu, \
     docker_start,docker_clean_up
 
@@ -554,53 +553,6 @@ class ChassisClient:
                 f.write(r.content)
         else:
             print(f'Error download tar: {r.text}')
-
-    def test_OMI_compliance(self, image_id=None):
-        '''
-        Tests a local image for compliance with the [Open Model Interface Specification](https://openmodel.ml/spec/)
-
-        Args:
-            image_id (str): image id of a local docker container. e.g. `dockerusername/repositoryname:tag`
-
-        Returns:
-            tuple(bool, str): Tuple containing compliance boolean (`True` if compliant, `False` if not) and corresponding string containing concatenation of any logs.
-
-        Examples:
-        ```python
-        # test a local docker image
-
-        OMI_test, logs = chassis_client.test_OMI_compliance(image_id)
-        if OMI_test:
-            print("OMI compliance test passed")
-        else:
-            print("OMI compliance test failed",logs)
-        ```
-        '''
-
-        rValue = (False, "Nothing Initialized")
-
-        try:
-            checkObject = OMI_check(image_id=image_id)
-            if checkObject.client is None:
-                raise TypeError("The Docker Client couldn't be initialized. Is Docker installed?")
-            image_check = checkObject.validate_image()
-            if "Failure" in image_check:
-                raise ValueError(image_check)
-            container_start = checkObject.start_container()
-            if "Failure" in container_start:
-                raise  ValueError(container_start)
-            gRPC_check = checkObject.validate_gRPC()
-            if "Failure"in gRPC_check:
-                raise ValueError(gRPC_check)
-            clean_up = checkObject.clean_up()
-            if "Failure" in clean_up:
-                raise ValueError(clean_up)
-            rValue = (True, "\n" + image_check + "\n" + container_start + "\n" + gRPC_check + "\n" +clean_up)
-
-        except Exception as e:
-            rValue = (False, e)
-
-        return rValue
 
     def create_model(self,process_fn=None,batch_process_fn=None,batch_size=None):
         '''

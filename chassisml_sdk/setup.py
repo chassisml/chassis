@@ -10,15 +10,18 @@ with open('README.md', 'r') as fh:
 
 setup(
     name='chassisml',
-    version='1.4.5',
+    version='1.4.6',
     author='Carlos Millán Soler',
     author_email='cmillan@sciling.com',
     description='Python API client for Chassis.',
     long_description=long_description,
     long_description_content_type='text/markdown',
     packages=find_packages(),
+    package_data={
+        "": ["*.pyi"]
+    },    
     python_requires='>=3.6',
-    install_requires=['requests','mlflow','numpy','pyyaml','validators','grpc-requests','grpcio>=1.44.0','docker','protobuf==3.19.4'],
+    install_requires=['requests','mlflow','numpy','pyyaml~=6.0','validators','grpcio-tools~=1.50.0', 'grpclib~=0.4.3', 'docker~=6.0.1','protobuf~=4.21.9'],
     url='https://github.com/modzy/chassis/tree/main/chassisml_sdk',
     zip_safe=False,
 )
