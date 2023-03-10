@@ -25,8 +25,8 @@ from ...grpc_model.src.auto_generated.model2_template.model_pb2 import (
     ShutdownResponse,
     StatusResponse,
 )
-from chassisml.grpc_model.src.auto_generated.model2_template.model_grpc import (ModzyModelBase)
-from chassisml.grpc_model.src.utils import (
+from flavours.mlflow.interfaces.modzy.grpc_model.src.auto_generated.model2_template.model_grpc import (ModzyModelBase)
+from flavours.mlflow.interfaces.modzy.grpc_model.src.utils import (
     InputOutputMismatchException,
     ModelVersionNotSynchronizedException,
     model_version_is_synchronized,
