@@ -4,7 +4,7 @@ apache-libcloud==3.6.0
 flask==2.0.3
 requests==2.27.1
 kubernetes>=21.7.0
-grpc-requests==0.1.1
+# grpc-requests==0.1.1
 Jinja2==3.0.0
 loguru==0.6.0
 pytest==7.1.2
@@ -21,4 +21,4 @@ numpy==1.23.0
 pandas==1.4.3
 python-dotenv==0.20.0
 validators==0.20.0
-protobuf==3.19.4
+protobuf~=4.21.9
