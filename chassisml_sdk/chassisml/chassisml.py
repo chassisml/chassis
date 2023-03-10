@@ -16,7 +16,7 @@ import warnings
 import validators
 from packaging import version
 
-from .grpc_model.src import model_client
+from chassisml.grpc_model.src import model_client
 from chassisml import __version__
 
 from ._utils import zipdir,fix_dependencies,write_metadata_yaml,NumpyEncoder,fix_dependencies_arm_gpu, \
