@@ -384,7 +384,7 @@ class ChassisClient:
         else:
             res = requests.get(base_url,verify=self.ssl_verification)
 
-        version_route = os.path.join(base_url,'version')
+        version_route = base_url + "/version"
         if self.auth_header:
             res = requests.get(version_route,headers={'Authorization': self.auth_header},verify=self.ssl_verification)
         else:
