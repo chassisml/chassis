@@ -10,7 +10,7 @@ with open('README.md', 'r') as fh:
 
 setup(
     name='chassisml',
-    version='1.4.8',
+    version='1.4.9',
     author='Carlos Millán Soler',
     author_email='cmillan@sciling.com',
     description='Python API client for Chassis.',

@@ -3,7 +3,7 @@
 *.tar
 venv
 chassis-sdk/examples/model
-__pycache__
+*__pycache__
 *.egg-info
 build
 dist
@@ -11,4 +11,4 @@ dist
 chassisml/examples/keras/*
 local_test_.py
 hello-world.txt
-*test_sdk*
+*test_sdk.py
