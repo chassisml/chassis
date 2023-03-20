@@ -10,7 +10,6 @@ if typing.TYPE_CHECKING:
     import grpclib.server
 
 from .....grpc_model.src.auto_generated.model2_template import model_pb2 as model_pb2
-# import chassisml.grpc_model.src.auto_generated.model2_template.model_pb2 as model_pb2
 
 
 class ModzyModelBase(abc.ABC):
