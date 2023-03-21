@@ -6,10 +6,10 @@ import json
 import logging
 from typing import Dict
 
-from grpclib import client
+import grpc
 
 from ...grpc_model.src.auto_generated.model2_template.model_pb2 import InputItem, RunRequest, RunResponse, StatusRequest
-from ...grpc_model.src.auto_generated.model2_template.model_grpc import ModzyModelStub
+from ...grpc_model.src.auto_generated.model2_template.model_pb2_grpc import ModzyModelStub
 from ...grpc_model.src.model_server import get_server_port
 
 HOST = "localhost"
@@ -48,9 +48,7 @@ def run(model_input):
 
     port = PORT
     LOGGER.info(f"Connecting to gRPC server on {HOST}:{port}")
-    
-    
-    with client.Channel(HOST, port, ssl=False) as grpc_channel:
+    with grpc.insecure_channel(f"{HOST}:{port}") as grpc_channel:
         grpc_client_stub = ModzyModelStub(grpc_channel)
         try:
             grpc_client_stub.Status(StatusRequest())  # Initialize the model

@@ -1,4 +1,3 @@
-import asyncio
 import logging
 import os
 import traceback
@@ -6,9 +5,8 @@ from concurrent import futures
 from time import time as t
 from typing import Dict, List
 
-from grpclib.server import Server
-from grpclib.utils import graceful_exit
-from grpclib.reflection.service import ServerReflection
+import grpc
+from grpc_reflection.v1alpha import reflection
 
 from ...grpc_model import GRPC_SERVER_PORT as _GRPC_SERVER_PORT
 from ...grpc_model.src.auto_generated.model2_template.model_pb2 import (
@@ -25,8 +23,11 @@ from ...grpc_model.src.auto_generated.model2_template.model_pb2 import (
     ShutdownResponse,
     StatusResponse,
 )
-from flavours.mlflow.interfaces.modzy.grpc_model.src.auto_generated.model2_template.model_grpc import (ModzyModelBase)
-from flavours.mlflow.interfaces.modzy.grpc_model.src.utils import (
+from ...grpc_model.src.auto_generated.model2_template.model_pb2_grpc import (
+    ModzyModelServicer,
+    add_ModzyModelServicer_to_server,
+)
+from ...grpc_model.src.utils import (
     InputOutputMismatchException,
     ModelVersionNotSynchronizedException,
     model_version_is_synchronized,
@@ -47,7 +48,7 @@ def log_stack_trace():
     LOGGER.critical(stack_trace_formatted)
 
 
-class ModzyModel(ModzyModelBase):
+class ModzyModel(ModzyModelServicer):
     def __init__(self):
 
         self.model = None
@@ -95,7 +96,7 @@ class ModzyModel(ModzyModelBase):
             explanation_format=features[5],
         )
 
-    async def Status(self, request, context):
+    def Status(self, request, context):
         start_status_call = t()
         if self.model is None:
             try:
@@ -161,7 +162,7 @@ class ModzyModel(ModzyModelBase):
         LOGGER.info(f"Completed call to Status Route in {t() - start_status_call}")
         return status_response
 
-    async def Run(self, request, context):
+    def Run(self, request, context):
         start_run_call = t()
         response = RunResponse()
         outputs = []
@@ -237,7 +238,7 @@ class ModzyModel(ModzyModelBase):
         )
         return response
 
-    async def Shutdown(self, request, context):
+    def Shutdown(self, request, context):
         shutdown_response = ShutdownResponse(
             status_code=200,
             status="OK",
@@ -270,19 +271,30 @@ def get_server_port():
     return os.getenv("PSC_MODEL_PORT", default=_GRPC_SERVER_PORT)
 
 
-async def serve():
-    model_server = ModzyModel()
-    servers = [model_server]
-    servers = ServerReflection.extend(servers)
-    server = Server(servers)
-    model_server.grpc_server = server
+def serve():
+    model_service = ModzyModel()
+    grpc_server = grpc.server(
+        futures.ThreadPoolExecutor(max_workers=MAX_WORKERS),
+        options=[
+            # TODO: this could potentially be filled out using the batch size and the input size with additional logic
+            ("grpc.max_send_message_length", 250 * 1024 * 1024),
+            ("grpc.max_receive_message_length", 250 * 1024 * 1024),
+        ],
+    )
+    add_ModzyModelServicer_to_server(model_service, grpc_server)
 
-    host = "0.0.0.0"
+    SERVICE_NAMES = [x.full_name for x in DESCRIPTOR.services_by_name['ModzyModel'].methods]
+    SERVICE_NAMES.append(reflection.SERVICE_NAME)
+    SERVICE_NAMES_2 = (DESCRIPTOR.services_by_name['ModzyModel'].full_name, reflection.SERVICE_NAME)
+    #reflection.enable_server_reflection(tuple(SERVICE_NAMES), grpc_server)
+    reflection.enable_server_reflection(SERVICE_NAMES_2, grpc_server)
+
     server_port = get_server_port()
-    with graceful_exit([server]):
-        await server.start(host, server_port)
-        print(f"Serving on {host}:{server_port}")
-        await server.wait_closed()    
+    grpc_server.add_insecure_port(f"[::]:{server_port}")  # TODO: is this insecure port really what we want?
+    grpc_server.start()
+    LOGGER.info(f"gRPC Server running on port {server_port}")
+    grpc_server.wait_for_termination()
+
 
 if __name__ == "__main__":
-    asyncio.run(serve())
+    serve()

@@ -1,5 +1,5 @@
 retry==0.9.2
-chassisml==1.4.2
+chassisml
 apache-libcloud==3.6.0
 flask==2.0.3
 requests==2.27.1

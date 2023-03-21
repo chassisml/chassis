@@ -2,8 +2,9 @@ flask
 loguru
 
 # Modzy Requirements
-grpcio-tools~=1.50.0
-grpclib~=0.4.3
-protobuf~=4.21.9
-pyyaml~=6.0
+grpcio-tools
+grpcio
+grpcio-reflection
+protobuf==3.19.4
+pyyaml
 six
