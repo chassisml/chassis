@@ -1,4 +1,4 @@
-FROM continuumio/miniconda3:latest
+FROM continuumio/miniconda3:4.12.0
 
 # At the moment it's always model.
 ARG MODEL_DIR
