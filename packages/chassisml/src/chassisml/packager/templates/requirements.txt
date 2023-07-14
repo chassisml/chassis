@@ -1,3 +1,4 @@
 cloudpickle == 2.2.0
+chassisml-server >= 2.0.0
 
 {{ additional_requirements }}

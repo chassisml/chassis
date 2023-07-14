@@ -2,25 +2,24 @@
 # -*- coding utf-8 -*-
 
 import _io
-import os
-import time
-import json
-import requests
-import urllib.parse
-import tempfile
-import shutil
-import mlflow
 import base64
+import json
+import os
+import shutil
 import string
+import tempfile
+import time
+import urllib.parse
 import warnings
+
+import mlflow
+import requests
 import validators
+from chassisml.grpc_model.src import model_client
 from packaging import version
 
-from chassisml.grpc_model.src import model_client
 from chassisml import __version__
-
-from ._utils import zipdir,fix_dependencies,write_metadata_yaml,NumpyEncoder,fix_dependencies_arm_gpu, \
-    docker_start,docker_clean_up
+from ._utils import docker_clean_up, docker_start, fix_dependencies, fix_dependencies_arm_gpu, NumpyEncoder, write_metadata_yaml, zipdir
 
 ###########################################
 MODEL_ZIP_NAME = 'model.zip'
@@ -32,6 +31,7 @@ routes = {
     'job': '/job',
     'test': '/test'
 }
+
 
 ###########################################
 
@@ -47,13 +47,13 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
         ssl_verification (Union[str, bool]): Can be path to certificate to use during requests to service, True (use verification), or False (don't use verification).
     """
 
-    def __init__(self,process_fn,batch_process_fn,batch_size,chassis_base_url,chassis_auth_header,ssl_verification):      
-        
+    def __init__(self, process_fn, batch_process_fn, batch_size, chassis_base_url, chassis_auth_header, ssl_verification):
+
         if process_fn and batch_process_fn:
             if not batch_size:
                 raise ValueError("Both batch_process_fn and batch_size must be provided for batch support.")
             self.predict = self._gen_predict_method(process_fn)
-            self.batch_predict = self._gen_predict_method(batch_process_fn,batch=True)
+            self.batch_predict = self._gen_predict_method(batch_process_fn, batch=True)
             self.batch_input = True
             self.batch_size = batch_size
         elif process_fn and not batch_process_fn:
@@ -63,8 +63,8 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
         elif batch_process_fn and not process_fn:
             if not batch_size:
                 raise ValueError("Both batch_process_fn and batch_size must be provided for batch support.")
-            self.predict = self._gen_predict_method(batch_process_fn,batch_to_single=True)
-            self.batch_predict = self._gen_predict_method(batch_process_fn,batch=True)
+            self.predict = self._gen_predict_method(batch_process_fn, batch_to_single=True)
+            self.batch_predict = self._gen_predict_method(batch_process_fn, batch=True)
             self.batch_input = True
             self.batch_size = batch_size
         else:
@@ -75,19 +75,20 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
         self.chassis_auth_header = chassis_auth_header
         self.ssl_verification = ssl_verification
 
-    def _gen_predict_method(self,process_fn,batch=False,batch_to_single=False):
-        def predict(_,model_input):
+    def _gen_predict_method(self, process_fn, batch=False, batch_to_single=False):
+        def predict(_, model_input):
             if batch_to_single:
                 output = process_fn([model_input])[0]
             else:
                 output = process_fn(model_input)
             if batch:
-                return [json.dumps(out,separators=(",", ":"),cls=NumpyEncoder).encode() for out in output]
+                return [json.dumps(out, separators=(",", ":"), cls=NumpyEncoder).encode() for out in output]
             else:
-                return json.dumps(output,separators=(",", ":"),cls=NumpyEncoder).encode()
+                return json.dumps(output, separators=(",", ":"), cls=NumpyEncoder).encode()
+
         return predict
 
-    def test(self,test_input):
+    def test(self, test_input):
         '''
         Runs a sample inference test on a single input on chassis model locally
 
@@ -104,21 +105,21 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
         results = chassis_model.test(sample_filepath)
         ```
         '''
-        if isinstance(test_input,_io.BufferedReader):
-            result = self.predict(None,test_input.read())
-        elif isinstance(test_input,bytes):
-            result = self.predict(None,test_input)
-        elif isinstance(test_input,str):
+        if isinstance(test_input, _io.BufferedReader):
+            result = self.predict(None, test_input.read())
+        elif isinstance(test_input, bytes):
+            result = self.predict(None, test_input)
+        elif isinstance(test_input, str):
             if os.path.exists(test_input):
-                result = self.predict(None,open(test_input,'rb').read())
+                result = self.predict(None, open(test_input, 'rb').read())
             else:
-                result = self.predict(None,bytes(test_input,encoding='utf8'))
+                result = self.predict(None, bytes(test_input, encoding='utf8'))
         else:
             print("Invalid input. Must be buffered reader, bytes, valid filepath, or text input.")
             return False
         return result
 
-    def test_batch(self,test_input):
+    def test_batch(self, test_input):
         '''
         Takes a single input file, creates a batch of size `batch_size` defined in `ChassisModel.create_model`, and runs a batch job against chassis model locally if `batch_process_fn` is defined.
 
@@ -139,26 +140,26 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
         if not self.batch_input:
             raise NotImplementedError("Batch inference not implemented.")
 
-        if hasattr(self,'batch_predict'):
+        if hasattr(self, 'batch_predict'):
             batch_method = self.batch_predict
         else:
             batch_method = self.predict
 
-        if isinstance(test_input,_io.BufferedReader):
-            results = batch_method(None,[test_input.read() for _ in range(self.batch_size)])
-        elif isinstance(test_input,bytes):
-            results = batch_method(None,[test_input for _ in range(self.batch_size)])
-        elif isinstance(test_input,str):
+        if isinstance(test_input, _io.BufferedReader):
+            results = batch_method(None, [test_input.read() for _ in range(self.batch_size)])
+        elif isinstance(test_input, bytes):
+            results = batch_method(None, [test_input for _ in range(self.batch_size)])
+        elif isinstance(test_input, str):
             if os.path.exists(test_input):
-                results = batch_method(None,[open(test_input,'rb').read() for _ in range(self.batch_size)])
+                results = batch_method(None, [open(test_input, 'rb').read() for _ in range(self.batch_size)])
             else:
-                results = batch_method(None,[bytes(test_input,encoding='utf8') for _ in range(self.batch_size)])
+                results = batch_method(None, [bytes(test_input, encoding='utf8') for _ in range(self.batch_size)])
         else:
             print("Invalid input. Must be buffered reader, bytes, valid filepath, or text input.")
             return False
         return results
 
-    def test_env(self,test_input_path,conda_env=None,fix_env=True):
+    def test_env(self, test_input_path, conda_env=None, fix_env=True):
         '''
         Runs a sample inference test in new conda environment created on the chassis service side. In other words, a "dry run" of a true chassis job to ensure model code runs within the chassis service.
         
@@ -180,19 +181,19 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
         ```        
 
         '''
-        model_directory = os.path.join(tempfile.mkdtemp(),CHASSIS_TMP_DIRNAME)
-        mlflow.pyfunc.save_model(path=model_directory, python_model=self, conda_env=conda_env, 
-                                extra_pip_requirements = None if conda_env else ["chassisml=={}".format(__version__)])
+        model_directory = os.path.join(tempfile.mkdtemp(), CHASSIS_TMP_DIRNAME)
+        mlflow.pyfunc.save_model(path=model_directory, python_model=self, conda_env=conda_env,
+                                 extra_pip_requirements=None if conda_env else ["chassisml=={}".format(__version__)])
 
         if fix_env:
             fix_dependencies(model_directory)
 
         # Compress all files in model directory to send them as a zip.
         tmppath = tempfile.mkdtemp()
-        zipdir(model_directory,tmppath,MODEL_ZIP_NAME)
-        
-        with open('{}/{}'.format(tmppath,MODEL_ZIP_NAME),'rb') as model_f, \
-                open(test_input_path,'rb') as test_input_f:
+        zipdir(model_directory, tmppath, MODEL_ZIP_NAME)
+
+        with open('{}/{}'.format(tmppath, MODEL_ZIP_NAME), 'rb') as model_f, \
+                open(test_input_path, 'rb') as test_input_f:
             files = [
                 ('sample_input', test_input_f),
                 ('model', model_f)
@@ -211,7 +212,7 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
 
         return res.json()
 
-    def save(self,path,conda_env=None,overwrite=False,fix_env=True,gpu=False,arm64=False):
+    def save(self, path, conda_env=None, overwrite=False, fix_env=True, gpu=False, arm64=False):
         '''
         Saves a copy of ChassisModel to local filepath
 
@@ -241,9 +242,9 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
 
         print("Chassis model saved.")
 
-    def publish(self,model_name,model_version,registry_user=None,registry_pass=None,
-                conda_env=None,fix_env=True,gpu=False,arm64=False,
-                sample_input_path=None,webhook=None):
+    def publish(self, model_name, model_version, registry_user=None, registry_pass=None,
+                conda_env=None, fix_env=True, gpu=False, arm64=False,
+                sample_input_path=None, webhook=None):
         '''
         Executes chassis job, which containerizes model and pushes container image to Docker registry.
 
@@ -286,9 +287,9 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
             raise ValueError("Provided webhook is not a valid URL")
 
         try:
-            model_directory = os.path.join(tempfile.mkdtemp(),CHASSIS_TMP_DIRNAME)
-            mlflow.pyfunc.save_model(path=model_directory, python_model=self, conda_env=conda_env, 
-                                    extra_pip_requirements = None if conda_env else ["chassisml=={}".format(__version__)])
+            model_directory = os.path.join(tempfile.mkdtemp(), CHASSIS_TMP_DIRNAME)
+            mlflow.pyfunc.save_model(path=model_directory, python_model=self, conda_env=conda_env,
+                                     extra_pip_requirements=None if conda_env else ["chassisml=={}".format(__version__)])
 
             if fix_env:
                 fix_dependencies(model_directory)
@@ -301,11 +302,11 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
 
             # Compress all files in model directory to send them as a zip.
             tmppath = tempfile.mkdtemp()
-            zipdir(model_directory,tmppath,MODEL_ZIP_NAME)
-            
+            zipdir(model_directory, tmppath, MODEL_ZIP_NAME)
+
             image_name = "-".join(model_name.translate(str.maketrans('', '', string.punctuation)).lower().split())
             image_data = {
-                'name': f"{registry_user+'/' if (registry_user and registry_pass) else ''}{image_name}:{model_version}",
+                'name': f"{registry_user + '/' if (registry_user and registry_pass) else ''}{image_name}:{model_version}",
                 'model_name': model_name,
                 'model_path': tmppath,
                 'publish': True,
@@ -315,12 +316,12 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
             }
 
             if registry_user and registry_pass:
-                image_data['registry_auth'] = base64.b64encode("{}:{}".format(registry_user,registry_pass).encode("utf-8")).decode("utf-8")
+                image_data['registry_auth'] = base64.b64encode("{}:{}".format(registry_user, registry_pass).encode("utf-8")).decode("utf-8")
 
-            metadata_path = os.path.join(tmppath,YAML_NAME)
-            write_metadata_yaml(model_name,model_version,metadata_path,batch_size=self.batch_size,gpu=gpu)
+            metadata_path = os.path.join(tmppath, YAML_NAME)
+            write_metadata_yaml(model_name, model_version, metadata_path, batch_size=self.batch_size, gpu=gpu)
 
-            with open('{}/{}'.format(tmppath,MODEL_ZIP_NAME),'rb') as f:
+            with open('{}/{}'.format(tmppath, MODEL_ZIP_NAME), 'rb') as f:
                 files = [
                     ('image_data', json.dumps(image_data)),
                     ('model', f)
@@ -353,13 +354,14 @@ class ChassisModel(mlflow.pyfunc.PythonModel):
             shutil.rmtree(model_directory)
 
             return res.json()
-        
+
         except Exception as e:
             if os.path.exists(tmppath):
                 shutil.rmtree(tmppath)
             if os.path.exists(model_directory):
                 shutil.rmtree(model_directory)
-            raise(e)
+            raise (e)
+
 
 ###########################################
 
@@ -374,21 +376,21 @@ class ChassisClient:
         ssl_verification (Union[str, bool]): Can be path to certificate to use during requests to service, True (use verification), or False (don't use verification).
     """
 
-    def __init__(self,base_url='http://localhost:5000',auth_header=None,ssl_verification=True):
+    def __init__(self, base_url='http://localhost:5000', auth_header=None, ssl_verification=True):
         self.base_url = base_url
         self.auth_header = auth_header
         self.ssl_verification = ssl_verification
 
         if self.auth_header:
-            res = requests.get(base_url,headers={'Authorization': self.auth_header},verify=self.ssl_verification)
+            res = requests.get(base_url, headers={'Authorization': self.auth_header}, verify=self.ssl_verification)
         else:
-            res = requests.get(base_url,verify=self.ssl_verification)
+            res = requests.get(base_url, verify=self.ssl_verification)
 
         version_route = base_url + "/version"
         if self.auth_header:
-            res = requests.get(version_route,headers={'Authorization': self.auth_header},verify=self.ssl_verification)
+            res = requests.get(version_route, headers={'Authorization': self.auth_header}, verify=self.ssl_verification)
         else:
-            res = requests.get(version_route,verify=self.ssl_verification)
+            res = requests.get(version_route, verify=self.ssl_verification)
 
         parsed_version = version.parse(res.text)
         if parsed_version < version.Version('1.0.0'):
@@ -428,9 +430,9 @@ class ChassisClient:
         '''
         route = f'{urllib.parse.urljoin(self.base_url, routes["job"])}/{job_id}'
         if self.auth_header:
-            res = requests.get(route,headers={'Authorization': self.auth_header},verify=self.ssl_verification)
+            res = requests.get(route, headers={'Authorization': self.auth_header}, verify=self.ssl_verification)
         else:
-            res = requests.get(route,verify=self.ssl_verification)
+            res = requests.get(route, verify=self.ssl_verification)
 
         data = res.json()
         return data
@@ -463,13 +465,13 @@ class ChassisClient:
         '''
         route = f'{urllib.parse.urljoin(self.base_url, routes["job"])}/{job_id}/logs'
         if self.auth_header:
-            res = requests.get(route,headers={'Authorization': self.auth_header},verify=self.ssl_verification)
+            res = requests.get(route, headers={'Authorization': self.auth_header}, verify=self.ssl_verification)
         else:
-            res = requests.get(route,verify=self.ssl_verification)
+            res = requests.get(route, verify=self.ssl_verification)
         res.raise_for_status()
         return res.text
 
-    def block_until_complete(self,job_id,timeout=None,poll_interval=5):
+    def block_until_complete(self, job_id, timeout=None, poll_interval=5):
         '''
         Blocks until Chassis job is complete or timeout is reached. Polls Chassis job API until a result is marked finished.
 
@@ -541,12 +543,11 @@ class ChassisClient:
         ```
         '''
         url = f'{urllib.parse.urljoin(self.base_url, routes["job"])}/{job_id}/download-tar'
-        
-        if self.auth_header:
-            r = requests.get(url,headers={'Authorization': self.auth_header},verify=self.ssl_verification)
-        else:
-            r = requests.get(url,verify=self.ssl_verification)
 
+        if self.auth_header:
+            r = requests.get(url, headers={'Authorization': self.auth_header}, verify=self.ssl_verification)
+        else:
+            r = requests.get(url, verify=self.ssl_verification)
 
         if r.status_code == 200:
             with open(output_filename, 'wb') as f:
@@ -554,7 +555,7 @@ class ChassisClient:
         else:
             print(f'Error download tar: {r.text}')
 
-    def create_model(self,process_fn=None,batch_process_fn=None,batch_size=None):
+    def create_model(self, process_fn=None, batch_process_fn=None, batch_size=None):
         '''
         Builds chassis model locally
 
@@ -618,9 +619,9 @@ class ChassisClient:
         if (batch_process_fn and not batch_size) or (batch_size and not batch_process_fn):
             raise ValueError("Both batch_process_fn and batch_size must be provided for batch support.")
 
-        return ChassisModel(process_fn,batch_process_fn,batch_size,self.base_url,self.auth_header,self.ssl_verification)
+        return ChassisModel(process_fn, batch_process_fn, batch_size, self.base_url, self.auth_header, self.ssl_verification)
 
-    def run_inference(self,input_data,container_url="localhost",host_port=45000):
+    def run_inference(self, input_data, container_url="localhost", host_port=45000):
         '''
         This is the method you use to submit data to a container chassis has built for inference. It assumes the container has been downloaded from dockerhub and is running somewhere you have access to.
 
@@ -656,7 +657,7 @@ class ChassisClient:
         model_client.override_server_URL(container_url, host_port)
         return model_client.run(input_data)
 
-    def docker_infer(self,image_id,input_data,container_url="localhost",host_port=5001,container_port=None,timeout=20,clean_up=True,pull_container=False):
+    def docker_infer(self, image_id, input_data, container_url="localhost", host_port=5001, container_port=None, timeout=20, clean_up=True, pull_container=False):
         '''
         Runs inference on an OMI compliant container. This method checks to see if a container is running and if not starts it. The method then runs inference against the input_data with the model in the container, and optionally shuts down the container.
 
@@ -695,7 +696,7 @@ class ChassisClient:
             container_id = docker_start(image_id, host_port=host_port, container_port=container_port, timeout=timeout, pull_container=pull_container)
             if "Error" in container_id:
                 raise ValueError("container_id wrong")
-            return_value = self.run_inference(input_data, container_url=container_url,  host_port=host_port)
+            return_value = self.run_inference(input_data, container_url=container_url, host_port=host_port)
             if clean_up:
                 docker_clean_up(container_id)
         except Exception as e:

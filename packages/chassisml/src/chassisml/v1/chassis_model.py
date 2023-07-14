@@ -4,7 +4,11 @@ import os
 import urllib.parse
 from typing import Union
 
+import cloudpickle
+
+from chassis.runtime import ModelRunner
 from ._utils import NumpyEncoder
+from ..packager.package import Package
 
 routes = {
     'build': '/build',
@@ -38,14 +42,10 @@ class ChassisModel:
         ssl_verification (Union[str, bool]): Can be path to certificate to use during requests to service, True (use verification), or False (don't use verification).
     """
 
+    # TODO - add type annotations to these parameters
     def __init__(self, process_fn, batch_process_fn, batch_size, chassis_base_url, chassis_auth_header, ssl_verification):
         if process_fn and batch_process_fn:
-            if not batch_size:
-                raise ValueError("Both batch_process_fn and batch_size must be provided for batch support")
-            self.predict = _gen_predict_method(process_fn)
-            self.batch_predict = _gen_predict_method(batch_process_fn, batch=True)
-            self.batch_input = True
-            self.batch_size = batch_size
+            raise ValueError("Please supply either a process_fn or batch_process_fn but not both")
         elif process_fn and not batch_process_fn:
             self.predict = _gen_predict_method(process_fn)
             self.batch_input = False
@@ -53,13 +53,13 @@ class ChassisModel:
         elif batch_process_fn and not process_fn:
             if not batch_size:
                 raise ValueError("Both batch_process_fn and batch_size must be provided for batch support")
-            self.predict = _gen_predict_method(batch_process_fn, batch_to_single=True)
-            self.batch_predict = _gen_predict_method(batch_process_fn, batch=True)
+            self.predict = _gen_predict_method(batch_process_fn, batch=True)
             self.batch_input = True
             self.batch_size = batch_size
         else:
             raise ValueError("At least one of process_fn or batch_process_fn must be provided.")
 
+        # TODO - add deprecation warning for supplying this info here.
         self.chassis_build_url = urllib.parse.urljoin(chassis_base_url, routes["build"])
         self.chassis_test_url = urllib.parse.urljoin(chassis_base_url, routes["test"])
         self.chassis_auth_header = chassis_auth_header
@@ -135,8 +135,34 @@ class ChassisModel:
             return False
         return results
 
-    def save(self, path: str, requirements: Union[str, dict] = None, overwrite=False, fix_env=False, gpu=False, arm64=False):
-        pass
+    def save(self, path: str, requirements: Union[str, dict] = None, overwrite=False, fix_env=False, gpu=False, arm64=False, conda_env=None):
+        if conda_env is not None:
+            print("DEPRECATION WARNING: Conda support is deprecated and will be removed in the next major release")
+            # TODO - parse conda environment and add python version and pip requirements
 
-    def publish(self, model_name: str, model_version: str, registry_user=None, registry_pass=None, requirements=None, fix_env=True, gpu=False, arm64=False, sample_input_path=None, webhook=None):
+        if path is not None and not os.path.exists(path):
+            os.makedirs(path, exist_ok=True)
+
+        package = Package(
+            base_dir=path,
+            # model_name=self._config.name,
+            # model_version=self._config.version,
+            batch_size=self.batch_size,
+            use_gpu=gpu,
+            arch="arm64" if arm64 else "amd64",
+            python_version="3.9",  # TODO
+        )
+        package.prepare_context()
+        package.write_requirements(requirements)
+
+        runner = ModelRunner(self.predict, supports_batch=self.batch_input, batch_size=self.batch_size)
+        package.write_model_pickle_file(block=lambda out: cloudpickle.dump(runner, out))
+
+        return package
+
+    def publish(self, model_name: str, model_version: str, registry_user=None, registry_pass=None, requirements=None, fix_env=True, gpu=False, arm64=False, sample_input_path=None, webhook=None, conda_env=None):
+        if conda_env is not None:
+            print("DEPRECATION WARNING: Conda support is deprecated and will be removed in the next major release")
+            # TODO - parse conda environment and add python version and pip requirements
+
         pass
