@@ -1,4 +1,5 @@
 .*
+!.python-version
 *~
 *.tar
 venv
