@@ -1,14 +1,13 @@
-.*
-!.python-version
-!.dockerignore
 *~
 *.tar
+.venv
 venv
 chassis-sdk/examples/model
 *__pycache__
 *.egg-info
 build
 dist
+.idea
 
 chassisml/examples/keras/*
 local_test_.py
