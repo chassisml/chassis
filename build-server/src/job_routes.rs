@@ -1,8 +1,9 @@
+use crate::AppState;
 use actix_web::{get, web, Error, HttpResponse, Responder};
 use k8s_openapi::api::batch::v1::{Job, JobStatus};
 use k8s_openapi::api::core::v1::Pod;
 use kube::api::{ListParams, LogParams};
-use kube::{Api, Client, ResourceExt};
+use kube::{Api, ResourceExt};
 use serde::Serialize;
 
 #[derive(Serialize)]
@@ -13,12 +14,11 @@ struct JobStatusResponse {
 }
 
 #[get("/job/{job_id}")]
-pub async fn get_job_status(job_id: web::Path<String>) -> Result<HttpResponse, Error> {
-    let client = match Client::try_default().await {
-        Ok(c) => c,
-        Err(err) => return Ok(HttpResponse::ServiceUnavailable().body(err.to_string())),
-    };
-    let jobs: Api<Job> = Api::default_namespaced(client);
+pub async fn get_job_status(
+    job_id: web::Path<String>,
+    state: web::Data<AppState>,
+) -> Result<HttpResponse, Error> {
+    let jobs: Api<Job> = Api::default_namespaced(state.kube_client.clone());
     let job = match jobs.get(job_id.as_str()).await {
         Ok(j) => j,
         Err(_) => return Ok(HttpResponse::NotFound().body("job not found")),
@@ -37,7 +37,7 @@ pub async fn get_job_status(job_id: web::Path<String>) -> Result<HttpResponse, E
     };
 
     if status.is_some() && status.unwrap().failed > Some(0) {
-        job_status.logs = get_logs(&job_id).await
+        job_status.logs = get_logs(&job_id, &state).await
     }
 
     Ok(HttpResponse::Ok().json(job_status))
@@ -49,19 +49,18 @@ pub async fn download_job_tar(job_id: web::Path<String>) -> impl Responder {
 }
 
 #[get("/job/{job_id}/logs")]
-pub async fn get_job_logs(job_id: web::Path<String>) -> Result<HttpResponse, Error> {
-    match get_logs(&job_id).await {
+pub async fn get_job_logs(
+    job_id: web::Path<String>,
+    state: web::Data<AppState>,
+) -> Result<HttpResponse, Error> {
+    match get_logs(&job_id, &state).await {
         Some(l) => Ok(HttpResponse::Ok().body(l)),
         None => Ok(HttpResponse::NotFound().body("not found")),
     }
 }
 
-async fn get_logs(job_id: &String) -> Option<String> {
-    let client = match Client::try_default().await {
-        Ok(c) => c,
-        Err(_) => return None,
-    };
-    let pods: Api<Pod> = Api::default_namespaced(client);
+async fn get_logs(job_id: &String, state: &web::Data<AppState>) -> Option<String> {
+    let pods: Api<Pod> = Api::default_namespaced(state.kube_client.clone());
     let list_params = ListParams::default().labels(format!("job-name={}", job_id).as_str());
     let job_pods = match pods.list(&list_params).await {
         Ok(p) => p,

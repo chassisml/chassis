@@ -1,9 +1,10 @@
 mod build;
 mod job_routes;
 
-use actix_web::{get, post, App, HttpResponse, HttpServer, Responder};
+use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
 use build::build_image;
 use job_routes::{download_job_tar, get_job_logs, get_job_status};
+use kube::Client;
 
 #[get("/")]
 async fn root() -> impl Responder {
@@ -25,10 +26,17 @@ async fn test() -> impl Responder {
     HttpResponse::Gone().body("The /test route has been deprecated and removed.")
 }
 
+pub struct AppState {
+    kube_client: Client,
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    HttpServer::new(|| {
+    let kube_client = Client::try_default().await.unwrap();
+    let state = web::Data::new(AppState { kube_client });
+    HttpServer::new(move || {
         App::new()
+            .app_data(state.clone())
             .service(root)
             .service(health)
             .service(version)
