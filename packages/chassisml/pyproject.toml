@@ -19,6 +19,7 @@ dependencies = [
     "chassisml-protobuf",
     "Jinja2 >= 3.1.2",
     "cloudpickle == 2.2.0",
+    "pyyaml",
 ]
 
 [project.urls]

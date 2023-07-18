@@ -135,7 +135,7 @@ class ChassisModel:
             return False
         return results
 
-    def save(self, path: str, requirements: Union[str, dict] = None, overwrite=False, fix_env=False, gpu=False, arm64=False, conda_env=None):
+    def save(self, path: str, requirements: Union[str, dict] = None, overwrite=False, fix_env=False, gpu=False, arm64=False, conda_env=None) -> Package:
         if conda_env is not None:
             print("DEPRECATION WARNING: Conda support is deprecated and will be removed in the next major release")
             # TODO - parse conda environment and add python version and pip requirements
@@ -145,8 +145,8 @@ class ChassisModel:
 
         package = Package(
             base_dir=path,
-            # model_name=self._config.name,
-            # model_version=self._config.version,
+            model_name="Chassis Model",
+            model_version="0.0.1",
             batch_size=self.batch_size,
             use_gpu=gpu,
             arch="arm64" if arm64 else "amd64",

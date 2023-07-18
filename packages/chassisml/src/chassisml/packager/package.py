@@ -2,15 +2,14 @@ import os.path
 import platform
 import shutil
 import tempfile
-from distutils.dir_util import copy_tree
-from shutil import copy
+from shutil import copy, copytree
 
 from jinja2 import Environment, PackageLoader, select_autoescape
 
 from .packageable import PACKAGE_DATA_PATH
 
 env = Environment(
-    loader=PackageLoader(package_name="chassis.packager"),
+    loader=PackageLoader(package_name="chassisml.packager"),
     autoescape=select_autoescape()
 )
 
@@ -63,7 +62,7 @@ class Package:
             f.write(rendered_template.encode("utf-8"))
 
     def write_model_pickle_file(self, block):
-        with open(os.path.join(self.base_dir, "model.pkl"), "wb") as f:
+        with open(os.path.join(self.data_dir, "model.pkl"), "wb") as f:
             block(f)
 
     def prepare_context(self):
@@ -86,8 +85,9 @@ class Package:
 
         # Save .dockerignore to package location.
         dockerignore_template = env.get_template(".dockerignore")
+        dockerignore = dockerignore_template.render()
         with open(os.path.join(self.base_dir, ".dockerignore"), "wb") as f:
-            f.write(dockerignore_template.render().encode("utf-8"))
+            f.write(dockerignore.encode("utf-8"))
 
         # Save an empty requirements.txt so we ensure the file is there.
         # It will be overridden if the user calls `write_requirements`.
@@ -99,12 +99,15 @@ class Package:
         #     f.write(entrypoint_template.render().encode("utf-8"))
 
         # # Copy any Chassis libraries we need.
-        self._copy_libraries()
+        self._copy_libraries(dockerignore.splitlines())
 
     def cleanup(self):
         shutil.rmtree(self.base_dir)
 
-    def _copy_libraries(self):
+    def _copy_libraries(self, ignore_patterns: list[str]):
         root = os.path.join(os.path.dirname(__file__), "..", "..")
+        ignore = shutil.ignore_patterns(*ignore_patterns)
         # copy(os.path.join(root, "metadata.py"), self.chassis_dir)
-        copy_tree(os.path.join(root, "chassis", "runtime"), os.path.join(self.chassis_dir, "runtime"))
+        copytree(os.path.join(root, "chassis", "runtime"), os.path.join(self.chassis_dir, "runtime"), ignore=ignore)
+        copytree(os.path.join(root, "chassis", "server", "omi"), os.path.join(self.chassis_dir, "server", "omi"), ignore=ignore)
+        # TODO - kserve
