@@ -1,4 +1,5 @@
 cloudpickle == 2.2.0
-chassisml-server >= 2.0.0
+chassisml-protobuf
+grpclib
 
 {{ additional_requirements }}

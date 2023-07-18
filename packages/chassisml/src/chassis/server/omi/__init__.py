@@ -1,1 +1,1 @@
-GRPC_SERVER_PORT = 45000
+from .server import serve

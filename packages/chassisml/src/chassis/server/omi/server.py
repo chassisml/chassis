@@ -13,23 +13,14 @@ from grpclib.utils import graceful_exit
 
 from chassis.protos.v1.model_grpc import ModzyModelBase
 from chassis.protos.v1.model_pb2 import (
-    ModelDescription,
-    ModelFeatures,
-    ModelInfo,
-    ModelInput,
-    ModelOutput,
-    ModelResources,
-    ModelTimeout,
     OutputItem,
     RunResponse,
     ShutdownResponse,
     StatusResponse,
 )
 from chassis.runtime import ModelRunner
-from . import GRPC_SERVER_PORT as _GRPC_SERVER_PORT
-from .utils import (
-    parse_complete_model_yaml,
-)
+
+GRPC_SERVER_PORT = 45000
 
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
@@ -45,66 +36,24 @@ def log_stack_trace():
 class ModzyModel(ModzyModelBase):
     def __init__(self):
         self.model: Union[ModelRunner, None] = None
-        (info, description, inputs, outputs, resources, timeout, features) = parse_complete_model_yaml()
 
-        self.adversarial_defense = features[0]
-        self.batch_size = features[1]
-        self.drift_detection = features[4] is not None
-        self.explainable = features[5] is not None
-        self.retrainable = features[2]
+        with open("data/model_info", "rb") as f:
+            data = f.read()
 
-        self.info = ModelInfo(
-            model_name=info[0], model_version=info[1], model_author=info[2], model_type=info[3], source=info[4]
-        )
+        sr = StatusResponse()
+        sr.ParseFromString(data)
+        self.metadata = sr
 
-        self.description = ModelDescription(
-            summary=description[0], details=description[1], technical=description[2], performance=description[3]
-        )
-
-        self.inputs = [
-            ModelInput(
-                filename=input_[0],
-                accepted_media_types=["not provided"] if input_[1] == [None] else input_[1],
-                max_size=input_[2],
-                description=input_[3],
-            )
-            for input_ in inputs
-        ]
-
-        self.outputs = [
-            ModelOutput(filename=output[0], media_type=output[1], max_size=output[2], description=output[3])
-            for output in outputs
-        ]
-
-        self.resources = ModelResources(required_ram=resources[0], num_cpus=resources[1], num_gpus=resources[2])
-
-        self.timeout = ModelTimeout(status=timeout[0], run=timeout[1])
-
-        self.features = ModelFeatures(
-            adversarial_defense=features[0],
-            batch_size=features[1],
-            retrainable=features[2],
-            results_format=features[3],
-            drift_format=features[4],
-            explanation_format=features[5],
-        )
-
-    def _build_status_response(self, status_code: int, message: str):
+    def _build_status_response(self, status_code: int, message: str) -> StatusResponse:
         status = "OK"
         if status_code != 200:
             status = "Internal Server Error"
-        return StatusResponse(
-            status_code=status_code,
-            status=status,
-            message=message,
-            model_info=self.info,
-            description=self.description,
-            inputs=self.inputs,
-            outputs=self.outputs,
-            resources=self.resources,
-            timeout=self.timeout,
-            features=self.features,
-        )
+        sr = StatusResponse()
+        sr.MergeFrom(self.metadata)
+        sr.status_code = status_code
+        sr.status = status
+        sr.message = message
+        return sr
 
     async def Status(self, stream):
         request = await stream.recv_message()
@@ -131,11 +80,11 @@ class ModzyModel(ModzyModelBase):
         LOGGER.info(
             f"The model is {'not ' if self.model is None else ''}loaded.\n"
             f"Features: "
-            f"Batch Size {self.batch_size}, "
-            f"Adversarial Defence = {self.adversarial_defense}, "
-            f"Drift Detection = {self.drift_detection}, "
-            f"Explainable = {self.explainable}, "
-            f"Retrainable = {self.retrainable}"
+            f"Batch Size {self.metadata.features.batch_size}, "
+            f"Adversarial Defence = {self.metadata.features.adversarial_defense}, "
+            f"Drift Detection = {len(self.metadata.features.drift_format) > 0}, "
+            f"Explainable = {len(self.metadata.features.explanation_format) > 0}, "
+            f"Retrainable = {self.metadata.features.retrainable}"
         )
         LOGGER.info(f"Completed call to Status Route in {t() - start_status_call}")
         await stream.send_message(status_response)
@@ -213,7 +162,7 @@ def create_output_item(message, data: Dict[str, bytes] = None):
 
 
 def get_server_port():
-    return os.getenv("PSC_MODEL_PORT", default=_GRPC_SERVER_PORT)
+    return os.getenv("PSC_MODEL_PORT", default=GRPC_SERVER_PORT)
 
 
 async def serve():

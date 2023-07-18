@@ -47,15 +47,11 @@ class ChassisModel:
         if process_fn and batch_process_fn:
             raise ValueError("Please supply either a process_fn or batch_process_fn but not both")
         elif process_fn and not batch_process_fn:
-            self.predict = _gen_predict_method(process_fn)
-            self.batch_input = False
-            self.batch_size = None
+            self.runner = ModelRunner(process_fn, supports_batch=False, batch_size=1)
         elif batch_process_fn and not process_fn:
             if not batch_size:
                 raise ValueError("Both batch_process_fn and batch_size must be provided for batch support")
-            self.predict = _gen_predict_method(batch_process_fn, batch=True)
-            self.batch_input = True
-            self.batch_size = batch_size
+            self.runner = ModelRunner(batch_process_fn, supports_batch=True, batch_size=batch_size)
         else:
             raise ValueError("At least one of process_fn or batch_process_fn must be provided.")
 
@@ -113,13 +109,10 @@ class ChassisModel:
         results = chassis_model.test_batch(sample_filepath)
         ```
         """
-        if not self.batch_input:
+        if not self.runner.supports_batch:
             raise NotImplementedError("Batch inference not implemented.")
 
-        if hasattr(self, 'batch_predict'):
-            batch_method = self.batch_predict
-        else:
-            batch_method = self.predict
+        batch_method = self.runner.predict
 
         if isinstance(test_input, _io.BufferedReader):
             results = batch_method(None, [test_input.read() for _ in range(self.batch_size)])
@@ -147,16 +140,14 @@ class ChassisModel:
             base_dir=path,
             model_name="Chassis Model",
             model_version="0.0.1",
-            batch_size=self.batch_size,
+            batch_size=self.runner.batch_size,
             use_gpu=gpu,
             arch="arm64" if arm64 else "amd64",
             python_version="3.9",  # TODO
         )
         package.prepare_context()
         package.write_requirements(requirements)
-
-        runner = ModelRunner(self.predict, supports_batch=self.batch_input, batch_size=self.batch_size)
-        package.write_model_pickle_file(block=lambda out: cloudpickle.dump(runner, out))
+        package.write_model_pickle_file(block=lambda out: cloudpickle.dump(self.runner, out))
 
         return package
 

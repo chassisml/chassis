@@ -6,6 +6,8 @@ from shutil import copy, copytree
 
 from jinja2 import Environment, PackageLoader, select_autoescape
 
+from chassis.metadata import ModelMetadata
+from chassis.protos.v1.model_pb2 import StatusResponse
 from .packageable import PACKAGE_DATA_PATH
 
 env = Environment(
@@ -31,9 +33,17 @@ def _convert_arch_to_container_arch(arch):
 
 class Package:
 
-    def __init__(self, model_name: str, model_version: str, batch_size: int = 1, python_version: str = "3.9", arch: str = "amd64", use_gpu: bool = False, base_dir: str = None):
+    def __init__(self, model_name: str, model_version: str, metadata: ModelMetadata = None, batch_size: int = 1, python_version: str = "3.9", arch: str = "amd64", use_gpu: bool = False, base_dir: str = None):
         self.model_name = model_name
         self.model_version = model_version
+        if metadata is not None:
+            self.metadata = metadata
+        else:
+            md = ModelMetadata.default()
+            md.info.model_name = model_name
+            md.info.model_version = model_version
+            self.metadata = md
+        self.metadata.info.model_name = model_name
         self.batch_size = batch_size
         self.python_version = python_version
         self.arch = arch
@@ -65,6 +75,21 @@ class Package:
         with open(os.path.join(self.data_dir, "model.pkl"), "wb") as f:
             block(f)
 
+    def write_metadata(self, md: ModelMetadata):
+        sr = StatusResponse()
+        sr.model_info.CopyFrom(md.info)
+        sr.description.CopyFrom(md.description)
+        sr.inputs.MergeFrom(md.inputs)
+        sr.outputs.MergeFrom(md.outputs)
+        sr.resources.CopyFrom(md.resources)
+        sr.timeout.CopyFrom(md.timeout)
+        sr.features.CopyFrom(md.features)
+
+        data = sr.SerializeToString()
+
+        with open(os.path.join(self.data_dir, "model_info"), "wb") as f:
+            f.write(data)
+
     def prepare_context(self):
         print("Using build directory: " + self.base_dir)
         # Ensure the target directories exist.
@@ -90,13 +115,17 @@ class Package:
             f.write(dockerignore.encode("utf-8"))
 
         # Save an empty requirements.txt so we ensure the file is there.
-        # It will be overridden if the user calls `write_requirements`.
+        # It will be overwritten if the user calls `write_requirements`.
         self.write_requirements("")
 
-        # # Save the entrypoint file.
-        # entrypoint_template = env.get_template("entrypoint.py")
-        # with open(os.path.join(self.base_dir, "entrypoint.py"), "wb") as f:
-        #     f.write(entrypoint_template.render().encode("utf-8"))
+        # Save a default model.yaml file to ensure the file is there.
+        # It may be overwritten if the user calls `write_metadata`.
+        self.write_metadata(self.metadata)
+
+        # Save the entrypoint file.
+        entrypoint_template = env.get_template("entrypoint.py")
+        with open(os.path.join(self.base_dir, "entrypoint.py"), "wb") as f:
+            f.write(entrypoint_template.render().encode("utf-8"))
 
         # # Copy any Chassis libraries we need.
         self._copy_libraries(dockerignore.splitlines())
@@ -107,7 +136,7 @@ class Package:
     def _copy_libraries(self, ignore_patterns: list[str]):
         root = os.path.join(os.path.dirname(__file__), "..", "..")
         ignore = shutil.ignore_patterns(*ignore_patterns)
-        # copy(os.path.join(root, "metadata.py"), self.chassis_dir)
         copytree(os.path.join(root, "chassis", "runtime"), os.path.join(self.chassis_dir, "runtime"), ignore=ignore)
+        copytree(os.path.join(root, "chassis", "metadata"), os.path.join(self.chassis_dir, "metadata"), ignore=ignore)
         copytree(os.path.join(root, "chassis", "server", "omi"), os.path.join(self.chassis_dir, "server", "omi"), ignore=ignore)
         # TODO - kserve
