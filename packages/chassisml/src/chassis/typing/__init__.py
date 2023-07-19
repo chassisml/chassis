@@ -1,1 +1,1 @@
-from .types import PredictFunction
+from .types import *

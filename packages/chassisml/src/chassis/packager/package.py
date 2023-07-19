@@ -52,7 +52,7 @@ class Package:
         self._chassis_dir = None
         self._data_dir = None
 
-    def create(self, base_dir=None, arch="amd64", use_gpu=False, python_version="3.9"):
+    def create(self, base_dir=None, arch="amd64", use_gpu=False, python_version="3.9") -> str:
         self._base_dir = base_dir if not None else tempfile.mkdtemp()
         self._chassis_dir = os.path.join(self._base_dir, "chassis")
         self._data_dir = os.path.join(self._base_dir, PACKAGE_DATA_PATH)
@@ -60,6 +60,8 @@ class Package:
         self._prepare_context(arch=arch, python_version=python_version, use_gpu=use_gpu)
         self._write_requirements(self.model.requirements)
         self._write_python_modules(self.model.python_modules)
+
+        return self._base_dir
 
     def cleanup(self):
         if os.path.exists(self._base_dir):

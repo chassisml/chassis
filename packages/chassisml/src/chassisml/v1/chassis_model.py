@@ -1,126 +1,73 @@
 import _io
 import os
-import urllib.parse
-from typing import Union
+from typing import Any, Union
 
 from chassis.builder import DockerBuilder
 from chassis.packager import Package, Packageable
 from chassis.runtime import ModelRunner, PYTHON_MODEL_KEY
-
-routes = {
-    'build': '/build',
-    'job': '/job',
-    'test': '/test'
-}
+from chassis.typing import PredictFunction
+from .helpers import deprecated
 
 
 class ChassisModel(Packageable):
-    """
-    The Chassis Model object.
 
-    Attributes:
-        predict (function): predict function.
-            Will wrap user-provided function which takes two arguments: model_input (bytes) and model_context (dict).
-        chassis_build_url (str): The build url for the Chassis API.
-        ssl_verification (Union[str, bool]): Can be path to certificate to use during requests to service, True (use verification), or False (don't use verification).
-    """
+    def __init__(self, process_fn: PredictFunction, batch_size=1, chassis_client=None):
+        self.runner = ModelRunner(process_fn, batch_size=batch_size)
+        self.python_modules[PYTHON_MODEL_KEY] = self.runner
+        if chassis_client is not None:
+            self.chassis_client = chassis_client
 
-    # TODO - add type annotations to these parameters
-    def __init__(self, process_fn, batch_process_fn, batch_size, chassis_base_url, chassis_auth_header, ssl_verification):
-        if process_fn and batch_process_fn:
-            raise ValueError("Please supply either a process_fn or batch_process_fn but not both")
-        elif process_fn and not batch_process_fn:
-            self.runner = ModelRunner(process_fn, supports_batch=False, batch_size=1)
-        elif batch_process_fn and not process_fn:
-            if not batch_size:
-                raise ValueError("Both batch_process_fn and batch_size must be provided for batch support")
-            self.runner = ModelRunner(batch_process_fn, supports_batch=True, batch_size=batch_size)
-        else:
-            raise ValueError("At least one of process_fn or batch_process_fn must be provided.")
-
-        # TODO - add deprecation warning for supplying this info here.
-        self.chassis_build_url = urllib.parse.urljoin(chassis_base_url, routes["build"])
-        self.chassis_test_url = urllib.parse.urljoin(chassis_base_url, routes["test"])
-        self.chassis_auth_header = chassis_auth_header
-        self.ssl_verification = ssl_verification
-
-    def test(self, test_input: Union[str, bytes, _io.BufferedReader]):
-        """
-        Runs a sample inference test on a single input on chassis model locally
-
-        Args:
-            test_input (Union[str, bytes, BufferedReader]): Single sample input data to test model
-
-        Returns:
-            bytes: raw model predictions returned by `process_fn` method
-
-        Examples:
-        ```python
-        chassis_model = chassis_client.create_model(process_fn=process)
-        sample_filepath = './sample_data.json'
-        results = chassis_model.test(sample_filepath)
-        ```
-        """
+    def test(self, test_input: Union[str, bytes, _io.BufferedReader, dict[str, bytes], list[dict[str, bytes]]]) -> list[dict[str, Any]]:
         if isinstance(test_input, _io.BufferedReader):
-            result = self.runner.predict(None, test_input.read())
+            result = self.runner.predict([{"input": test_input.read()}])
         elif isinstance(test_input, bytes):
-            result = self.runner.predict(None, test_input)
+            result = self.runner.predict([{"input": test_input}])
         elif isinstance(test_input, str):
             if os.path.exists(test_input):
-                result = self.runner.predict(None, open(test_input, 'rb').read())
+                data = open(test_input, 'rb').read()
+                result = self.runner.predict([{"input": data}])
             else:
-                result = self.runner.predict(None, bytes(test_input, encoding='utf8'))
+                result = self.runner.predict([{"input": bytes(test_input, encoding='utf8')}])
+        elif isinstance(test_input, dict):
+            result = self.runner.predict([test_input])
+        elif isinstance(test_input, list):
+            result = self.runner.predict(test_input)
         else:
-            print("Invalid input. Must be buffered reader, bytes, valid filepath, or text input.")
-            return False
+            raise ValueError("Invalid input. Must be buffered reader, bytes, valid filepath, or text input.")
         return result
 
     def test_batch(self, test_input: Union[str, bytes, _io.BufferedReader]):
-        """
-        Takes a single input file, creates a batch of size `batch_size` defined in `ChassisModel.create_model`, and runs a batch job against chassis model locally if `batch_process_fn` is defined.
-
-        Args:
-            test_input (Union[str, bytes, BufferedReader]): Batch of sample input data to test model
-
-        Returns:
-            bytes: raw model predictions returned by `batch_process_fn` method
-
-        Examples:
-        ```python
-        chassis_model = chassis_client.create_model(process_fn=process)
-        sample_input = sample_filepath = './sample_data.json'
-        results = chassis_model.test_batch(sample_filepath)
-        ```
-        """
+        deprecated("The `test` method now supports supplying batches of inputs.")
         if not self.runner.supports_batch:
             raise NotImplementedError("Batch inference not implemented.")
 
-        batch_method = self.runner.predict
-
         if isinstance(test_input, _io.BufferedReader):
-            results = batch_method(None, [test_input.read() for _ in range(self.batch_size)])
+            data = test_input.read()
+            inputs = [{"input": data} for _ in range(self.runner.batch_size)]
+            return self.test(inputs)
         elif isinstance(test_input, bytes):
-            results = batch_method(None, [test_input for _ in range(self.batch_size)])
+            return self.test([{"input": test_input} for _ in range(self.runner.batch_size)])
         elif isinstance(test_input, str):
             if os.path.exists(test_input):
-                results = batch_method(None, [open(test_input, 'rb').read() for _ in range(self.batch_size)])
+                data = open(test_input, "rb").read()
+                inputs = [{"input": data} for _ in range(self.runner.batch_size)]
+                return self.test(inputs)
             else:
-                results = batch_method(None, [bytes(test_input, encoding='utf8') for _ in range(self.batch_size)])
+                return self.test([{"input": test_input.encode("utf8")} for _ in range(self.runner.batch_size)])
         else:
             print("Invalid input. Must be buffered reader, bytes, valid filepath, or text input.")
             return False
-        return results
+
+    def test_env(self, test_input_path, conda_env=None, fix_env=True):
+        pass
 
     def save(self, path: str = None, requirements: Union[str, dict] = None, overwrite=False, fix_env=False, gpu=False, arm64=False, conda_env=None) -> Package:
-        if conda_env is not None:
-            print("DEPRECATION WARNING: Conda support is deprecated and will be removed in the next major release")
-            # TODO - parse conda environment and add python version and pip requirements
+        self._parse_conda_env(conda_env)
 
         if path is not None and not os.path.exists(path):
             os.makedirs(path, exist_ok=True)
 
         self.add_requirements(requirements)
-        self.python_modules[PYTHON_MODEL_KEY] = self.runner
 
         package = Package(
             model_name="Chassis Model",
@@ -131,9 +78,53 @@ class ChassisModel(Packageable):
 
         return package
 
-    def publish(self, model_name: str, model_version: str, registry_user=None, registry_pass=None, requirements=None, fix_env=True, gpu=False, arm64=False, sample_input_path=None, webhook=None, conda_env=None):
-        if conda_env is not None:
-            print("DEPRECATION WARNING: Conda support is deprecated and will be removed in the next major release")
-            # TODO - parse conda environment and add python version and pip requirements
+    def build_with_docker(self, tag: str = None, cache=False):
+        """
+        Builds a container from model details and package information.
 
+        Args:
+            tag (str): Optional tag to override default. By default, Chassis will create the repository name and tag based on model name and version. But this tag can optionally override the version tag
+            cache (bool): Set to True to enable Docker's intermediate layer caching. Will speed up iterative builds but takes up more disk space.
+        """
+        package = None
+        try:
+            package = self.save()
+            builder = DockerBuilder(package)
+            builder.build_image(name=package.model_name, tag=tag if not None else package.model_version, arch=package.arch, cache=cache)
+        finally:
+            if package is not None:
+                package.cleanup()
+
+    def publish(self, model_name: str, model_version: str, registry_user=None, registry_pass=None, requirements=None, fix_env=True, gpu=False, arm64=False, sample_input_path=None, webhook=None, conda_env=None):
+        self._parse_conda_env(conda_env)
         pass
+
+    def _parse_conda_env(self, conda_env):
+        """
+        If supplied, the input parameter will look like this:
+
+        ```python
+        env = {
+            "name": "sklearn-chassis",
+            "channels": ['conda-forge'],
+            "dependencies": [
+                "python=3.8.5",
+                {
+                    "pip": [
+                        "scikit-learn",
+                        "numpy",
+                        "chassisml"
+                    ]
+                }
+            ]
+        }
+        ```
+
+        :param conda_env:
+        :return:
+        """
+        if conda_env is not None:
+            deprecated()
+            pip_dependencies = conda_env["dependencies"][1]["pip"]
+            self.add_requirements(pip_dependencies)
+            # TODO - add python version?

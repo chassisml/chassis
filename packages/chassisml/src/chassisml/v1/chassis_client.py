@@ -5,6 +5,9 @@ import warnings
 import requests
 from packaging import version
 
+from .chassis_model import ChassisModel
+from .helpers import deprecated
+
 routes = {
     'build': '/build',
     'job': '/job',
@@ -262,13 +265,17 @@ class ChassisClient:
         ```
 
         """
-        if not (process_fn or batch_process_fn):
+        deprecated()
+        if process_fn and batch_process_fn:
+            raise ValueError("Please supply either a process_fn or batch_process_fn but not both")
+        elif process_fn:
+            return ChassisModel(process_fn, chassis_client=self)
+        elif batch_process_fn:
+            if not batch_size:
+                raise ValueError("Both batch_process_fn and batch_size must be provided for batch support")
+            return ChassisModel(batch_process_fn, batch_size=batch_size, chassis_client=self)
+        else:
             raise ValueError("At least one of process_fn or batch_process_fn must be provided.")
-
-        if (batch_process_fn and not batch_size) or (batch_size and not batch_process_fn):
-            raise ValueError("Both batch_process_fn and batch_size must be provided for batch support.")
-
-        return ChassisModel(process_fn, batch_process_fn, batch_size, self.base_url, self.auth_header, self.ssl_verification)
 
     # TODO - move out of this class
     def run_inference(self, input_data, container_url="localhost", host_port=45000):
