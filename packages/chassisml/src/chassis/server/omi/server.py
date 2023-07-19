@@ -18,7 +18,7 @@ from chassis.protos.v1.model_pb2 import (
     ShutdownResponse,
     StatusResponse,
 )
-from chassis.runtime import ModelRunner
+from chassis.runtime import ModelRunner, PACKAGE_DATA_PATH, PYTHON_MODEL_KEY, python_pickle_filename_for_key
 
 GRPC_SERVER_PORT = 45000
 
@@ -37,7 +37,7 @@ class ModzyModel(ModzyModelBase):
     def __init__(self):
         self.model: Union[ModelRunner, None] = None
 
-        with open("data/model_info", "rb") as f:
+        with open(os.path.join(PACKAGE_DATA_PATH, "model_info"), "rb") as f:
             data = f.read()
 
         sr = StatusResponse()
@@ -61,8 +61,12 @@ class ModzyModel(ModzyModelBase):
         if self.model is None:
             try:
                 # If this is the first time calling the `Status` route, then attempt to load the model
-                with open("data/model.pkl", "rb") as f:
-                    self.model: ModelRunner = cloudpickle.load(f)
+                filename = python_pickle_filename_for_key(PYTHON_MODEL_KEY)
+                with open(os.path.join(PACKAGE_DATA_PATH, filename), "rb") as f:
+                    modules = cloudpickle.load(f)
+                self.model: ModelRunner = modules[PYTHON_MODEL_KEY]
+                if self.model is None:
+                    raise "Model not found"
                 message = "Model Initialized Successfully."
                 LOGGER.info(message)
                 status_response = self._build_status_response(200, message)

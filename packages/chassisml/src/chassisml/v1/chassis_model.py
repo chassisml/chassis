@@ -1,14 +1,11 @@
 import _io
-import json
 import os
 import urllib.parse
 from typing import Union
 
-import cloudpickle
-
-from chassis.runtime import ModelRunner
-from ._utils import NumpyEncoder
-from ..packager.package import Package
+from chassis.builder import DockerBuilder
+from chassis.packager import Package, Packageable
+from chassis.runtime import ModelRunner, PYTHON_MODEL_KEY
 
 routes = {
     'build': '/build',
@@ -17,21 +14,7 @@ routes = {
 }
 
 
-def _gen_predict_method(process_fn, batch=False, batch_to_single=False):
-    def predict(_, model_input):
-        if batch_to_single:
-            output = process_fn([model_input])[0]
-        else:
-            output = process_fn(model_input)
-        if batch:
-            return [json.dumps(out, separators=(",", ":"), cls=NumpyEncoder).encode() for out in output]
-        else:
-            return json.dumps(output, separators=(",", ":"), cls=NumpyEncoder).encode()
-
-    return predict
-
-
-class ChassisModel:
+class ChassisModel(Packageable):
     """
     The Chassis Model object.
 
@@ -79,14 +62,14 @@ class ChassisModel:
         ```
         """
         if isinstance(test_input, _io.BufferedReader):
-            result = self.predict(None, test_input.read())
+            result = self.runner.predict(None, test_input.read())
         elif isinstance(test_input, bytes):
-            result = self.predict(None, test_input)
+            result = self.runner.predict(None, test_input)
         elif isinstance(test_input, str):
             if os.path.exists(test_input):
-                result = self.predict(None, open(test_input, 'rb').read())
+                result = self.runner.predict(None, open(test_input, 'rb').read())
             else:
-                result = self.predict(None, bytes(test_input, encoding='utf8'))
+                result = self.runner.predict(None, bytes(test_input, encoding='utf8'))
         else:
             print("Invalid input. Must be buffered reader, bytes, valid filepath, or text input.")
             return False
@@ -128,7 +111,7 @@ class ChassisModel:
             return False
         return results
 
-    def save(self, path: str, requirements: Union[str, dict] = None, overwrite=False, fix_env=False, gpu=False, arm64=False, conda_env=None) -> Package:
+    def save(self, path: str = None, requirements: Union[str, dict] = None, overwrite=False, fix_env=False, gpu=False, arm64=False, conda_env=None) -> Package:
         if conda_env is not None:
             print("DEPRECATION WARNING: Conda support is deprecated and will be removed in the next major release")
             # TODO - parse conda environment and add python version and pip requirements
@@ -136,18 +119,15 @@ class ChassisModel:
         if path is not None and not os.path.exists(path):
             os.makedirs(path, exist_ok=True)
 
+        self.add_requirements(requirements)
+        self.python_modules[PYTHON_MODEL_KEY] = self.runner
+
         package = Package(
-            base_dir=path,
             model_name="Chassis Model",
             model_version="0.0.1",
-            batch_size=self.runner.batch_size,
-            use_gpu=gpu,
-            arch="arm64" if arm64 else "amd64",
-            python_version="3.9",  # TODO
+            model=self,
         )
-        package.prepare_context()
-        package.write_requirements(requirements)
-        package.write_model_pickle_file(block=lambda out: cloudpickle.dump(self.runner, out))
+        package.create(path, "arm64" if arm64 else "amd64", gpu, "3.9")
 
         return package
 

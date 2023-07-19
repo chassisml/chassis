@@ -6,6 +6,7 @@ Jinja2 >= 3.1.2
 cloudpickle == 2.2.0
 grpclib
 pyyaml
+docker
 
 retry==0.9.2
 chassisml>=1.4.2

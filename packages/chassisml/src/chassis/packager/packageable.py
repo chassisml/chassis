@@ -5,20 +5,19 @@ import os
 import posixpath
 from typing import Union
 
-PACKAGE_DATA_PATH = "data"
+from chassis.runtime import PACKAGE_DATA_PATH
 
 
 class Packageable(metaclass=abc.ABCMeta):
     packaged = False
     requirements: set[str] = set()
     additional_files: set[str] = set()
-
-    # python_modules: dict = {}
+    python_modules: dict = {}
 
     def merge_package(self, package: Packageable):
         self.requirements = self.requirements.union(package.requirements)
         self.additional_files = self.additional_files.union(package.additional_files)
-        # self.python_modules.update(package.python_modules)
+        self.python_modules.update(package.python_modules)
 
     def add_requirements(self, reqs: Union[str, list]):
         if type(reqs) == str:
