@@ -48,24 +48,24 @@ class Package:
             self.metadata = md
 
         # Initialize the variables we'll use to hold path references.
-        self._base_dir = None
+        self.path = None
         self._chassis_dir = None
         self._data_dir = None
 
     def create(self, base_dir=None, arch="amd64", use_gpu=False, python_version="3.9") -> str:
-        self._base_dir = base_dir if not None else tempfile.mkdtemp()
-        self._chassis_dir = os.path.join(self._base_dir, "chassis")
-        self._data_dir = os.path.join(self._base_dir, PACKAGE_DATA_PATH)
+        self.path = base_dir if not None else tempfile.mkdtemp()
+        self._chassis_dir = os.path.join(self.path, "chassis")
+        self._data_dir = os.path.join(self.path, PACKAGE_DATA_PATH)
 
         self._prepare_context(arch=arch, python_version=python_version, use_gpu=use_gpu)
         self._write_requirements(self.model.requirements)
         self._write_python_modules(self.model.python_modules)
 
-        return self._base_dir
+        return self.path
 
     def cleanup(self):
-        if os.path.exists(self._base_dir):
-            shutil.rmtree(self._base_dir)
+        if os.path.exists(self.path):
+            shutil.rmtree(self.path)
 
     def _write_additional_files(self, files: set[str]):
         for file in files:
@@ -82,7 +82,7 @@ class Package:
         rendered_template = requirements_template.render(
             additional_requirements="\n".join(additional_requirements)
         )
-        with open(os.path.join(self._base_dir, "requirements.txt"), "wb") as f:
+        with open(os.path.join(self.path, "requirements.txt"), "wb") as f:
             f.write(rendered_template.encode("utf-8"))
 
     def _write_python_modules(self, modules: dict):
@@ -107,7 +107,7 @@ class Package:
             f.write(data)
 
     def _prepare_context(self, arch="amd64", python_version="3.9", use_gpu=False):
-        print("Using build directory: " + self._base_dir)
+        print("Using build directory: " + self.path)
         # Ensure the target directories exist.
         if not os.path.exists(self._chassis_dir):
             os.makedirs(self._chassis_dir, exist_ok=True)
@@ -122,13 +122,13 @@ class Package:
             needs_cross_compiling=_needs_cross_compiling(arch),
             use_gpu=use_gpu,
         )
-        with open(os.path.join(self._base_dir, "Dockerfile"), "wb") as f:
+        with open(os.path.join(self.path, "Dockerfile"), "wb") as f:
             f.write(rendered_template.encode("utf-8"))
 
         # Save .dockerignore to package location.
         dockerignore_template = env.get_template(".dockerignore")
         dockerignore = dockerignore_template.render()
-        with open(os.path.join(self._base_dir, ".dockerignore"), "wb") as f:
+        with open(os.path.join(self.path, ".dockerignore"), "wb") as f:
             f.write(dockerignore.encode("utf-8"))
 
         # Save an empty requirements.txt so we ensure the file is there.
@@ -141,7 +141,7 @@ class Package:
 
         # Save the entrypoint file.
         entrypoint_template = env.get_template("entrypoint.py")
-        with open(os.path.join(self._base_dir, "entrypoint.py"), "wb") as f:
+        with open(os.path.join(self.path, "entrypoint.py"), "wb") as f:
             f.write(entrypoint_template.render().encode("utf-8"))
 
         # # Copy any Chassis libraries we need.

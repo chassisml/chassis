@@ -8,7 +8,7 @@ from chassisml import ChassisClient
 
 @pytest.fixture
 def chassis_client():
-    host = "https://chassis.app.modzy.com" if os.getenv('CHASSIS_URL') is None else os.getenv('CHASSIS_URL')
+    host = "http://chassis-test-mode:9999" if os.getenv('CHASSIS_URL') is None else os.getenv('CHASSIS_URL')
     return ChassisClient(host)
 
 

@@ -1,5 +1,7 @@
 import pytest
 
+from chassisml import ChassisModel
+
 
 def test_create_model_fails_if_neither_process_nor_batch_process_given(chassis_client):
     with pytest.raises(ValueError):
@@ -15,4 +17,22 @@ def test_create_batch_model_fails_without_batch_size(chassis_client, echo_predic
     with pytest.raises(ValueError):
         model = chassis_client.create_model(batch_process_fn=echo_predict_function)
 
-# test adding requirements via conda_env (deprecated)
+
+def test_adding_pip_requirements_from_conda_env(echo_predict_function):
+    model = ChassisModel(echo_predict_function)
+    env = {
+        "name": "sklearn-chassis",
+        "channels": ['conda-forge'],
+        "dependencies": [
+            "python=3.8.5",
+            {
+                "pip": [
+                    "scikit-learn",
+                    "numpy",
+                    "chassisml",
+                ]
+            }
+        ]
+    }
+    model.parse_conda_env(env)
+    assert len(model.requirements.symmetric_difference(["scikit-learn", "numpy", "chassisml"])) == 0

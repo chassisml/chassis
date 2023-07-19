@@ -11,8 +11,8 @@ from .helpers import deprecated
 
 class ChassisModel(Packageable):
 
-    def __init__(self, process_fn: PredictFunction, batch_size=1, chassis_client=None):
-        self.runner = ModelRunner(process_fn, batch_size=batch_size)
+    def __init__(self, process_fn: PredictFunction, batch_size=1, legacy_predict_fn=False, chassis_client=None):
+        self.runner = ModelRunner(process_fn, batch_size=batch_size, is_legacy_fn=legacy_predict_fn)
         self.python_modules[PYTHON_MODEL_KEY] = self.runner
         if chassis_client is not None:
             self.chassis_client = chassis_client
@@ -62,7 +62,7 @@ class ChassisModel(Packageable):
         pass
 
     def save(self, path: str = None, requirements: Union[str, dict] = None, overwrite=False, fix_env=False, gpu=False, arm64=False, conda_env=None) -> Package:
-        self._parse_conda_env(conda_env)
+        self.parse_conda_env(conda_env)
 
         if path is not None and not os.path.exists(path):
             os.makedirs(path, exist_ok=True)
@@ -74,7 +74,7 @@ class ChassisModel(Packageable):
             model_version="0.0.1",
             model=self,
         )
-        package.create(path, "arm64" if arm64 else "amd64", gpu, "3.9")
+        package.create(path, "arm64" if arm64 else "amd64", gpu, "3.9")  # TODO - python version
 
         return package
 
@@ -96,10 +96,10 @@ class ChassisModel(Packageable):
                 package.cleanup()
 
     def publish(self, model_name: str, model_version: str, registry_user=None, registry_pass=None, requirements=None, fix_env=True, gpu=False, arm64=False, sample_input_path=None, webhook=None, conda_env=None):
-        self._parse_conda_env(conda_env)
+        self.parse_conda_env(conda_env)
         pass
 
-    def _parse_conda_env(self, conda_env):
+    def parse_conda_env(self, conda_env):
         """
         If supplied, the input parameter will look like this:
 

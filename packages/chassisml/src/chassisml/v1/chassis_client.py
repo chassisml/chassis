@@ -5,6 +5,7 @@ import warnings
 import requests
 from packaging import version
 
+from chassis.typing import LegacyBatchPredictFunction, LegacyNormalPredictFunction
 from .chassis_model import ChassisModel
 from .helpers import deprecated
 
@@ -32,10 +33,9 @@ class ChassisClient:
         self.auth_header = auth_header
         self.ssl_verification = ssl_verification
 
-        if self.auth_header:
-            res = requests.get(base_url, headers={'Authorization': self.auth_header}, verify=self.ssl_verification)
-        else:
-            res = requests.get(base_url, verify=self.ssl_verification)
+        if base_url == "http://chassis-test-mode:9999":
+            # Don't try to reach out to a real server during tests.
+            return
 
         version_route = base_url + "/version"
         if self.auth_header:
@@ -207,7 +207,7 @@ class ChassisClient:
             print(f'Error download tar: {r.text}')
 
     # TODO - move out of this class
-    def create_model(self, process_fn=None, batch_process_fn=None, batch_size=None):
+    def create_model(self, process_fn: LegacyNormalPredictFunction = None, batch_process_fn: LegacyBatchPredictFunction = None, batch_size=None):
         """
         Builds chassis model locally
 
@@ -269,11 +269,11 @@ class ChassisClient:
         if process_fn and batch_process_fn:
             raise ValueError("Please supply either a process_fn or batch_process_fn but not both")
         elif process_fn:
-            return ChassisModel(process_fn, chassis_client=self)
+            return ChassisModel(process_fn, chassis_client=self, legacy_predict_fn=True)
         elif batch_process_fn:
             if not batch_size:
                 raise ValueError("Both batch_process_fn and batch_size must be provided for batch support")
-            return ChassisModel(batch_process_fn, batch_size=batch_size, chassis_client=self)
+            return ChassisModel(batch_process_fn, batch_size=batch_size, legacy_predict_fn=True, chassis_client=self)
         else:
             raise ValueError("At least one of process_fn or batch_process_fn must be provided.")
 
