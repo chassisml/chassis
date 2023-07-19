@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any, List, Mapping
 
 from chassis.typing import PredictFunction
 
@@ -11,7 +11,7 @@ class ModelRunner:
         self.batch_size = batch_size
         self.legacy = is_legacy_fn
 
-    def predict(self, inputs: List[Dict[str, bytes]]) -> List[Dict[str, Any]]:
+    def predict(self, inputs: List[Mapping[str, bytes]]) -> List[Mapping[str, Any]]:
         if self.legacy:
             return self._predict_legacy(inputs)
         if self.supports_batch:
@@ -19,7 +19,7 @@ class ModelRunner:
         else:
             return self._predict_single(inputs)
 
-    def _predict_single(self, inputs: List[Dict[str, bytes]]) -> List[Dict[str, Any]]:
+    def _predict_single(self, inputs: List[Mapping[str, bytes]]) -> List[Mapping[str, Any]]:
         outputs = []
         for input_item in inputs:
             try:
@@ -30,11 +30,11 @@ class ModelRunner:
             outputs.append(output)
         return outputs
 
-    def _predict_batch(self, inputs: List[Dict[str, bytes]]) -> List[Dict[str, Any]]:
+    def _predict_batch(self, inputs: List[Mapping[str, bytes]]) -> List[Mapping[str, Any]]:
         # TODO - split inputs into groups of self.batch_size
         return self.predict_fn(inputs)
 
-    def _predict_legacy(self, inputs: List[Dict[str, bytes]]) -> List[Dict[str, Any]]:
+    def _predict_legacy(self, inputs: List[Mapping[str, bytes]]) -> List[Mapping[str, Any]]:
         if self.batch_size == 1:
             outputs = []
             for input_item in inputs:

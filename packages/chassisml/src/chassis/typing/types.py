@@ -1,10 +1,10 @@
-from typing import Any, Callable, Union
+from typing import Any, Callable, List, Mapping, Union
 
 LegacyNormalPredictFunction = Callable[[bytes], Any]
-LegacyBatchPredictFunction = Callable[[list[bytes]], list[Any]]
+LegacyBatchPredictFunction = Callable[[List[bytes]], List[Any]]
 
-NormalPredictFunction = Callable[[dict[str, bytes]], dict[str, Any]]
-BatchPredictFunction = Callable[[list[dict[str, bytes]]], list[dict[str, Any]]]
+NormalPredictFunction = Callable[[Mapping[str, bytes]], Mapping[str, Any]]
+BatchPredictFunction = Callable[[List[Mapping[str, bytes]]], List[Mapping[str, Any]]]
 
 LegacyPredictFunction = Union[LegacyNormalPredictFunction, LegacyBatchPredictFunction]
 PredictFunction = Union[LegacyPredictFunction, NormalPredictFunction, BatchPredictFunction]

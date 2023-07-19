@@ -3,7 +3,7 @@ import logging
 import os
 import traceback
 from time import time as t
-from typing import Dict, Union
+from typing import Mapping, Union
 
 import cloudpickle
 from grpclib.health.service import Health
@@ -14,6 +14,7 @@ from grpclib.utils import graceful_exit
 from chassis.protos.v1.model_grpc import ModzyModelBase
 from chassis.protos.v1.model_pb2 import (
     OutputItem,
+    RunRequest,
     RunResponse,
     ShutdownResponse,
     StatusResponse,
@@ -94,7 +95,7 @@ class ModzyModel(ModzyModelBase):
         await stream.send_message(status_response)
 
     async def Run(self, stream):
-        request = await stream.recv_message()
+        request: RunRequest = await stream.recv_message()
         start_run_call = t()
         response = RunResponse()
         outputs = []
@@ -146,7 +147,7 @@ class ModzyModel(ModzyModelBase):
         await stream.send_message(shutdown_response)
 
 
-def create_output_item(message, data: Dict[str, bytes] = None):
+def create_output_item(message, data: Mapping[str, bytes] = None):
     output_item = OutputItem()
     if data is None:
         # Deals with output items that encapsulate errors

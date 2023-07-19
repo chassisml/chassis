@@ -1,6 +1,6 @@
 import _io
 import os
-from typing import Any, Union
+from typing import Any, List, Mapping, Union
 
 from chassis.builder import DockerBuilder
 from chassis.packager import Package, Packageable
@@ -17,7 +17,7 @@ class ChassisModel(Packageable):
         if chassis_client is not None:
             self.chassis_client = chassis_client
 
-    def test(self, test_input: Union[str, bytes, _io.BufferedReader, dict[str, bytes], list[dict[str, bytes]]]) -> list[dict[str, Any]]:
+    def test(self, test_input: Union[str, bytes, _io.BufferedReader, Mapping[str, bytes], List[Mapping[str, bytes]]]) -> List[Mapping[str, Any]]:
         if isinstance(test_input, _io.BufferedReader):
             result = self.runner.predict([{"input": test_input.read()}])
         elif isinstance(test_input, bytes):
