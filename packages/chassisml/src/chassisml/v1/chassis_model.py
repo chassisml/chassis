@@ -1,8 +1,10 @@
 import _io
 import os
+import string
 from typing import List, Mapping, Union
 
 from chassis.builder import BuildContext
+from chassis.builder.remote import Credentials, RemoteBuilder
 from chassis.packager import Packageable
 from chassis.runtime import ModelRunner, PYTHON_MODEL_KEY
 from chassis.typing import PredictFunction
@@ -63,19 +65,50 @@ class ChassisModel(Packageable):
 
     def save(self, path: str = None, requirements: Union[str, dict] = None, overwrite=False, fix_env=False, gpu=False, arm64=False, conda_env=None) -> BuildContext:
         deprecated()
+
+        # Append any additional requirements.
         self.parse_conda_env(conda_env)
+        self.add_requirements(requirements)
 
         if path is not None and not os.path.exists(path):
             os.makedirs(path, exist_ok=True)
 
-        self.add_requirements(requirements)
-        # TODO - don't hard-code python version
-        return self.prepare_context(base_dir=path, arch="arm64" if arm64 else "amd64", use_gpu=gpu, python_version="3.9")
+        return self.prepare_context(base_dir=path, arch="arm64" if arm64 else "amd64", use_gpu=gpu)
 
     def publish(self, model_name: str, model_version: str, registry_user=None, registry_pass=None, requirements=None, fix_env=True, gpu=False, arm64=False, sample_input_path=None, webhook=None, conda_env=None):
         deprecated()
+
+        # Append any additional requirements.
         self.parse_conda_env(conda_env)
-        pass
+        self.add_requirements(requirements)
+
+        # Update the model name and version in the metadata.
+        self.metadata.info.model_name = model_name
+        self.metadata.info.model_version = model_version
+
+        # Create the build context.
+        build_context = self.prepare_context(
+            arch="arm64" if arm64 else "amd64",
+            use_gpu=gpu,
+        )
+
+        # Create the registry credentials.
+        registry_creds = None
+        if registry_user is not None and registry_pass is not None:
+            registry_creds = Credentials(
+                username=registry_user,
+                password=registry_pass,
+            )
+
+        # Construct the image name from the model name.
+        image_name = "-".join(model_name.translate(str.maketrans('', '', string.punctuation)).lower().split())
+        # If presented with registry credentials, prefix the image name with the username of the registry user.
+        # This is primarily aimed at supporting images pushed to Docker Hub.
+        image_path = f"{registry_user + '/' if (registry_user and registry_pass) else ''}{image_name}:{model_version}"
+
+        # Create the remote builder.
+        builder = RemoteBuilder(client=self.chassis_client, context=build_context)
+        builder.build_image(image_path, model_version, registry_creds, webhook)
 
     def parse_conda_env(self, conda_env):
         """
