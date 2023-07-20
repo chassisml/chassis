@@ -102,7 +102,7 @@ class ModzyModel(ModzyModelBase):
 
         if self.model is None:
             # If the model has not been initialized, every input in the batch produces an error
-            for _ in range(request.inputs):
+            for _ in request.inputs:
                 output_item = create_output_item(
                     "Failed to process model input. Model has not been initialized for inference."
                 )

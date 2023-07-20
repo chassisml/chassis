@@ -6,7 +6,7 @@ RUN [ "cross-build-start" ]
 
 # Copy requirements file and pip install.
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
+RUN pip install --no-cache-dir -r requirements.txt
 
 {% if needs_cross_compiling -%}
 RUN [ "cross-build-end" ]
@@ -32,16 +32,12 @@ WORKDIR /app
 COPY --from=build /usr/local/lib/python{{ python_version }}/site-packages /usr/local/lib/python{{ python_version }}/site-packages
 
 # Copy the entrypoint file and gRPC server implementation.
-COPY entrypoint.py __init__.py modzy_server.py ./
+COPY entrypoint.py ./
 
 # Copy app folder.
 COPY chassis chassis
 
-# Copy the model.yaml file.
-COPY model.yaml .
-
 # Copy the app and data
-COPY app.py model.pkl ./
 COPY data data
 
 CMD ["python3", "entrypoint.py"]

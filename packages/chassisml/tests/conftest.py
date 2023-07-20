@@ -1,5 +1,5 @@
+import json
 import os
-from typing import Any
 
 import pytest
 
@@ -14,15 +14,15 @@ def chassis_client():
 
 @pytest.fixture
 def echo_predict_function():
-    def echo_predict_function(input_bytes: bytes) -> Any:
-        return {"Message": str(input_bytes)}
+    def echo_predict_function(input_bytes: bytes) -> bytes:
+        return json.dumps({"Message": str(input_bytes)}).encode()
 
     return echo_predict_function
 
 
 @pytest.fixture
 def classic_predict_function():
-    def classic_predict_function(input_bytes: bytes) -> dict[str, Any]:
+    def classic_predict_function(input_bytes: bytes) -> dict[str, bytes]:
         pass
 
     return classic_predict_function
@@ -30,7 +30,7 @@ def classic_predict_function():
 
 @pytest.fixture
 def predict_function():
-    def predict_function(inputs: dict[str, bytes]) -> dict[str, Any]:
+    def predict_function(inputs: dict[str, bytes]) -> dict[str, bytes]:
         return inputs
 
     return predict_function
@@ -38,7 +38,7 @@ def predict_function():
 
 @pytest.fixture
 def batch_predict_function():
-    def batch_predict_function(inputs: list[dict[str, bytes]]) -> list[dict[str, Any]]:
+    def batch_predict_function(inputs: list[dict[str, bytes]]) -> list[dict[str, bytes]]:
         return inputs
 
     return batch_predict_function

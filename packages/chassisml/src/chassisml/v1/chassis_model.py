@@ -1,9 +1,9 @@
 import _io
 import os
-from typing import Any, List, Mapping, Union
+from typing import List, Mapping, Union
 
-from chassis.builder import DockerBuilder
-from chassis.packager import Package, Packageable
+from chassis.builder import BuildContext
+from chassis.packager import Packageable
 from chassis.runtime import ModelRunner, PYTHON_MODEL_KEY
 from chassis.typing import PredictFunction
 from .helpers import deprecated
@@ -17,7 +17,7 @@ class ChassisModel(Packageable):
         if chassis_client is not None:
             self.chassis_client = chassis_client
 
-    def test(self, test_input: Union[str, bytes, _io.BufferedReader, Mapping[str, bytes], List[Mapping[str, bytes]]]) -> List[Mapping[str, Any]]:
+    def test(self, test_input: Union[str, bytes, _io.BufferedReader, Mapping[str, bytes], List[Mapping[str, bytes]]]) -> List[Mapping[str, bytes]]:
         if isinstance(test_input, _io.BufferedReader):
             result = self.runner.predict([{"input": test_input.read()}])
         elif isinstance(test_input, bytes):
@@ -27,7 +27,7 @@ class ChassisModel(Packageable):
                 data = open(test_input, 'rb').read()
                 result = self.runner.predict([{"input": data}])
             else:
-                result = self.runner.predict([{"input": bytes(test_input, encoding='utf8')}])
+                result = self.runner.predict([{"input": test_input.encode()}])
         elif isinstance(test_input, dict):
             result = self.runner.predict([test_input])
         elif isinstance(test_input, list):
@@ -53,7 +53,7 @@ class ChassisModel(Packageable):
                 inputs = [{"input": data} for _ in range(self.runner.batch_size)]
                 return self.test(inputs)
             else:
-                return self.test([{"input": test_input.encode("utf8")} for _ in range(self.runner.batch_size)])
+                return self.test([{"input": test_input.encode()} for _ in range(self.runner.batch_size)])
         else:
             print("Invalid input. Must be buffered reader, bytes, valid filepath, or text input.")
             return False
@@ -61,39 +61,15 @@ class ChassisModel(Packageable):
     def test_env(self, test_input_path, conda_env=None, fix_env=True):
         pass
 
-    def save(self, path: str = None, requirements: Union[str, dict] = None, overwrite=False, fix_env=False, gpu=False, arm64=False, conda_env=None) -> Package:
+    def save(self, path: str = None, requirements: Union[str, dict] = None, overwrite=False, fix_env=False, gpu=False, arm64=False, conda_env=None) -> BuildContext:
         self.parse_conda_env(conda_env)
 
         if path is not None and not os.path.exists(path):
             os.makedirs(path, exist_ok=True)
 
         self.add_requirements(requirements)
-
-        package = Package(
-            model_name="Chassis Model",
-            model_version="0.0.1",
-            model=self,
-        )
-        package.create(path, "arm64" if arm64 else "amd64", gpu, "3.9")  # TODO - python version
-
-        return package
-
-    def build_with_docker(self, tag: str = None, cache=False):
-        """
-        Builds a container from model details and package information.
-
-        Args:
-            tag (str): Optional tag to override default. By default, Chassis will create the repository name and tag based on model name and version. But this tag can optionally override the version tag
-            cache (bool): Set to True to enable Docker's intermediate layer caching. Will speed up iterative builds but takes up more disk space.
-        """
-        package = None
-        try:
-            package = self.save()
-            builder = DockerBuilder(package)
-            builder.build_image(name=package.model_name, tag=tag if not None else package.model_version, arch=package.arch, cache=cache)
-        finally:
-            if package is not None:
-                package.cleanup()
+        # TODO - don't hard-code python version
+        return self.prepare_context(base_dir=path, arch="arm64" if arm64 else "amd64", use_gpu=gpu, python_version="3.9")
 
     def publish(self, model_name: str, model_version: str, registry_user=None, registry_pass=None, requirements=None, fix_env=True, gpu=False, arm64=False, sample_input_path=None, webhook=None, conda_env=None):
         self.parse_conda_env(conda_env)
