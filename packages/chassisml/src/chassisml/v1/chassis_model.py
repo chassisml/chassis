@@ -104,7 +104,7 @@ class ChassisModel(Packageable):
         image_name = "-".join(model_name.translate(str.maketrans('', '', string.punctuation)).lower().split())
         # If presented with registry credentials, prefix the image name with the username of the registry user.
         # This is primarily aimed at supporting images pushed to Docker Hub.
-        image_path = f"{registry_user + '/' if (registry_user and registry_pass) else ''}{image_name}:{model_version}"
+        image_path = f"{registry_user + '/' if (registry_user and registry_pass) else ''}{image_name}"
 
         # Create the remote builder.
         builder = RemoteBuilder(client=self.chassis_client, context=build_context)
