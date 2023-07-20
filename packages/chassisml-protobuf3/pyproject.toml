@@ -6,8 +6,8 @@ dependencies = [
     "grpclib",
 ]
 
-[tool.setuptools.packages]
-find = {}
+#[tool.setuptools.packages]
+#find = {}
 
 [tool.setuptools.packages.find]
 where = ["src"]
