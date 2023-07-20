@@ -62,6 +62,7 @@ class ChassisModel(Packageable):
         pass
 
     def save(self, path: str = None, requirements: Union[str, dict] = None, overwrite=False, fix_env=False, gpu=False, arm64=False, conda_env=None) -> BuildContext:
+        deprecated()
         self.parse_conda_env(conda_env)
 
         if path is not None and not os.path.exists(path):
@@ -72,6 +73,7 @@ class ChassisModel(Packageable):
         return self.prepare_context(base_dir=path, arch="arm64" if arm64 else "amd64", use_gpu=gpu, python_version="3.9")
 
     def publish(self, model_name: str, model_version: str, registry_user=None, registry_pass=None, requirements=None, fix_env=True, gpu=False, arm64=False, sample_input_path=None, webhook=None, conda_env=None):
+        deprecated()
         self.parse_conda_env(conda_env)
         pass
 
@@ -100,7 +102,6 @@ class ChassisModel(Packageable):
         :return:
         """
         if conda_env is not None:
-            deprecated()
             pip_dependencies = conda_env["dependencies"][1]["pip"]
             self.add_requirements(pip_dependencies)
             # TODO - add python version?

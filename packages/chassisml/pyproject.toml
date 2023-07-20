@@ -20,6 +20,7 @@ dependencies = [
     "cloudpickle == 2.2.0",
     "pyyaml",
     "docker",
+    "validators",
 ]
 optional-dependencies = [
     "pytest",

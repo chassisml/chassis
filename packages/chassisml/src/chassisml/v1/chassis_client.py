@@ -44,8 +44,8 @@ class ChassisClient:
             res = requests.get(version_route, verify=self.ssl_verification)
 
         parsed_version = version.parse(res.text)
-        if parsed_version < version.Version('1.0.0'):
-            warnings.warn("Chassis service version should be >=1.0.0 for compatibility with this SDK version, things may not work as expected. Please update the service.")
+        if parsed_version < version.Version('1.5.0'):
+            warnings.warn("Chassis service version should be >=1.5.0 for compatibility with this SDK version, things may not work as expected. Please update the service.")
 
     def get_job_status(self, job_id):
         """
@@ -129,7 +129,7 @@ class ChassisClient:
         Args:
             job_id (str): Chassis job identifier generated from `ChassisModel.publish` method
             timeout (int): Timeout threshold in seconds
-            poll_intervall (int): Amount of time to wait in between API polls to check status of job
+            poll_interval (int): Amount of time to wait in between API polls to check status of job
 
         Returns:
             Dict: final job status returned by `ChassisClient.block_until_complete` method
@@ -154,7 +154,6 @@ class ChassisClient:
         job_id = response.get('job_id')
         final_status = chassis_client.block_until_complete(job_id)
         ```
-
         """
         endby = time.time() + timeout if (timeout is not None) else None
         while True:
@@ -206,9 +205,10 @@ class ChassisClient:
         else:
             print(f'Error download tar: {r.text}')
 
-    # TODO - move out of this class
     def create_model(self, process_fn: LegacyNormalPredictFunction = None, batch_process_fn: LegacyBatchPredictFunction = None, batch_size=None):
         """
+        DEPRECATED
+
         Builds chassis model locally
 
         Args:

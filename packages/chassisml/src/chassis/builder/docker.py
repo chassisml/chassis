@@ -43,6 +43,7 @@ class DockerBuilder:
             print(f"Image ID: {image.id}")
             print(f"Image Tags: {image.tags}")
             if clean_context:
+                print("Cleaning context")
                 self.context.cleanup()
         except BuildError as e:
             log_output = ""

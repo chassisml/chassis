@@ -36,3 +36,5 @@ def test_adding_pip_requirements_from_conda_env(echo_predict_function):
     }
     model.parse_conda_env(env)
     assert len(model.requirements.symmetric_difference(["scikit-learn", "numpy", "chassisml"])) == 0
+
+# Verify that the fields in the metadata are updated based on the values provided during `prepare_context`.
