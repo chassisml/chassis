@@ -18,7 +18,7 @@ async fn health() -> impl Responder {
 
 #[get("/version")]
 async fn version() -> impl Responder {
-    HttpResponse::Ok().body("???")
+    HttpResponse::Ok().body("1.5.0")
 }
 
 #[post("/test")]
