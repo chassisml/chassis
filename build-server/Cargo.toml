@@ -13,3 +13,4 @@ serde_json = "1"
 kube = { version = "0.83.0", features = ["runtime", "derive"] }
 k8s-openapi = { version = "0.18.0", features = ["v1_24"] }
 uuid = { version = "1", features = ["v4"] }
+tokio = { version = "1", features = ["full"] }

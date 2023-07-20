@@ -45,7 +45,7 @@ pub async fn get_job_status(
 
 #[get("/job/{job_id}/download-tar")]
 pub async fn download_job_tar(job_id: web::Path<String>) -> impl Responder {
-    HttpResponse::Ok().body(format!("{}", job_id))
+    HttpResponse::Gone().body("The download-tar route has been deprecated and removed.")
 }
 
 #[get("/job/{job_id}/logs")]
