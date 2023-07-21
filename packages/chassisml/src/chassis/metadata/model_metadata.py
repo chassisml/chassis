@@ -15,44 +15,36 @@ class ModelMetadata:
     features: ModelFeatures
 
     def __init__(self, info: ModelInfo = None, description: ModelDescription = None, inputs: List[ModelInput] = None, outputs: List[ModelOutput] = None, resources: ModelResources = None, timeout: ModelTimeout = None, features: ModelFeatures = None):
-        md = ModelMetadata.default()
-        self.info = info if info is not None else md.info
-        self.description = description if description is not None else md.description
-        self.inputs = inputs if inputs is not None else md.inputs
-        self.outputs = outputs if outputs is not None else md.outputs
-        self.resources = resources if resources is not None else md.resources
-        self.timeout = timeout if timeout is not None else md.timeout
-        self.features = features if features is not None else md.features
-
-    @classmethod
-    def default(cls: Type[T]) -> T:
-        md = cls()
-        md.info = ModelInfo(source="chassis", model_type="grpc")
-        md.description = ModelDescription()
-        md.inputs = [
+        self.info = info if info is not None else ModelInfo(source="chassis", model_type="grpc")
+        self.description = description if description is not None else ModelDescription()
+        self.inputs = inputs if inputs is not None else [
             ModelInput(
                 filename="input",
                 accepted_media_types=["application/octet-stream"],
                 max_size="10M",
             )
         ]
-        md.outputs = [
+        self.outputs = outputs if outputs is not None else [
             ModelOutput(
                 filename="results.json",
                 media_type="application/json",
                 max_size="1M",
             )
         ]
-        md.resources = ModelResources(
+        self.resources = resources if resources is not None else ModelResources(
             required_ram="512M",
             num_cpus=1,
             num_gpus=0,
         )
-        md.timeout = ModelTimeout(
+        self.timeout = timeout if timeout is not None else ModelTimeout(
             status="60s",
             run="60s",
         )
-        md.features = ModelFeatures(
+        self.features = features if features is not None else ModelFeatures(
             batch_size=1,
         )
+
+    @classmethod
+    def default(cls: Type[T]) -> T:
+        md = cls()
         return md
