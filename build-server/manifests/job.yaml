@@ -14,7 +14,10 @@ spec:
           command:
             - sh
             - -c
-            - "echo FROM hello-world > /workspace/Dockerfile"
+            - |-
+              wget {{CONTEXT_URL}} && \
+              unzip -d /workspace context.zip && \
+              rm context.zip
           volumeMounts:
             - mountPath: /workspace
               name: workspace
@@ -45,6 +48,7 @@ spec:
           volumeMounts:
             - mountPath: /workspace
               name: workspace
+            # TODO - volume mount for registry secret
       volumes:
         - name: workspace
           emptyDir: {}

@@ -16,6 +16,7 @@ pub(crate) fn create_job_object(
         "JOB_NAME": job_name,
         "JOB_IDENTIFIER": job_id,
         "IMAGE_NAME": image_name,
+        "CONTEXT_URL": context_url,
         "CPU_CORES": "2",
         "MEMORY": "8Gi",
     });
@@ -27,6 +28,8 @@ pub(crate) fn create_job_object(
 fn build_job_name(job_id: &str) -> String {
     format!("chassis-remote-build-job-{}", job_id)
 }
+
+// -------------------------------------------------------------------------------------------------
 
 #[cfg(test)]
 mod tests {
