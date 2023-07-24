@@ -1,3 +1,5 @@
+use crate::contexts::save_context;
+use crate::kubernetes::create_job_object;
 use crate::{AppState, Error};
 use actix_multipart::form::json::Json;
 use actix_multipart::form::tempfile::TempFile;
@@ -5,13 +7,11 @@ use actix_multipart::form::MultipartForm;
 use actix_web::http::header::USER_AGENT;
 use actix_web::{post, web, HttpRequest, HttpResponse, Responder};
 use k8s_openapi::api::batch::v1::Job;
-use k8s_openapi::apimachinery::pkg::apis::meta::v1::ObjectMeta;
 use kube::api::PostParams;
 use kube::runtime::conditions;
 use kube::runtime::wait::await_condition;
 use kube::{Api, Client};
 use serde::{Deserialize, Serialize};
-use std::fs::Metadata;
 use uuid::Uuid;
 
 #[derive(Debug, MultipartForm)]
@@ -24,11 +24,11 @@ pub struct BuildImageForm {
 
 #[derive(Debug, Deserialize)]
 pub struct BuildConfig {
-    image_name: String,
-    tag: String,
-    publish: bool,
-    webhook: String,
-    registry_creds: String,
+    pub image_name: String,
+    pub tag: String,
+    pub publish: bool,
+    pub webhook: String,
+    pub registry_creds: String,
 }
 
 #[derive(Debug, Serialize)]
@@ -42,7 +42,7 @@ pub struct BuildImageResponse {
 pub async fn build_image(
     req: HttpRequest,
     MultipartForm(form): MultipartForm<BuildImageForm>,
-    state: web::Data<AppState>,
+    state: web::Data<AppState<'_>>,
 ) -> impl Responder {
     // First ensure that the caller is using a new-enough SDK.
     if let Some(e) = verify_user_agent(&req) {
@@ -50,10 +50,10 @@ pub async fn build_image(
     }
 
     // Create a UUID for this build job.
-    let job_id = Uuid::new_v4();
+    let job_id = Uuid::new_v4().to_string();
 
-    // Upload the context to object storage.
-    let build_context_url = match upload_context() {
+    // Save the context to our cache directory.
+    let build_context_url = match save_context(&state, &job_id, form.build_context) {
         Ok(u) => u,
         Err(e) => {
             return HttpResponse::InternalServerError().json(BuildImageResponse {
@@ -65,7 +65,12 @@ pub async fn build_image(
     };
 
     // Construct the Kubernetes Job object.
-    let job = match create_job_object(&job_id) {
+    let job = match create_job_object(
+        &form.build_config,
+        &job_id,
+        &build_context_url,
+        &state.template_registry,
+    ) {
         Ok(j) => j,
         Err(e) => {
             return HttpResponse::InternalServerError().json(BuildImageResponse {
@@ -77,7 +82,7 @@ pub async fn build_image(
     };
 
     // Apply the Kubernetes Job object.
-    return match start_build_job(state.kube_client.clone(), &job).await {
+    return match start_build_job(state.kube_client.clone(), job).await {
         Ok(_) => {
             println!("Job started: {}", job_id);
             HttpResponse::Ok().json(BuildImageResponse {
@@ -110,42 +115,10 @@ fn verify_user_agent(req: &HttpRequest) -> Option<HttpResponse> {
     return None;
 }
 
-fn upload_context() -> Result<String, Error> {
-    Ok("".to_string())
-}
-
-fn create_job_object(job_id: &Uuid) -> Result<Job, Error> {
-    let mut metadata: ObjectMeta = Default::default();
-
-    let job = Job {
-        metadata: ObjectMeta {
-            annotations: None,
-            cluster_name: None,
-            creation_timestamp: None,
-            deletion_grace_period_seconds: None,
-            deletion_timestamp: None,
-            finalizers: None,
-            generate_name: None,
-            generation: None,
-            labels: None,
-            managed_fields: None,
-            name: None,
-            namespace: None,
-            owner_references: None,
-            resource_version: None,
-            self_link: None,
-            uid: None,
-        },
-        spec: None,
-        status: None,
-    };
-    Ok(job)
-}
-
-async fn start_build_job(client: Client, job: &Job) -> Result<(), Error> {
+async fn start_build_job(client: Client, job: Job) -> Result<(), Error> {
     // Apply Job object to Kubernetes.
     let jobs: Api<Job> = Api::default_namespaced(client);
-    jobs.create(&PostParams::default(), job).await?;
+    jobs.create(&PostParams::default(), &job).await?;
 
     // Start a listener to determine when the job finishes.
     let job_name = job.metadata.name.as_ref().unwrap();

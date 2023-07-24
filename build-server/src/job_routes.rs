@@ -16,7 +16,7 @@ struct JobStatusResponse {
 #[get("/job/{job_id}")]
 pub async fn get_job_status(
     job_id: web::Path<String>,
-    state: web::Data<AppState>,
+    state: web::Data<AppState<'_>>,
 ) -> Result<HttpResponse, Error> {
     let jobs: Api<Job> = Api::default_namespaced(state.kube_client.clone());
     let job = match jobs.get(job_id.as_str()).await {
@@ -44,14 +44,14 @@ pub async fn get_job_status(
 }
 
 #[get("/job/{job_id}/download-tar")]
-pub async fn download_job_tar(job_id: web::Path<String>) -> impl Responder {
+pub async fn download_job_tar(_job_id: web::Path<String>) -> impl Responder {
     HttpResponse::Gone().body("The download-tar route has been deprecated and removed.")
 }
 
 #[get("/job/{job_id}/logs")]
 pub async fn get_job_logs(
     job_id: web::Path<String>,
-    state: web::Data<AppState>,
+    state: web::Data<AppState<'_>>,
 ) -> Result<HttpResponse, Error> {
     match get_logs(&job_id, &state).await {
         Some(l) => Ok(HttpResponse::Ok().body(l)),
@@ -59,7 +59,7 @@ pub async fn get_job_logs(
     }
 }
 
-async fn get_logs(job_id: &String, state: &web::Data<AppState>) -> Option<String> {
+async fn get_logs(job_id: &String, state: &web::Data<AppState<'_>>) -> Option<String> {
     let pods: Api<Pod> = Api::default_namespaced(state.kube_client.clone());
     let list_params = ListParams::default().labels(format!("job-name={}", job_id).as_str());
     let job_pods = match pods.list(&list_params).await {

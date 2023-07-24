@@ -14,19 +14,6 @@ RUN [ "cross-build-end" ]
 
 FROM balenalib/{{ arch }}-debian-python:{{ python_version }}-run
 
-# Currently always "model"
-ARG MODEL_DIR
-ARG MODEL_NAME
-ARG MODEL_CLASS
-ARG INTERFACE
-ARG MODZY_METADATA_PATH
-
-# OMI annotations
-LABEL ml.openmodel.interfaces=["${INTERFACE}"]
-LABEL ml.openmodel.model_name="${MODEL_NAME}"
-LABEL ml.openmodel.protocols=[["v2"]]
-LABEL ml.openmodel.port="45000"
-
 WORKDIR /app
 
 COPY --from=build /usr/local/lib/python{{ python_version }}/site-packages /usr/local/lib/python{{ python_version }}/site-packages

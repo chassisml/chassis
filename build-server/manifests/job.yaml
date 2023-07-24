@@ -1,0 +1,50 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{JOB_NAME}}"
+  labels:
+    chassisml.io/job-identifier: "{{JOB_IDENTIFIER}}"
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      initContainers:
+        - name: prepare
+          image: alpine:3.10
+          command:
+            - sh
+            - -c
+            - "echo FROM hello-world > /workspace/Dockerfile"
+          volumeMounts:
+            - mountPath: /workspace
+              name: workspace
+      containers:
+        - name: buildkit
+          image: moby/buildkit:latest
+          command:
+            - buildctl-daemonless.sh
+          args:
+            - build
+            - --frontend
+            - dockerfile.v0
+            - --local
+            - context=/workspace
+            - --local
+            - dockerfile=/workspace
+            - --output
+            - type=image,name={{IMAGE_NAME}},push=true
+          resources:
+            requests:
+              cpu: "{{CPU_CORES}}"
+              memory: "{{MEMORY}}"
+            limits:
+              cpu: "{{CPU_CORES}}"
+              memory: "{{MEMORY}}"
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - mountPath: /workspace
+              name: workspace
+      volumes:
+        - name: workspace
+          emptyDir: {}
