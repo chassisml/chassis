@@ -22,9 +22,9 @@ dependencies = [
     "docker",
     "validators",
 ]
-optional-dependencies = [
-    "pytest",
-]
+
+[project.optional-dependencies]
+test = ["pytest"]
 
 [project.urls]
 "Homepage" = "https://modzy.github.io/chassis"
