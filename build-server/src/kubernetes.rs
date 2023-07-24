@@ -29,6 +29,20 @@ fn build_job_name(job_id: &str) -> String {
     format!("chassis-remote-build-job-{}", job_id)
 }
 
+fn create_docker_config_secret(build_config: &BuildConfig) -> Result<(), Error> {
+    let registry = "https://index.docker.io/v1/";
+    let auth_string = "";
+
+    let data = json!({
+        "auths": {
+            registry: {
+                "auth": auth_string
+            }
+        }
+    });
+    Ok(())
+}
+
 // -------------------------------------------------------------------------------------------------
 
 #[cfg(test)]
@@ -61,8 +75,8 @@ mod tests {
             image_name: "".to_string(),
             tag: "".to_string(),
             publish: false,
-            webhook: "".to_string(),
-            registry_creds: "".to_string(),
+            webhook: None,
+            registry_creds: None,
         };
         let context_url = "http://test-0:8080/contexts/abc123".to_string();
 

@@ -27,8 +27,8 @@ pub struct BuildConfig {
     pub image_name: String,
     pub tag: String,
     pub publish: bool,
-    pub webhook: String,
-    pub registry_creds: String,
+    pub webhook: Option<String>,
+    pub registry_creds: Option<String>,
 }
 
 #[derive(Debug, Serialize)]
