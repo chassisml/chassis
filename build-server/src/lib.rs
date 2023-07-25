@@ -10,6 +10,7 @@ mod kubernetes;
 
 pub type Error = Box<dyn std::error::Error>;
 
+pub const PORT: u16 = 8080;
 const POD_NAME_KEY: &str = "POD_NAME";
 const CONTEXT_DIR_KEY: &str = "CHASSIS_CONTEXT_DIR";
 
