@@ -17,7 +17,7 @@ async fn main() -> std::io::Result<()> {
     let state = web::Data::new(app_data);
 
     // Start the server.
-    info!("Starting server on port {}", PORT);
+    info!("Starting server on 0.0.0.0:{}", PORT);
     HttpServer::new(move || {
         App::new()
             .app_data(state.clone())
@@ -30,7 +30,7 @@ async fn main() -> std::io::Result<()> {
             .service(download_job_tar)
             .service(get_job_logs)
     })
-    .bind((PORT))?
+    .bind(("0.0.0.0", PORT))?
     .run()
     .await
 }

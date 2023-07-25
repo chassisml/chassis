@@ -3,6 +3,7 @@ FROM rust:1.68-bullseye as builder
 WORKDIR /app
 # Create a new cargo project so we can download and build our dependencies
 # independently of any other code changes.
+# Inspiration here: https://dev.to/deciduously/use-multi-stage-docker-builds-for-statically-linked-rust-binaries-3jgd
 RUN cargo new build-server
 # Set our workdir to the new cargo project.
 WORKDIR /app/build-server
