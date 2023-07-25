@@ -49,6 +49,11 @@ pub async fn health() -> impl Responder {
     HttpResponse::Ok().body("Chassis Server Up and Running!")
 }
 
+#[get("/healthz")]
+pub async fn healthz() -> impl Responder {
+    HttpResponse::Ok().body("")
+}
+
 #[get("/version")]
 pub async fn version() -> impl Responder {
     HttpResponse::Ok().body("1.5.0")
