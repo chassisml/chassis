@@ -28,7 +28,7 @@ class DockerBuilder:
 
     def build_image(self, name: str, tag="latest", cache=False, show_logs=False, clean_context=True) -> BuildResponse:
         try:
-            print("Starting Docker build...", end="")
+            print("Starting Docker build...", end="", flush=True)
             image, logs = self.client.images.build(
                 path=self.context.base_dir,
                 tag=_create_full_image_name(name, tag),
