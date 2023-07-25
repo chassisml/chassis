@@ -28,6 +28,7 @@ class DockerBuilder:
 
     def build_image(self, name: str, tag="latest", cache=False, show_logs=False, clean_context=True) -> BuildResponse:
         try:
+            print("Starting Docker build...", end="")
             image, logs = self.client.images.build(
                 path=self.context.base_dir,
                 tag=_create_full_image_name(name, tag),
@@ -35,11 +36,13 @@ class DockerBuilder:
                 forcerm=not cache,
                 platform=self.context.platform,
             )
+            print("Done!")
             log_output = ""
             if show_logs:
                 for log_line in logs:
                     if "stream" in log_line:
                         log_output += log_line["stream"]
+                print("Logs:")
                 print(log_output)
             print(f"Image ID: {image.id}")
             print(f"Image Tags: {image.tags}")
@@ -48,10 +51,12 @@ class DockerBuilder:
                 self.context.cleanup()
             return BuildResponse(image_tag=image.tags[0], logs=log_output, success=True, error_message=None)
         except DockerBuildError as e:
+            print("Error :(")
             log_output = ""
             print("Error in Docker build process. Full logs below:\n\n")
             for log_line in e.build_log:
                 if "stream" in log_line:
                     log_output += log_line["stream"]
+            print("Logs:")
             print(log_output)
             raise BuildError(e, logs=log_output)
