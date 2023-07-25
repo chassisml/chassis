@@ -3,7 +3,7 @@ import string
 import docker
 from docker.errors import BuildError
 
-from .context import BuildContext
+from chassis.packager import Packageable
 
 
 def _create_full_image_name(name: str, tag: str):
@@ -21,9 +21,9 @@ def _create_full_image_name(name: str, tag: str):
 
 class DockerBuilder:
 
-    def __init__(self, context: BuildContext):
+    def __init__(self, package: Packageable, base_dir=None, arch="amd64", use_gpu=False, python_version="3.9", server="omi"):
         self.client = docker.from_env()
-        self.context = context
+        self.context = package.prepare_context(base_dir, arch, use_gpu, python_version, server)
 
     def build_image(self, name: str, tag="latest", cache=False, show_logs=False, clean_context=True):
         try:
