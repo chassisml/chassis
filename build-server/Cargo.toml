@@ -17,3 +17,6 @@ k8s-openapi = { version = "0.18.0", features = ["v1_24"] }
 uuid = { version = "1", features = ["v4"] }
 tokio = { version = "1", features = ["full"] }
 handlebars = "4.3.7"
+log = "0.4"
+fern = { version = "0.6", features = ["colored"] }
+chrono = "0.4"
