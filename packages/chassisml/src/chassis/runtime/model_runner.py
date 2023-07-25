@@ -1,3 +1,4 @@
+import json
 from typing import List, Mapping
 
 from chassis.typing import PredictFunction
@@ -41,11 +42,11 @@ class ModelRunner:
             outputs = []
             for input_item in inputs:
                 output = self.predict_fn(input_item["input"])
-                outputs.append({"results.json": output})
+                outputs.append({"results.json": json.dumps(output).encode()})
             return outputs
         else:
             adjusted_inputs = [input_item["input"] for input_item in inputs]
             # TODO - split inputs into groups of self.batch_size
             outputs = self.predict_fn(adjusted_inputs)
-            adjusted_outputs = [{"results.json": o} for o in outputs]
+            adjusted_outputs = [{"results.json": json.dumps(o).encode()} for o in outputs]
             return adjusted_outputs
