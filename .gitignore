@@ -13,3 +13,5 @@ chassisml/examples/keras/*
 local_test_.py
 hello-world.txt
 *test_sdk.py
+*.ipynb_checkpoints/
+.vscode
