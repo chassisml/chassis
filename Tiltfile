@@ -15,13 +15,13 @@ helm_resource(
 
 docker_build(
   "build-server",
-  context="./build-server",
+  context="./servers/remote-build",
   match_in_env_vars=True,
 )
 
 helm_resource(
   "chassis-build-service",
-  chart="./build-server/charts/chassis-build-server",
+  chart="./servers/remote-build/charts/chassis-build-server",
   image_deps=["build-server"],
   image_keys=[("image.repository", "image.tag")],
   flags=["-f", "./environments/tilt/build-server-values.yaml"],
