@@ -8,6 +8,7 @@ chassis-sdk/examples/model
 build
 dist
 .idea
+.DS_Store
 
 chassisml/examples/keras/*
 local_test_.py
