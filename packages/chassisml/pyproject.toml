@@ -21,6 +21,7 @@ dependencies = [
     "pyyaml",
     "docker",
     "validators",
+    "numpy",
 ]
 
 [project.optional-dependencies]

@@ -5,11 +5,12 @@ use std::env;
 
 pub mod build;
 mod contexts;
-pub mod job_routes;
+pub mod jobs;
 mod kubernetes;
 
 pub type Error = Box<dyn std::error::Error>;
 
+pub const PORT: u16 = 8080;
 const POD_NAME_KEY: &str = "POD_NAME";
 const CONTEXT_DIR_KEY: &str = "CHASSIS_CONTEXT_DIR";
 
@@ -47,6 +48,11 @@ pub async fn root() -> impl Responder {
 #[get("/health")]
 pub async fn health() -> impl Responder {
     HttpResponse::Ok().body("Chassis Server Up and Running!")
+}
+
+#[get("/healthz")]
+pub async fn healthz() -> impl Responder {
+    HttpResponse::Ok().body("")
 }
 
 #[get("/version")]
