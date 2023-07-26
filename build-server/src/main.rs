@@ -1,6 +1,6 @@
 use actix_web::{web, App, HttpServer};
 use chassis_build_server::build::build_image;
-use chassis_build_server::job_routes::{download_job_tar, get_job_logs, get_job_status};
+use chassis_build_server::jobs::{download_job_tar, get_job_logs, get_job_status};
 use chassis_build_server::PORT;
 use chassis_build_server::{health, root, test, version, AppState};
 use chrono::{DateTime, Utc};

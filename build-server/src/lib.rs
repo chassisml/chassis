@@ -5,7 +5,7 @@ use std::env;
 
 pub mod build;
 mod contexts;
-pub mod job_routes;
+pub mod jobs;
 mod kubernetes;
 
 pub type Error = Box<dyn std::error::Error>;
