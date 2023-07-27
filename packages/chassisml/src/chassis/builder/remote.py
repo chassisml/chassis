@@ -7,7 +7,7 @@ import os.path
 import shutil
 import tempfile
 from typing import TYPE_CHECKING
-
+from chassis.builder import Buildable, BuildOptions, DefaultBuildOptions
 import requests
 import validators
 
@@ -30,9 +30,9 @@ class Credentials:
 
 
 class RemoteBuilder:
-    def __init__(self, client: ChassisClient, context: BuildContext):
+    def __init__(self, client: ChassisClient, package: Buildable, options: BuildOptions = DefaultBuildOptions):
         self.client = client
-        self.context = context
+        self.context = package.prepare_context(options)
 
     def build_image(self, name: str, tag="latest", credentials: Credentials = None, webhook: str = None, clean_context=True):
         if webhook is not None and validators.url(webhook):

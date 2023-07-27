@@ -11,6 +11,7 @@ use kube::api::PostParams;
 use kube::runtime::conditions;
 use kube::runtime::wait::await_condition;
 use kube::{Api, Client};
+use log::{error, info};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -130,9 +131,17 @@ async fn start_build_job(client: Client, job: Job) -> Result<(), Error> {
 async fn cleanup_job(jobs: Api<Job>, job_name: String) {
     // Set up the condition for when the job finishes.
     let finish_condition = await_condition(jobs, job_name.as_str(), conditions::is_job_completed());
+    info!("Waiting until job {} completes", job_name);
     // Run the watcher but cancel it if it takes longer than an hour.
-    let asdf = tokio::time::timeout(std::time::Duration::from_secs(3600), finish_condition).await;
-    // TODO - check error? log elapsed time?
+    let job_result =
+        tokio::time::timeout(std::time::Duration::from_secs(3600), finish_condition).await;
+    if job_result.is_err() {
+        error!("Job {} has failed", job_name);
+        // TODO - do something with error logs?
+        return;
+    }
+    info!("Job {} has completed", job_name);
+    // TODO - log elapsed time?
 
     // Call any webhooks.
 

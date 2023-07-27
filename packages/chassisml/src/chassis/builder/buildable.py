@@ -15,9 +15,10 @@ from chassis.builder import BuildContext
 from chassis.metadata import ModelMetadata
 from chassis.protos.v1.model_pb2 import StatusResponse
 from chassis.runtime import PACKAGE_DATA_PATH, python_pickle_filename_for_key
+from .options import BuildOptions, DefaultBuildOptions
 
 env = Environment(
-    loader=PackageLoader(package_name="chassis.packager"),
+    loader=PackageLoader(package_name="chassis.builder"),
     autoescape=select_autoescape()
 )
 
@@ -46,14 +47,14 @@ def _copy_libraries(context: BuildContext, server: str, ignore_patterns: list[st
     copytree(os.path.join(root, "chassis", "server", server), os.path.join(context.chassis_dir, "server", server), ignore=ignore)
 
 
-class Packageable(metaclass=abc.ABCMeta):
+class Buildable(metaclass=abc.ABCMeta):
     packaged = False
     metadata = ModelMetadata.default()
     requirements: set[str] = set()
     additional_files: set[str] = set()
     python_modules: dict = {}
 
-    def merge_package(self, package: Packageable):
+    def merge_package(self, package: Buildable):
         self.requirements = self.requirements.union(package.requirements)
         self.additional_files = self.additional_files.union(package.additional_files)
         self.python_modules.update(package.python_modules)
@@ -67,9 +68,9 @@ class Packageable(metaclass=abc.ABCMeta):
     def get_packaged_path(self, path: str):
         return posixpath.join(PACKAGE_DATA_PATH, os.path.basename(path))
 
-    def prepare_context(self, base_dir=None, arch="amd64", use_gpu=False, python_version="3.9", server="omi") -> BuildContext:
-        container_arch = _convert_arch_to_container_arch(arch)
-        context = BuildContext(base_dir=base_dir, platform="{}/{}".format("linux", container_arch))
+    def prepare_context(self, options: BuildOptions = DefaultBuildOptions) -> BuildContext:
+        container_arch = _convert_arch_to_container_arch(options.arch)
+        context = BuildContext(base_dir=options.base_dir, platform="{}/{}".format("linux", container_arch))
 
         print("Using build directory: " + context.base_dir)
         # Ensure the target directories exist.
@@ -82,9 +83,9 @@ class Packageable(metaclass=abc.ABCMeta):
         dockerfile_template = env.get_template("Dockerfile")
         rendered_template = dockerfile_template.render(
             arch=container_arch,
-            python_version=python_version,
-            needs_cross_compiling=_needs_cross_compiling(arch),
-            use_gpu=use_gpu,
+            python_version=options.python_version,
+            needs_cross_compiling=_needs_cross_compiling(options.arch),
+            use_gpu=options.use_gpu,
         )
         with open(os.path.join(context.base_dir, "Dockerfile"), "wb") as f:
             f.write(rendered_template.encode())
@@ -101,7 +102,7 @@ class Packageable(metaclass=abc.ABCMeta):
             f.write(entrypoint_template.render().encode())
 
         # # Copy any Chassis libraries we need.
-        _copy_libraries(context, server, dockerignore.splitlines())
+        _copy_libraries(context, options.server, dockerignore.splitlines())
 
         self._write_metadata(context)
         self._write_requirements(context)

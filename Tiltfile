@@ -25,4 +25,5 @@ helm_resource(
   image_deps=["build-server"],
   image_keys=[("image.repository", "image.tag")],
   flags=["-f", "./environments/tilt/build-server-values.yaml"],
+  port_forwards=[8080],
 )

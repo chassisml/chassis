@@ -5,13 +5,13 @@ from typing import List, Mapping, Union
 
 from chassis.builder import BuildContext
 from chassis.builder.remote import Credentials, RemoteBuilder
-from chassis.packager import Packageable
+from chassis.builder import Buildable, BuildOptions
 from chassis.runtime import ModelRunner, PYTHON_MODEL_KEY
 from chassis.typing import PredictFunction
 from .helpers import deprecated
 
 
-class ChassisModel(Packageable):
+class ChassisModel(Buildable):
 
     def __init__(self, process_fn: PredictFunction, batch_size=1, legacy_predict_fn=False, chassis_client=None):
         self.runner = ModelRunner(process_fn, batch_size=batch_size, is_legacy_fn=legacy_predict_fn)
@@ -73,7 +73,8 @@ class ChassisModel(Packageable):
         if path is not None and not os.path.exists(path):
             os.makedirs(path, exist_ok=True)
 
-        return self.prepare_context(base_dir=path, arch="arm64" if arm64 else "amd64", use_gpu=gpu)
+        options = BuildOptions(base_dir=path, arch="arm64" if arm64 else "amd64", use_gpu=gpu)
+        return self.prepare_context(options)
 
     def publish(self, model_name: str, model_version: str, registry_user=None, registry_pass=None, requirements=None, fix_env=True, gpu=False, arm64=False, sample_input_path=None, webhook=None, conda_env=None):
         deprecated()
@@ -86,8 +87,8 @@ class ChassisModel(Packageable):
         self.metadata.info.model_name = model_name
         self.metadata.info.model_version = model_version
 
-        # Create the build context.
-        build_context = self.prepare_context(
+        # Create the build options.
+        options = BuildOptions(
             arch="arm64" if arm64 else "amd64",
             use_gpu=gpu,
         )
@@ -107,7 +108,7 @@ class ChassisModel(Packageable):
         image_path = f"{registry_user + '/' if (registry_user and registry_pass) else ''}{image_name}"
 
         # Create the remote builder.
-        builder = RemoteBuilder(client=self.chassis_client, context=build_context)
+        builder = RemoteBuilder(client=self.chassis_client, package=self, options=options)
         builder.build_image(image_path, model_version, registry_creds, webhook)
 
     def parse_conda_env(self, conda_env):

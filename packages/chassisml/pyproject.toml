@@ -37,7 +37,7 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 "*" = ["*.pyi"]
-"chassis.packager" = ["templates/*"]
+"chassis.builder" = ["templates/*"]
 
 [build-system]
 requires = ["setuptools>=41.0.0"]

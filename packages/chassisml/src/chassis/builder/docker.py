@@ -3,7 +3,8 @@ import string
 import docker
 from docker.errors import BuildError as DockerBuildError
 
-from chassis.packager import Packageable
+from .buildable import Buildable
+from .options import BuildOptions, DefaultBuildOptions
 from .response import BuildError, BuildResponse
 
 
@@ -22,9 +23,9 @@ def _create_full_image_name(name: str, tag: str):
 
 class DockerBuilder:
 
-    def __init__(self, package: Packageable, base_dir=None, arch="amd64", use_gpu=False, python_version="3.9", server="omi"):
+    def __init__(self, package: Buildable, options: BuildOptions = DefaultBuildOptions):
         self.client = docker.from_env()
-        self.context = package.prepare_context(base_dir, arch, use_gpu, python_version, server)
+        self.context = package.prepare_context(options)
 
     def build_image(self, name: str, tag="latest", cache=False, show_logs=False, clean_context=True) -> BuildResponse:
         try:

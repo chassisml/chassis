@@ -4,7 +4,7 @@ use kube::Client;
 use std::env;
 
 pub mod build;
-mod contexts;
+pub mod contexts;
 pub mod jobs;
 mod kubernetes;
 
@@ -34,7 +34,7 @@ impl AppState<'_> {
             kube_client,
             context_dir,
             pod_name,
-            port: "8080".to_string(),
+            port: PORT.to_string(),
             template_registry,
         })
     }

@@ -1,8 +1,9 @@
 use actix_web::{web, App, HttpServer};
 use chassis_build_server::build::build_image;
+use chassis_build_server::contexts::{delete_context, get_context};
 use chassis_build_server::jobs::{download_job_tar, get_job_logs, get_job_status};
 use chassis_build_server::PORT;
-use chassis_build_server::{health, root, test, version, AppState};
+use chassis_build_server::{health, healthz, root, test, version, AppState};
 use chrono::{DateTime, Utc};
 use fern::colors::ColoredLevelConfig;
 use log::{info, LevelFilter};
@@ -23,12 +24,15 @@ async fn main() -> std::io::Result<()> {
             .app_data(state.clone())
             .service(root)
             .service(health)
+            .service(healthz)
             .service(version)
             .service(test)
             .service(build_image)
             .service(get_job_status)
             .service(download_job_tar)
             .service(get_job_logs)
+            .service(get_context)
+            .service(delete_context)
     })
     .bind(("0.0.0.0", PORT))?
     .run()
