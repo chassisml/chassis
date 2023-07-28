@@ -20,8 +20,8 @@ RUN cargo build --release --locked
 
 # Unless we statically compile in libc into our binary, we need to use the
 # 'cc' variant of the distroless container.
-FROM gcr.io/distroless/cc-debian11:nonroot
+FROM gcr.io/distroless/cc-debian11:debug-nonroot
 # Copy in the built binary from the builder stage into a location in $PATH.
 COPY --from=builder /app/build-server/target/release/chassis-build-server /usr/local/bin/chassis-build-server
 # Finally set the default command to execute the server.
-CMD ["chassis-build-server"]
+ENTRYPOINT ["chassis-build-server"]

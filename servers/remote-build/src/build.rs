@@ -1,7 +1,6 @@
 use crate::contexts::save_context;
 use crate::kubernetes::create_job_object;
 use crate::{AppState, Error};
-use actix_multipart::form::json::Json;
 use actix_multipart::form::tempfile::TempFile;
 use actix_multipart::form::MultipartForm;
 use actix_web::http::header::USER_AGENT;
@@ -11,14 +10,14 @@ use kube::api::PostParams;
 use kube::runtime::conditions;
 use kube::runtime::wait::await_condition;
 use kube::{Api, Client};
-use log::{error, info};
+use log::{debug, error, info};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 #[derive(Debug, MultipartForm)]
 pub struct BuildImageForm {
     #[multipart(limit = "1 MiB")]
-    build_config: Json<BuildConfig>,
+    build_config: TempFile,
     #[multipart(limit = "20 GiB")]
     build_context: TempFile,
 }
@@ -47,16 +46,22 @@ pub async fn build_image(
 ) -> impl Responder {
     // First ensure that the caller is using a new-enough SDK.
     if let Some(e) = verify_user_agent(&req) {
+        info!("Received request from invalid client.");
         return e;
     }
 
+    // TODO - gracefully handle errors
+    let build_config: BuildConfig = serde_json::from_reader(&form.build_config.file).unwrap();
+
     // Create a UUID for this build job.
     let job_id = Uuid::new_v4().to_string();
+    debug!("Created job id: {}", &job_id);
 
     // Save the context to our cache directory.
     let build_context_url = match save_context(&state, &job_id, form.build_context) {
         Ok(u) => u,
         Err(e) => {
+            error!("error saving context: {e}");
             return HttpResponse::InternalServerError().json(BuildImageResponse {
                 error: true,
                 error_message: e.to_string(),
@@ -67,7 +72,7 @@ pub async fn build_image(
 
     // Construct the Kubernetes Job object.
     let job = match create_job_object(
-        &form.build_config,
+        &build_config,
         &job_id,
         &build_context_url,
         &state.template_registry,

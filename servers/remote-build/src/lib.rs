@@ -2,6 +2,7 @@ use actix_web::{get, post, HttpResponse, Responder};
 use handlebars::Handlebars;
 use kube::Client;
 use std::env;
+use std::path::PathBuf;
 
 pub mod build;
 pub mod contexts;
@@ -11,29 +12,31 @@ mod kubernetes;
 pub type Error = Box<dyn std::error::Error>;
 
 pub const PORT: u16 = 8080;
-const POD_NAME_KEY: &str = "POD_NAME";
-const CONTEXT_DIR_KEY: &str = "CHASSIS_CONTEXT_DIR";
 
 pub struct AppState<'a> {
     kube_client: Client,
-    context_dir: String,
+    context_path: PathBuf,
+    service_name: String,
     pod_name: String,
     port: String,
     template_registry: Handlebars<'a>,
 }
 
 impl AppState<'_> {
-    pub async fn new() -> Result<AppState<'static>, Error> {
+    pub async fn new(
+        service_name: &String,
+        pod_name: &String,
+        context_path: PathBuf,
+    ) -> Result<AppState<'static>, Error> {
         let kube_client = Client::try_default().await.unwrap();
-        let pod_name = env::var(POD_NAME_KEY)?;
-        let context_dir = env::var(CONTEXT_DIR_KEY)?;
         let mut template_registry = Handlebars::new();
         let job_template = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/manifests/job.yaml"));
         template_registry.register_template_string("job", job_template)?;
         Ok(AppState {
             kube_client,
-            context_dir,
-            pod_name,
+            context_path,
+            service_name: service_name.to_string(),
+            pod_name: pod_name.to_string(),
             port: PORT.to_string(),
             template_registry,
         })

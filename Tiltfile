@@ -20,10 +20,11 @@ docker_build(
 )
 
 helm_resource(
-  "chassis-build-service",
+  "chassis-build-server",
   chart="./servers/remote-build/charts/chassis-build-server",
   image_deps=["build-server"],
   image_keys=[("image.repository", "image.tag")],
   flags=["-f", "./environments/tilt/build-server-values.yaml"],
   port_forwards=[8080],
+  deps=["./environments/tilt/build-server-values.yaml"],
 )

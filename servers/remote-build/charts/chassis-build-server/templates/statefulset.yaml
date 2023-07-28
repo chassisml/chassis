@@ -35,8 +35,8 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-            - name: CHASSIS_CONTEXT_DIR
-              value: /opt/chassis/contexts
+            - name: CHASSIS_DATA_DIR
+              value: /opt/chassis
             - name: SERVICE_NAME
               value: {{ include "chassis-build-server.fullname" . }}
             - name: POD_NAME
@@ -49,6 +49,8 @@ spec:
               value: {{ .Values.registry.credentialsSecretName }}
             - name: REGISTRY_PREFIX
               value: {{ .Values.registry.repositoryPrefix }}
+            - name: LOG_LEVEL
+              value: {{ ternary "debug" "info" .Values.debug }}
           ports:
             - name: http
               containerPort: 8080
@@ -64,8 +66,10 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
-            - mountPath: /opt/chassis/contexts
-              name: chassis-contexts
+            - mountPath: /tmp
+              name: tmp
+            - mountPath: /opt/chassis
+              name: chassis-data
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -78,9 +82,12 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      volumes:
+        - name: tmp
+          emptyDir: {}
   volumeClaimTemplates:
     - metadata:
-        name: chassis-contexts
+        name: chassis-data
       spec:
         accessModes: [ {{ .Values.persistence.accessMode }} ]
         {{- if .Values.persistence.storageClass }}

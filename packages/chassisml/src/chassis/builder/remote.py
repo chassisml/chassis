@@ -6,8 +6,10 @@ import json
 import os.path
 import shutil
 import tempfile
+import urllib.parse
 from typing import TYPE_CHECKING
-from chassis.builder import Buildable, BuildOptions, DefaultBuildOptions
+from .buildable import Buildable
+from .options import BuildOptions, DefaultBuildOptions
 import requests
 import validators
 
@@ -43,8 +45,8 @@ class RemoteBuilder:
         try:
             # Zip up the build context.
             tmpdir = tempfile.mkdtemp()
-            package_filename = os.path.join(tmpdir, "package.zip")
-            shutil.make_archive(package_filename, "zip", self.context.base_dir)
+            package_basename = os.path.join(tmpdir, "package")
+            package_filename = shutil.make_archive(package_basename, "zip", self.context.base_dir)
 
             # Construct the build arguments.
             build_config = {
@@ -73,8 +75,9 @@ class RemoteBuilder:
             ]
 
             # Submit the build request.
-            print("Starting build job... ", end="", flush=True)
-            response = requests.post("", headers=headers, files=files, verify=self.client.ssl_verification)
+            url = urllib.parse.urljoin(self.client.base_url, "/build")
+            response = requests.post(url, headers=headers, files=files, verify=self.client.ssl_verification)
+            print(response.json())
             response.raise_for_status()
 
             print("Ok!")

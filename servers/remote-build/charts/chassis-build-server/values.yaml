@@ -19,6 +19,8 @@ persistence:
   accessMode: ReadWriteOnce
   #storageClass: default
 
+debug: false
+
 replicaCount: 1
 
 image:
