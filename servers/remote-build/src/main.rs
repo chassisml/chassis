@@ -1,9 +1,9 @@
 use actix_multipart::form::tempfile::TempFileConfig;
 use actix_web::middleware::Logger;
 use actix_web::{web, App, HttpServer};
-use chassis_build_server::build::build_image;
-use chassis_build_server::contexts::{delete_context, get_context};
-use chassis_build_server::jobs::{download_job_tar, get_job_logs, get_job_status};
+use chassis_build_server::routes::build::build_image;
+use chassis_build_server::routes::contexts::{delete_context, get_context};
+use chassis_build_server::routes::jobs::{download_job_tar, get_job_logs, get_job_status};
 use chassis_build_server::PORT;
 use chassis_build_server::{health, healthz, root, test, version, AppState};
 use chrono::{DateTime, Utc};
@@ -15,6 +15,7 @@ use std::path::PathBuf;
 const SERVICE_NAME_KEY: &str = "SERVICE_NAME";
 const POD_NAME_KEY: &str = "POD_NAME";
 const DATA_DIR_KEY: &str = "CHASSIS_DATA_DIR";
+const BUILD_TIMEOUT_KEY: &str = "BUILD_TIMEOUT";
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
@@ -35,6 +36,12 @@ async fn main() -> std::io::Result<()> {
         .expect(format!("the {} environment variable must be set", POD_NAME_KEY).as_str());
     let data_dir = env::var(DATA_DIR_KEY)
         .expect(format!("the {} environment variable must be set", DATA_DIR_KEY).as_str());
+    let build_timeout_string = env::var(BUILD_TIMEOUT_KEY)
+        .expect(format!("the {} environment variable must be set", BUILD_TIMEOUT_KEY).as_str());
+    let build_timeout: u64 = build_timeout_string
+        .trim()
+        .parse()
+        .expect(format!("{} must be an integer", BUILD_TIMEOUT_KEY).as_str());
 
     // Create data directories.
     let data_path = PathBuf::from(&data_dir);
@@ -46,7 +53,7 @@ async fn main() -> std::io::Result<()> {
     std::fs::create_dir_all(&tmp_path).expect("unable to create tmp directory");
 
     // Initialize our shared app state.
-    let app_data = AppState::new(&service_name, &pod_name, context_path)
+    let app_data = AppState::new(&service_name, &pod_name, context_path, build_timeout)
         .await
         .expect("error initializing app state");
 

@@ -4,10 +4,12 @@ use kube::Client;
 use std::env;
 use std::path::PathBuf;
 
-pub mod build;
-pub mod contexts;
-pub mod jobs;
-mod kubernetes;
+pub mod routes {
+    pub mod build;
+    pub mod contexts;
+    pub mod jobs;
+}
+mod manager;
 
 pub type Error = Box<dyn std::error::Error>;
 
@@ -20,6 +22,7 @@ pub struct AppState<'a> {
     pod_name: String,
     port: String,
     template_registry: Handlebars<'a>,
+    build_timeout: u64,
 }
 
 impl AppState<'_> {
@@ -27,6 +30,7 @@ impl AppState<'_> {
         service_name: &String,
         pod_name: &String,
         context_path: PathBuf,
+        build_timeout: u64,
     ) -> Result<AppState<'static>, Error> {
         let kube_client = Client::try_default().await.unwrap();
         let mut template_registry = Handlebars::new();
@@ -39,6 +43,7 @@ impl AppState<'_> {
             pod_name: pod_name.to_string(),
             port: PORT.to_string(),
             template_registry,
+            build_timeout,
         })
     }
 }

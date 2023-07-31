@@ -2,8 +2,8 @@ use actix_web::http::{Method, StatusCode};
 use actix_web::test::read_body;
 use actix_web::{test, App};
 use chassis_build_server;
-use chassis_build_server::build::build_image;
-use chassis_build_server::jobs::download_job_tar;
+use chassis_build_server::routes::build::build_image;
+use chassis_build_server::routes::jobs::download_job_tar;
 use chassis_build_server::{health, root, test as test_fn};
 
 #[actix_web::test]
