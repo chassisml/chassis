@@ -2,12 +2,10 @@ use crate::manager::BuildManager;
 use crate::AppState;
 use actix_web::{get, web, Error, HttpResponse, Responder};
 use k8s_openapi::api::batch::v1::JobStatus;
-use kube::ResourceExt;
 use serde::Serialize;
 
 #[derive(Serialize)]
 struct JobStatusResponse {
-    result: String,
     status: Option<JobStatus>,
     logs: Option<String>,
 }
@@ -25,21 +23,19 @@ pub async fn get_job_status(
         Ok(j) => j,
         Err(_) => return Ok(HttpResponse::NotFound().body("job not found")),
     };
-    let annotations = &job.annotations();
-    let result = match annotations.get("result") {
-        Some(r) => r.to_string(),
-        None => String::from(""),
-    };
     let status = job.status;
 
     let mut job_status = JobStatusResponse {
-        result: result.to_owned(),
         status: status.to_owned(),
         logs: None,
     };
 
-    if status.is_some() && status.unwrap().failed > Some(0) {
-        job_status.logs = manager.get_job_logs().await
+    if let Some(s) = status {
+        if let Some(f) = s.failed {
+            if f > 0 {
+                job_status.logs = manager.get_job_logs().await
+            }
+        }
     }
 
     Ok(HttpResponse::Ok().json(job_status))

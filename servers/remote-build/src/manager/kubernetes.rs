@@ -2,11 +2,11 @@ use crate::manager::BuildManager;
 use crate::Error;
 use k8s_openapi::api::batch::v1::Job;
 use k8s_openapi::api::core::v1::Pod;
-use kube::api::{ListParams, LogParams, PostParams};
+use kube::api::{DeleteParams, ListParams, LogParams, PostParams};
 use kube::runtime::conditions;
 use kube::runtime::wait::await_condition;
 use kube::Api;
-use log::{error, info};
+use log::{debug, error, info};
 use serde_json::json;
 
 impl BuildManager {
@@ -60,7 +60,7 @@ impl BuildManager {
     pub async fn get_job_logs(&self) -> Option<String> {
         let pods: Api<Pod> = Api::default_namespaced(self.state.kube_client.clone());
         let list_params =
-            ListParams::default().labels(format!("job-name={}", &self.job_id).as_str());
+            ListParams::default().labels(format!("job-name={}", self.get_job_name()).as_str());
         let job_pods = match pods.list(&list_params).await {
             Ok(p) => p,
             Err(_) => return None,
@@ -94,7 +94,52 @@ impl BuildManager {
         Ok(())
     }
 
+    async fn delete_job(&self) -> Result<(), Error> {
+        let jobs: Api<Job> = Api::default_namespaced(self.state.kube_client.clone());
+        let job_name = self.get_job_name();
+        jobs.delete(job_name.as_str(), &DeleteParams::foreground())
+            .await?;
+        Ok(())
+    }
+
     pub async fn cleanup_job(&self) {
+        let job = self.wait_for_job_completion().await;
+
+        // If we got a Job back then call webhooks, etc.
+        match job {
+            Some(job) => {
+                info!("Job {} has completed: {:?}", &self.job_id, job.status);
+
+                // TODO - log elapsed time?
+
+                // Call any webhooks.
+                match &self.config {
+                    Some(build_config) => {
+                        if let Some(_wh) = &build_config.webhook {
+                            info!("Running webhook(s)")
+                            // TODO - actually call webhook.
+                        }
+                    }
+                    None => {
+                        error!("cleanup_job called without access to build_config");
+                    }
+                };
+            }
+            None => {
+                // TODO - what to do here??
+            }
+        }
+
+        // Always do the following actions.
+
+        // Delete any Kubernetes secrets for this job.
+        // TODO
+
+        // Remove the build context from the context cache.
+        self.clean_context().await;
+    }
+
+    async fn wait_for_job_completion(&self) -> Option<Job> {
         // Set up the condition for when the job finishes.
         let jobs: Api<Job> = Api::default_namespaced(self.state.kube_client.clone());
         let job_name = self.get_job_name();
@@ -104,7 +149,7 @@ impl BuildManager {
             Some(bc) => bc,
             None => {
                 error!("cleanup_job called without access to build_config");
-                return;
+                return None;
             }
         };
         info!("Waiting until job {} completes", &self.job_id);
@@ -115,29 +160,22 @@ impl BuildManager {
         };
         let job_result =
             tokio::time::timeout(std::time::Duration::from_secs(timeout), finish_condition).await;
-        match job_result {
-            Err(_) => {
-                error!("Job {} did not complete within the allotted time", job_name);
-                // TODO - do something with error logs?
+        return match job_result {
+            Err(e) => {
+                error!(
+                    "Job {} did not complete within the allotted time: {e}",
+                    &self.job_id
+                );
+                None
             }
-            Ok(job_result) => {
-                info!("Job {} has completed", job_name);
-                // TODO - log elapsed time?
-                // Determine if the job was successful or not.
-                // If job was successful, then delete the Job from Kubernetes so we don't accumulate Job
-                // records for successful runs.
-            }
-        }
-
-        // Call any webhooks.
-        if let Some(wh) = &build_config.webhook {
-            info!("Running webhook(s)")
-            // TODO - actually call webhook.
-        }
-
-        // Delete any Kubernetes secrets for this job.
-
-        // Remove the build context from object storage.
+            Ok(job_result) => match job_result {
+                Err(e) => {
+                    error!("{e}");
+                    None
+                }
+                Ok(j) => j,
+            },
+        };
     }
 }
 // -------------------------------------------------------------------------------------------------

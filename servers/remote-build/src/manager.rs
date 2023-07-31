@@ -53,6 +53,7 @@ impl BuildManager {
         let build_context_url = manager.save_context(context)?;
         // Construct the Kubernetes Job object.
         let job = manager.create_job_object(&build_context_url)?;
+        // Apply the job to Kubernetes
         let _ = manager.start_build_job(job).await?;
 
         // Save the job ID before moving the manager into the spawned task.

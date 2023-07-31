@@ -157,8 +157,8 @@ class ChassisClient:
         """
         endby = time.time() + timeout if (timeout is not None) else None
         while True:
-            status = self.get_job_status(job_id)
-            if status['status']['succeeded'] or status['status']['failed']:
+            status = self.get_job_status(job_id)["status"]
+            if "succeeded" in status or "failed" in status:
                 return status
             if (endby is not None) and (time.time() > endby - poll_interval):
                 print('Timed out before completion.')

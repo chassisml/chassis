@@ -77,19 +77,18 @@ class RemoteBuilder:
             # Submit the build request.
             url = urllib.parse.urljoin(self.client.base_url, "/build")
             response = requests.post(url, headers=headers, files=files, verify=self.client.ssl_verification)
-            print(response.json())
             response.raise_for_status()
 
-            print("Ok!")
+            obj = response.json()
+            print(f"Job has been submitted with id {obj['job_id']}")
 
             if clean_context:
-                print("Cleaning context")
+                print("Cleaning local context")
                 self.context.cleanup()
 
             return response.json()
         finally:
             # Clean up
-            print("Cleaning up")
             if build_context is not None and not build_context.closed:
                 build_context.close()
             if tmpdir is not None and os.path.exists(tmpdir):

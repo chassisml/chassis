@@ -2,7 +2,7 @@ use actix_multipart::form::tempfile::TempFileConfig;
 use actix_web::middleware::Logger;
 use actix_web::{web, App, HttpServer};
 use chassis_build_server::routes::build::build_image;
-use chassis_build_server::routes::contexts::{delete_context, get_context};
+use chassis_build_server::routes::contexts::get_context;
 use chassis_build_server::routes::jobs::{download_job_tar, get_job_logs, get_job_status};
 use chassis_build_server::PORT;
 use chassis_build_server::{health, healthz, root, test, version, AppState};
@@ -81,7 +81,6 @@ async fn main() -> std::io::Result<()> {
             .service(download_job_tar)
             .service(get_job_logs)
             .service(get_context)
-            .service(delete_context)
     })
     .bind(("0.0.0.0", PORT))?
     .run()
