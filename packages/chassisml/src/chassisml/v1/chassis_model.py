@@ -3,6 +3,7 @@ import os
 import string
 from typing import List, Mapping, Union
 
+from chassis.metadata import ModelMetadata
 from chassis.builder import BuildContext
 from chassis.builder.remote import Credentials, RemoteBuilder
 from chassis.builder import Buildable, BuildOptions
@@ -16,6 +17,8 @@ class ChassisModel(Buildable):
     def __init__(self, process_fn: PredictFunction, batch_size=1, legacy_predict_fn=False, chassis_client=None):
         self.runner = ModelRunner(process_fn, batch_size=batch_size, is_legacy_fn=legacy_predict_fn)
         self.python_modules[PYTHON_MODEL_KEY] = self.runner
+        if legacy_predict_fn:
+            self.metadata = ModelMetadata.legacy()
         if chassis_client is not None:
             self.chassis_client = chassis_client
 

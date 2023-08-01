@@ -134,16 +134,6 @@ class Buildable(metaclass=abc.ABCMeta):
                 cloudpickle.dump({key: m}, f)
 
     def _write_metadata(self, context: BuildContext):
-        sr = StatusResponse()
-        sr.model_info.CopyFrom(self.metadata.info)
-        sr.description.CopyFrom(self.metadata.description)
-        sr.inputs.MergeFrom(self.metadata.inputs)
-        sr.outputs.MergeFrom(self.metadata.outputs)
-        sr.resources.CopyFrom(self.metadata.resources)
-        sr.timeout.CopyFrom(self.metadata.timeout)
-        sr.features.CopyFrom(self.metadata.features)
-
-        data = sr.SerializeToString()
-
+        data = self.metadata.serialize()
         with open(os.path.join(context.data_dir, "model_info"), "wb") as f:
             f.write(data)
