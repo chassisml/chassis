@@ -9,6 +9,7 @@ build
 dist
 .idea
 .DS_Store
+scratch
 
 chassisml/examples/keras/*
 local_test_.py
