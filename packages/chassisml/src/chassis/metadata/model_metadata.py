@@ -81,7 +81,7 @@ class ModelMetadata:
     def performance(self, performance):
         self._description.performance = performance
 
-    def add_input(self, key, accepted_media_types: list[str] = None, max_size: str = "1M", description: str = ""):
+    def add_input(self, key: str, accepted_media_types: list[str] = None, max_size: str = "1M", description: str = ""):
         if accepted_media_types is None:
             accepted_media_types = ["application/octet-stream"]
         self._inputs = self._inputs + [ModelInput(
@@ -91,7 +91,7 @@ class ModelMetadata:
             description=description,
         )]
 
-    def add_output(self, key, media_type: str = "application/octet-stream", max_size: str = "1M", description: str = ""):
+    def add_output(self, key: str, media_type: str = "application/octet-stream", max_size: str = "1M", description: str = ""):
         self._outputs = self._outputs + [ModelOutput(
             filename=key,
             media_type=media_type,
