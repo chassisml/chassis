@@ -18,6 +18,7 @@ const DATA_DIR_KEY: &str = "CHASSIS_DATA_DIR";
 const BUILD_TIMEOUT_KEY: &str = "BUILD_TIMEOUT";
 const LOG_LEVEL_KEY: &str = "LOG_LEVEL";
 const REGISTRY_URL_KEY: &str = "REGISTRY_URL";
+const REGISTRY_PREFIX_KEY: &str = "REGISTRY_PREFIX";
 const REGISTRY_CREDENTIALS_SECRET_NAME_KEY: &str = "REGISTRY_CREDENTIALS_SECRET_NAME";
 
 #[tokio::main]
@@ -46,6 +47,7 @@ async fn main() -> std::io::Result<()> {
         .parse()
         .expect(format!("{} must be an integer", BUILD_TIMEOUT_KEY).as_str());
     let registry_url: Option<String> = env::var(REGISTRY_URL_KEY).ok();
+    let registry_prefix: Option<String> = env::var(REGISTRY_PREFIX_KEY).ok();
     let registry_credentials_secret_name: Option<String> =
         env::var(REGISTRY_CREDENTIALS_SECRET_NAME_KEY).ok();
 
@@ -65,6 +67,7 @@ async fn main() -> std::io::Result<()> {
         context_path,
         build_timeout,
         registry_url,
+        registry_prefix,
         registry_credentials_secret_name,
     )
     .await

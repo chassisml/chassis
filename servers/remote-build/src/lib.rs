@@ -24,6 +24,7 @@ pub struct AppState<'a> {
     template_registry: Handlebars<'a>,
     build_timeout: u64,
     registry_url: Option<String>,
+    registry_prefix: Option<String>,
     registry_credentials_secret_name: Option<String>,
 }
 
@@ -34,6 +35,7 @@ impl AppState<'_> {
         context_path: PathBuf,
         build_timeout: u64,
         registry_url: Option<String>,
+        registry_prefix: Option<String>,
         registry_credentials_secret_name: Option<String>,
     ) -> Result<AppState<'static>, Error> {
         let kube_client = Client::try_default().await.unwrap();
@@ -49,6 +51,7 @@ impl AppState<'_> {
             template_registry,
             build_timeout,
             registry_url,
+            registry_prefix,
             registry_credentials_secret_name,
         })
     }

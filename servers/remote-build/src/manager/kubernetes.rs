@@ -35,11 +35,23 @@ impl BuildManager {
         let mut parts: Vec<&str> = vec![];
         let build_config = self.config.as_ref().expect("build config is not available");
         if let Some(u) = &self.state.registry_url {
-            parts.push(u);
+            if !u.is_empty() {
+                parts.push(u);
+            }
         };
+        if let Some(p) = &self.state.registry_prefix {
+            if !p.is_empty() {
+                parts.push(p);
+            }
+        }
         parts.push(&build_config.image_name);
-        let url = parts.join("/");
-        let url = MULTIPLE_SLASH_REGEX.replace_all(url.as_str(), "/");
+        let mut url = parts.join("/");
+        url = MULTIPLE_SLASH_REGEX
+            .replace_all(url.as_str(), "/")
+            .to_string();
+        if url.starts_with("/") {
+            url = url[1..].to_string();
+        }
         return format!("{}:{}", url, &build_config.tag);
     }
 
@@ -219,8 +231,9 @@ mod tests {
             port: "8080".to_string(),
             template_registry,
             build_timeout: 3600,
-            registry_url: None,
-            registry_credentials_secret_name: None,
+            registry_url: Some("".to_string()),
+            registry_prefix: Some("".to_string()),
+            registry_credentials_secret_name: Some("".to_string()),
         });
 
         let build_config = BuildConfig {
@@ -261,7 +274,8 @@ mod tests {
             template_registry,
             build_timeout: 3600,
             registry_url: Some("my-registry:5000".to_string()),
-            registry_credentials_secret_name: None,
+            registry_prefix: Some("".to_string()),
+            registry_credentials_secret_name: Some("".to_string()),
         });
 
         let build_config = BuildConfig {
@@ -274,6 +288,43 @@ mod tests {
         };
         let manager = BuildManager::new(state, build_config).unwrap();
         assert_eq!(manager.build_image_name(), "my-registry:5000/image:tag")
+    }
+
+    #[tokio::test]
+    async fn test_build_image_name_with_registry_url_and_prefix() {
+        let kube_client = Client::try_default().await.unwrap();
+        let mut template_registry = Handlebars::new();
+        let job_template = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/manifests/job.yaml"));
+        template_registry
+            .register_template_string("job", job_template)
+            .expect("failure registering job template");
+
+        let state = web::Data::new(AppState {
+            kube_client,
+            context_path: PathBuf::from("/tmp".to_string()),
+            service_name: "test".to_string(),
+            pod_name: "test-0".to_string(),
+            port: "8080".to_string(),
+            template_registry,
+            build_timeout: 3600,
+            registry_url: Some("my-registry:5000".to_string()),
+            registry_prefix: Some("prefix".to_string()),
+            registry_credentials_secret_name: Some("".to_string()),
+        });
+
+        let build_config = BuildConfig {
+            image_name: "image".to_string(),
+            tag: "tag".to_string(),
+            publish: false,
+            webhook: None,
+            registry_creds: None,
+            timeout: None,
+        };
+        let manager = BuildManager::new(state, build_config).unwrap();
+        assert_eq!(
+            manager.build_image_name(),
+            "my-registry:5000/prefix/image:tag"
+        )
     }
 
     #[tokio::test]
@@ -294,7 +345,8 @@ mod tests {
             template_registry,
             build_timeout: 3600,
             registry_url: Some("my-registry:5000/".to_string()),
-            registry_credentials_secret_name: None,
+            registry_prefix: Some("".to_string()),
+            registry_credentials_secret_name: Some("".to_string()),
         });
 
         let build_config = BuildConfig {
