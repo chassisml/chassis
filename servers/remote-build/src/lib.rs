@@ -23,9 +23,10 @@ pub struct AppState<'a> {
     port: String,
     template_registry: Handlebars<'a>,
     build_timeout: u64,
-    registry_url: Option<String>,
-    registry_prefix: Option<String>,
-    registry_credentials_secret_name: Option<String>,
+    registry_url: String,
+    registry_prefix: String,
+    registry_credentials_secret_name: String,
+    registry_insecure: bool,
 }
 
 impl AppState<'_> {
@@ -34,9 +35,10 @@ impl AppState<'_> {
         pod_name: String,
         context_path: PathBuf,
         build_timeout: u64,
-        registry_url: Option<String>,
-        registry_prefix: Option<String>,
-        registry_credentials_secret_name: Option<String>,
+        registry_url: String,
+        registry_prefix: String,
+        registry_credentials_secret_name: String,
+        registry_insecure: bool,
     ) -> Result<AppState<'static>, Error> {
         let kube_client = Client::try_default().await.unwrap();
         let mut template_registry = Handlebars::new();
@@ -53,6 +55,7 @@ impl AppState<'_> {
             registry_url,
             registry_prefix,
             registry_credentials_secret_name,
+            registry_insecure,
         })
     }
 }

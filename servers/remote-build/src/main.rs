@@ -20,6 +20,7 @@ const LOG_LEVEL_KEY: &str = "LOG_LEVEL";
 const REGISTRY_URL_KEY: &str = "REGISTRY_URL";
 const REGISTRY_PREFIX_KEY: &str = "REGISTRY_PREFIX";
 const REGISTRY_CREDENTIALS_SECRET_NAME_KEY: &str = "REGISTRY_CREDENTIALS_SECRET_NAME";
+const REGISTRY_INSECURE: &str = "REGISTRY_INSECURE";
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
@@ -46,10 +47,33 @@ async fn main() -> std::io::Result<()> {
         .trim()
         .parse()
         .expect(format!("{} must be an integer", BUILD_TIMEOUT_KEY).as_str());
-    let registry_url: Option<String> = env::var(REGISTRY_URL_KEY).ok();
-    let registry_prefix: Option<String> = env::var(REGISTRY_PREFIX_KEY).ok();
-    let registry_credentials_secret_name: Option<String> =
-        env::var(REGISTRY_CREDENTIALS_SECRET_NAME_KEY).ok();
+    let registry_url: String = env::var(REGISTRY_URL_KEY)
+        .expect(format!("the {} environment variable must be set", REGISTRY_URL_KEY).as_str());
+    let registry_prefix: String = env::var(REGISTRY_PREFIX_KEY).expect(
+        format!(
+            "the {} environment variable must be set",
+            REGISTRY_PREFIX_KEY
+        )
+        .as_str(),
+    );
+    let registry_credentials_secret_name: String = env::var(REGISTRY_CREDENTIALS_SECRET_NAME_KEY)
+        .expect(
+            format!(
+                "the {} environment variable must be set",
+                REGISTRY_CREDENTIALS_SECRET_NAME_KEY
+            )
+            .as_str(),
+        );
+    let registry_insecure: bool = env::var(REGISTRY_INSECURE)
+        .expect(format!("the {} environment variable must be set", REGISTRY_INSECURE).as_str())
+        .parse()
+        .expect(
+            format!(
+                "the {} environment variable must be either 'true' or 'false'",
+                REGISTRY_INSECURE
+            )
+            .as_str(),
+        );
 
     // Create data directories.
     let data_path = PathBuf::from(&data_dir);
@@ -69,6 +93,7 @@ async fn main() -> std::io::Result<()> {
         registry_url,
         registry_prefix,
         registry_credentials_secret_name,
+        registry_insecure,
     )
     .await
     .expect("error initializing app state");

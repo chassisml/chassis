@@ -1,5 +1,6 @@
 registry:
   url: "registry-docker-registry:5000"
   repositoryPrefix: "tilt"
+  insecure: true
 
 debug: true

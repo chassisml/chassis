@@ -9,6 +9,9 @@ registry:
   credentialsSecretName: ""
   # Optional prefix to be applied to image repositories created by Chassis
   repositoryPrefix: ""
+  # Set to true if the registry is considered insecure. An insecure registry
+  # is one that is hosted using HTTP or uses an untrusted TLS certificate.
+  insecure: false
 
 persistence:
   # The max context size that the API supports is 20Gi so setting the value to

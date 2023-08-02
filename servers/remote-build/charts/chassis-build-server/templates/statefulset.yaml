@@ -49,6 +49,8 @@ spec:
               value: {{ .Values.registry.credentialsSecretName }}
             - name: REGISTRY_PREFIX
               value: {{ .Values.registry.repositoryPrefix }}
+            - name: REGISTRY_INSECURE
+              value: {{ .Values.registry.insecure }}
             - name: LOG_LEVEL
               value: {{ ternary "debug" "info" .Values.debug }}
             - name: BUILD_TIMEOUT

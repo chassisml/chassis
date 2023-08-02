@@ -37,7 +37,7 @@ spec:
             - --local
             - dockerfile=/workspace
             - --output
-            - type=image,name={{IMAGE_NAME}},push=true,registry.insecure=true
+            - type=image,name={{IMAGE_NAME}},push=true{{{ADDTL_OPTIONS}}}
           resources:
             requests:
               cpu: "{{CPU_CORES}}"
