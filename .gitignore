@@ -12,6 +12,7 @@ dist
 scratch
 
 chassisml/examples/keras/*
+examples/hugging-face/model/*
 local_test_.py
 hello-world.txt
 *test_sdk.py
