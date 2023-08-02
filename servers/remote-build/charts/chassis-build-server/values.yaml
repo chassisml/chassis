@@ -22,11 +22,20 @@ persistence:
   accessMode: ReadWriteOnce
   #storageClass: default
 
+builder:
+  # Set the timeout for how long a build job can take before it is canceled.
+  timeout: 3600
+  # Set the resource requests and limits used by the builder job pods.
+  resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
 # Set to `true` to enable debug logging.
 debug: false
-
-# Set the timeout for how long a build job can take before it is canceled.
-buildTimeout: 3600
 
 replicaCount: 1
 

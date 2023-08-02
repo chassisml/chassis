@@ -38,13 +38,7 @@ spec:
             - dockerfile=/workspace
             - --output
             - type=image,name={{IMAGE_NAME}},push=true{{{ADDTL_OPTIONS}}}
-          resources:
-            requests:
-              cpu: "{{CPU_CORES}}"
-              memory: "{{MEMORY}}"
-            limits:
-              cpu: "{{CPU_CORES}}"
-              memory: "{{MEMORY}}"
+          resources: {{{RESOURCES}}}
           securityContext:
             privileged: true
           volumeMounts:

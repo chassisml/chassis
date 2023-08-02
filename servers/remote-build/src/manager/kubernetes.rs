@@ -28,8 +28,7 @@ impl BuildManager {
             "IMAGE_NAME": self.build_image_name(),
             "CONTEXT_URL": context_url,
             "ADDTL_OPTIONS": addtl_options,
-            "CPU_CORES": "2", // TODO
-            "MEMORY": "8Gi", // TODO
+            "RESOURCES": self.state.build_resources,
         });
         let manifest = &self.state.template_registry.render("job", &data)?;
         let job: Job = serde_yaml::from_str(manifest.as_str())?;
@@ -213,7 +212,9 @@ mod tests {
     use crate::AppState;
     use actix_web::web;
     use handlebars::Handlebars;
+    use k8s_openapi::apimachinery::pkg::api::resource::Quantity;
     use kube::Client;
+    use serde_json::json;
     use std::path::PathBuf;
 
     async fn get_test_manager() -> BuildManager {
@@ -232,6 +233,7 @@ mod tests {
             port: "8080".to_string(),
             template_registry,
             build_timeout: 3600,
+            build_resources: "{}".to_string(),
             registry_url: "".to_string(),
             registry_prefix: "".to_string(),
             registry_credentials_secret_name: "".to_string(),
@@ -275,6 +277,7 @@ mod tests {
             port: "8080".to_string(),
             template_registry,
             build_timeout: 3600,
+            build_resources: "{}".to_string(),
             registry_url: "my-registry:5000".to_string(),
             registry_prefix: "".to_string(),
             registry_credentials_secret_name: "".to_string(),
@@ -310,6 +313,7 @@ mod tests {
             port: "8080".to_string(),
             template_registry,
             build_timeout: 3600,
+            build_resources: "{}".to_string(),
             registry_url: "my-registry:5000".to_string(),
             registry_prefix: "prefix".to_string(),
             registry_credentials_secret_name: "".to_string(),
@@ -348,6 +352,7 @@ mod tests {
             port: "8080".to_string(),
             template_registry,
             build_timeout: 3600,
+            build_resources: "{}".to_string(),
             registry_url: "my-registry:5000/".to_string(),
             registry_prefix: "".to_string(),
             registry_credentials_secret_name: "".to_string(),
@@ -405,6 +410,7 @@ mod tests {
             port: "8080".to_string(),
             template_registry,
             build_timeout: 3600,
+            build_resources: "{}".to_string(),
             registry_url: "my-registry:5000/".to_string(),
             registry_prefix: "".to_string(),
             registry_credentials_secret_name: "".to_string(),
@@ -448,6 +454,7 @@ mod tests {
             port: "8080".to_string(),
             template_registry,
             build_timeout: 3600,
+            build_resources: "{}".to_string(),
             registry_url: "my-registry:5000/".to_string(),
             registry_prefix: "".to_string(),
             registry_credentials_secret_name: "".to_string(),
@@ -472,5 +479,64 @@ mod tests {
         assert!(args
             .iter()
             .all(|line| { !line.contains(",registry.insecure=true") }));
+    }
+
+    #[tokio::test]
+    async fn test_create_job_object_with_resources() {
+        let kube_client = Client::try_default().await.unwrap();
+        let mut template_registry = Handlebars::new();
+        let job_template = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/manifests/job.yaml"));
+        template_registry
+            .register_template_string("job", job_template)
+            .expect("failure registering job template");
+
+        let resources = json!({
+            "requests": {
+                "cpu": "4",
+                "memory": "32Gi",
+            },
+            "limits": {
+                "cpu": "8000m",
+                "memory": "128Gi",
+            }
+        })
+        .to_string();
+
+        let state = web::Data::new(AppState {
+            kube_client,
+            context_path: PathBuf::from("/tmp".to_string()),
+            service_name: "test".to_string(),
+            pod_name: "test-0".to_string(),
+            port: "8080".to_string(),
+            template_registry,
+            build_timeout: 3600,
+            build_resources: resources,
+            registry_url: "my-registry:5000/".to_string(),
+            registry_prefix: "".to_string(),
+            registry_credentials_secret_name: "".to_string(),
+            registry_insecure: false,
+        });
+
+        let build_config = BuildConfig {
+            image_name: "username/image".to_string(),
+            tag: "tag".to_string(),
+            publish: false,
+            webhook: None,
+            registry_creds: None,
+            timeout: None,
+        };
+        let context_url = "http://test-0:8080/contexts/abc123".to_string();
+        let manager = BuildManager::new(state, build_config).unwrap();
+        let job = manager
+            .create_job_object(&context_url)
+            .expect("unable to create job object");
+        let containers = job.spec.unwrap().template.spec.unwrap().containers;
+        let resources = containers[0].resources.as_ref().unwrap();
+        let requests = resources.requests.as_ref().unwrap();
+        let limits = resources.limits.as_ref().unwrap();
+        assert_eq!(requests["cpu"], Quantity("4".to_string()));
+        assert_eq!(requests["memory"], Quantity("32Gi".to_string()));
+        assert_eq!(limits["cpu"], Quantity("8000m".to_string()));
+        assert_eq!(limits["memory"], Quantity("128Gi".to_string()));
     }
 }
