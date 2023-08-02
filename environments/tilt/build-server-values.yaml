@@ -1,5 +1,5 @@
 registry:
-  url: "http://registry-docker-registry:5000"
+  url: "registry-docker-registry:5000"
   repositoryPrefix: "tilt"
 
 debug: true

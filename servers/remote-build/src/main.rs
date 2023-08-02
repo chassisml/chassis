@@ -16,11 +16,14 @@ const SERVICE_NAME_KEY: &str = "SERVICE_NAME";
 const POD_NAME_KEY: &str = "POD_NAME";
 const DATA_DIR_KEY: &str = "CHASSIS_DATA_DIR";
 const BUILD_TIMEOUT_KEY: &str = "BUILD_TIMEOUT";
+const LOG_LEVEL_KEY: &str = "LOG_LEVEL";
+const REGISTRY_URL_KEY: &str = "REGISTRY_URL";
+const REGISTRY_CREDENTIALS_SECRET_NAME_KEY: &str = "REGISTRY_CREDENTIALS_SECRET_NAME";
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
     // Set up the logger.
-    let log_level: LevelFilter = match env::var("LOG_LEVEL") {
+    let log_level: LevelFilter = match env::var(LOG_LEVEL_KEY) {
         Ok(v) => match v.as_str() {
             "debug" => LevelFilter::Debug,
             _ => LevelFilter::Info,
@@ -42,6 +45,9 @@ async fn main() -> std::io::Result<()> {
         .trim()
         .parse()
         .expect(format!("{} must be an integer", BUILD_TIMEOUT_KEY).as_str());
+    let registry_url: Option<String> = env::var(REGISTRY_URL_KEY).ok();
+    let registry_credentials_secret_name: Option<String> =
+        env::var(REGISTRY_CREDENTIALS_SECRET_NAME_KEY).ok();
 
     // Create data directories.
     let data_path = PathBuf::from(&data_dir);
@@ -53,9 +59,16 @@ async fn main() -> std::io::Result<()> {
     std::fs::create_dir_all(&tmp_path).expect("unable to create tmp directory");
 
     // Initialize our shared app state.
-    let app_data = AppState::new(&service_name, &pod_name, context_path, build_timeout)
-        .await
-        .expect("error initializing app state");
+    let app_data = AppState::new(
+        service_name,
+        pod_name,
+        context_path,
+        build_timeout,
+        registry_url,
+        registry_credentials_secret_name,
+    )
+    .await
+    .expect("error initializing app state");
 
     // Configure where uploaded tempfiles get stored.
     let tempfile_config = TempFileConfig::default().directory(&tmp_path);

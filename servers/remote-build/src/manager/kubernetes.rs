@@ -6,21 +6,22 @@ use kube::api::{DeleteParams, ListParams, LogParams, PostParams};
 use kube::runtime::conditions;
 use kube::runtime::wait::await_condition;
 use kube::Api;
-use log::{debug, error, info};
+use lazy_static::lazy_static;
+use log::{error, info};
+use regex::Regex;
 use serde_json::json;
+
+lazy_static! {
+    static ref MULTIPLE_SLASH_REGEX: Regex = Regex::new(r"/{2,}").unwrap();
+}
 
 impl BuildManager {
     pub(crate) fn create_job_object(&self, context_url: &String) -> Result<Job, Error> {
         let job_name = self.get_job_name();
-        let build_config = match &self.config {
-            Some(bc) => bc,
-            None => return Err("build config not available".into()),
-        };
-        let image_name = &build_config.image_name;
         let data = json!({
             "JOB_NAME": job_name,
             "JOB_IDENTIFIER": &self.job_id,
-            "IMAGE_NAME": image_name,
+            "IMAGE_NAME": self.build_image_name(),
             "CONTEXT_URL": context_url,
             "CPU_CORES": "2", // TODO
             "MEMORY": "8Gi", // TODO
@@ -28,6 +29,18 @@ impl BuildManager {
         let manifest = &self.state.template_registry.render("job", &data)?;
         let job: Job = serde_yaml::from_str(manifest.as_str())?;
         Ok(job)
+    }
+
+    fn build_image_name(&self) -> String {
+        let mut parts: Vec<&str> = vec![];
+        let build_config = self.config.as_ref().expect("build config is not available");
+        if let Some(u) = &self.state.registry_url {
+            parts.push(u);
+        };
+        parts.push(&build_config.image_name);
+        let url = parts.join("/");
+        let url = MULTIPLE_SLASH_REGEX.replace_all(url.as_str(), "/");
+        return format!("{}:{}", url, &build_config.tag);
     }
 
     pub fn get_job_name(&self) -> String {
@@ -190,8 +203,7 @@ mod tests {
     use kube::Client;
     use std::path::PathBuf;
 
-    #[tokio::test]
-    async fn test_create_job_object() {
+    async fn get_test_manager() -> BuildManager {
         let kube_client = Client::try_default().await.unwrap();
         let mut template_registry = Handlebars::new();
         let job_template = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/manifests/job.yaml"));
@@ -207,6 +219,8 @@ mod tests {
             port: "8080".to_string(),
             template_registry,
             build_timeout: 3600,
+            registry_url: None,
+            registry_credentials_secret_name: None,
         });
 
         let build_config = BuildConfig {
@@ -217,8 +231,91 @@ mod tests {
             registry_creds: None,
             timeout: None,
         };
-        let context_url = "http://test-0:8080/contexts/abc123".to_string();
+        BuildManager::new(state, build_config).unwrap()
+    }
+
+    #[tokio::test]
+    async fn test_build_image_name_without_registry_url() {
+        let mut manager = get_test_manager().await;
+        let config = manager.config.as_mut().unwrap();
+        config.image_name = "username/image".to_string();
+        config.tag = "tag".to_string();
+        assert_eq!(manager.build_image_name(), "username/image:tag")
+    }
+
+    #[tokio::test]
+    async fn test_build_image_name_with_registry_url() {
+        let kube_client = Client::try_default().await.unwrap();
+        let mut template_registry = Handlebars::new();
+        let job_template = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/manifests/job.yaml"));
+        template_registry
+            .register_template_string("job", job_template)
+            .expect("failure registering job template");
+
+        let state = web::Data::new(AppState {
+            kube_client,
+            context_path: PathBuf::from("/tmp".to_string()),
+            service_name: "test".to_string(),
+            pod_name: "test-0".to_string(),
+            port: "8080".to_string(),
+            template_registry,
+            build_timeout: 3600,
+            registry_url: Some("my-registry:5000".to_string()),
+            registry_credentials_secret_name: None,
+        });
+
+        let build_config = BuildConfig {
+            image_name: "image".to_string(),
+            tag: "tag".to_string(),
+            publish: false,
+            webhook: None,
+            registry_creds: None,
+            timeout: None,
+        };
         let manager = BuildManager::new(state, build_config).unwrap();
+        assert_eq!(manager.build_image_name(), "my-registry:5000/image:tag")
+    }
+
+    #[tokio::test]
+    async fn test_build_image_name_with_registry_url_and_trailing_slash() {
+        let kube_client = Client::try_default().await.unwrap();
+        let mut template_registry = Handlebars::new();
+        let job_template = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/manifests/job.yaml"));
+        template_registry
+            .register_template_string("job", job_template)
+            .expect("failure registering job template");
+
+        let state = web::Data::new(AppState {
+            kube_client,
+            context_path: PathBuf::from("/tmp".to_string()),
+            service_name: "test".to_string(),
+            pod_name: "test-0".to_string(),
+            port: "8080".to_string(),
+            template_registry,
+            build_timeout: 3600,
+            registry_url: Some("my-registry:5000/".to_string()),
+            registry_credentials_secret_name: None,
+        });
+
+        let build_config = BuildConfig {
+            image_name: "username/image".to_string(),
+            tag: "tag".to_string(),
+            publish: false,
+            webhook: None,
+            registry_creds: None,
+            timeout: None,
+        };
+        let manager = BuildManager::new(state, build_config).unwrap();
+        assert_eq!(
+            manager.build_image_name(),
+            "my-registry:5000/username/image:tag"
+        )
+    }
+
+    #[tokio::test]
+    async fn test_create_job_object() {
+        let context_url = "http://test-0:8080/contexts/abc123".to_string();
+        let manager = get_test_manager().await;
 
         let job = manager
             .create_job_object(&context_url)

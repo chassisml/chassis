@@ -23,14 +23,18 @@ pub struct AppState<'a> {
     port: String,
     template_registry: Handlebars<'a>,
     build_timeout: u64,
+    registry_url: Option<String>,
+    registry_credentials_secret_name: Option<String>,
 }
 
 impl AppState<'_> {
     pub async fn new(
-        service_name: &String,
-        pod_name: &String,
+        service_name: String,
+        pod_name: String,
         context_path: PathBuf,
         build_timeout: u64,
+        registry_url: Option<String>,
+        registry_credentials_secret_name: Option<String>,
     ) -> Result<AppState<'static>, Error> {
         let kube_client = Client::try_default().await.unwrap();
         let mut template_registry = Handlebars::new();
@@ -39,11 +43,13 @@ impl AppState<'_> {
         Ok(AppState {
             kube_client,
             context_path,
-            service_name: service_name.to_string(),
-            pod_name: pod_name.to_string(),
+            service_name,
+            pod_name,
             port: PORT.to_string(),
             template_registry,
             build_timeout,
+            registry_url,
+            registry_credentials_secret_name,
         })
     }
 }
