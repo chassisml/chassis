@@ -4,6 +4,8 @@ metadata:
   name: "{{JOB_NAME}}"
   labels:
     chassisml.io/job-identifier: "{{JOB_IDENTIFIER}}"
+  annotations:
+    chassisml.io/destination: "{{IMAGE_NAME}}"
 spec:
   template:
     spec:

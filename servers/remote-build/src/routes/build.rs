@@ -26,10 +26,13 @@ pub struct BuildConfig {
 }
 
 #[derive(Debug, Serialize)]
-pub struct BuildImageResponse {
-    error: bool,
-    error_message: String,
-    job_id: String,
+pub struct BuildStatusResponse {
+    pub image_tag: Option<String>,
+    pub logs: Option<String>,
+    pub success: bool,
+    pub completed: bool,
+    pub error_message: Option<String>,
+    pub remote_build_id: String,
 }
 
 #[post("/build")]
@@ -49,10 +52,13 @@ pub async fn build_image(
         Ok(bc) => bc,
         Err(e) => {
             error!("error deserializing build_config: {e}");
-            return HttpResponse::BadRequest().json(BuildImageResponse {
-                error: true,
-                error_message: "invalid build config".to_string(),
-                job_id: "".to_string(),
+            return HttpResponse::BadRequest().json(BuildStatusResponse {
+                image_tag: None,
+                logs: None,
+                success: false,
+                completed: true,
+                error_message: Some("invalid build config".to_string()),
+                remote_build_id: "".to_string(),
             });
         }
     };
@@ -60,18 +66,24 @@ pub async fn build_image(
     return match BuildManager::build(state.clone(), build_config, form.build_context).await {
         Ok(m) => {
             println!("Job started: {}", &m);
-            HttpResponse::Ok().json(BuildImageResponse {
-                error: false,
-                error_message: "".to_string(),
-                job_id: m,
+            HttpResponse::Ok().json(BuildStatusResponse {
+                image_tag: None,
+                logs: None,
+                success: false,
+                completed: false,
+                error_message: None,
+                remote_build_id: m,
             })
         }
         Err(e) => {
             error!("error saving context: {e}");
-            return HttpResponse::InternalServerError().json(BuildImageResponse {
-                error: true,
-                error_message: e.to_string(),
-                job_id: "".to_string(),
+            return HttpResponse::InternalServerError().json(BuildStatusResponse {
+                image_tag: None,
+                logs: None,
+                success: false,
+                completed: true,
+                error_message: Some(e.to_string()),
+                remote_build_id: "".to_string(),
             });
         }
     };

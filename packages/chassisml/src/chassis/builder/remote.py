@@ -13,7 +13,7 @@ from .options import BuildOptions, DefaultBuildOptions
 import requests
 import validators
 
-from .context import BuildContext
+from .response import BuildResponse
 if TYPE_CHECKING:
     from chassisml.v1.chassis_client import ChassisClient
 
@@ -36,7 +36,7 @@ class RemoteBuilder:
         self.client = client
         self.context = package.prepare_context(options)
 
-    def build_image(self, name: str, tag="latest", credentials: Credentials = None, webhook: str = None, clean_context=True):
+    def build_image(self, name: str, tag="latest", credentials: Credentials = None, webhook: str = None, clean_context=True) -> BuildResponse:
         if webhook is not None and validators.url(webhook):
             raise ValueError("Provided webhook is not a valid URL")
 
@@ -80,13 +80,14 @@ class RemoteBuilder:
             response.raise_for_status()
 
             obj = response.json()
-            print(f"Job has been submitted with id {obj['job_id']}")
+            build_response = BuildResponse(**obj)
+            print(f"Job has been submitted with id {build_response.remote_build_id}")
 
             if clean_context:
                 print("Cleaning local context")
                 self.context.cleanup()
 
-            return response.json()
+            return build_response
         finally:
             # Clean up
             if build_context is not None and not build_context.closed:

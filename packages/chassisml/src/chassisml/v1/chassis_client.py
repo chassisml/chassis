@@ -1,11 +1,13 @@
 import time
 import urllib.parse
 import warnings
+from typing import Union
 
 import requests
 from packaging import version
 
 from chassis.typing import LegacyBatchPredictFunction, LegacyNormalPredictFunction
+from chassis.builder import BuildResponse
 from .chassis_model import ChassisModel
 from .helpers import deprecated
 
@@ -47,7 +49,7 @@ class ChassisClient:
         if parsed_version < version.Version('1.5.0'):
             warnings.warn("Chassis service version should be >=1.5.0 for compatibility with this SDK version, things may not work as expected. Please update the service.")
 
-    def get_job_status(self, job_id):
+    def get_job_status(self, job_id: str) -> BuildResponse:
         """
         Checks the status of a chassis job
 
@@ -86,7 +88,7 @@ class ChassisClient:
             res = requests.get(route, verify=self.ssl_verification)
 
         data = res.json()
-        return data
+        return BuildResponse(**data)
 
     def get_job_logs(self, job_id):
         """
@@ -122,7 +124,7 @@ class ChassisClient:
         res.raise_for_status()
         return res.text
 
-    def block_until_complete(self, job_id, timeout=None, poll_interval=5):
+    def block_until_complete(self, job_id: str, timeout=None, poll_interval=5) -> BuildResponse:
         """
         Blocks until Chassis job is complete or timeout is reached. Polls Chassis job API until a result is marked finished.
 
@@ -157,12 +159,12 @@ class ChassisClient:
         """
         endby = time.time() + timeout if (timeout is not None) else None
         while True:
-            status = self.get_job_status(job_id)["status"]
-            if "succeeded" in status or "failed" in status:
+            status = self.get_job_status(job_id)
+            if status.completed:
                 return status
             if (endby is not None) and (time.time() > endby - poll_interval):
                 print('Timed out before completion.')
-                return False
+                return BuildResponse(image_tag=None, logs=None, success=False, completed=False, error_message="Timed out before completion.", remote_build_id=job_id)
             time.sleep(poll_interval)
 
     def download_tar(self, job_id, output_filename):
@@ -192,6 +194,7 @@ class ChassisClient:
         chassis_client.download_tar(job_id, "./chassis-model.tar")
         ```
         """
+        deprecated()
         url = f'{urllib.parse.urljoin(self.base_url, routes["job"])}/{job_id}/download-tar'
 
         if self.auth_header:

@@ -372,11 +372,10 @@ mod tests {
         let job = manager
             .create_job_object(&context_url)
             .expect("unable to create job object");
-        assert!(job
-            .metadata
-            .labels
-            .unwrap()
-            .contains_key("chassisml.io/job-identifier"));
+        let labels = job.metadata.labels.unwrap();
+        let annotations = job.metadata.annotations.unwrap();
+        assert!(labels.contains_key("chassisml.io/job-identifier"));
+        assert!(annotations.contains_key("chassisml.io/destination"));
         assert!(job
             .metadata
             .name
