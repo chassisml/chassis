@@ -87,8 +87,8 @@ class ChassisModel(Buildable):
         self.add_requirements(requirements)
 
         # Update the model name and version in the metadata.
-        self.metadata.info.model_name = model_name
-        self.metadata.info.model_version = model_version
+        self.metadata.model_name = model_name
+        self.metadata.model_version = model_version
 
         # Create the build options.
         options = BuildOptions(
