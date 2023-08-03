@@ -473,6 +473,7 @@ dependencies = [
  "actix-files",
  "actix-multipart",
  "actix-web",
+ "base64 0.21.2",
  "chrono",
  "fern",
  "handlebars",

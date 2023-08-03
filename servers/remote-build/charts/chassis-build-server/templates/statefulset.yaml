@@ -50,7 +50,7 @@ spec:
             - name: REGISTRY_PREFIX
               value: {{ .Values.registry.repositoryPrefix }}
             - name: REGISTRY_INSECURE
-              value: {{ .Values.registry.insecure }}
+              value: "{{ .Values.registry.insecure }}"
             - name: LOG_LEVEL
               value: {{ ternary "debug" "info" .Values.debug }}
             - name: BUILD_TIMEOUT
@@ -58,7 +58,7 @@ spec:
             - name: BUILD_TTL_AFTER_FINISHED
               value: "{{ .Values.builder.ttlSecondsAfterFinished }}"
             - name: BUILD_RESOURCES
-              value: {{ toJson .Values.builder.resources | quote }}
+              value: {{ toJson .Values.builder.resources | b64enc | quote }}
           ports:
             - name: http
               containerPort: 8080

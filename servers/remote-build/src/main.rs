@@ -1,6 +1,7 @@
 use actix_multipart::form::tempfile::TempFileConfig;
 use actix_web::middleware::Logger;
 use actix_web::{web, App, HttpServer};
+use base64::Engine;
 use chassis_build_server::routes::build::build_image;
 use chassis_build_server::routes::contexts::get_context;
 use chassis_build_server::routes::jobs::{download_job_tar, get_job_logs, get_job_status};
@@ -60,12 +61,23 @@ async fn main() -> std::io::Result<()> {
         .trim()
         .parse()
         .expect(format!("{} must be an integer", BUILD_TTL_AFTER_FINISHED_KEY).as_str());
+    // Extract the builder pod resources. This will be a base64 encoded string containing JSON
+    // suitable for setting as the "resources" attribute of a Kubernetes Job.
     let build_resources = env::var(BUILD_RESOURCES_KEY).expect(
         format!(
             "the {} environment variable must be set",
             BUILD_RESOURCES_KEY
         )
         .as_str(),
+    );
+    // Base64 decode the result into a byte array.
+    let build_resources = base64::engine::general_purpose::STANDARD
+        .decode(build_resources.as_str())
+        .expect("invalid base64");
+    // Convert the byte array back to a String.
+    let build_resources = String::from(
+        std::str::from_utf8(build_resources.as_slice())
+            .expect("base64 did not decode to valid utf-8"),
     );
     let registry_url: String = env::var(REGISTRY_URL_KEY)
         .expect(format!("the {} environment variable must be set", REGISTRY_URL_KEY).as_str());
