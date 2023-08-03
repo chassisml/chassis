@@ -58,7 +58,7 @@ spec:
             - name: BUILD_TTL_AFTER_FINISHED
               value: "{{ .Values.builder.ttlSecondsAfterFinished }}"
             - name: BUILD_RESOURCES
-              value: {{ toJson .Values.builder.resources }}
+              value: {{ toJson .Values.builder.resources | quote }}
           ports:
             - name: http
               containerPort: 8080
