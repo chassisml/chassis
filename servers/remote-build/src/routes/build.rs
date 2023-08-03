@@ -20,6 +20,7 @@ pub struct BuildConfig {
     pub image_name: String,
     pub tag: String,
     pub publish: bool,
+    pub insecure_registry: bool,
     pub webhook: Option<String>,
     pub registry_creds: Option<String>,
     pub timeout: Option<u64>,

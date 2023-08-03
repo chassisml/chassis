@@ -36,7 +36,7 @@ class RemoteBuilder:
         self.client = client
         self.context = package.prepare_context(options)
 
-    def build_image(self, name: str, tag="latest", credentials: Credentials = None, webhook: str = None, clean_context=True) -> BuildResponse:
+    def build_image(self, name: str, tag="latest", credentials: Credentials = None, insecure_registry=False, timeout: int = 3600, webhook: str = None, clean_context=True) -> BuildResponse:
         if webhook is not None and validators.url(webhook):
             raise ValueError("Provided webhook is not a valid URL")
 
@@ -53,7 +53,9 @@ class RemoteBuilder:
                 "image_name": name,
                 "tag": tag,
                 "publish": True,
+                "insecure_registry": insecure_registry,
                 "webhook": webhook,
+                "timeout": timeout,
             }
 
             # If registry credentials were provided, add them to the build config.

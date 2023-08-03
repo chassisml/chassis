@@ -7,6 +7,9 @@ metadata:
   annotations:
     chassisml.io/destination: "{{IMAGE_NAME}}"
 spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: {{TIMEOUT}}
+  ttlSecondsAfterFinished: {{TTL_AFTER_FINISHED}}
   template:
     spec:
       restartPolicy: Never

@@ -55,6 +55,8 @@ spec:
               value: {{ ternary "debug" "info" .Values.debug }}
             - name: BUILD_TIMEOUT
               value: "{{ .Values.builder.timeout }}"
+            - name: BUILD_TTL_AFTER_FINISHED
+              value: "{{ .Values.builder.ttlSecondsAfterFinished }}"
             - name: BUILD_RESOURCES
               value: "{{ toJson .Values.builder.resources }}"
           ports:

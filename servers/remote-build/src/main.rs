@@ -16,6 +16,7 @@ const SERVICE_NAME_KEY: &str = "SERVICE_NAME";
 const POD_NAME_KEY: &str = "POD_NAME";
 const DATA_DIR_KEY: &str = "CHASSIS_DATA_DIR";
 const BUILD_TIMEOUT_KEY: &str = "BUILD_TIMEOUT";
+const BUILD_TTL_AFTER_FINISHED_KEY: &str = "BUILD_TTL_AFTER_FINISHED";
 const BUILD_RESOURCES_KEY: &str = "BUILD_RESOURCES";
 const LOG_LEVEL_KEY: &str = "LOG_LEVEL";
 const REGISTRY_URL_KEY: &str = "REGISTRY_URL";
@@ -48,6 +49,17 @@ async fn main() -> std::io::Result<()> {
         .trim()
         .parse()
         .expect(format!("{} must be an integer", BUILD_TIMEOUT_KEY).as_str());
+    let build_ttl_after_finished_string = env::var(BUILD_TTL_AFTER_FINISHED_KEY).expect(
+        format!(
+            "the {} environment variable must be set",
+            BUILD_TTL_AFTER_FINISHED_KEY
+        )
+        .as_str(),
+    );
+    let build_ttl_after_finished: u64 = build_ttl_after_finished_string
+        .trim()
+        .parse()
+        .expect(format!("{} must be an integer", BUILD_TTL_AFTER_FINISHED_KEY).as_str());
     let build_resources = env::var(BUILD_RESOURCES_KEY).expect(
         format!(
             "the {} environment variable must be set",
@@ -98,6 +110,7 @@ async fn main() -> std::io::Result<()> {
         pod_name,
         context_path,
         build_timeout,
+        build_ttl_after_finished,
         build_resources,
         registry_url,
         registry_prefix,

@@ -24,7 +24,10 @@ persistence:
 
 builder:
   # Set the timeout for how long a build job can take before it is canceled.
-  timeout: 3600
+  timeout: 3600 # in seconds; 3600 == one hour
+  # Set the amount of time before the Job is cleaned up and removed from
+  # Kubernetes.
+  ttlSecondsAfterFinished: 3600 # in seconds; 3600 == one hour
   # Set the resource requests and limits used by the builder job pods.
   resources: {}
   # limits:
