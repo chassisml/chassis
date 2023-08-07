@@ -35,6 +35,8 @@ spec:
             - build
             - --frontend
             - dockerfile.v0
+            - --opt
+            - platform={{PLATFORM}}
             - --local
             - context=/workspace
             - --local

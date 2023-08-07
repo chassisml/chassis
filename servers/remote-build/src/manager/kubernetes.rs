@@ -24,10 +24,13 @@ impl BuildManager {
             addtl_options += ",registry.insecure=true"
         }
         let timeout = self.get_timeout();
+        let build_config = self.config.as_ref().expect("build config not available");
+        let platform = &build_config.platform;
         let data = json!({
             "JOB_NAME": job_name,
             "JOB_IDENTIFIER": &self.job_id,
             "IMAGE_NAME": self.build_image_name(),
+            "PLATFORM": platform,
             "CONTEXT_URL": context_url,
             "TIMEOUT": timeout,
             "TTL_AFTER_FINISHED": self.state.build_ttl_after_finished,

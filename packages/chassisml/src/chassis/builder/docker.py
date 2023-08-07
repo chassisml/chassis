@@ -15,13 +15,16 @@ class DockerBuilder:
 
     def build_image(self, name: str, tag="latest", cache=False, show_logs=False, clean_context=True) -> BuildResponse:
         try:
+            platform = self.context.platforms[0]
+            if len(self.context.platforms) > 1:
+                print(f"Warning: DockerBuilder only supports a single platform at a time. We will use the first one: {platform}")
             print("Starting Docker build...", end="", flush=True)
             image, logs = self.client.images.build(
                 path=self.context.base_dir,
                 tag=sanitize_image_name(name, tag),
                 rm=not cache,
                 forcerm=not cache,
-                platform=self.context.platform,
+                platform=platform,
             )
             print("Done!")
             log_output = ""

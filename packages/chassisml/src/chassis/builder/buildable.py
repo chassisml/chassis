@@ -30,14 +30,6 @@ def _needs_cross_compiling(arch: str):
     return False
 
 
-def _convert_arch_to_container_arch(arch):
-    if arch == "arm64":
-        return "aarch64"
-    elif arch == "arm" or arch == "arm32":
-        return "armv7hf"
-    return arch
-
-
 def _copy_libraries(context: BuildContext, server: str, ignore_patterns: list[str]):
     root = os.path.join(os.path.dirname(__file__), "..", "..")
     ignore = shutil.ignore_patterns(*ignore_patterns)
@@ -81,8 +73,12 @@ class Buildable(metaclass=abc.ABCMeta):
     def prepare_context(self, options: BuildOptions = DefaultBuildOptions) -> BuildContext:
         self.verify_prerequisites()
 
-        container_arch = _convert_arch_to_container_arch(options.arch)
-        context = BuildContext(base_dir=options.base_dir, platform="{}/{}".format("linux", container_arch))
+        platforms = []
+        if isinstance(options.arch, str):
+            platforms = [f"linux/{options.arch}"]
+        elif isinstance(options.arch, list):
+            platforms = [f"linux/{a}" for a in options.arch]
+        context = BuildContext(base_dir=options.base_dir, platforms=platforms)
 
         print("Using local context: " + context.base_dir)
         # Ensure the target directories exist.
@@ -94,7 +90,6 @@ class Buildable(metaclass=abc.ABCMeta):
         # Render and save Dockerfile to package location.
         dockerfile_template = env.get_template("Dockerfile")
         rendered_template = dockerfile_template.render(
-            arch=container_arch,
             python_version=options.python_version,
             needs_cross_compiling=_needs_cross_compiling(options.arch),
             use_gpu=options.use_gpu,

@@ -38,6 +38,7 @@ class RemoteBuilder:
             # Construct the build arguments.
             build_config = {
                 "image_tag": sanitize_image_name(name, tag),
+                "platform": ",".join(self.context.platforms),
                 "webhook": webhook,
                 "timeout": timeout,
             }
