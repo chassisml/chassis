@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import base64
-import dataclasses
 import json
 import os.path
 import shutil
@@ -12,6 +10,7 @@ from .buildable import Buildable
 from .options import BuildOptions, DefaultBuildOptions
 import requests
 import validators
+from .utils import sanitize_image_name
 
 from .response import BuildResponse
 if TYPE_CHECKING:
@@ -37,9 +36,9 @@ class RemoteBuilder:
             package_filename = shutil.make_archive(package_basename, "zip", self.context.base_dir)
 
             # Construct the build arguments.
+            print(sanitize_image_name(name, tag))
             build_config = {
-                "image_name": name,
-                "tag": tag,
+                "image_tag": sanitize_image_name(name, tag),
                 "webhook": webhook,
                 "timeout": timeout,
             }

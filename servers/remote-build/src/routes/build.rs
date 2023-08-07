@@ -17,8 +17,7 @@ pub struct BuildImageForm {
 
 #[derive(Debug, Deserialize)]
 pub struct BuildConfig {
-    pub image_name: String,
-    pub tag: String,
+    pub image_tag: String,
     pub webhook: Option<String>,
     pub timeout: Option<u64>,
 }
