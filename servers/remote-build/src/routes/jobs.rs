@@ -10,7 +10,7 @@ struct JobStatusResponse {
     logs: Option<String>,
 }
 
-#[get("/job/{job_id}")]
+#[get("/jobs/{job_id}")]
 pub async fn get_job_status(
     job_id: web::Path<String>,
     state: web::Data<AppState<'static>>,
@@ -28,12 +28,12 @@ pub async fn get_job_status(
     Ok(HttpResponse::Ok().json(build_status))
 }
 
-#[get("/job/{job_id}/download-tar")]
+#[get("/jobs/{job_id}/download-tar")]
 pub async fn download_job_tar(_job_id: web::Path<String>) -> impl Responder {
     HttpResponse::Gone().body("The download-tar route has been deprecated and removed.")
 }
 
-#[get("/job/{job_id}/logs")]
+#[get("/jobs/{job_id}/logs")]
 pub async fn get_job_logs(
     job_id: web::Path<String>,
     state: web::Data<AppState<'static>>,

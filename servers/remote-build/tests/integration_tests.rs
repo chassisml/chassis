@@ -40,7 +40,7 @@ async fn test_test_route_returns_gone() {
 async fn test_download_tar_route_returns_gone() {
     let app = App::new().service(download_job_tar);
     let svc = test::init_service(app).await;
-    let req = test::TestRequest::with_uri("/job/123/download-tar").to_request();
+    let req = test::TestRequest::with_uri("/jobs/123/download-tar").to_request();
     let resp = test::call_service(&svc, req).await;
     assert_eq!(resp.status(), StatusCode::GONE);
 }

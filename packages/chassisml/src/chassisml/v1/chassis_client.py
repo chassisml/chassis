@@ -13,7 +13,7 @@ from .helpers import deprecated
 
 routes = {
     'build': '/build',
-    'job': '/job',
+    'job': '/jobs',
     'test': '/test'
 }
 
