@@ -1,9 +1,7 @@
 use crate::manager::BuildManager;
-use crate::routes::build::BuildStatusResponse;
 use crate::AppState;
 use actix_web::{get, web, Error, HttpResponse, Responder};
 use k8s_openapi::api::batch::v1::JobStatus;
-use log::error;
 use serde::Serialize;
 
 #[derive(Serialize)]
@@ -25,45 +23,8 @@ pub async fn get_job_status(
         Ok(j) => j,
         Err(_) => return Ok(HttpResponse::NotFound().body("job not found")),
     };
-    let status = job.status.expect("job has no status");
 
-    let mut build_status = BuildStatusResponse {
-        image_tag: None,
-        logs: None,
-        success: false,
-        completed: false,
-        error_message: None,
-        remote_build_id: job_id.to_string(),
-    };
-
-    let mut job_failed = false;
-    if let Some(f) = status.failed {
-        if f > 0 {
-            job_failed = true;
-            build_status.success = false;
-            build_status.completed = true;
-            build_status.error_message =
-                Some("Build failed. Check logs for more information".to_string());
-            build_status.logs = manager.get_job_logs().await;
-        }
-    }
-
-    if let Some(s) = status.succeeded {
-        if s > 0 {
-            if job_failed {
-                error!("something funky is going on; job both failed and succeeded")
-            }
-            let annotations = &job.metadata.annotations.expect("job has no annotations");
-            let destination = annotations
-                .get("chassisml.io/destination")
-                .expect("job missing destination label");
-            build_status.image_tag = Some(destination.to_string());
-            build_status.logs = manager.get_job_logs().await;
-            build_status.success = true;
-            build_status.completed = true;
-        }
-    }
-
+    let build_status = manager.get_build_status_response(&job).await;
     Ok(HttpResponse::Ok().json(build_status))
 }
 

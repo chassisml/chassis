@@ -1,4 +1,5 @@
 use crate::manager::BuildManager;
+use crate::routes::build::BuildStatusResponse;
 use crate::Error;
 use k8s_openapi::api::batch::v1::Job;
 use k8s_openapi::api::core::v1::Pod;
@@ -132,6 +133,53 @@ impl BuildManager {
         }
     }
 
+    pub async fn get_build_status_response(&self, job: &Job) -> BuildStatusResponse {
+        let status = job.status.as_ref().expect("job has no status");
+
+        let mut build_status = BuildStatusResponse {
+            image_tag: None,
+            logs: None,
+            success: false,
+            completed: false,
+            error_message: None,
+            remote_build_id: self.job_id.to_string(),
+        };
+
+        let mut job_failed = false;
+        if let Some(f) = status.failed {
+            if f > 0 {
+                job_failed = true;
+                build_status.success = false;
+                build_status.completed = true;
+                build_status.error_message =
+                    Some("Build failed. Check logs for more information".to_string());
+                build_status.logs = self.get_job_logs().await;
+            }
+        }
+
+        if let Some(s) = status.succeeded {
+            if s > 0 {
+                if job_failed {
+                    error!("something funky is going on; job both failed and succeeded")
+                }
+                let annotations = job
+                    .metadata
+                    .annotations
+                    .as_ref()
+                    .expect("job has no annotations");
+                let destination = annotations
+                    .get("chassisml.io/destination")
+                    .expect("job missing destination label");
+                build_status.image_tag = Some(destination.to_string());
+                build_status.logs = self.get_job_logs().await;
+                build_status.success = true;
+                build_status.completed = true;
+            }
+        }
+
+        build_status
+    }
+
     pub async fn start_build_job(&self, job: Job) -> Result<(), Error> {
         // Apply Job object to Kubernetes.
         let jobs: Api<Job> = Api::default_namespaced(self.state.kube_client.clone());
@@ -152,9 +200,12 @@ impl BuildManager {
                 // Call any webhooks.
                 match &self.config {
                     Some(build_config) => {
-                        if let Some(_wh) = &build_config.webhook {
-                            info!("Running webhook(s)")
-                            // TODO - actually call webhook.
+                        if let Some(wh) = &build_config.webhook {
+                            info!("Running webhook(s)");
+                            let build_status = self.get_build_status_response(&job).await;
+                            let client = reqwest::Client::new();
+                            // We don't care about the response or whether it was successful or not.
+                            let _ = client.post(wh).json(&build_status).send().await;
                         }
                     }
                     None => {
