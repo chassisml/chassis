@@ -1,10 +1,7 @@
-import string
-
 import docker
 from docker.errors import BuildError as DockerBuildError
 
 from .buildable import Buildable
-from .errors import RequiredFieldMissing
 from .options import BuildOptions, DefaultBuildOptions
 from .response import BuildError, BuildResponse
 from .utils import sanitize_image_name
