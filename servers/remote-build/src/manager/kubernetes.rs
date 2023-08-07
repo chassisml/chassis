@@ -2,7 +2,7 @@ use crate::manager::BuildManager;
 use crate::Error;
 use k8s_openapi::api::batch::v1::Job;
 use k8s_openapi::api::core::v1::Pod;
-use kube::api::{DeleteParams, ListParams, LogParams, PostParams};
+use kube::api::{ListParams, LogParams, PostParams};
 use kube::runtime::conditions;
 use kube::runtime::wait::await_condition;
 use kube::Api;
@@ -32,6 +32,7 @@ impl BuildManager {
             "TTL_AFTER_FINISHED": self.state.build_ttl_after_finished,
             "ADDTL_OPTIONS": addtl_options,
             "RESOURCES": self.state.build_resources,
+            "CREDS": self.get_secret_name(),
         });
         let manifest = &self.state.template_registry.render("job", &data)?;
         let job: Job = serde_yaml::from_str(manifest.as_str())?;
@@ -79,26 +80,17 @@ impl BuildManager {
         if !self.state.registry_url.is_empty() {
             return self.state.registry_insecure;
         }
-        // Otherwise, use the value passed in from the build config.
-        return self
-            .config
-            .as_ref()
-            .expect("build config not available")
-            .insecure_registry;
+        return false;
     }
 
-    fn create_docker_config_secret(&self) -> Result<(), Error> {
-        let registry = "https://index.docker.io/v1/";
-        let auth_string = "";
-
-        let data = json!({
-            "auths": {
-                registry: {
-                    "auth": auth_string
-                }
-            }
-        });
-        Ok(())
+    fn get_secret_name(&self) -> Option<String> {
+        // If we have a static registry configured and a secret name is given then return it.
+        if !self.state.registry_url.is_empty() {
+            if !self.state.registry_credentials_secret_name.is_empty() {
+                return Some(self.state.registry_credentials_secret_name.to_string());
+            };
+        }
+        None
     }
 
     pub async fn get_job(&self) -> Result<Job, Error> {
@@ -147,14 +139,6 @@ impl BuildManager {
         Ok(())
     }
 
-    async fn delete_job(&self) -> Result<(), Error> {
-        let jobs: Api<Job> = Api::default_namespaced(self.state.kube_client.clone());
-        let job_name = self.get_job_name();
-        jobs.delete(job_name.as_str(), &DeleteParams::foreground())
-            .await?;
-        Ok(())
-    }
-
     pub async fn cleanup_job(&self) {
         let job = self.wait_for_job_completion().await;
 
@@ -184,9 +168,6 @@ impl BuildManager {
         }
 
         // Always do the following actions.
-
-        // Delete any Kubernetes secrets for this job.
-        // TODO
 
         // Remove the build context from the context cache.
         self.clean_context().await;
@@ -238,61 +219,14 @@ mod tests {
     use serde_json::json;
     use std::path::PathBuf;
 
-    async fn get_test_manager() -> BuildManager {
+    async fn get_default_app_state() -> AppState<'static> {
         let kube_client = Client::try_default().await.unwrap();
         let mut template_registry = Handlebars::new();
         let job_template = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/manifests/job.yaml"));
         template_registry
             .register_template_string("job", job_template)
             .expect("failure registering job template");
-
-        let state = web::Data::new(AppState {
-            kube_client,
-            context_path: PathBuf::from("/tmp".to_string()),
-            service_name: "test".to_string(),
-            pod_name: "test-0".to_string(),
-            port: "8080".to_string(),
-            template_registry,
-            build_timeout: 3600,
-            build_ttl_after_finished: 3600,
-            build_resources: "{}".to_string(),
-            registry_url: "".to_string(),
-            registry_prefix: "".to_string(),
-            registry_credentials_secret_name: "".to_string(),
-            registry_insecure: true,
-        });
-
-        let build_config = BuildConfig {
-            image_name: "".to_string(),
-            tag: "".to_string(),
-            publish: false,
-            insecure_registry: false,
-            webhook: None,
-            registry_creds: None,
-            timeout: None,
-        };
-        BuildManager::new(state, build_config).unwrap()
-    }
-
-    #[tokio::test]
-    async fn test_build_image_name_without_registry_url() {
-        let mut manager = get_test_manager().await;
-        let config = manager.config.as_mut().unwrap();
-        config.image_name = "username/image".to_string();
-        config.tag = "tag".to_string();
-        assert_eq!(manager.build_image_name(), "username/image:tag")
-    }
-
-    #[tokio::test]
-    async fn test_build_image_name_with_registry_url() {
-        let kube_client = Client::try_default().await.unwrap();
-        let mut template_registry = Handlebars::new();
-        let job_template = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/manifests/job.yaml"));
-        template_registry
-            .register_template_string("job", job_template)
-            .expect("failure registering job template");
-
-        let state = web::Data::new(AppState {
+        AppState {
             kube_client,
             context_path: PathBuf::from("/tmp".to_string()),
             service_name: "test".to_string(),
@@ -306,56 +240,50 @@ mod tests {
             registry_prefix: "".to_string(),
             registry_credentials_secret_name: "".to_string(),
             registry_insecure: true,
-        });
+        }
+    }
 
-        let build_config = BuildConfig {
+    fn get_default_build_config() -> BuildConfig {
+        BuildConfig {
             image_name: "image".to_string(),
             tag: "tag".to_string(),
-            publish: false,
-            insecure_registry: false,
             webhook: None,
-            registry_creds: None,
             timeout: None,
-        };
-        let manager = BuildManager::new(state, build_config).unwrap();
+        }
+    }
+
+    async fn get_default_test_manager() -> BuildManager {
+        get_custom_test_manager(None, None).await
+    }
+
+    async fn get_custom_test_manager(
+        state: Option<AppState<'static>>,
+        config: Option<BuildConfig>,
+    ) -> BuildManager {
+        let state = web::Data::new(state.unwrap_or(get_default_app_state().await));
+        let build_config = config.unwrap_or(get_default_build_config());
+        BuildManager::new(state, build_config).unwrap()
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn test_build_image_name_without_registry_url() {
+        let mut state = get_default_app_state().await;
+        state.registry_url = "".to_string();
+        let _manager = get_custom_test_manager(Some(state), None).await;
+    }
+
+    #[tokio::test]
+    async fn test_build_image_name_with_registry_url() {
+        let manager = get_default_test_manager().await;
         assert_eq!(manager.build_image_name(), "my-registry:5000/image:tag")
     }
 
     #[tokio::test]
     async fn test_build_image_name_with_registry_url_and_prefix() {
-        let kube_client = Client::try_default().await.unwrap();
-        let mut template_registry = Handlebars::new();
-        let job_template = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/manifests/job.yaml"));
-        template_registry
-            .register_template_string("job", job_template)
-            .expect("failure registering job template");
-
-        let state = web::Data::new(AppState {
-            kube_client,
-            context_path: PathBuf::from("/tmp".to_string()),
-            service_name: "test".to_string(),
-            pod_name: "test-0".to_string(),
-            port: "8080".to_string(),
-            template_registry,
-            build_timeout: 3600,
-            build_ttl_after_finished: 3600,
-            build_resources: "{}".to_string(),
-            registry_url: "my-registry:5000".to_string(),
-            registry_prefix: "prefix".to_string(),
-            registry_credentials_secret_name: "".to_string(),
-            registry_insecure: true,
-        });
-
-        let build_config = BuildConfig {
-            image_name: "image".to_string(),
-            tag: "tag".to_string(),
-            publish: false,
-            insecure_registry: false,
-            webhook: None,
-            registry_creds: None,
-            timeout: None,
-        };
-        let manager = BuildManager::new(state, build_config).unwrap();
+        let mut state = get_default_app_state().await;
+        state.registry_prefix = "prefix".to_string();
+        let manager = get_custom_test_manager(Some(state), None).await;
         assert_eq!(
             manager.build_image_name(),
             "my-registry:5000/prefix/image:tag"
@@ -364,39 +292,11 @@ mod tests {
 
     #[tokio::test]
     async fn test_build_image_name_with_registry_url_and_trailing_slash() {
-        let kube_client = Client::try_default().await.unwrap();
-        let mut template_registry = Handlebars::new();
-        let job_template = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/manifests/job.yaml"));
-        template_registry
-            .register_template_string("job", job_template)
-            .expect("failure registering job template");
-
-        let state = web::Data::new(AppState {
-            kube_client,
-            context_path: PathBuf::from("/tmp".to_string()),
-            service_name: "test".to_string(),
-            pod_name: "test-0".to_string(),
-            port: "8080".to_string(),
-            template_registry,
-            build_timeout: 3600,
-            build_ttl_after_finished: 3600,
-            build_resources: "{}".to_string(),
-            registry_url: "my-registry:5000/".to_string(),
-            registry_prefix: "".to_string(),
-            registry_credentials_secret_name: "".to_string(),
-            registry_insecure: true,
-        });
-
-        let build_config = BuildConfig {
-            image_name: "username/image".to_string(),
-            tag: "tag".to_string(),
-            publish: false,
-            insecure_registry: false,
-            webhook: None,
-            registry_creds: None,
-            timeout: None,
-        };
-        let manager = BuildManager::new(state, build_config).unwrap();
+        let mut build_config = get_default_build_config();
+        build_config.image_name = "username/image".to_string();
+        let mut state = get_default_app_state().await;
+        state.registry_url = "my-registry:5000/".to_string();
+        let manager = get_custom_test_manager(Some(state), Some(build_config)).await;
         assert_eq!(
             manager.build_image_name(),
             "my-registry:5000/username/image:tag"
@@ -406,7 +306,7 @@ mod tests {
     #[tokio::test]
     async fn test_create_job_object() {
         let context_url = "http://test-0:8080/contexts/abc123".to_string();
-        let manager = get_test_manager().await;
+        let manager = get_default_test_manager().await;
 
         let job = manager
             .create_job_object(&context_url)
@@ -424,40 +324,8 @@ mod tests {
 
     #[tokio::test]
     async fn test_create_job_object_with_insecure_registry() {
-        let kube_client = Client::try_default().await.unwrap();
-        let mut template_registry = Handlebars::new();
-        let job_template = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/manifests/job.yaml"));
-        template_registry
-            .register_template_string("job", job_template)
-            .expect("failure registering job template");
-
-        let state = web::Data::new(AppState {
-            kube_client,
-            context_path: PathBuf::from("/tmp".to_string()),
-            service_name: "test".to_string(),
-            pod_name: "test-0".to_string(),
-            port: "8080".to_string(),
-            template_registry,
-            build_timeout: 3600,
-            build_ttl_after_finished: 3600,
-            build_resources: "{}".to_string(),
-            registry_url: "my-registry:5000/".to_string(),
-            registry_prefix: "".to_string(),
-            registry_credentials_secret_name: "".to_string(),
-            registry_insecure: true,
-        });
-
-        let build_config = BuildConfig {
-            image_name: "username/image".to_string(),
-            tag: "tag".to_string(),
-            publish: false,
-            insecure_registry: false,
-            webhook: None,
-            registry_creds: None,
-            timeout: None,
-        };
         let context_url = "http://test-0:8080/contexts/abc123".to_string();
-        let manager = BuildManager::new(state, build_config).unwrap();
+        let manager = get_default_test_manager().await;
         let job = manager
             .create_job_object(&context_url)
             .expect("unable to create job object");
@@ -470,40 +338,10 @@ mod tests {
 
     #[tokio::test]
     async fn test_create_job_object_with_secure_registry() {
-        let kube_client = Client::try_default().await.unwrap();
-        let mut template_registry = Handlebars::new();
-        let job_template = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/manifests/job.yaml"));
-        template_registry
-            .register_template_string("job", job_template)
-            .expect("failure registering job template");
-
-        let state = web::Data::new(AppState {
-            kube_client,
-            context_path: PathBuf::from("/tmp".to_string()),
-            service_name: "test".to_string(),
-            pod_name: "test-0".to_string(),
-            port: "8080".to_string(),
-            template_registry,
-            build_timeout: 3600,
-            build_ttl_after_finished: 3600,
-            build_resources: "{}".to_string(),
-            registry_url: "my-registry:5000/".to_string(),
-            registry_prefix: "".to_string(),
-            registry_credentials_secret_name: "".to_string(),
-            registry_insecure: false,
-        });
-
-        let build_config = BuildConfig {
-            image_name: "username/image".to_string(),
-            tag: "tag".to_string(),
-            publish: false,
-            insecure_registry: false,
-            webhook: None,
-            registry_creds: None,
-            timeout: None,
-        };
+        let mut state = get_default_app_state().await;
+        state.registry_insecure = false;
         let context_url = "http://test-0:8080/contexts/abc123".to_string();
-        let manager = BuildManager::new(state, build_config).unwrap();
+        let manager = get_custom_test_manager(Some(state), None).await;
         let job = manager
             .create_job_object(&context_url)
             .expect("unable to create job object");
@@ -516,13 +354,6 @@ mod tests {
 
     #[tokio::test]
     async fn test_create_job_object_with_resources() {
-        let kube_client = Client::try_default().await.unwrap();
-        let mut template_registry = Handlebars::new();
-        let job_template = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/manifests/job.yaml"));
-        template_registry
-            .register_template_string("job", job_template)
-            .expect("failure registering job template");
-
         let resources = json!({
             "requests": {
                 "cpu": "4",
@@ -535,33 +366,11 @@ mod tests {
         })
         .to_string();
 
-        let state = web::Data::new(AppState {
-            kube_client,
-            context_path: PathBuf::from("/tmp".to_string()),
-            service_name: "test".to_string(),
-            pod_name: "test-0".to_string(),
-            port: "8080".to_string(),
-            template_registry,
-            build_timeout: 3600,
-            build_ttl_after_finished: 3600,
-            build_resources: resources,
-            registry_url: "my-registry:5000/".to_string(),
-            registry_prefix: "".to_string(),
-            registry_credentials_secret_name: "".to_string(),
-            registry_insecure: false,
-        });
+        let mut state = get_default_app_state().await;
+        state.build_resources = resources;
 
-        let build_config = BuildConfig {
-            image_name: "username/image".to_string(),
-            tag: "tag".to_string(),
-            publish: false,
-            insecure_registry: false,
-            webhook: None,
-            registry_creds: None,
-            timeout: None,
-        };
         let context_url = "http://test-0:8080/contexts/abc123".to_string();
-        let manager = BuildManager::new(state, build_config).unwrap();
+        let manager = get_custom_test_manager(Some(state), None).await;
         let job = manager
             .create_job_object(&context_url)
             .expect("unable to create job object");
@@ -576,133 +385,9 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_create_job_object_with_insecure_registry_from_config() {
-        let kube_client = Client::try_default().await.unwrap();
-        let mut template_registry = Handlebars::new();
-        let job_template = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/manifests/job.yaml"));
-        template_registry
-            .register_template_string("job", job_template)
-            .expect("failure registering job template");
-
-        let state = web::Data::new(AppState {
-            kube_client,
-            context_path: PathBuf::from("/tmp".to_string()),
-            service_name: "test".to_string(),
-            pod_name: "test-0".to_string(),
-            port: "8080".to_string(),
-            template_registry,
-            build_timeout: 3600,
-            build_ttl_after_finished: 3600,
-            build_resources: "{}".to_string(),
-            registry_url: "".to_string(),
-            registry_prefix: "".to_string(),
-            registry_credentials_secret_name: "".to_string(),
-            registry_insecure: false,
-        });
-
-        let build_config = BuildConfig {
-            image_name: "my-registry:5000/username/image".to_string(),
-            tag: "tag".to_string(),
-            publish: false,
-            insecure_registry: true,
-            webhook: None,
-            registry_creds: None,
-            timeout: None,
-        };
-        let context_url = "http://test-0:8080/contexts/abc123".to_string();
-        let manager = BuildManager::new(state, build_config).unwrap();
-        let job = manager
-            .create_job_object(&context_url)
-            .expect("unable to create job object");
-        let containers = job.spec.unwrap().template.spec.unwrap().containers;
-        let args = containers[0].args.as_ref().unwrap();
-        assert!(args
-            .iter()
-            .any(|line| { line.contains(",registry.insecure=true") }));
-    }
-
-    #[tokio::test]
-    async fn test_create_job_object_with_secure_registry_from_config() {
-        let kube_client = Client::try_default().await.unwrap();
-        let mut template_registry = Handlebars::new();
-        let job_template = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/manifests/job.yaml"));
-        template_registry
-            .register_template_string("job", job_template)
-            .expect("failure registering job template");
-
-        let state = web::Data::new(AppState {
-            kube_client,
-            context_path: PathBuf::from("/tmp".to_string()),
-            service_name: "test".to_string(),
-            pod_name: "test-0".to_string(),
-            port: "8080".to_string(),
-            template_registry,
-            build_timeout: 3600,
-            build_ttl_after_finished: 3600,
-            build_resources: "{}".to_string(),
-            registry_url: "".to_string(),
-            registry_prefix: "".to_string(),
-            registry_credentials_secret_name: "".to_string(),
-            registry_insecure: false,
-        });
-
-        let build_config = BuildConfig {
-            image_name: "my-registry:5000/username/image".to_string(),
-            tag: "tag".to_string(),
-            publish: false,
-            insecure_registry: false,
-            webhook: None,
-            registry_creds: None,
-            timeout: None,
-        };
-        let context_url = "http://test-0:8080/contexts/abc123".to_string();
-        let manager = BuildManager::new(state, build_config).unwrap();
-        let job = manager
-            .create_job_object(&context_url)
-            .expect("unable to create job object");
-        let containers = job.spec.unwrap().template.spec.unwrap().containers;
-        let args = containers[0].args.as_ref().unwrap();
-        assert!(args
-            .iter()
-            .all(|line| { !line.contains(",registry.insecure=true") }));
-    }
-
-    #[tokio::test]
     async fn test_create_job_object_with_default_timeout() {
-        let kube_client = Client::try_default().await.unwrap();
-        let mut template_registry = Handlebars::new();
-        let job_template = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/manifests/job.yaml"));
-        template_registry
-            .register_template_string("job", job_template)
-            .expect("failure registering job template");
-
-        let state = web::Data::new(AppState {
-            kube_client,
-            context_path: PathBuf::from("/tmp".to_string()),
-            service_name: "test".to_string(),
-            pod_name: "test-0".to_string(),
-            port: "8080".to_string(),
-            template_registry,
-            build_timeout: 3600,
-            build_ttl_after_finished: 3600,
-            build_resources: "{}".to_string(),
-            registry_url: "".to_string(),
-            registry_prefix: "".to_string(),
-            registry_credentials_secret_name: "".to_string(),
-            registry_insecure: false,
-        });
-
-        let build_config = BuildConfig {
-            image_name: "my-registry:5000/username/image".to_string(),
-            tag: "tag".to_string(),
-            publish: false,
-            insecure_registry: false,
-            webhook: None,
-            registry_creds: None,
-            timeout: None,
-        };
         let context_url = "http://test-0:8080/contexts/abc123".to_string();
-        let manager = BuildManager::new(state, build_config).unwrap();
+        let manager = get_default_test_manager().await;
         let job = manager
             .create_job_object(&context_url)
             .expect("unable to create job object");
@@ -711,40 +396,10 @@ mod tests {
 
     #[tokio::test]
     async fn test_create_job_object_with_user_timeout() {
-        let kube_client = Client::try_default().await.unwrap();
-        let mut template_registry = Handlebars::new();
-        let job_template = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/manifests/job.yaml"));
-        template_registry
-            .register_template_string("job", job_template)
-            .expect("failure registering job template");
-
-        let state = web::Data::new(AppState {
-            kube_client,
-            context_path: PathBuf::from("/tmp".to_string()),
-            service_name: "test".to_string(),
-            pod_name: "test-0".to_string(),
-            port: "8080".to_string(),
-            template_registry,
-            build_timeout: 3600,
-            build_ttl_after_finished: 3600,
-            build_resources: "{}".to_string(),
-            registry_url: "".to_string(),
-            registry_prefix: "".to_string(),
-            registry_credentials_secret_name: "".to_string(),
-            registry_insecure: false,
-        });
-
-        let build_config = BuildConfig {
-            image_name: "my-registry:5000/username/image".to_string(),
-            tag: "tag".to_string(),
-            publish: false,
-            insecure_registry: false,
-            webhook: None,
-            registry_creds: None,
-            timeout: Some(10),
-        };
+        let mut build_config = get_default_build_config();
+        build_config.timeout = Some(10);
         let context_url = "http://test-0:8080/contexts/abc123".to_string();
-        let manager = BuildManager::new(state, build_config).unwrap();
+        let manager = get_custom_test_manager(None, Some(build_config)).await;
         let job = manager
             .create_job_object(&context_url)
             .expect("unable to create job object");
@@ -753,43 +408,61 @@ mod tests {
 
     #[tokio::test]
     async fn test_create_job_object_with_ttl_after_finished() {
-        let kube_client = Client::try_default().await.unwrap();
-        let mut template_registry = Handlebars::new();
-        let job_template = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/manifests/job.yaml"));
-        template_registry
-            .register_template_string("job", job_template)
-            .expect("failure registering job template");
+        let mut state = get_default_app_state().await;
+        state.build_ttl_after_finished = 600;
 
-        let state = web::Data::new(AppState {
-            kube_client,
-            context_path: PathBuf::from("/tmp".to_string()),
-            service_name: "test".to_string(),
-            pod_name: "test-0".to_string(),
-            port: "8080".to_string(),
-            template_registry,
-            build_timeout: 3600,
-            build_ttl_after_finished: 600,
-            build_resources: "{}".to_string(),
-            registry_url: "".to_string(),
-            registry_prefix: "".to_string(),
-            registry_credentials_secret_name: "".to_string(),
-            registry_insecure: false,
-        });
-
-        let build_config = BuildConfig {
-            image_name: "my-registry:5000/username/image".to_string(),
-            tag: "tag".to_string(),
-            publish: false,
-            insecure_registry: false,
-            webhook: None,
-            registry_creds: None,
-            timeout: Some(10),
-        };
         let context_url = "http://test-0:8080/contexts/abc123".to_string();
-        let manager = BuildManager::new(state, build_config).unwrap();
+        let manager = get_custom_test_manager(Some(state), None).await;
         let job = manager
             .create_job_object(&context_url)
             .expect("unable to create job object");
         assert_eq!(job.spec.unwrap().ttl_seconds_after_finished, Some(600));
+    }
+
+    #[tokio::test]
+    async fn test_create_job_object_without_registry_credentials() {
+        let context_url = "http://test-0:8080/contexts/abc123".to_string();
+        let manager = get_default_test_manager().await;
+        let job = manager
+            .create_job_object(&context_url)
+            .expect("unable to create job object");
+        let spec = job.spec.unwrap().template.spec.unwrap();
+        let volumes = &spec.volumes.unwrap();
+        assert_eq!(volumes.len(), 1);
+        assert!(volumes.iter().all(|v| {
+            if let Some(s) = v.secret.as_ref() {
+                s.secret_name != Some("my-registry-creds".to_string())
+            } else {
+                true
+            }
+        }));
+        let volume_mounts = spec.containers[0].volume_mounts.as_ref().unwrap();
+        assert_eq!(volume_mounts.len(), 1);
+        assert!(volume_mounts.iter().all(|vm| vm.name != "creds"))
+    }
+
+    #[tokio::test]
+    async fn test_create_job_object_with_registry_credentials() {
+        let mut state = get_default_app_state().await;
+        state.registry_credentials_secret_name = "my-registry-creds".to_string();
+
+        let context_url = "http://test-0:8080/contexts/abc123".to_string();
+        let manager = get_custom_test_manager(Some(state), None).await;
+        let job = manager
+            .create_job_object(&context_url)
+            .expect("unable to create job object");
+        let spec = job.spec.unwrap().template.spec.unwrap();
+        let volumes = &spec.volumes.unwrap();
+        assert_eq!(volumes.len(), 2);
+        assert!(volumes.iter().any(|v| {
+            if let Some(s) = v.secret.as_ref() {
+                s.secret_name == Some("my-registry-creds".to_string())
+            } else {
+                false
+            }
+        }));
+        let volume_mounts = spec.containers[0].volume_mounts.as_ref().unwrap();
+        assert_eq!(volume_mounts.len(), 2);
+        assert!(volume_mounts.iter().any(|vm| vm.name == "creds"))
     }
 }

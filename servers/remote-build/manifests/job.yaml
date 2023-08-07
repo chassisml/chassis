@@ -47,7 +47,15 @@ spec:
           volumeMounts:
             - mountPath: /workspace
               name: workspace
-            # TODO - volume mount for registry secret
+{{#if CREDS}}
+            - mountPath: /root/.docker
+              name: creds
+{{/if}}
       volumes:
         - name: workspace
           emptyDir: {}
+{{#if CREDS}}
+        - name: creds
+          secret:
+            secretName: {{CREDS}}
+{{/if}}

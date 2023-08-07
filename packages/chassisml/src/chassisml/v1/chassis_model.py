@@ -5,7 +5,7 @@ from typing import List, Mapping, Union
 
 from chassis.metadata import ModelMetadata
 from chassis.builder import BuildContext
-from chassis.builder.remote import Credentials, RemoteBuilder
+from chassis.builder import DockerBuilder
 from chassis.builder import Buildable, BuildOptions
 from chassis.runtime import ModelRunner, PYTHON_MODEL_KEY
 from chassis.typing import PredictFunction
@@ -96,14 +96,6 @@ class ChassisModel(Buildable):
             use_gpu=gpu,
         )
 
-        # Create the registry credentials.
-        registry_creds = None
-        if registry_user is not None and registry_pass is not None:
-            registry_creds = Credentials(
-                username=registry_user,
-                password=registry_pass,
-            )
-
         # Construct the image name from the model name.
         image_name = "-".join(model_name.translate(str.maketrans('', '', string.punctuation)).lower().split())
         # If presented with registry credentials, prefix the image name with the username of the registry user.
@@ -111,8 +103,8 @@ class ChassisModel(Buildable):
         image_path = f"{registry_user + '/' if (registry_user and registry_pass) else ''}{image_name}"
 
         # Create the remote builder.
-        builder = RemoteBuilder(client=self.chassis_client, package=self, options=options)
-        builder.build_image(image_path, model_version, registry_creds, webhook)
+        builder = DockerBuilder(package=self, options=options)
+        builder.build_image(image_path, model_version)
 
     def parse_conda_env(self, conda_env):
         """

@@ -15,20 +15,8 @@ import validators
 
 from .response import BuildResponse
 if TYPE_CHECKING:
+    # This import is placed like this to prevent a circular dependency while still allowing type checking in an IDE.
     from chassisml.v1.chassis_client import ChassisClient
-
-
-@dataclasses.dataclass
-class Credentials:
-    username: str
-    password: str
-
-    def encoded(self) -> str:
-        authorization_string = f"{self.username}:{self.password}"
-        # The base64 encoder requires bytes and returns bytes so we need to encode the
-        # input string and then decode the resulting bytes back to a string before
-        # returning the value.
-        return base64.b64encode(authorization_string.encode()).decode()
 
 
 class RemoteBuilder:
@@ -36,7 +24,7 @@ class RemoteBuilder:
         self.client = client
         self.context = package.prepare_context(options)
 
-    def build_image(self, name: str, tag="latest", credentials: Credentials = None, insecure_registry=False, timeout: int = 3600, webhook: str = None, clean_context=True) -> BuildResponse:
+    def build_image(self, name: str, tag="latest", timeout: int = 3600, webhook: str = None, clean_context=True) -> BuildResponse:
         if webhook is not None and validators.url(webhook):
             raise ValueError("Provided webhook is not a valid URL")
 
@@ -52,15 +40,9 @@ class RemoteBuilder:
             build_config = {
                 "image_name": name,
                 "tag": tag,
-                "publish": True,
-                "insecure_registry": insecure_registry,
                 "webhook": webhook,
                 "timeout": timeout,
             }
-
-            # If registry credentials were provided, add them to the build config.
-            if credentials is not None:
-                build_config["registry_creds"] = credentials.encoded()
 
             # Construct our request headers.
             headers = {

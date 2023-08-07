@@ -20,6 +20,10 @@ impl BuildManager {
         state: web::Data<AppState<'static>>,
         config: BuildConfig,
     ) -> Result<Self, Error> {
+        // Verify that the registry URL is not empty, just in case.
+        if state.registry_url.is_empty() {
+            panic!("the registry url must not be empty");
+        }
         // Create a UUID for this build job.
         let job_id = Uuid::new_v4().to_string();
         debug!("Created job id: {}", &job_id);

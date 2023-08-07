@@ -81,6 +81,12 @@ async fn main() -> std::io::Result<()> {
     );
     let registry_url: String = env::var(REGISTRY_URL_KEY)
         .expect(format!("the {} environment variable must be set", REGISTRY_URL_KEY).as_str());
+    if registry_url.is_empty() {
+        panic!(
+            "the {} environment variable must not be empty",
+            REGISTRY_URL_KEY
+        );
+    }
     let registry_prefix: String = env::var(REGISTRY_PREFIX_KEY).expect(
         format!(
             "the {} environment variable must be set",
