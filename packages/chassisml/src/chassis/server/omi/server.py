@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import os
+import signal
 import traceback
 from time import time as t
 from typing import Mapping, Union
@@ -37,7 +38,6 @@ def log_stack_trace():
 class ModzyModel(ModzyModelBase):
     def __init__(self):
         self.model: Union[ModelRunner, None] = None
-        self.grpc_server: Union[Server, None] = None
 
         with open(os.path.join(PACKAGE_DATA_PATH, "model_info"), "rb") as f:
             data = f.read()
@@ -138,7 +138,7 @@ class ModzyModel(ModzyModelBase):
         await stream.send_message(response)
 
     async def Shutdown(self, stream):
-        request = await stream.recv_message()
+        # request = await stream.recv_message()
         shutdown_response = ShutdownResponse(
             status_code=200,
             status="OK",
@@ -146,8 +146,13 @@ class ModzyModel(ModzyModelBase):
         )
         self.model = None
         await stream.send_message(shutdown_response)
-        if self.grpc_server is not None:
-            self.grpc_server.close()
+        # Currently there is a problem calling `close()` on the gRPC server object.
+        # This is a much less graceful way to handle it but it works.
+        # NOTE: we have to call kill twice because the first one attempts a graceful
+        # shutdown which is the thing that's broken. If a second signal is sent then
+        # it will kill the process.
+        os.kill(os.getpid(), signal.SIGTERM)
+        os.kill(os.getpid(), signal.SIGTERM)
 
 
 def create_output_item(message, data: Mapping[str, bytes] = None):
@@ -174,13 +179,11 @@ def get_server_port():
 
 
 async def serve():
-    modzy_server = ModzyModel()
-    services = [modzy_server, Health()]
+    services = [ModzyModel(), Health()]
     services = ServerReflection.extend(services)
 
     # TODO - do we need to increase max message size?
     server = Server(services)
-    modzy_server.grpc_server = server
 
     server_port = get_server_port()
     with graceful_exit([server]):
