@@ -36,7 +36,6 @@ class RemoteBuilder:
             package_filename = shutil.make_archive(package_basename, "zip", self.context.base_dir)
 
             # Construct the build arguments.
-            print(sanitize_image_name(name, tag))
             build_config = {
                 "image_tag": sanitize_image_name(name, tag),
                 "webhook": webhook,
