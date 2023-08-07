@@ -37,6 +37,7 @@ def log_stack_trace():
 class ModzyModel(ModzyModelBase):
     def __init__(self):
         self.model: Union[ModelRunner, None] = None
+        self.grpc_server: Union[Server, None] = None
 
         with open(os.path.join(PACKAGE_DATA_PATH, "model_info"), "rb") as f:
             data = f.read()
@@ -145,6 +146,8 @@ class ModzyModel(ModzyModelBase):
         )
         self.model = None
         await stream.send_message(shutdown_response)
+        if self.grpc_server is not None:
+            self.grpc_server.close()
 
 
 def create_output_item(message, data: Mapping[str, bytes] = None):
@@ -171,11 +174,13 @@ def get_server_port():
 
 
 async def serve():
-    services = [ModzyModel(), Health()]
+    modzy_server = ModzyModel()
+    services = [modzy_server, Health()]
     services = ServerReflection.extend(services)
 
     # TODO - do we need to increase max message size?
     server = Server(services)
+    modzy_server.grpc_server = server
 
     server_port = get_server_port()
     with graceful_exit([server]):
