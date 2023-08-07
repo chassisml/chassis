@@ -13,9 +13,9 @@ from jinja2 import Environment, PackageLoader, select_autoescape
 
 from chassis.builder import BuildContext
 from chassis.metadata import ModelMetadata
-from chassis.protos.v1.model_pb2 import StatusResponse
 from chassis.runtime import PACKAGE_DATA_PATH, python_pickle_filename_for_key
 from .options import BuildOptions, DefaultBuildOptions
+from .errors import RequiredFieldMissing
 
 env = Environment(
     loader=PackageLoader(package_name="chassis.builder"),
@@ -68,11 +68,23 @@ class Buildable(metaclass=abc.ABCMeta):
     def get_packaged_path(self, path: str):
         return posixpath.join(PACKAGE_DATA_PATH, os.path.basename(path))
 
+    def verify_prerequisites(self):
+        if len(self.metadata.model_name) == 0:
+            raise RequiredFieldMissing("The model must have a name set before it can be built. Please set `metadata.model_name`.")
+        if len(self.metadata.model_version) == 0:
+            raise RequiredFieldMissing("The model must have a version set before it can be built. Please set `metadata.model_version`.")
+        if not self.metadata.has_inputs():
+            raise RequiredFieldMissing("The model must have at least one input defined before it can be built. Please call `metadata.add_input()`.")
+        if not self.metadata.has_outputs():
+            raise RequiredFieldMissing("The model must have at least one output defined before it can be built. Please call `metadata.add_output()`.")
+
     def prepare_context(self, options: BuildOptions = DefaultBuildOptions) -> BuildContext:
+        self.verify_prerequisites()
+
         container_arch = _convert_arch_to_container_arch(options.arch)
         context = BuildContext(base_dir=options.base_dir, platform="{}/{}".format("linux", container_arch))
 
-        print("Using build directory: " + context.base_dir)
+        print("Using local context: " + context.base_dir)
         # Ensure the target directories exist.
         if not os.path.exists(context.chassis_dir):
             os.makedirs(context.chassis_dir, exist_ok=True)

@@ -4,6 +4,7 @@ import docker
 from docker.errors import BuildError as DockerBuildError
 
 from .buildable import Buildable
+from .errors import RequiredFieldMissing
 from .options import BuildOptions, DefaultBuildOptions
 from .response import BuildError, BuildResponse
 from .utils import sanitize_image_name
@@ -36,7 +37,7 @@ class DockerBuilder:
             print(f"Image ID: {image.id}")
             print(f"Image Tags: {image.tags}")
             if clean_context:
-                print("Cleaning context")
+                print("Cleaning local context")
                 self.context.cleanup()
             return BuildResponse(image_tag=image.tags[0], logs=log_output, success=True, completed=True, error_message=None, remote_build_id=None)
         except DockerBuildError as e:

@@ -81,6 +81,9 @@ class ModelMetadata:
     def performance(self, performance):
         self._description.performance = performance
 
+    def has_inputs(self) -> bool:
+        return len(self._inputs) > 0
+
     def add_input(self, key: str, accepted_media_types: list[str] = None, max_size: str = "1M", description: str = ""):
         if accepted_media_types is None:
             accepted_media_types = ["application/octet-stream"]
@@ -90,6 +93,9 @@ class ModelMetadata:
             max_size=max_size,
             description=description,
         )]
+
+    def has_outputs(self) -> bool:
+        return len(self._outputs) > 0
 
     def add_output(self, key: str, media_type: str = "application/octet-stream", max_size: str = "1M", description: str = ""):
         self._outputs = self._outputs + [ModelOutput(
