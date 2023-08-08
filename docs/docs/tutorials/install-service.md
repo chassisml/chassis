@@ -1,6 +1,6 @@
-# Install Service Manually
+# Install Remote Service
 
-<!-- TODO: add link to google colab notebook -->
+**TODO - edit this page**
 
 !!! info "Different Connection Options"
     Before following this guide, note that you can connect to the Chassis service in one of two ways:

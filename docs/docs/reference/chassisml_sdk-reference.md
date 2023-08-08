@@ -17,11 +17,20 @@ To import the library into your editor:
 
 ## Usage
 
-::: chassisml_sdk.chassisml.chassisml
+::: chassisml.v1.chassis_model
     :docstring:
     :members:
-    rendering:
+    <!-- rendering:
         show_source: true
         show_category_heading: false
         show_root_toc_entry: false
-        show_if_no_docstring: false
+        show_if_no_docstring: false -->
+
+::: chassisml.v1.chassis_client
+    :docstring:
+    :members:
+    <!-- rendering:
+        show_source: true
+        show_category_heading: false
+        show_root_toc_entry: false
+        show_if_no_docstring: false         -->

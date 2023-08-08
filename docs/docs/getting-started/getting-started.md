@@ -1,12 +1,22 @@
-# Getting Started
+# Quickstart
 
-!!! success "Welcome!"
-     In this getting started guide, you will learn how to use the [Chassis SDK](https://pypi.org/project/chassisml/) to build your first ML container by connecting to the publicly-hosted Chassis service.
-     Connecting to this service eliminates the need for you to deploy and stand up a [private Kubernetes cluster](../tutorials/deploy-manual.md). Each chassis job run on our hosted service has enough resources to containerize even the most memory intensive ML models (up to 8GB RAM and 2 CPUs).  
+!!! tip "Welcome!"
+    In this getting started guide, you will learn how to use the **[Chassis SDK](https://pypi.org/project/chassisml/)** to build your first ML container locally on your computer.  
+
+!!! warning "What you will need"
+    This quickstart guide requires two prerequisites to follow along:
+
+    1. Python (v3.8 or greater supported)
+    2. Docker (Installation instructions **[here](https://www.docker.com/products/docker-desktop/)**) 
+
+    You can verify Docker it is successfully installed by typing `docker run hello-world` in your terminal.  
+
+       
 
 ## Installation
 
-To get started, make sure you set up a [Python virtual enviornment](https://realpython.com/what-is-pip/#using-pip-in-a-python-virtual-environment) and install the Chassis SDK (Python 3.6 and above supported).
+To get started, set up a [Python virtual enviornment](https://realpython.com/what-is-pip/#using-pip-in-a-python-virtual-environment) and install the Chassis SDK (Python 3.8 and above supported).
+
 
 ```bash
 pip install chassisml
@@ -14,13 +24,28 @@ pip install chassisml
 
 ## Try it out
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Follow these steps to build your first model container (*estimated time: 5 minutes*)
 
 1. Clone the Chassis repository into your environment: `git clone https://github.com/modzy/chassis.git`
 2. Install [Jupyter](https://jupyter.org/install) in your conda or virtual environment if it is not already installed
 3. Execute the Python code below
 
-!!! info "Note"
+!!! note "Note"
      * To follow along with the example code, you must create a free [Docker Hub](https://hub.docker.com/signup) account if you do not already have one
      * You have the option of either opening and running the pre-configured [Example Notebook](https://github.com/modzy/chassis/blob/main/getting-started/Getting%20Started%20with%20Chassis.ipynb) or following the below instructions
      * The example code connects to the publicly-hosted Kubernetes service through this URL: **`https://chassis.app.modzy.com`**, which is hosted and managed in [Modzy's](https://modzy.com) public cloud
