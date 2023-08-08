@@ -15,62 +15,37 @@
 
 ## Installation
 
-To get started, set up a [Python virtual enviornment](https://realpython.com/what-is-pip/#using-pip-in-a-python-virtual-environment) and install the Chassis SDK (Python 3.8 and above supported).
+To get started, set up a [Python virtual enviornment](https://realpython.com/what-is-pip/#using-pip-in-a-python-virtual-environment) and install the Chassis SDK along with the other Python dependencies needed to execute the sample code (Python 3.8 and above supported).
 
 
 ```bash
-pip install chassisml
+pip install chassisml scikit-learn numpy
 ```
 
-## Try it out
+## Build Container
 
+Build your first model container with a few simple steps:
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Follow these steps to build your first model container (*estimated time: 5 minutes*)
-
-1. Clone the Chassis repository into your environment: `git clone https://github.com/modzy/chassis.git`
-2. Install [Jupyter](https://jupyter.org/install) in your conda or virtual environment if it is not already installed
-3. Execute the Python code below
-
-!!! note "Note"
-     * To follow along with the example code, you must create a free [Docker Hub](https://hub.docker.com/signup) account if you do not already have one
-     * You have the option of either opening and running the pre-configured [Example Notebook](https://github.com/modzy/chassis/blob/main/getting-started/Getting%20Started%20with%20Chassis.ipynb) or following the below instructions
-     * The example code connects to the publicly-hosted Kubernetes service through this URL: **`https://chassis.app.modzy.com`**, which is hosted and managed in [Modzy's](https://modzy.com) public cloud
-
-In your Python environment, install the remaining dependencies required to run the example code.
-
-```bash
-pip install scikit-learn numpy
-```
-
-Finally, create a file in the `./getting-started/` directory called `example.py` and add this code:
+1. Next, open a Python file (this may be a Jupyter notebook file or Python script in your preferred IDE), and call it `quickstart.py`
+2. Paste the below code into your Python file
 
 ```python
+import time
 import json
 import pickle
-import chassisml # (1)
 import numpy as np
+from typing import Mapping
+from chassisml import ChassisModel # (1)
+from chassis.builder import DockerBuilder # (2)
 
-# load model # (2)
-model = pickle.load(open("./model.pkl", "rb"))
+# load model # (3)
+# TODO - configure this to import from URL or hosted file
+model = pickle.load(open("<path-to-publicly-hosted-model-file>", "rb")) 
 
-# define process function # (3)
-def process(input_bytes):
-    inputs = np.array(json.loads(input_bytes))
-    inference_results = model.predict(inputs)
+# define predict function # (4)
+def predict(inputs: Mapping[str, bytes]) -> dict[str, bytes]:
+    input_processed = np.array(json.loads(inputs['input']))
+    inference_results = model.predict(input_processed)
     structured_results = []
     for inference_result in inference_results:
         structured_output = {
@@ -79,57 +54,55 @@ def process(input_bytes):
             }
         }
         structured_results.append(structured_output)
-    return structured_results
+    return {'results.json': json.dumps(structured_results).encode()}
 
-# connect to Chassis client # (4)
-chassis_client = chassisml.ChassisClient("https://chassis.app.modzy.com/")
 
-# create Chassis model # (5)
-chassis_model = chassis_client.create_model(process_fn=process)
+# create chassis model # (5)
+chassis_model = ChassisModel(process_fn=predict)
+# add pip requirements # (6)
+chassis_model.add_requirements(["scikit-learn", "numpy"])
 
-# test Chassis model # (6)
-sample_filepath = './digits_sample.json'
-results = chassis_model.test(sample_filepath)
+# test model # (7)
+sample_data = "TODO"
+results = chassis_model.test(sunflower_path)
 print(results)
 
-# publish model to Dockerhub # (7)
-docker_user = "<insert-Docker Hub username>"
-docker_pass = "<insert-Docker Hub password>"
-model_name = "My First Chassis Model"
-
-response = chassis_model.publish(
-    model_name=model_name,
-    model_version="0.0.1",
-    registry_user=docker_user,
-    registry_pass=docker_pass,
-    arm64=False # (8)
-) # (9)
-
-# wait for job to complete and print result # (10)
-job_id = response.get('job_id')
-final_status = chassis_client.block_until_complete(job_id)
-if final_status['status']['succeeded'] == 1:
-    print("Job Completed. View your new container image here: https://hub.docker.com/repository/docker/{}/{}".format(docker_user, "-".join(model_name.lower().split(" "))))
-else:
-    print("Job Failed. See logs below:\n\n{}".format(final_status['logs']))
+# build container # (8)
+builder = DockerBuilder(chassis_model)
+start_time = time.time()
+res = builder.build_image(name="quickstart-chassis-model", tag="0.0.1", show_logs=True)
+end_time = time.time()
+print(res)
+print(f"Container image built in {round((end_time-start_time)/60, 5)} minutes")
 ```
 
-1. First, we will import the Chassis SDK. If you have not already done so, make sure you install it via PyPi: `pip install chassisml`
-2. Next, we will load our model. For this example, we have a pre-trained Scikit-learn classifier saved as a pickle file (`./model.pkl`). When integrating Chassis into your own code, this can be done however you load your model. It could be loaded from a pickle file, checkpoint file, multiple configuration files, etc. The *key* is that you load your model into memory so it can be accessed in the below `process` function. 
-3. Here, we will define our `process` function, which you can think of as an inference function for your model. This function can access objects loaded into memory (e.g., `model` loaded above), and the only requirement is it must convert input data in raw bytes form to the data type your model expects. See this [guide](../how-to-guides/common-data-types.md) for help on converting common data types. In this example, we process the raw bytes data using `numpy` and `json`, pass this processed data through to our model for predictions (`model.predict`), and perform some postprocessing to return the results in a human-readable manner. You can customize this function based on your model and preferences.    
-4. Here, we will connect to the publicly-hosted Chassis service.
-5. Now, we will simply create a `ChassisModel` object directly from our process function. See the [reference docs](../chassisml_sdk-reference.md#chassisml-python-sdk.chassisml.chassisml.ChassisClient.create_model) for more details on this method.
-6. Before kicking off the Chassis job, we can test our `ChassisModel` object by passing through a sample data path.
-7. Here is where you will need to add in your own Docker Hub credentials for the `docker_user` and `docker_pass` variables. Chassis will use these credentials when the container image is built and it is time to push it to a container registry.
-8. Chassis can build containers that compile for both AMD and ARM chipsets. By default, the `arm64` flag is set to False, but if changed to True in this line, the resulting container will be able to run on any device with an ARM 64 chip. 
-9. Finally, kick off the Chassis job. If you follow this example code as-is, this execution should take 4-5 minutes to complete. To see more parameter options for this method, view the [reference docs](../chassisml_sdk-reference.md#chassisml-python-sdk.chassisml.chassisml.ChassisModel.publish)
-10. After a successful Chassis job, these next few lines of code will check the final status of your job and print your the URL to your newly-built container!
+1. First, we will import the `ChassisModel` class from the Chassis SDK. If you have not already done so, make sure you install it via PyPi: `pip install chassisml`
+2. In addition to the `ChassisModel` object, we need to import a Builder option. The two available options, `DockerBuilder` and `RemoteBuilder`, will both build the same container but in different execution environments. Since we'd like to build a container locally with Docker, we will import the `DockerBuilder` object.  
+3. Next, we will load our model. For this example, we have a pre-trained Scikit-learn classifier saved as a pickle file (`./model.pkl`). When integrating Chassis into your own code, this can be done however you load your model. It could be loaded from a pickle file, checkpoint file, multiple configuration files, etc. The *key* is that you load your model into memory so it can be accessed in the below `process` function. 
+4. Here, we will define a *single* predict function, which you can think of as an inference function for your model. This function can access in-memory objects (e.g., `model` loaded above), and the only requirement is it must convert input data in raw bytes form to the data type your model expects. See this [guide](../how-to-guides/common-data-types.md) for help on converting common data types. In this example, we process the raw bytes data using `numpy` and `json`, pass this processed data through to our model for predictions (`model.predict`), and perform some postprocessing to return the results in a human-readable manner. You can customize this function based on your model and preferences.    
+5. Now, we will simply create a `ChassisModel` object directly from our process function.
+6. With our `ChassisModel` object defined, there are a few optional methods we can call. Here, we will add the Python libraries our model will need to run. You can pass a list of packages you would list in a `requirements.txt` file that will be installed with Pip.
+7. Before kicking off the Chassis job, we can test our `ChassisModel` object by passing through sample data.
+8. After our test has passed, we can define our builder object, which as mentioned before, will be `DockerBuilder`. This builder object uses your local Docker installation to build a model container and store it on your machine. First, we will simply pass our `ChassisModel` object to our builder, and build the container image using the `build_image` function.
 
-Next, run your script.
+Finally, run your script.
 
 ```bash
-python example.py
+python quickstart.py
 ```
 
-In just a few minutes, the Chassis job will complete. Congratulations! You just built your first ML container from a Scikit learn digits classification model. Check out our [Tutorials](../tutorials/ds-postman.md) to learn about different ways to run this container.
+In just about 60 seconds, the Chassis job will complete. Congratulations! You just built your first ML container from a Scikit learn digits classification model. Verify your container build by running the following command in your terminal:
+
+```bash
+docker images
+```
+
+The output should look something like this:
+```
+TODO - fill in
+```
+
+## Run Inference
+
+TODO - need to add inference client
 
