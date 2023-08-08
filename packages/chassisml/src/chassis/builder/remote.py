@@ -24,7 +24,7 @@ class RemoteBuilder:
         self.context = package.prepare_context(options)
 
     def build_image(self, name: str, tag="latest", timeout: int = 3600, webhook: str = None, clean_context=True) -> BuildResponse:
-        if webhook is not None and validators.url(webhook):
+        if webhook is not None and not validators.url(webhook):
             raise ValueError("Provided webhook is not a valid URL")
 
         tmpdir = None
