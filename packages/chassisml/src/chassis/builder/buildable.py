@@ -53,7 +53,7 @@ class Buildable(metaclass=abc.ABCMeta):
     def get_packaged_path(self, path: str):
         return posixpath.join(PACKAGE_DATA_PATH, os.path.basename(path))
 
-    def verify_prerequisites(self):
+    def verify_prerequisites(self, options: BuildOptions):
         if len(self.metadata.model_name) == 0:
             raise RequiredFieldMissing("The model must have a name set before it can be built. Please set `metadata.model_name`.")
         if len(self.metadata.model_version) == 0:
@@ -62,9 +62,11 @@ class Buildable(metaclass=abc.ABCMeta):
             raise RequiredFieldMissing("The model must have at least one input defined before it can be built. Please call `metadata.add_input()`.")
         if not self.metadata.has_outputs():
             raise RequiredFieldMissing("The model must have at least one output defined before it can be built. Please call `metadata.add_output()`.")
+        if options.cuda_version is not None and options.python_version != "3.8":
+            print(f"Warning: Building a container with CUDA currently only supports Python 3.8. Python 3.8 will be used instead of '{options.python_version}'.")
 
     def prepare_context(self, options: BuildOptions = DefaultBuildOptions) -> BuildContext:
-        self.verify_prerequisites()
+        self.verify_prerequisites(options)
 
         platforms = []
         if isinstance(options.arch, str):
