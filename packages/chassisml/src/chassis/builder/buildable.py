@@ -13,9 +13,9 @@ from jinja2 import Environment, PackageLoader, select_autoescape
 
 from chassis.builder import BuildContext
 from chassis.metadata import ModelMetadata
-from chassis.protos.v1.model_pb2 import StatusResponse
 from chassis.runtime import PACKAGE_DATA_PATH, python_pickle_filename_for_key
 from .options import BuildOptions, DefaultBuildOptions
+from .errors import RequiredFieldMissing
 
 env = Environment(
     loader=PackageLoader(package_name="chassis.builder"),
@@ -28,14 +28,6 @@ def _needs_cross_compiling(arch: str):
     if host_arch.lower() in ["x86_64", "amd64"]:
         return arch.lower().startswith("arm")
     return False
-
-
-def _convert_arch_to_container_arch(arch):
-    if arch == "arm64":
-        return "aarch64"
-    elif arch == "arm" or arch == "arm32":
-        return "armv7hf"
-    return arch
 
 
 def _copy_libraries(context: BuildContext, server: str, ignore_patterns: list[str]):
@@ -68,11 +60,27 @@ class Buildable(metaclass=abc.ABCMeta):
     def get_packaged_path(self, path: str):
         return posixpath.join(PACKAGE_DATA_PATH, os.path.basename(path))
 
-    def prepare_context(self, options: BuildOptions = DefaultBuildOptions) -> BuildContext:
-        container_arch = _convert_arch_to_container_arch(options.arch)
-        context = BuildContext(base_dir=options.base_dir, platform="{}/{}".format("linux", container_arch))
+    def verify_prerequisites(self):
+        if len(self.metadata.model_name) == 0:
+            raise RequiredFieldMissing("The model must have a name set before it can be built. Please set `metadata.model_name`.")
+        if len(self.metadata.model_version) == 0:
+            raise RequiredFieldMissing("The model must have a version set before it can be built. Please set `metadata.model_version`.")
+        if not self.metadata.has_inputs():
+            raise RequiredFieldMissing("The model must have at least one input defined before it can be built. Please call `metadata.add_input()`.")
+        if not self.metadata.has_outputs():
+            raise RequiredFieldMissing("The model must have at least one output defined before it can be built. Please call `metadata.add_output()`.")
 
-        print("Using build directory: " + context.base_dir)
+    def prepare_context(self, options: BuildOptions = DefaultBuildOptions) -> BuildContext:
+        self.verify_prerequisites()
+
+        platforms = []
+        if isinstance(options.arch, str):
+            platforms = [f"linux/{options.arch}"]
+        elif isinstance(options.arch, list):
+            platforms = [f"linux/{a}" for a in options.arch]
+        context = BuildContext(base_dir=options.base_dir, platforms=platforms)
+
+        print("Using local context: " + context.base_dir)
         # Ensure the target directories exist.
         if not os.path.exists(context.chassis_dir):
             os.makedirs(context.chassis_dir, exist_ok=True)
@@ -82,7 +90,6 @@ class Buildable(metaclass=abc.ABCMeta):
         # Render and save Dockerfile to package location.
         dockerfile_template = env.get_template("Dockerfile")
         rendered_template = dockerfile_template.render(
-            arch=container_arch,
             python_version=options.python_version,
             needs_cross_compiling=_needs_cross_compiling(options.arch),
             use_gpu=options.use_gpu,

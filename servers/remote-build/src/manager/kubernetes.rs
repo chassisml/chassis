@@ -24,10 +24,13 @@ impl BuildManager {
             addtl_options += ",registry.insecure=true"
         }
         let timeout = self.get_timeout();
+        let build_config = self.config.as_ref().expect("build config not available");
+        let platform = &build_config.platform;
         let data = json!({
             "JOB_NAME": job_name,
             "JOB_IDENTIFIER": &self.job_id,
             "IMAGE_NAME": self.build_image_name(),
+            "PLATFORM": platform,
             "CONTEXT_URL": context_url,
             "TIMEOUT": timeout,
             "TTL_AFTER_FINISHED": self.state.build_ttl_after_finished,
@@ -49,7 +52,7 @@ impl BuildManager {
         if !self.state.registry_prefix.is_empty() {
             parts.push(&self.state.registry_prefix);
         }
-        parts.push(&build_config.image_name);
+        parts.push(&build_config.image_tag);
         let mut url = parts.join("/");
         url = MULTIPLE_SLASH_REGEX
             .replace_all(url.as_str(), "/")
@@ -57,7 +60,7 @@ impl BuildManager {
         if url.starts_with("/") {
             url = url[1..].to_string();
         }
-        return format!("{}:{}", url, &build_config.tag);
+        return url;
     }
 
     pub fn get_job_name(&self) -> String {
@@ -296,8 +299,7 @@ mod tests {
 
     fn get_default_build_config() -> BuildConfig {
         BuildConfig {
-            image_name: "image".to_string(),
-            tag: "tag".to_string(),
+            image_tag: "image:tag".to_string(),
             webhook: None,
             timeout: None,
         }
@@ -344,7 +346,7 @@ mod tests {
     #[tokio::test]
     async fn test_build_image_name_with_registry_url_and_trailing_slash() {
         let mut build_config = get_default_build_config();
-        build_config.image_name = "username/image".to_string();
+        build_config.image_tag = "username/image:tag".to_string();
         let mut state = get_default_app_state().await;
         state.registry_url = "my-registry:5000/".to_string();
         let manager = get_custom_test_manager(Some(state), Some(build_config)).await;

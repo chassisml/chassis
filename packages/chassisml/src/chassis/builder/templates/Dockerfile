@@ -1,22 +1,10 @@
-FROM balenalib/{{ arch }}-debian-python:{{ python_version }}-build AS build
+FROM python:{{ python_version }}-slim-bullseye
 
-{% if needs_cross_compiling -%}
-RUN [ "cross-build-start" ]
-{%- endif %}
+WORKDIR /app
 
 # Copy requirements file and pip install.
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-
-{% if needs_cross_compiling -%}
-RUN [ "cross-build-end" ]
-{%- endif %}
-
-FROM balenalib/{{ arch }}-debian-python:{{ python_version }}-run
-
-WORKDIR /app
-
-COPY --from=build /usr/local/lib/python{{ python_version }}/site-packages /usr/local/lib/python{{ python_version }}/site-packages
 
 # Copy the entrypoint file and gRPC server implementation.
 COPY entrypoint.py ./
