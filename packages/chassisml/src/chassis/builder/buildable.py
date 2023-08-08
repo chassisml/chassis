@@ -23,13 +23,6 @@ env = Environment(
 )
 
 
-def _needs_cross_compiling(arch: str):
-    host_arch = platform.machine()
-    if host_arch.lower() in ["x86_64", "amd64"]:
-        return arch.lower().startswith("arm")
-    return False
-
-
 def _copy_libraries(context: BuildContext, server: str, ignore_patterns: list[str]):
     root = os.path.join(os.path.dirname(__file__), "..", "..")
     ignore = shutil.ignore_patterns(*ignore_patterns)
@@ -88,11 +81,10 @@ class Buildable(metaclass=abc.ABCMeta):
             os.makedirs(context.data_dir, exist_ok=True)
 
         # Render and save Dockerfile to package location.
-        dockerfile_template = env.get_template("Dockerfile")
+        dockerfile_template = env.get_template("cpu.Dockerfile" if options.cuda_version is None else "gpu.Dockerfile")
         rendered_template = dockerfile_template.render(
             python_version=options.python_version,
-            needs_cross_compiling=_needs_cross_compiling(options.arch),
-            use_gpu=options.use_gpu,
+            cuda_version=options.cuda_version,
         )
         with open(os.path.join(context.base_dir, "Dockerfile"), "wb") as f:
             f.write(rendered_template.encode())
