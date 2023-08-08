@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import abc
 import os
-import platform
 import posixpath
 import shutil
 from shutil import copy, copytree
@@ -36,11 +35,13 @@ class Buildable(metaclass=abc.ABCMeta):
     packaged = False
     metadata = ModelMetadata.default()
     requirements: set[str] = set()
+    apt_packages: set[str] = set()
     additional_files: set[str] = set()
     python_modules: dict = {}
 
     def merge_package(self, package: Buildable):
         self.requirements = self.requirements.union(package.requirements)
+        self.apt_packages = self.apt_packages.union(package.apt_packages)
         self.additional_files = self.additional_files.union(package.additional_files)
         self.python_modules.update(package.python_modules)
 
@@ -49,6 +50,12 @@ class Buildable(metaclass=abc.ABCMeta):
             self.requirements = self.requirements.union(reqs.splitlines())
         elif type(reqs) == list:
             self.requirements = self.requirements.union(reqs)
+
+    def add_apt_packages(self, packages: Union[str, list]):
+        if type(packages) == str:
+            self.apt_packages = self.apt_packages.union(packages.splitlines())
+        elif type(packages) == list:
+            self.apt_packages = self.apt_packages.union(packages)
 
     def get_packaged_path(self, path: str):
         return posixpath.join(PACKAGE_DATA_PATH, os.path.basename(path))
@@ -83,11 +90,7 @@ class Buildable(metaclass=abc.ABCMeta):
             os.makedirs(context.data_dir, exist_ok=True)
 
         # Render and save Dockerfile to package location.
-        dockerfile_template = env.get_template("cpu.Dockerfile" if options.cuda_version is None else "gpu.Dockerfile")
-        rendered_template = dockerfile_template.render(
-            python_version=options.python_version,
-            cuda_version=options.cuda_version,
-        )
+        rendered_template = self.render_dockerfile(options)
         with open(os.path.join(context.base_dir, "Dockerfile"), "wb") as f:
             f.write(rendered_template.encode())
 
@@ -111,6 +114,19 @@ class Buildable(metaclass=abc.ABCMeta):
         self._write_python_modules(context)
 
         return context
+
+    def render_dockerfile(self, options: BuildOptions) -> str:
+        dockerfile_template = env.get_template("Dockerfile")
+        run_apt_get = ""
+        if len(self.apt_packages) > 0:
+            apt_package_list = " ".join(self.apt_packages)
+            run_apt_get = f"RUN apt-get update && apt-get install -y {apt_package_list} && rm -rf /var/lib/apt/lists/*"
+
+        return dockerfile_template.render(
+            python_version=options.python_version,
+            cuda_version=options.cuda_version,
+            apt_packages=run_apt_get,
+        )
 
     def _write_additional_files(self, context: BuildContext):
         for file in self.additional_files:

@@ -1,9 +1,15 @@
+{%- if cuda_version -%}
 FROM nvidia/cuda:{{ cuda_version }}-runtime-ubuntu20.04
 
 # Install Python
 ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Etc/UTC
 RUN apt-get update && apt-get install -y python3 python3-pip && rm -rf /var/lib/apt/lists/*
+{%- else -%}
+FROM python:{{ python_version }}-slim-bullseye
+{%- endif %}
+
+{{ apt_packages }}
 
 WORKDIR /app
 
