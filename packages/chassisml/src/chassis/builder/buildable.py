@@ -4,6 +4,8 @@ import abc
 import os
 import posixpath
 import shutil
+import subprocess
+import sys
 from shutil import copy, copytree
 from typing import Union
 
@@ -20,6 +22,10 @@ env = Environment(
     loader=PackageLoader(package_name="chassis.builder"),
     autoescape=select_autoescape()
 )
+
+REQUIREMENTS_SUBSTITUTIONS = {
+    "opencv-python=": "opencv-python-headless="
+}
 
 
 def _copy_libraries(context: BuildContext, server: str, ignore_patterns: list[str]):
@@ -141,8 +147,19 @@ class Buildable(metaclass=abc.ABCMeta):
         rendered_template = requirements_template.render(
             additional_requirements="\n".join(additional_requirements)
         )
-        with open(os.path.join(context.base_dir, "requirements.txt"), "wb") as f:
+        requirements_in = os.path.join(context.base_dir, "requirements.in")
+        requirements_txt = os.path.join(context.base_dir, "requirements.txt")
+        with open(requirements_in, "wb") as f:
             f.write(rendered_template.encode("utf-8"))
+        # Use pip-tools to expand the list out to a frozen and pinned list.
+        subprocess.run([sys.executable, "-m", "piptools", "compile", "-q", "-o", requirements_txt, requirements_in])
+        # Now post-process the full requirements.txt with automatic replacements.
+        with open(requirements_txt, "rb") as f:
+            reqs = f.read().decode()
+        for old, new in REQUIREMENTS_SUBSTITUTIONS.items():
+            reqs = reqs.replace(old, new)
+        with open(requirements_txt, "wb") as f:
+            f.write(reqs.encode())
 
     def _write_python_modules(self, context: BuildContext):
         for key, m in self.python_modules.items():

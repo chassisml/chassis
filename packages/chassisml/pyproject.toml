@@ -22,6 +22,7 @@ dependencies = [
     "docker",
     "validators",
     "numpy",
+    "pip-tools",
 ]
 
 [project.optional-dependencies]
