@@ -101,9 +101,7 @@ nav:
       - reference/index.md
       - Chassisml Service: reference/service.md
       - Python SDK: reference/sdk.md
-      - Interfaces:
-          - OMI: reference/omi.md
-          - KServe: reference/kserve.md
+      - Interfaces: reference/interfaces.md
   - Community:
       - Get Involved: community/get-involved.md
   - Release Notes: release-notes.md
