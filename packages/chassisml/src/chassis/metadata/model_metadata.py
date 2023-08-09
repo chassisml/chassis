@@ -8,6 +8,18 @@ T = TypeVar("T", bound="ModelMetadata")
 class ModelMetadata:
 
     def __init__(self, info: ModelInfo = None, description: ModelDescription = None, inputs: List[ModelInput] = None, outputs: List[ModelOutput] = None, resources: ModelResources = None, timeout: ModelTimeout = None, features: ModelFeatures = None):
+        '''This class provides an interface for customizing metadata embedded into the model container.
+        
+        Args:
+             info (ModelInfo): `ModelInfo` object that includes optional fields to override defaults including `["model_name", "model_version", "model_author", "model_type", "source"]` 
+             description (ModelDescription): `ModelDescription` object that includes optional metadata fields to document details about model. Available slots to override: `["summary", "details", "technical", "performance"]` 
+             inputs (List[ModelInput]): List of `ModelInput` objects that define information about the input(s) the model expects
+             outputs (List[ModelOutput]): List of `ModelInput` objects that define information about the output(s) the model returns
+             resources (ModelResources): `ModelResources` object that defines hardware resources the model requires to run effectively. Available slots to override: `["required_ram", "num_cpus", "num_gpus"]`
+             timeout (ModelTimeout): `ModelTimeout` object that defines timeout thresholds for the model to load (`status`) and run (`run`)
+             features (ModelFeatures): Set of metadata booleans and constants required by the OMI API specification
+        '''
+        
         self._info: ModelInfo = info if info is not None else ModelInfo(source="chassis", model_type="grpc")
         self._description = description if description is not None else ModelDescription()
         self._inputs = inputs if inputs is not None else []
@@ -82,9 +94,32 @@ class ModelMetadata:
         self._description.performance = performance
 
     def has_inputs(self) -> bool:
+        '''
+        TODO - internal?
+        '''
         return len(self._inputs) > 0
 
     def add_input(self, key: str, accepted_media_types: list[str] = None, max_size: str = "1M", description: str = ""):
+        '''Defines single or list of `ModelInput` objects associated with a model
+        
+        Args:
+             key (str): Key name to represent the input. E.g., "input", "image", "text", etc.
+             accepted_media_types list[str]: Acceptable mime type(s) for the respective input. For more information on common mime types, visit (https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types)
+             max_size (str): Maximum acceptable size of input. This value should include an integer followed by a letter indicating the unit of measure (e.g., "3M" = 3 MB, "1.5G" = 1.5 GB, etc.)
+             description (str): Short description of the input
+        
+        Examples:
+        ```python
+        from chassisml import ChassisModel
+        model = ChassisModel(process_fn=predict)
+        model.metadata.add_input(
+            "image",
+            ["image/png", "image/jpeg"],
+            "10M,
+            "Image to be classified by computer vision model"
+        )
+        ``` 
+        '''
         if accepted_media_types is None:
             accepted_media_types = ["application/octet-stream"]
         self._inputs = self._inputs + [ModelInput(
@@ -95,9 +130,32 @@ class ModelMetadata:
         )]
 
     def has_outputs(self) -> bool:
+        '''
+        TODO - Internal function?
+        '''
         return len(self._outputs) > 0
 
     def add_output(self, key: str, media_type: str = "application/octet-stream", max_size: str = "1M", description: str = ""):
+        '''Defines single or list of `ModelOutput` objects associated with a model
+        
+        Args:
+             key (str): Key name to represent the output. E.g., "results.json", "results", "output", etc.
+             media_type list[str]: Acceptable mime type for the respective output. For more information on common mime types, visit (https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types)
+             max_size (str): Maximum acceptable size of output. This value should include an integer followed by a letter indicating the unit of measure (e.g., "3M" = 3 MB, "1.5G" = 1.5 GB, etc.)
+             description (str): Short description of the output
+        
+        Examples:
+        ```python
+        from chassisml import ChassisModel
+        model = ChassisModel(process_fn=predict)
+        model.metadata.add_input(
+            "results.json",
+            ["application/json"],
+            "1M,
+            "Classification results of computer vision model with class name and confidence score in JSON format"
+        )
+        ``` 
+        '''        
         self._outputs = self._outputs + [ModelOutput(
             filename=key,
             media_type=media_type,
@@ -156,6 +214,9 @@ class ModelMetadata:
     # TODO - adversarial defense, retrainable, results/drift/explanation formats
 
     def serialize(self) -> bytes:
+        '''
+        TODO - internal?
+        '''
         sr = StatusResponse()
         sr.model_info.CopyFrom(self._info)
         sr.description.CopyFrom(self._description)

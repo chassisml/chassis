@@ -20,11 +20,44 @@ if TYPE_CHECKING:
 
 class RemoteBuilder:
     def __init__(self, client: ChassisClient, package: Buildable, options: BuildOptions = DefaultBuildOptions):
+        '''Builder object that connects to a remote Kubernetes Chassis server to build containers from `Buildable` objects
+        
+        Args:
+            client (ChassisClient): Chassis client that handles all communication with remote Chassis service
+            package (Buildable): Chassis model object that serves as the primary model code to be containerized
+            options (BuildOptions): Object that provides specific build configuration options. See `chassis.builder.BuildOptions` for more details
+        '''        
         self.client = client
         self.context = package.prepare_context(options)
 
     def build_image(self, name: str, tag="latest", timeout: int = 3600, webhook: str = None, clean_context=True) -> BuildResponse:
-        if webhook is not None and validators.url(webhook):
+        '''Kicks off a remote container build job and pushes to pre-configured Docker registry
+        
+        Args:
+            name (str): Name of container image repository
+            tag (str): Tag of container image
+            timeout (int): Timeout value passed to build config object
+            webhook (str): TODO
+            clean_context (bool): If False does not remove build context folder
+        
+        Returns:
+            BuildResponse: `BuildResponse` object with details from the build job
+            
+        Raises:
+            ValueError: If webhook is not valid URL
+            
+        Examples:
+        ```python
+        from chassisml import ChassisModel, ChassisClient
+        from chassis.builder import RemoteBuilder
+        
+        model = ChassisModel(process_fn=predict)
+        client = ChassisClient("http://localhost:8080)
+        builder = RemoteBuilder(client, model)
+        res = builder.build_image(name="chassis-model")      
+        ```
+        '''        
+        if webhook is not None and not validators.url(webhook):
             raise ValueError("Provided webhook is not a valid URL")
 
         tmpdir = None

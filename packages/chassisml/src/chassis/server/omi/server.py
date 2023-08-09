@@ -6,7 +6,6 @@ import traceback
 from time import time as t
 from typing import Mapping, Union
 
-import cloudpickle
 from grpclib.health.service import Health
 from grpclib.reflection.service import ServerReflection
 from grpclib.server import Server
@@ -20,7 +19,7 @@ from chassis.protos.v1.model_pb2 import (
     ShutdownResponse,
     StatusResponse,
 )
-from chassis.runtime import ModelRunner, PACKAGE_DATA_PATH, PYTHON_MODEL_KEY, python_pickle_filename_for_key
+from chassis.runtime import ModelRunner, PACKAGE_DATA_PATH
 
 GRPC_SERVER_PORT = 45000
 
@@ -61,23 +60,17 @@ class ModzyModel(ModzyModelBase):
         request = await stream.recv_message()
         start_status_call = t()
         if self.model is None:
-            try:
-                # If this is the first time calling the `Status` route, then attempt to load the model
-                filename = python_pickle_filename_for_key(PYTHON_MODEL_KEY)
-                with open(os.path.join(PACKAGE_DATA_PATH, filename), "rb") as f:
-                    modules = cloudpickle.load(f)
-                self.model: ModelRunner = modules[PYTHON_MODEL_KEY]
-                if self.model is None:
-                    raise "Model not found"
-                message = "Model Initialized Successfully."
-                LOGGER.info(message)
-                status_response = self._build_status_response(200, message)
-            except Exception as e:
+            self.model = ModelRunner.load()
+            if self.model is None:
                 # If there is a problem in loading the model, catch it and report the error
                 message = "Model Failed to Initialize."
                 LOGGER.critical(f"{message} Error: {e}")
                 log_stack_trace()
                 status_response = self._build_status_response(500, message)
+            else:
+                message = "Model Initialized Successfully."
+                LOGGER.info(message)
+                status_response = self._build_status_response(200, message)
         else:
             # The model is treated as a singleton that cannot be reloaded. If the model has already been initialized,
             message = "Model Already Initialized."

@@ -8,7 +8,7 @@ authors = [
 ]
 description = ""
 readme = "README.md"
-requires-python = ">= 3.9"
+requires-python = ">= 3.8"
 classifiers = [
 ]
 license = { file = "LICENSE" }
@@ -22,10 +22,12 @@ dependencies = [
     "docker",
     "validators",
     "numpy",
+    "pip-tools",
 ]
 
 [project.optional-dependencies]
 test = ["pytest"]
+kserve = ["kserve"]
 
 [project.urls]
 "Homepage" = "https://modzy.github.io/chassis"
@@ -38,6 +40,7 @@ where = ["src"]
 [tool.setuptools.package-data]
 "*" = ["*.pyi"]
 "chassis.builder" = ["templates/*"]
+"chassis.guides" = ["data/*"]
 
 [build-system]
 requires = ["setuptools>=41.0.0"]
