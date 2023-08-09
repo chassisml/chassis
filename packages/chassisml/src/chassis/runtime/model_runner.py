@@ -37,12 +37,27 @@ class ModelRunner:
             return None
 
     def __init__(self, predict_fn: PredictFunction, batch_size: int = 1, is_legacy_fn=False):
+        '''This class handles the inference execution for a model
+        
+        Args:
+            predict_fn (PredictFunction): Single predict function of type `PredictFunction` that represents a model inference function
+            batch_size (int): Integer representing the batch size your model supports. If your model does not support batching, the default value is 1
+            is_legacy_fn (bool): If True, predict_fn follows legacy format (not typed, only single input and output supported, returns dictionary)
+        '''
         self.predict_fn = predict_fn
         self.supports_batch = batch_size > 1
         self.batch_size = batch_size
         self.legacy = is_legacy_fn
 
     def predict(self, inputs: List[Mapping[str, bytes]]) -> List[Mapping[str, bytes]]:
+        '''Executes inference function
+        
+        Args:
+            inputs (List[Mapping[str, bytes]]): Mapping of input name (str) to input data (bytes) which the predict function is expected to process for inference
+        
+        Returns:
+            List[Mapping[str, bytes]]: List of outputs the `predict_fn` returns
+        '''
         if self.legacy:
             return self._predict_legacy(inputs)
         if self.supports_batch:
