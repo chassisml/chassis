@@ -89,7 +89,10 @@ markdown_extensions:
 
 nav:
   - Home: index.md
-  - Getting Started: getting-started/getting-started.md
+  - Getting Started: 
+      - getting-started/index.md
+      - Quickstart: getting-started/quickstart.md
+      - Build Container: getting-started/build-first-model.md
   - Tutorials: 
       - tutorials/index.md
       - Install Remote Service: tutorials/install-service.md

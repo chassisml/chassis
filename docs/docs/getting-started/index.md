@@ -1,8 +1,10 @@
 
+# Getting Started
+
 !!! tip "Welcome!"
     In this getting started guide, you will learn how to use the **[Chassis SDK](https://pypi.org/project/chassisml/)** to build your first ML container locally on your computer.  
 
-    Check out the **[Quickstart]()** guide to build a container from a preset model, or follow the **[Build your first model]()** guide to implement it yourself!
+    Check out the **[Quickstart](quickstart.md)** guide to build a container from a preset model, or follow the **[Build your first model](build-first-model.md)** guide to implement it yourself!
 
 !!! warning "What you will need"
     This quickstart guide requires two prerequisites to follow along:
