@@ -46,27 +46,46 @@ class Buildable(metaclass=abc.ABCMeta):
     python_modules: dict = {}
 
     def merge_package(self, package: Buildable):
+        '''
+        TODO - internal?
+        '''        
         self.requirements = self.requirements.union(package.requirements)
         self.apt_packages = self.apt_packages.union(package.apt_packages)
         self.additional_files = self.additional_files.union(package.additional_files)
         self.python_modules.update(package.python_modules)
 
     def add_requirements(self, reqs: Union[str, list]):
+        '''This function adds python dependencies to a `Buildable` model object
+        
+        Args:
+            reqs: (Union[str, list]): Single python package (str) or list of python packages that are required dependencies to run the `ChassisModel.process_fn` attribute. These values are the same values that would follow `pip install` or that would be added to a Python dependencies txt file (e.g., `requirements.txt`) 
+        '''
         if type(reqs) == str:
             self.requirements = self.requirements.union(reqs.splitlines())
         elif type(reqs) == list:
             self.requirements = self.requirements.union(reqs)
 
     def add_apt_packages(self, packages: Union[str, list]):
+        '''This function adds OS-level dependencies to a `Buildable` model object
+        
+        Args:
+            reqs: (Union[str, list]): Single OS-level package (str) or list of OS-level packages that are required dependencies to run the `ChassisModel.process_fn` attribute. These values are the same values that can be installed via `apt-get install` 
+        '''        
         if type(packages) == str:
             self.apt_packages = self.apt_packages.union(packages.splitlines())
         elif type(packages) == list:
             self.apt_packages = self.apt_packages.union(packages)
 
     def get_packaged_path(self, path: str):
+        '''
+        TODO - internal?
+        '''        
         return posixpath.join(PACKAGE_DATA_PATH, os.path.basename(path))
 
     def verify_prerequisites(self, options: BuildOptions):
+        '''
+        TODO - internal?
+        '''        
         if len(self.metadata.model_name) == 0:
             raise RequiredFieldMissing("The model must have a name set before it can be built. Please set `metadata.model_name`.")
         if len(self.metadata.model_version) == 0:
@@ -79,6 +98,9 @@ class Buildable(metaclass=abc.ABCMeta):
             print(f"Warning: Building a container with CUDA currently only supports Python 3.8. Python 3.8 will be used instead of '{options.python_version}'.")
 
     def prepare_context(self, options: BuildOptions = DefaultBuildOptions) -> BuildContext:
+        '''
+        TODO - internal?
+        '''        
         self.verify_prerequisites(options)
 
         platforms = []
@@ -122,6 +144,9 @@ class Buildable(metaclass=abc.ABCMeta):
         return context
 
     def render_dockerfile(self, options: BuildOptions) -> str:
+        '''
+        TODO - internal?
+        '''        
         dockerfile_template = env.get_template("Dockerfile")
         run_apt_get = ""
         if len(self.apt_packages) > 0:
