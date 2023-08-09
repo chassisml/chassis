@@ -20,8 +20,6 @@ class OMIClient:
             res = client.run([{"input": b"testing one two three"}])
             result = res.outputs[0].output["results.json"]
             print(f"Result: {result}")
-
-        asyncio.run(client_test())
         ```
     """
 
