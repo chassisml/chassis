@@ -28,7 +28,8 @@ class KServe(kserve.Model):
 
     def load(self) -> bool:
         self.model = ModelRunner.load()
-        return self.model is not None
+        self.ready = self.model is not None
+        return self.ready
 
     def predict(self, payload: Union[Dict, InferRequest, ModelInferRequest],
                 headers: Dict[str, str] = None) -> Union[Dict, InferResponse]:
@@ -77,9 +78,9 @@ class KServe(kserve.Model):
 
 def serve():
     env = {
-        "HTTP_PORT": os.getenv("HTTP_PORT"),
-        "MODEL_NAME": os.getenv("MODEL_NAME"),
-        "PROTOCOL": os.getenv("PROTOCOL"),
+        "HTTP_PORT": os.getenv("HTTP_PORT", "45000"),
+        "MODEL_NAME": os.getenv("MODEL_NAME", "default"),
+        "PROTOCOL": os.getenv("PROTOCOL", "v2"),
     }
 
     for e in env:
@@ -97,4 +98,5 @@ def serve():
 
     kserve.ModelServer(
         http_port=int(env.get("HTTP_PORT")),
+        enable_docs_url=True,
     ).start([model])

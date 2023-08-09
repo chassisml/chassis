@@ -67,9 +67,6 @@ class DockerBuilder:
                 print(log_output)
             print(f"Image ID: {image.id}")
             print(f"Image Tags: {image.tags}")
-            if clean_context:
-                print("Cleaning local context")
-                self.context.cleanup()
             return BuildResponse(image_tag=image.tags[0], logs=log_output, success=True, completed=True, error_message=None, remote_build_id=None)
         except DockerBuildError as e:
             print("Error :(")
@@ -81,3 +78,7 @@ class DockerBuilder:
             print("Logs:")
             print(log_output)
             raise BuildError(e, logs=log_output)
+        finally:
+            if clean_context:
+                print("Cleaning local context")
+                self.context.cleanup()
