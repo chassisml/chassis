@@ -18,10 +18,13 @@ theme:
   logo: images/chassis-symbol-negative.png
   favicon: images/chassis-symbol.png
   features:
+    - navigation.instant
     - navigation.footer
+    - navigation.indexes
     - navigation.header
     - navigation.expand
     - navigation.tabs
+    - navigation.tabs.sticky
     - navigation.top
     - toc.integrate
     - content.tabs.link
@@ -86,16 +89,21 @@ markdown_extensions:
 
 nav:
   - Home: index.md
-  - Getting Started:
-      - getting-started/getting-started.md
-  - Tutorials:
-      - tutorials/install-service.md
+  - Getting Started: getting-started/getting-started.md
+  - Tutorials: 
+      - tutorials/index.md
+      - Install Remote Service: tutorials/install-service.md
   - How-to Guides:
+      - how-to-guides/index.md
       - Model Containers by Framework: how-to-guides/frameworks.md
       - Common Data Types Support: how-to-guides/common-data-types.md
   - Reference:
-      - Chassisml Service: reference/service-reference.md
-      - Python SDK: reference/chassisml_sdk-reference.md
+      - reference/index.md
+      - Chassisml Service: reference/service.md
+      - Python SDK: reference/sdk.md
+      - Interfaces:
+          - OMI: reference/omi.md
+          - KServe: reference/kserve.md
   - Community:
       - Get Involved: community/get-involved.md
   - Release Notes: release-notes.md

@@ -1,7 +1,8 @@
-# Quickstart
 
 !!! tip "Welcome!"
     In this getting started guide, you will learn how to use the **[Chassis SDK](https://pypi.org/project/chassisml/)** to build your first ML container locally on your computer.  
+
+    Check out the **[Quickstart]()** guide to build a container from a preset model, or follow the **[Build your first model]()** guide to implement it yourself!
 
 !!! warning "What you will need"
     This quickstart guide requires two prerequisites to follow along:
@@ -11,11 +12,10 @@
 
     You can verify Docker it is successfully installed by typing `docker run hello-world` in your terminal.  
 
-       
 
 ## Installation
 
-To get started, set up a [Python virtual enviornment](https://realpython.com/what-is-pip/#using-pip-in-a-python-virtual-environment) and install the Chassis SDK along with the other Python dependencies needed to execute the sample code (Python 3.8 and above supported).
+To get started, set up a [Python virtual enviornment](https://realpython.com/what-is-pip/#using-pip-in-a-python-virtual-environment) and install the Chassis SDK along with the other Python dependencies needed to execute the sample code.
 
 
 ```bash
@@ -24,9 +24,9 @@ pip install chassisml scikit-learn numpy
 
 ## Build Container
 
-Build your first model container with a few simple steps:
+Build your first model container in a few simple steps:
 
-1. Next, open a Python file (this may be a Jupyter notebook file or Python script in your preferred IDE), and call it `quickstart.py`
+1. Open a Python file (this may be a Jupyter notebook file or Python script in your preferred IDE), and call it `quickstart.py`
 2. Paste the below code into your Python file
 
 ```python
@@ -43,6 +43,7 @@ from chassis.builder import DockerBuilder # (2)
 model = pickle.load(open("<path-to-publicly-hosted-model-file>", "rb")) 
 
 # define predict function # (4)
+# TODO - edit and/or change model predict function
 def predict(inputs: Mapping[str, bytes]) -> dict[str, bytes]:
     input_processed = np.array(json.loads(inputs['input']))
     inference_results = model.predict(input_processed)
@@ -91,7 +92,7 @@ Finally, run your script.
 python quickstart.py
 ```
 
-In just about 60 seconds, the Chassis job will complete. Congratulations! You just built your first ML container from a Scikit learn digits classification model. Verify your container build by running the following command in your terminal:
+In just about 60 (***TODO - probably less***) seconds, the Chassis job will complete. Congratulations! You just built your first ML container from a Scikit learn digits classification model. Verify your container build by running the following command in your terminal:
 
 ```bash
 docker images
