@@ -1,3 +1,4 @@
+import asyncio
 from typing import List, Mapping
 
 from grpclib.client import Channel
@@ -13,13 +14,12 @@ class OMIClient:
 
     Example:
         ```python
-        async def client_test():
-            async with OMIClient("localhost", 45000) as client:
-                status = await client.status()
-                print(f"Status: {status}")
-                res = await client.run([{"input": b"testing one two three"}])
-                result = res.outputs[0].output["results.json"]
-                print(f"Result: {result}")
+        with OMIClient("localhost", 45000) as client:
+            status = client.status()
+            print(f"Status: {status}")
+            res = client.run([{"input": b"testing one two three"}])
+            result = res.outputs[0].output["results.json"]
+            print(f"Result: {result}")
 
         asyncio.run(client_test())
         ```
@@ -34,9 +34,9 @@ class OMIClient:
     def __del__(self):
         self._channel.close()
 
-    async def __aenter__(self) -> 'OMIClient':
+    def __enter__(self) -> 'OMIClient':
         try:
-            status_response: StatusResponse = await self.client.Status(StatusRequest())
+            status_response: StatusResponse = self.status()
             if status_response.status_code != 200:
                 raise "Model did not initialize successfully"
         except Exception as e:
@@ -44,13 +44,16 @@ class OMIClient:
             raise e
         return self
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type, exc_val, exc_tb):
         self._channel.close()
 
-    async def status(self) -> StatusResponse:
-        return await self.client.Status(StatusRequest())
+    def status(self) -> StatusResponse:
+        coroutine = self.client.Status(StatusRequest())
+        loop = asyncio.get_event_loop()
+        res: StatusResponse = loop.run_until_complete(coroutine)
+        return res
 
-    async def run(self, inputs: List[Mapping[str, bytes]], detect_drift: bool = False, explain: bool = False) -> RunResponse:
+    def run(self, inputs: List[Mapping[str, bytes]], detect_drift: bool = False, explain: bool = False) -> RunResponse:
         req = RunRequest(
             inputs=[
                 InputItem(input=i)
@@ -59,7 +62,12 @@ class OMIClient:
             detect_drift=detect_drift,
             explain=explain,
         )
-        return await self.client.Run(req)
+        coroutine = self.client.Run(req)
+        loop = asyncio.get_event_loop()
+        res: RunResponse = loop.run_until_complete(coroutine)
+        return res
 
-    async def shutdown(self):
-        await self.client.Shutdown(ShutdownRequest())
+    def shutdown(self):
+        coroutine = self.client.Shutdown(ShutdownRequest())
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(coroutine)
