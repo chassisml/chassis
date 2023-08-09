@@ -27,7 +27,7 @@ dependencies = [
 
 [project.optional-dependencies]
 test = ["pytest"]
-kserve = ["kserve"]
+kserve = ["kserve >= 0.11"]
 
 [project.urls]
 "Homepage" = "https://modzy.github.io/chassis"

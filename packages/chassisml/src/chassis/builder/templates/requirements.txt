@@ -1,6 +1,5 @@
 cloudpickle == 2.2.0
 chassisml-protobuf
-grpclib
 numpy
 
 {{ additional_requirements }}

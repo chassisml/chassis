@@ -118,6 +118,7 @@ class Buildable(metaclass=abc.ABCMeta):
             os.makedirs(context.data_dir, exist_ok=True)
 
         # Render and save Dockerfile to package location.
+        print("Generating Dockerfile...", end="", flush=True)
         rendered_template = self.render_dockerfile(options)
         with open(os.path.join(context.base_dir, "Dockerfile"), "wb") as f:
             f.write(rendered_template.encode())
@@ -132,14 +133,22 @@ class Buildable(metaclass=abc.ABCMeta):
         entrypoint_template = env.get_template("entrypoint.py")
         with open(os.path.join(context.base_dir, "entrypoint.py"), "wb") as f:
             f.write(entrypoint_template.render().encode())
+        print("Done!")
 
-        # # Copy any Chassis libraries we need.
+        # Copy any Chassis libraries we need.
+        print("Copying libraries...", end="", flush=True)
         _copy_libraries(context, options.server, dockerignore.splitlines())
-
+        print("Done!")
+        print("Writing metadata...", end="", flush=True)
         self._write_metadata(context)
-        self._write_requirements(context)
+        print("Done!")
+        print("Compiling pip requirements...", end="", flush=True)
+        self._write_requirements(context, options)
+        print("Done!")
+        print("Copying files...", end="", flush=True)
         self._write_additional_files(context)
         self._write_python_modules(context)
+        print("Done!")
 
         return context
 
@@ -163,10 +172,17 @@ class Buildable(metaclass=abc.ABCMeta):
         for file in self.additional_files:
             copy(file, os.path.join(context.data_dir, os.path.basename(file)))
 
-    def _write_requirements(self, context: BuildContext):
+    def _write_requirements(self, context: BuildContext, options: BuildOptions):
         requirements_template = env.get_template("requirements.txt")
         # Convert to a set then back to a list to unique the entries in case there are duplicates.
         additional_requirements = list(set(self.requirements))
+        # Append the server requirements.
+        if options.server == "omi":
+            from chassis.server.omi import REQUIREMENTS
+            additional_requirements.extend(REQUIREMENTS)
+        elif options.server == "kserve":
+            from chassis.server.kserve import REQUIREMENTS
+            additional_requirements.extend(REQUIREMENTS)
         # Sort the list so that our requirements.txt is stable for Docker caching.
         additional_requirements.sort()
         rendered_template = requirements_template.render(
