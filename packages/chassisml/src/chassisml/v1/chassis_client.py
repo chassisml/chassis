@@ -1,11 +1,14 @@
 import time
 import urllib.parse
 import warnings
-from typing import Union
+from collections.abc import Iterable
+from typing import Dict, Mapping, Union
 
 import requests
 from packaging import version
 
+from chassis.client import OMIClient
+from chassis.protos.v1.model_pb2 import OutputItem
 from chassis.typing import LegacyBatchPredictFunction, LegacyNormalPredictFunction
 from chassis.builder import BuildResponse
 from .chassis_model import ChassisModel
@@ -20,9 +23,15 @@ routes = {
 
 class ChassisClient:
     """
+    **DEPRECATED**
+
+    Please use `chassis.builder.RemoteBuilder` moving forward.
+
+    ---
+
     The Chassis Client object.
 
-    This class is used to interact with the Kaniko service.
+    This class is used to interact with the Chassis remote build service.
 
     Attributes:
         base_url (str): The base url for the API.
@@ -31,7 +40,7 @@ class ChassisClient:
     """
 
     def __init__(self, base_url='http://localhost:5000', auth_header=None, ssl_verification=True):
-        deprecated()
+        deprecated("Please use `chassis.builder.RemoteBuilder` moving forward.")
         self.base_url = base_url
         self.auth_header = auth_header
         self.ssl_verification = ssl_verification
@@ -82,7 +91,7 @@ class ChassisClient:
         ```
 
         """
-        deprecated()
+        deprecated("Please use `chassis.builder.RemoteBuilder` moving forward.")
         route = f'{urllib.parse.urljoin(self.base_url, routes["job"])}/{job_id}'
         if self.auth_header:
             res = requests.get(route, headers={'Authorization': self.auth_header}, verify=self.ssl_verification)
@@ -94,12 +103,20 @@ class ChassisClient:
 
     def get_job_logs(self, job_id):
         """
+        **DEPRECATED**
+
+        Please use `chassis.builder.RemoteBuilder` moving forward.
+
+        ---
+
         Checks the status of a chassis job
+
         Args:
             job_id (str): Chassis job identifier generated from `ChassisModel.publish` method
 
         Returns:
-            Dict: JSON Chassis job status
+            Text: The job logs
+
         Examples:
         ```python
         # Create Chassisml model
@@ -118,7 +135,7 @@ class ChassisClient:
         job_status = chassis_client.get_job_logs(job_id)
         ```
         """
-        deprecated()
+        deprecated("Please use `chassis.builder.RemoteBuilder` moving forward.")
         route = f'{urllib.parse.urljoin(self.base_url, routes["job"])}/{job_id}/logs'
         if self.auth_header:
             res = requests.get(route, headers={'Authorization': self.auth_header}, verify=self.ssl_verification)
@@ -129,6 +146,12 @@ class ChassisClient:
 
     def block_until_complete(self, job_id: str, timeout=None, poll_interval=5) -> BuildResponse:
         """
+        **DEPRECATED**
+
+        Please use `chassis.builder.RemoteBuilder` moving forward.
+
+        ---
+
         Blocks until Chassis job is complete or timeout is reached. Polls Chassis job API until a result is marked finished.
 
         Args:
@@ -160,7 +183,7 @@ class ChassisClient:
         final_status = chassis_client.block_until_complete(job_id)
         ```
         """
-        deprecated()
+        deprecated("Please use `chassis.builder.RemoteBuilder` moving forward.")
         endby = time.time() + timeout if (timeout is not None) else None
         while True:
             status = self.get_job_status(job_id)
@@ -173,48 +196,18 @@ class ChassisClient:
 
     def download_tar(self, job_id, output_filename):
         """
-        Downloads container image as tar archive
-
-        **NOTE**: This method is not available in the publicly-hosted service.
-
-        Args:
-            job_id (str): Chassis job identifier generated from `ChassisModel.publish` method
-            output_filename (str): Local output filepath to save container image
-
-        Returns:
-            None: This method does not return an object
-
-        Examples:
-        ```python
-        # Publish model to Docker registry
-        response = chassis_model.publish(
-            model_name="Chassisml Regression Model",
-            model_version="0.0.1",
-            registry_user=dockerhub_user,
-            registry_pass=dockerhub_pass,
-        )
-
-        job_id = response.get('job_id)
-        chassis_client.download_tar(job_id, "./chassis-model.tar")
-        ```
+        This method is no longer available.
         """
         deprecated()
-        url = f'{urllib.parse.urljoin(self.base_url, routes["job"])}/{job_id}/download-tar'
-
-        if self.auth_header:
-            r = requests.get(url, headers={'Authorization': self.auth_header}, verify=self.ssl_verification)
-        else:
-            r = requests.get(url, verify=self.ssl_verification)
-
-        if r.status_code == 200:
-            with open(output_filename, 'wb') as f:
-                f.write(r.content)
-        else:
-            print(f'Error download tar: {r.text}')
+        raise NotImplementedError
 
     def create_model(self, process_fn: LegacyNormalPredictFunction = None, batch_process_fn: LegacyBatchPredictFunction = None, batch_size=None):
         """
-        DEPRECATED
+        **DEPRECATED**
+
+        Please use `chassisml.ChassisModel` moving forward.
+
+        ---
 
         Builds chassis model locally
 
@@ -272,7 +265,7 @@ class ChassisClient:
         ```
 
         """
-        deprecated()
+        deprecated("Please use `chassisml.ChassisModel` moving forward.")
         if process_fn and batch_process_fn:
             raise ValueError("Please supply either a process_fn or batch_process_fn but not both")
         elif process_fn:
@@ -284,8 +277,14 @@ class ChassisClient:
         else:
             raise ValueError("At least one of process_fn or batch_process_fn must be provided.")
 
-    def run_inference(self, input_data: Mapping[str, bytes], container_url="localhost", host_port=45000) -> Iterable[OutputItem]:
+    def run_inference(self, input_data: Dict[str, bytes], container_url="localhost", host_port=45000) -> Iterable[OutputItem]:
         """
+        **DEPRECATED**
+
+        Please use `chassis.client.OMIClient` moving forward.
+
+        ---
+
         This is the method you use to submit data to a container chassis has built for inference. It assumes the container has been downloaded from dockerhub and is running somewhere you have access to.
 
         Args:
@@ -317,13 +316,18 @@ class ChassisClient:
             print(x)
         ```
         """
-        deprecated()
-        model_client.override_server_URL(container_url, host_port)
-        return model_client.run(input_data)
+        deprecated("Please use `chassis.client.OMIClient` moving forward.")
+        with OMIClient(container_url, host_port) as client:
+            return client.run([input_data]).outputs
 
-    # TODO - move out of this class
-    def docker_infer(self, image_id, input_data, container_url="localhost", host_port=5001, container_port=None, timeout=20, clean_up=True, pull_container=False):
+    def docker_infer(self, image_id, input_data: Mapping[str, bytes], container_url="localhost", host_port=5001, container_port=None, timeout=20, clean_up=True, pull_container=False):
         """
+        **DEPRECATED**
+
+        Please use `chassis.client.OMIClient` moving forward.
+
+        ---
+
         Runs inference on an OMI compliant container. This method checks to see if a container is running and if not starts it. The method then runs inference against the input_data with the model in the container, and optionally shuts down the container.
 
         Args:
@@ -357,7 +361,7 @@ class ChassisClient:
             print(x)
         ```
         """
-        deprecated()
+        deprecated("Please use `chassis.client.OMIClient` moving forward.")
         try:
             container_id = docker_start(image_id, host_port=host_port, container_port=container_port, timeout=timeout, pull_container=pull_container)
             if "Error" in container_id:
