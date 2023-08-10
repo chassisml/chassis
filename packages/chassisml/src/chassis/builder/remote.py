@@ -111,6 +111,10 @@ class RemoteBuilder:
         from chassis.builder import RemoteBuilder, BuildOptions
 
         model = ChassisModel(process_fn=predict)
+        model.metadata.model_name = "My Awesome Model"
+        model.metadata.model_version = "1.0.1"
+        model.metadata.add_input("input.txt", ["text/plain"])
+        model.metadata.add_output("results.json", "application/json")
         options = BuildOptions(arch="arm64")
         builder = RemoteBuilder("http://localhost:8080", model, options)
         response = builder.build_image(name="chassis-model", tag="1.0.1")
@@ -178,7 +182,7 @@ class RemoteBuilder:
         Checks the status of a remote build.
 
         Args:
-            remote_build_id (str): Remote build identifier generated from `RemoteBuilder.build_image` method
+            remote_build_id (str): Remote build identifier generated from `RemoteBuilder.build_image`
 
         Returns:
             BuildResponse: `BuildResponse` object with details from the build job
@@ -189,6 +193,10 @@ class RemoteBuilder:
         from chassis.builder import RemoteBuilder, BuildOptions
 
         model = ChassisModel(process_fn=predict)
+        model.metadata.model_name = "My Awesome Model"
+        model.metadata.model_version = "1.0.1"
+        model.metadata.add_input("input.txt", ["text/plain"])
+        model.metadata.add_output("results.json", "application/json")
         options = BuildOptions(arch="arm64")
         builder = RemoteBuilder("http://localhost:8080", model, options)
         response = builder.build_image(name="chassis-model", tag="1.0.1", block_until_complete=False)
@@ -206,28 +214,29 @@ class RemoteBuilder:
 
     def get_build_logs(self, remote_build_id: str) -> str:
         """
-        Checks the status of a chassis job
+        Retrieves the logs from the remote build container.
+
         Args:
-            job_id (str): Chassis job identifier generated from `ChassisModel.publish` method
+            remote_build_id (str): Remote build identifier generated from `RemoteBuilder.build_image`
 
         Returns:
-            Dict: JSON Chassis job status
+            Text: The logs from the remote build container
+
         Examples:
         ```python
-        # Create Chassisml model
-        chassis_model = chassis_client.create_model(process_fn=process)
-        # Define Dockerhub credentials
-        dockerhub_user = "user"
-        dockerhub_pass = "password"
-        # Publish model to Docker registry
-        response = chassis_model.publish(
-            model_name="Chassisml Regression Model",
-            model_version="0.0.1",
-            registry_user=dockerhub_user,
-            registry_pass=dockerhub_pass,
-        )
-        job_id = response.get('job_id')
-        job_status = chassis_client.get_job_logs(job_id)
+        from chassisml import ChassisModel
+        from chassis.builder import RemoteBuilder, BuildOptions
+
+        model = ChassisModel(process_fn=predict)
+        model.metadata.model_name = "My Awesome Model"
+        model.metadata.model_version = "1.0.1"
+        model.metadata.add_input("input.txt", ["text/plain"])
+        model.metadata.add_output("results.json", "application/json")
+        options = BuildOptions(arch="arm64")
+        builder = RemoteBuilder("http://localhost:8080", model, options)
+        response = builder.build_image(name="chassis-model", tag="1.0.1")
+        build_id = response.remote_build_id
+        print(builder.get_build_logs(build_id))
         ```
         """
         route = urllib.parse.urljoin(self.url, f"/jobs/{remote_build_id}/logs")
@@ -240,35 +249,33 @@ class RemoteBuilder:
 
     def block_until_complete(self, remote_build_id: str, timeout=None, poll_interval=5) -> BuildResponse:
         """
-        Blocks until Chassis job is complete or timeout is reached. Polls Chassis job API until a result is marked finished.
+        Blocks until Chassis remote build is complete or the timeout has been reached.
+        Polls the Chassis job API until a result is marked as Completed or Failed.
 
         Args:
-            job_id (str): Chassis job identifier generated from `ChassisModel.publish` method
+            remote_build_id (str): Remote build identifier generated from `RemoteBuilder.build_image`
             timeout (int): Timeout threshold in seconds
-            poll_interval (int): Amount of time to wait in between API polls to check status of job
+            poll_interval (int): Amount of time in seconds to wait in between API polls to check the build status
 
         Returns:
-            Dict: final job status returned by `ChassisClient.block_until_complete` method
+            BuildResponse: `BuildResponse` object with details from the build job
 
         Examples:
         ```python
-        # Create Chassisml model
-        chassis_model = chassis_client.create_model(process_fn=process)
+        from chassisml import ChassisModel
+        from chassis.builder import RemoteBuilder, BuildOptions
 
-        # Define Dockerhub credentials
-        dockerhub_user = "user"
-        dockerhub_pass = "password"
-
-        # Publish model to Docker registry
-        response = chassis_model.publish(
-            model_name="Chassisml Regression Model",
-            model_version="0.0.1",
-            registry_user=dockerhub_user,
-            registry_pass=dockerhub_pass,
-        )
-
-        job_id = response.get('job_id')
-        final_status = chassis_client.block_until_complete(job_id)
+        model = ChassisModel(process_fn=predict)
+        model.metadata.model_name = "My Awesome Model"
+        model.metadata.model_version = "1.0.1"
+        model.metadata.add_input("input.txt", ["text/plain"])
+        model.metadata.add_output("results.json", "application/json")
+        options = BuildOptions(arch="arm64")
+        builder = RemoteBuilder("http://localhost:8080", model, options)
+        response = builder.build_image(name="chassis-model", tag="1.0.1", block_until_complete=False)
+        build_id = response.remote_build_id
+        response = builder.block_until_complete(build_id)
+        print(response)
         ```
         """
         endby = time.time() + timeout if (timeout is not None) else None
