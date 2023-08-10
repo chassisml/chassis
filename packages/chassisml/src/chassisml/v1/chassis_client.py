@@ -284,7 +284,7 @@ class ChassisClient:
         else:
             raise ValueError("At least one of process_fn or batch_process_fn must be provided.")
 
-    def run_inference(self, input_data, container_url="localhost", host_port=45000):
+    def run_inference(self, input_data: Mapping[str, bytes], container_url="localhost", host_port=45000) -> Iterable[OutputItem]:
         """
         This is the method you use to submit data to a container chassis has built for inference. It assumes the container has been downloaded from dockerhub and is running somewhere you have access to.
 

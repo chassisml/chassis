@@ -7,7 +7,7 @@ import shutil
 import subprocess
 import sys
 from shutil import copy, copytree
-from typing import Union
+from typing import List, Union
 
 import cloudpickle
 from jinja2 import Environment, PackageLoader, select_autoescape
@@ -28,7 +28,7 @@ REQUIREMENTS_SUBSTITUTIONS = {
 }
 
 
-def _copy_libraries(context: BuildContext, server: str, ignore_patterns: list[str]):
+def _copy_libraries(context: BuildContext, server: str, ignore_patterns: List[str]):
     root = os.path.join(os.path.dirname(__file__), "..", "..")
     ignore = shutil.ignore_patterns(*ignore_patterns)
     copytree(os.path.join(root, "chassis", "runtime"), os.path.join(context.chassis_dir, "runtime"), ignore=ignore)
@@ -48,7 +48,7 @@ class Buildable(metaclass=abc.ABCMeta):
     def merge_package(self, package: Buildable):
         '''
         TODO - internal?
-        '''        
+        '''
         self.requirements = self.requirements.union(package.requirements)
         self.apt_packages = self.apt_packages.union(package.apt_packages)
         self.additional_files = self.additional_files.union(package.additional_files)
@@ -70,7 +70,7 @@ class Buildable(metaclass=abc.ABCMeta):
         
         Args:
             reqs: (Union[str, list]): Single OS-level package (str) or list of OS-level packages that are required dependencies to run the `ChassisModel.process_fn` attribute. These values are the same values that can be installed via `apt-get install` 
-        '''        
+        '''
         if type(packages) == str:
             self.apt_packages = self.apt_packages.union(packages.splitlines())
         elif type(packages) == list:
@@ -79,13 +79,13 @@ class Buildable(metaclass=abc.ABCMeta):
     def get_packaged_path(self, path: str):
         '''
         TODO - internal?
-        '''        
+        '''
         return posixpath.join(PACKAGE_DATA_PATH, os.path.basename(path))
 
     def verify_prerequisites(self, options: BuildOptions):
         '''
         TODO - internal?
-        '''        
+        '''
         if len(self.metadata.model_name) == 0:
             raise RequiredFieldMissing("The model must have a name set before it can be built. Please set `metadata.model_name`.")
         if len(self.metadata.model_version) == 0:
@@ -100,7 +100,7 @@ class Buildable(metaclass=abc.ABCMeta):
     def prepare_context(self, options: BuildOptions = DefaultBuildOptions) -> BuildContext:
         '''
         TODO - internal?
-        '''        
+        '''
         self.verify_prerequisites(options)
 
         platforms = []
@@ -155,7 +155,7 @@ class Buildable(metaclass=abc.ABCMeta):
     def render_dockerfile(self, options: BuildOptions) -> str:
         '''
         TODO - internal?
-        '''        
+        '''
         dockerfile_template = env.get_template("Dockerfile")
         run_apt_get = ""
         if len(self.apt_packages) > 0:
