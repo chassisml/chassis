@@ -2,7 +2,7 @@ import os
 import json
 import pickle
 import numpy as np
-from typing import Mapping
+from typing import Dict, Mapping
 
 from chassisml import ChassisModel
 
@@ -11,8 +11,9 @@ ROOT = os.path.abspath(os.path.dirname(__file__))
 digits_clf = pickle.load(open(os.path.join(ROOT, "data", "logistic.pkl"), "rb"))
 digits_sample = os.path.join(ROOT, "data", "digits_sample.json")
 
+
 # define predict function
-def predict(input_bytes: Mapping[str, bytes]) -> dict[str, bytes]:
+def predict(input_bytes: Mapping[str, bytes]) -> Dict[str, bytes]:
     inputs = np.array(json.loads(input_bytes['input']))
     inference_results = digits_clf.predict_proba(inputs)
     structured_results = []
@@ -24,6 +25,7 @@ def predict(input_bytes: Mapping[str, bytes]) -> dict[str, bytes]:
         }
         structured_results.append(structured_output)
     return {'results.json': json.dumps(structured_results).encode()}
+
 
 # define chassis model object and add required dependencies
 chassis_model = ChassisModel(predict)

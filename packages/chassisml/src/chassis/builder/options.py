@@ -1,6 +1,6 @@
 import dataclasses
 import platform
-from typing import Union
+from typing import List, Union
 
 
 @dataclasses.dataclass
@@ -15,7 +15,7 @@ class BuildOptions:
         server (str): Server specification to build. "omi" and "kserve" supported
     '''
     base_dir: str = None
-    arch: Union[str, list[str]] = platform.machine() or "amd64"
+    arch: Union[str, List[str]] = platform.machine() or "amd64"
     python_version: str = "3.9"
     cuda_version: str = None
     server: str = "omi"
