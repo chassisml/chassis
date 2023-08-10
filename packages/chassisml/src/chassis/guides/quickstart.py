@@ -40,7 +40,7 @@ chassis_model.metadata.add_output(
     key="results.json",
     media_type="application/json",
     max_size="1M",
-    description="Top digig classification and corresponding confidence score"
+    description="Top digit classification and corresponding confidence score"
 )
 # results = chassis_model.test(digits_sample)
 # results = chassis_model.test(open(digits_sample, "rb").read())
