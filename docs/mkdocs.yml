@@ -92,7 +92,7 @@ nav:
   - Getting Started: 
       - getting-started/index.md
       - Quickstart: getting-started/quickstart.md
-      - Build Container: getting-started/build-first-model.md
+      - Full Chassis Workflow: getting-started/full-workflow.md
   - Tutorials: 
       - tutorials/index.md
       - Install Remote Service: tutorials/install-service.md

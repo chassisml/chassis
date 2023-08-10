@@ -1,151 +1,117 @@
 
 # Getting Started
 
-!!! tip "Welcome!"
-    In this getting started guide, you will learn how to use the **[Chassis SDK](https://pypi.org/project/chassisml/)** to build your first ML container locally on your computer.  
+!!! tip "Welcome to Chassis!"
 
-    Check out the **[Quickstart](quickstart.md)** guide to build a container from a preset model, or follow the **[Build your first model](build-first-model.md)** guide to implement it yourself!
+    The getting started section of the Chassis docs site provides two easy-to-follow guides that will demonstrate how to use the **[Chassis SDK](https://pypi.org/project/chassisml/)** to build your first ML container on your computer using your local Docker daemon.
 
-!!! warning "What you will need"
-    This quickstart guide requires two prerequisites to follow along:
+    There are two guides available:
 
-    1. Python (v3.8 or greater supported)
-    2. Docker (Installation instructions **[here](https://www.docker.com/products/docker-desktop/)**) 
-
-    You can verify Docker it is successfully installed by typing `docker run hello-world` in your terminal.  
+    1. **[Quickstart Guide](quickstart.md)** *(<5 minutes)*: Build your first container with Chassis in just minutes. In this guide, leverage a pre-trained scikit-learn classification model that comes with the `chassis` package to execute your first container build with a few lines of code.
+    2. **[Full Chassis Workflow](full-workflow.md)** *(~10 minutes)*: Learn how to transform your model into a single `predict` function with a few more lines of code. In this guide, you will unpack the pre-baked quickstart model and see how to construct a `ChassisModel` object. This will serve as a starting point for you to containerize your own model!  
 
 
-## Quickstart
+    !!! warning "What you will need"
+        Both guides in this section require two simple prerequisites to follow along:
 
-### Installation
+        1. Python (v3.8 or greater supported)
+        2. Docker (Installation instructions **[here](https://www.docker.com/products/docker-desktop/)**) 
 
-To get started, set up a [Python virtual enviornment](https://realpython.com/what-is-pip/#using-pip-in-a-python-virtual-environment) and install the Chassis SDK along with the other Python dependencies needed to execute the sample code.
+        You can verify Docker it is successfully installed by typing `docker run hello-world` in your terminal.  
+
+<br>
+
+# Quickstart
+
+
+First, you will need to set up a [Python virtual enviornment](https://realpython.com/what-is-pip/#using-pip-in-a-python-virtual-environment) and install the Chassis SDK. Include `[quickstart]` to install the extra dependencies required to use the quickstart model. 
 
 
 ```bash
-pip install chassisml[guides]
+pip install chassisml[quickstart]
 ```
 
-### Build Model
+## Build Container
 
-Now, simply paste the below code snippet into your preferred Python file (Jupyter notebook or script in other IDE).
+With the SDK installed, you can now begin to build your first model container. Chassis's quickstart mode provides a pre-trained scikit-learn digits classification model as a simple import, so you do not need to bring your own model.
 
-!!! example Example
+
+!!! example "Container Build"
     === "Python"
+        Paste the below code snippet into your Python file (Jupyter notebook or script in other preferred IDE) to build a model container from the Chassis quickstart scikit-learn model.
+
 
         ```python
+        import cloudpickle
+        import chassis.guides as guides
         from chassis.builder import DockerBuilder
-        from chassis.guides import QuickstartDigitsClassifier, DigitsSampleData
+        cloudpickle.register_pickle_by_value(guides)
 
-        model = QuickstartDigitsClassifier
-        results = model.test(DigitsSampleData)
+        model = guides.QuickstartDigitsClassifier
+        results = model.test(guides.DigitsSampleData)
+        print(results)
 
         builder = DockerBuilder(model)
         job_results = builder.build_image("my-first-chassis-model")
         print(job_results)
         ```
 
+        Execute this snippet to kick off the local Docker build.
 
-### Run Inference
-
-TODO - need to add inference client
-
-
-
-
-
-## Build your first model
-### Installation
-
-To get started, set up a [Python virtual enviornment](https://realpython.com/what-is-pip/#using-pip-in-a-python-virtual-environment) and install the Chassis SDK along with the other Python dependencies needed to execute the sample code.
-
-
-```bash
-pip install chassisml scikit-learn numpy
-```
-
-### Build Container
-
-Build your first model container in a few simple steps:
-
-1. Open a Python file (this may be a Jupyter notebook file or Python script in your preferred IDE), and call it `quickstart.py`
-2. Paste the below code into your Python file
-
-```python
-import time
-import json
-import pickle
-import numpy as np
-from typing import Mapping
-from chassisml import ChassisModel # (1)
-from chassis.builder import DockerBuilder # (2)
-
-# load model # (3)
-# TODO - configure this to import from URL or hosted file
-model = pickle.load(open("<path-to-publicly-hosted-model-file>", "rb")) 
-
-# define predict function # (4)
-# TODO - edit and/or change model predict function
-def predict(inputs: Mapping[str, bytes]) -> dict[str, bytes]:
-    input_processed = np.array(json.loads(inputs['input']))
-    inference_results = model.predict(input_processed)
-    structured_results = []
-    for inference_result in inference_results:
-        structured_output = {
-            "data": {
-                "result": {"classPredictions": [{"class": str(inference_result), "score": str(1)}]}
-            }
-        }
-        structured_results.append(structured_output)
-    return {'results.json': json.dumps(structured_results).encode()}
-
-
-# create chassis model # (5)
-chassis_model = ChassisModel(process_fn=predict)
-# add pip requirements # (6)
-chassis_model.add_requirements(["scikit-learn", "numpy"])
-
-# test model # (7)
-sample_data = "TODO"
-results = chassis_model.test(sunflower_path)
-print(results)
-
-# build container # (8)
-builder = DockerBuilder(chassis_model)
-start_time = time.time()
-res = builder.build_image(name="quickstart-chassis-model", tag="0.0.1", show_logs=True)
-end_time = time.time()
-print(res)
-print(f"Container image built in {round((end_time-start_time)/60, 5)} minutes")
-```
-
-1. First, we will import the `ChassisModel` class from the Chassis SDK. If you have not already done so, make sure you install it via PyPi: `pip install chassisml`
-2. In addition to the `ChassisModel` object, we need to import a Builder option. The two available options, `DockerBuilder` and `RemoteBuilder`, will both build the same container but in different execution environments. Since we'd like to build a container locally with Docker, we will import the `DockerBuilder` object.  
-3. Next, we will load our model. For this example, we have a pre-trained Scikit-learn classifier saved as a pickle file (`./model.pkl`). When integrating Chassis into your own code, this can be done however you load your model. It could be loaded from a pickle file, checkpoint file, multiple configuration files, etc. The *key* is that you load your model into memory so it can be accessed in the below `process` function. 
-4. Here, we will define a *single* predict function, which you can think of as an inference function for your model. This function can access in-memory objects (e.g., `model` loaded above), and the only requirement is it must convert input data in raw bytes form to the data type your model expects. See this [guide](../how-to-guides/common-data-types.md) for help on converting common data types. In this example, we process the raw bytes data using `numpy` and `json`, pass this processed data through to our model for predictions (`model.predict`), and perform some postprocessing to return the results in a human-readable manner. You can customize this function based on your model and preferences.    
-5. Now, we will simply create a `ChassisModel` object directly from our process function.
-6. With our `ChassisModel` object defined, there are a few optional methods we can call. Here, we will add the Python libraries our model will need to run. You can pass a list of packages you would list in a `requirements.txt` file that will be installed with Pip.
-7. Before kicking off the Chassis job, we can test our `ChassisModel` object by passing through sample data.
-8. After our test has passed, we can define our builder object, which as mentioned before, will be `DockerBuilder`. This builder object uses your local Docker installation to build a model container and store it on your machine. First, we will simply pass our `ChassisModel` object to our builder, and build the container image using the `build_image` function.
-
-Finally, run your script.
-
-```bash
-python quickstart.py
-```
-
-In just about 60 (***TODO - probably less***) seconds, the Chassis job will complete. Congratulations! You just built your first ML container from a Scikit learn digits classification model. Verify your container build by running the following command in your terminal:
+This local container build should take just under a minute. Confirm the new container is available with the following command:
 
 ```bash
 docker images
 ```
 
-The output should look something like this:
+Expected output:
+
 ```
-TODO - fill in
+REPOSITORY                 TAG       IMAGE ID       CREATED         SIZE
+my-first-chassis-model     latest    5c4ec0cfeb99   4 minutes ago   377MB
 ```
 
-### Run Inference
+Congratulations! You just built your first ML container from a scikit-learn digits classification model. Next, run a sample inference through this container with Chassis's OMI inference client.
 
-TODO - need to add inference client
+## Run Inference
+
+Before submitting data to your model container, you must first spin it up. To do so, open a terminal on your machine and run the container:
+
+```bash
+docker run --rm -it -p 45000:45000 my-first-chassis-model
+```
+
+When your container is spun up and running, you should see the following message in your logs:
+
+```
+Serving on: 45000
+```
+
+Next, open a Python file (new or existing) and paste the following inference code. Again, we will use a convenience import with Chassis's quickstart mode to load a sample piece of data.
+
+!!! example "Inference"
+    === "Python"
+
+        ```python
+        from chassis.client import OMIClient
+        from chassis.guides import DigitsSampleData
+
+        with OMIClient("localhost", 45000) as client:
+            status = client.status()
+            res = client.run([{'input': DigitsSampleData}])
+            result = res.outputs[0].output["results.json"]
+            print(f"Result: {result}")
+        ```
+
+A successful inference run should yield the following result:
+
+```
+Result: b'[{"data": {"result": {"classPredictions": [{"class": 5, "score": 0.71212}]}}}]'
+```
+
+!!! info "What's next?"
+    After completing this quickstart guide, you might be wondering how to integrate *your own* model into this workflow. This guide intentionally abstracts out much of the model configuration for a quick and easy experience to get up and running.
+
+    Visit the **[Full Chassis Workflow](full-workflow.md)** guide to learn how to use Chassis with your own model!  
+
 
