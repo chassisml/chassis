@@ -23,7 +23,7 @@ class OMIClient:
         ```
     """
 
-    def __init__(self, host: str, port: int):
+    def __init__(self, host: str, port: int = 45000):
         self._host = host
         self._port = port
         self._channel = Channel(host, port, ssl=False)

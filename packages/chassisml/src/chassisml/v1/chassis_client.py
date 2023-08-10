@@ -31,6 +31,7 @@ class ChassisClient:
     """
 
     def __init__(self, base_url='http://localhost:5000', auth_header=None, ssl_verification=True):
+        deprecated()
         self.base_url = base_url
         self.auth_header = auth_header
         self.ssl_verification = ssl_verification
@@ -81,6 +82,7 @@ class ChassisClient:
         ```
 
         """
+        deprecated()
         route = f'{urllib.parse.urljoin(self.base_url, routes["job"])}/{job_id}'
         if self.auth_header:
             res = requests.get(route, headers={'Authorization': self.auth_header}, verify=self.ssl_verification)
@@ -116,6 +118,7 @@ class ChassisClient:
         job_status = chassis_client.get_job_logs(job_id)
         ```
         """
+        deprecated()
         route = f'{urllib.parse.urljoin(self.base_url, routes["job"])}/{job_id}/logs'
         if self.auth_header:
             res = requests.get(route, headers={'Authorization': self.auth_header}, verify=self.ssl_verification)
@@ -157,6 +160,7 @@ class ChassisClient:
         final_status = chassis_client.block_until_complete(job_id)
         ```
         """
+        deprecated()
         endby = time.time() + timeout if (timeout is not None) else None
         while True:
             status = self.get_job_status(job_id)
@@ -280,7 +284,6 @@ class ChassisClient:
         else:
             raise ValueError("At least one of process_fn or batch_process_fn must be provided.")
 
-    # TODO - move out of this class
     def run_inference(self, input_data, container_url="localhost", host_port=45000):
         """
         This is the method you use to submit data to a container chassis has built for inference. It assumes the container has been downloaded from dockerhub and is running somewhere you have access to.
@@ -314,6 +317,7 @@ class ChassisClient:
             print(x)
         ```
         """
+        deprecated()
         model_client.override_server_URL(container_url, host_port)
         return model_client.run(input_data)
 
@@ -353,6 +357,7 @@ class ChassisClient:
             print(x)
         ```
         """
+        deprecated()
         try:
             container_id = docker_start(image_id, host_port=host_port, container_port=container_port, timeout=timeout, pull_container=pull_container)
             if "Error" in container_id:
