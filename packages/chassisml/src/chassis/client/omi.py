@@ -1,8 +1,11 @@
 from __future__ import annotations
 
 import asyncio
-from typing import List, Mapping
+import time
+from typing import List, Mapping, Union
 
+import docker
+from docker.models.containers import Container
 from grpclib.client import Channel
 
 from chassis.protos.v1.model_grpc import ModzyModelStub
@@ -25,24 +28,27 @@ class OMIClient:
         ```
     """
 
-    def __init__(self, host: str, port: int = 45000):
+    def __init__(self, host: str, port: int = 45000, timeout: int = 10):
         self._host = host
         self._port = port
+        self._timeout = timeout
         self._channel = Channel(host, port, ssl=False)
         self.client = ModzyModelStub(self._channel)
 
     def __del__(self):
         self._channel.close()
 
-    def __enter__(self) -> 'OMIClient':
-        try:
-            status_response: StatusResponse = self.status()
-            if status_response.status_code != 200:
-                raise "Model did not initialize successfully"
-        except Exception as e:
-            print(f"Error connecting to model running on '{self._host}:{self._port}': {e}")
-            raise e
-        return self
+    def __enter__(self) -> OMIClient:
+        for _ in range(self._timeout * 2):
+            try:
+                status_response: StatusResponse = self.status()
+                if status_response.status_code != 200:
+                    raise "Model did not initialize successfully"
+                return self
+            except Exception:
+                time.sleep(0.5)
+        print(f"Error connecting to model running on '{self._host}:{self._port}'")
+        raise "Model server failed to become available in the allotted time"
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self._channel.close()
@@ -115,3 +121,69 @@ class OMIClient:
         coroutine = self.client.Shutdown(ShutdownRequest())
         loop = asyncio.get_event_loop()
         loop.run_until_complete(coroutine)
+
+    @classmethod
+    def test_container(cls, container_name: str, inputs: List[Mapping[str, bytes]], tag: str = "latest", port: int = 45000, timeout: int = 10, pull: bool = True, detect_drift: bool = False, explain: bool = False):
+        """
+        Tests a container. This method will use your local Docker engine to spin up the named container,
+        perform an inference against it with the given `inputs`, and return the result.
+
+        Args:
+            container_name (str): The full name of the container without the tag.
+            inputs (list[map[str, bytes]]): A batch of input(s) to perform inference on. See `OMIClient.run` for more information.
+            tag (str): The tag of the image to test. Default = "latest"
+            port (int): The port on the host that the container should map to. Default = 45000
+            timeout (int): A timeout in seconds to wait for the model container to become available. Default = 10
+            pull (bool): Whether to pull the image if it doesn't exist in your local image cache. Default = True
+            detect_drift (bool): Whether to enable drift detection on models that support it. Default = False
+            explain (bool): Whether to enable explainability on models that support it. Default = False
+
+
+        Returns:
+            RunResponse: see `OMIClient.run` for more information.
+        """
+        # Concat the container name and tag to get the full reference.
+        container_tag = f"{container_name}:{tag}"
+        # Grab an instance of the Docker client using the current environment.
+        docker_client = docker.from_env()
+        # List local images that match the supplied repository name.
+        local_images = docker_client.images.list(container_name)
+        # Check to see if the image (and tag) exist already.
+        image_present = False
+        for img in local_images:
+            if container_tag in img.tags:
+                image_present = True
+                break
+
+        # If the image is not present then either pull it or return an error if `pull=False`.
+        if not image_present:
+            if not pull:
+                print("Image not present in local image cache and `pull` is set to False")
+                return
+            print("Pulling image...", end="", flush=True)
+            docker_client.images.pull(container_name, tag)
+            print("Done!")
+
+        container: Union[Container, None] = None
+        try:
+            # Start the container configured to expose the port to `localhost`.
+            container = docker_client.containers.run(
+                image=container_tag,
+                auto_remove=True,
+                detach=True,
+                environment={
+                    "PSC_MODEL_PORT": "45000"
+                },
+                ports={
+                    "45000/tcp": port,
+                },
+                remove=True,
+            )
+
+            # Use the OMIClient to run an inference.
+            with cls("localhost", port, timeout=timeout) as omi_client:
+                return omi_client.run(inputs, detect_drift=detect_drift, explain=explain)
+        finally:
+            # No matter what happens, kill the container at the end.
+            if container is not None:
+                container.kill()
