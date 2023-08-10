@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import List, Type, TypeVar
 
 from chassis.protos.v1.model_pb2 import (ModelDescription, ModelFeatures, ModelInfo, ModelInput, ModelOutput, ModelResources, ModelTimeout, StatusResponse)
