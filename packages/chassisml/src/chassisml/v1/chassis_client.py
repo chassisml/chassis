@@ -364,14 +364,7 @@ class ChassisClient:
         ```
         """
         deprecated("Please use `chassis.client.OMIClient` moving forward.")
-        try:
-            container_id = docker_start(image_id, host_port=host_port, container_port=container_port, timeout=timeout, pull_container=pull_container)
-            if "Error" in container_id:
-                raise ValueError("container_id wrong")
-            return_value = self.run_inference(input_data, container_url=container_url, host_port=host_port)
-            if clean_up:
-                docker_clean_up(container_id)
-        except Exception as e:
-            return_value = {"results": ["Error " + str(e)]}
 
-        return return_value
+        image_parts = image_id.split(":", 2)
+        result = OMIClient.test_container(image_parts[0], [input_data], tag=image_parts[1], pull=pull_container, port=host_port, timeout=timeout)
+        return result.outputs
