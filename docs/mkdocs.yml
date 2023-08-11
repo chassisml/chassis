@@ -119,7 +119,7 @@ nav:
       - Common Data Types Support: how-to-guides/common-data-types.md
   - Reference:
       - reference/index.md
-      - Chassis SDK: reference/
+      - Chassis SDK: reference/sdk/
   - Community:
       - Get Involved: community/get-involved.md
   - Release Notes: release-notes.md
