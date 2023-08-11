@@ -4,24 +4,13 @@ from typing import List, Type, TypeVar
 
 from chassis.protos.v1.model_pb2 import (ModelDescription, ModelFeatures, ModelInfo, ModelInput, ModelOutput, ModelResources, ModelTimeout, StatusResponse)
 
-T = TypeVar("T", bound="ModelMetadata")
-
 
 class ModelMetadata:
+    """
+    This class provides an interface for customizing metadata embedded into the model container.
+    """
 
     def __init__(self, info: ModelInfo = None, description: ModelDescription = None, inputs: List[ModelInput] = None, outputs: List[ModelOutput] = None, resources: ModelResources = None, timeout: ModelTimeout = None, features: ModelFeatures = None):
-        '''This class provides an interface for customizing metadata embedded into the model container.
-        
-        Args:
-             info (ModelInfo): `ModelInfo` object that includes optional fields to override defaults including `["model_name", "model_version", "model_author", "model_type", "source"]` 
-             description (ModelDescription): `ModelDescription` object that includes optional metadata fields to document details about model. Available slots to override: `["summary", "details", "technical", "performance"]` 
-             inputs (List[ModelInput]): List of `ModelInput` objects that define information about the input(s) the model expects
-             outputs (List[ModelOutput]): List of `ModelInput` objects that define information about the output(s) the model returns
-             resources (ModelResources): `ModelResources` object that defines hardware resources the model requires to run effectively. Available slots to override: `["required_ram", "num_cpus", "num_gpus"]`
-             timeout (ModelTimeout): `ModelTimeout` object that defines timeout thresholds for the model to load (`status`) and run (`run`)
-             features (ModelFeatures): Set of metadata booleans and constants required by the OMI API specification
-        '''
-
         self._info: ModelInfo = info if info is not None else ModelInfo(source="chassis", model_type="grpc")
         self._description = description if description is not None else ModelDescription()
         self._inputs = inputs if inputs is not None else []
@@ -41,6 +30,7 @@ class ModelMetadata:
 
     @property
     def model_name(self):
+        """str: The human-readable name of the model."""
         return self._info.model_name
 
     @model_name.setter
@@ -49,6 +39,7 @@ class ModelMetadata:
 
     @property
     def model_version(self):
+        """str: The semantic-versioning compatible version of the model."""
         return self._info.model_version
 
     @model_version.setter
@@ -57,6 +48,7 @@ class ModelMetadata:
 
     @property
     def model_author(self):
+        """str: The name and optional email of the author. Example: 'John Smith <john.smith@example.com>'"""
         return self._info.model_author
 
     @model_author.setter
@@ -65,6 +57,7 @@ class ModelMetadata:
 
     @property
     def summary(self):
+        """str: A short summary of what the model does and how to use it."""
         return self._description.summary
 
     @summary.setter
@@ -73,6 +66,7 @@ class ModelMetadata:
 
     @property
     def details(self):
+        """str: A longer description of the model that contains useful information that was unsuitable to put in the Summary."""
         return self._description.details
 
     @details.setter
@@ -81,6 +75,7 @@ class ModelMetadata:
 
     @property
     def technical(self):
+        """str: Technical information about the model such as how it was trained, any known biases, the dataset that was used, etc."""
         return self._description.technical
 
     @technical.setter
@@ -89,6 +84,7 @@ class ModelMetadata:
 
     @property
     def performance(self):
+        """str: Performance information about the model."""
         return self._description.performance
 
     @performance.setter
@@ -96,20 +92,33 @@ class ModelMetadata:
         self._description.performance = performance
 
     def has_inputs(self) -> bool:
-        '''
-        TODO - internal?
-        '''
+        """
+        Returns `True` if at least one input has been defined.
+
+        Returns:
+            bool
+        """
         return len(self._inputs) > 0
 
     def add_input(self, key: str, accepted_media_types: List[str] = None, max_size: str = "1M", description: str = ""):
-        '''Defines single or list of `ModelInput` objects associated with a model
-        
+        """
+        Defines an input to the model. Inputs are identified by a string `key` that will be used to retrieve them from the
+        dictionary of inputs during inference.
+
+        Since all input values are sent as `bytes`, each input should define one or more MIME types that are suitable for
+        decoding the bytes into a usable object.
+
+        Additionally, each input can be set to have a maximum size to easily reject requests with inputs that are too large.
+
+        Finally, you can give each input a description which can be used in documentation to explain any further details about
+        the input requirements, such as indicating whether color channels need to be stripped from the image, etc.
+
         Args:
              key (str): Key name to represent the input. E.g., "input", "image", "text", etc.
-             accepted_media_types list[str]: Acceptable mime type(s) for the respective input. For more information on common mime types, visit (https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types)
+             accepted_media_types (list[str]): Acceptable mime type(s) for the respective input. For more information on common mime types, visit (https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types)
              max_size (str): Maximum acceptable size of input. This value should include an integer followed by a letter indicating the unit of measure (e.g., "3M" = 3 MB, "1.5G" = 1.5 GB, etc.)
              description (str): Short description of the input
-        
+
         Examples:
         ```python
         from chassisml import ChassisModel
@@ -117,11 +126,11 @@ class ModelMetadata:
         model.metadata.add_input(
             "image",
             ["image/png", "image/jpeg"],
-            "10M,
+            "10M",
             "Image to be classified by computer vision model"
         )
-        ``` 
-        '''
+        ```
+        """
         if accepted_media_types is None:
             accepted_media_types = ["application/octet-stream"]
         self._inputs = self._inputs + [ModelInput(
@@ -132,20 +141,34 @@ class ModelMetadata:
         )]
 
     def has_outputs(self) -> bool:
-        '''
-        TODO - Internal function?
-        '''
+        """
+        Returns `True` if at least one output has been defined.
+
+        Returns:
+            bool
+        """
         return len(self._outputs) > 0
 
     def add_output(self, key: str, media_type: str = "application/octet-stream", max_size: str = "1M", description: str = ""):
-        '''Defines single or list of `ModelOutput` objects associated with a model
-        
+        """
+        Defines an output from the model. Outputs are identified by a string `key` that will be used to retrieve them from the
+        dictionary of outputs received after inference.
+
+        Since all output values are sent as `bytes`, each output should define the MIME type that is suitable for
+        decoding the bytes into a usable object.
+
+        Additionally, each output should be set to have a maximum size to prevent results that are too large for practical use.
+
+        Finally, you can give each output a description which can be used in documentation to explain any further details about
+        the output.
+
+
         Args:
              key (str): Key name to represent the output. E.g., "results.json", "results", "output", etc.
-             media_type list[str]: Acceptable mime type for the respective output. For more information on common mime types, visit (https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types)
+             media_type (list[str]): Acceptable mime type for the respective output. For more information on common mime types, visit (https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types)
              max_size (str): Maximum acceptable size of output. This value should include an integer followed by a letter indicating the unit of measure (e.g., "3M" = 3 MB, "1.5G" = 1.5 GB, etc.)
              description (str): Short description of the output
-        
+
         Examples:
         ```python
         from chassisml import ChassisModel
@@ -156,8 +179,8 @@ class ModelMetadata:
             "1M,
             "Classification results of computer vision model with class name and confidence score in JSON format"
         )
-        ``` 
-        '''
+        ```
+        """
         self._outputs = self._outputs + [ModelOutput(
             filename=key,
             media_type=media_type,
@@ -167,6 +190,7 @@ class ModelMetadata:
 
     @property
     def required_ram(self):
+        """str: The amount of RAM required to run the model. This string can be any value accepted by Docker or Kubernetes."""
         return self._resources.required_ram
 
     @required_ram.setter
@@ -175,6 +199,7 @@ class ModelMetadata:
 
     @property
     def num_cpus(self):
+        """float: The number of fractional CPU cores required to run the model."""
         return self._resources.num_cpus
 
     @num_cpus.setter
@@ -183,6 +208,7 @@ class ModelMetadata:
 
     @property
     def num_gpus(self):
+        """int: The number of GPUs required to run the model."""
         return self._resources.num_gpus
 
     @num_gpus.setter
@@ -191,6 +217,7 @@ class ModelMetadata:
 
     @property
     def status_timeout(self):
+        """str: The amount of time after which a model should be considered to have failed initializing itself."""
         return self._timeout.status
 
     @status_timeout.setter
@@ -199,6 +226,7 @@ class ModelMetadata:
 
     @property
     def run_timeout(self):
+        """str: The amount of time after which an inference should be considered to have failed."""
         return self._timeout.run
 
     @run_timeout.setter
@@ -207,6 +235,7 @@ class ModelMetadata:
 
     @property
     def batch_size(self):
+        """int: The batch size supported by this model. For models that don't support batch, set this to 1."""
         return self._features.batch_size
 
     @batch_size.setter
@@ -216,9 +245,15 @@ class ModelMetadata:
     # TODO - adversarial defense, retrainable, results/drift/explanation formats
 
     def serialize(self) -> bytes:
-        '''
-        TODO - internal?
-        '''
+        """
+        For internal use only.
+
+        This method will take the values of this object and serialize them in the protobuf message
+        that the final container expects to receive.
+
+        Returns:
+            bytes
+        """
         sr = StatusResponse()
         sr.model_info.CopyFrom(self._info)
         sr.description.CopyFrom(self._description)
@@ -230,12 +265,30 @@ class ModelMetadata:
         return sr.SerializeToString()
 
     @classmethod
-    def default(cls: Type[T]) -> T:
+    def default(cls) -> ModelMetadata:
+        """
+        A ModelMetadata object that corresponds to the defaults used by Chassis v1.5+.
+
+        The defaults are blank values for all properties. You are responsible for setting
+        any appropriate values for your model.
+
+        Note: It is always required to set the `model_name`, `model_version` fields and to
+        add at least one input and one output.
+
+        Returns:
+            ModelMetadata
+        """
         md = cls()
         return md
 
     @classmethod
-    def legacy(cls: Type[T]) -> T:
+    def legacy(cls) -> ModelMetadata:
+        """
+        A ModelMetadata object that corresponds to the values used before Chassis v1.5.
+
+        Returns:
+            ModelMetadata
+        """
         md = cls()
         md._inputs = [
             ModelInput(
