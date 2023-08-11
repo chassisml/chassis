@@ -111,7 +111,13 @@ class ChassisModel(Buildable):
             return False
 
     def test_env(self, test_input_path, conda_env=None, fix_env=True):
-        pass
+        """
+        **No Longer Available**
+
+        Please use `chassis.client.OMIClient.test_container`.
+        """
+        deprecated("Method no longer supported and will be removed in the next release.")
+        raise NotImplementedError
 
     def save(self, path: str = None, requirements: Union[str, List[str]] = None, overwrite=False, fix_env=False, gpu=False, arm64=False, conda_env=None) -> BuildContext:
         """
