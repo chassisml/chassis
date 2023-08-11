@@ -13,15 +13,14 @@ numpy
 pip-tools
 #kserve
 
-flask==2.0.3
-pylint==2.14.4
-flake8==4.0.1
 mkdocs>=1.3.0
 mkdocs-autorefs>=0.4.1
-mkdocs-material>=8.1.6                  
-mkdocs-material-extensions>=1.0.3       
-mkdocs-minify-plugin>=0.6.2             
-# mkdocstrings==0.17.0    
-mkdocstrings-python                
-pandas==1.4.3
-python-dotenv==0.20.0
+mkdocs-material>=8.1.6
+mkdocs-material-extensions>=1.0.3
+mkdocs-minify-plugin>=0.6.2
+mkdocstrings-python
+mkdocs-gen-files
+mkdocs-literate-nav
+
+pylint==2.14.4
+flake8==4.0.1

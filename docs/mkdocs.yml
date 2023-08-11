@@ -36,19 +36,36 @@ plugins:
   - search:
       separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
   - minify:
-      minify_html: true      
+      minify_html: true
+  - gen-files:
+      scripts:
+        - docs/generate_sdk_pages.py
+  - literate-nav:
+      nav_file: navigation.md
   - mkdocstrings:
+      default_handler: python
       handlers:
         python:
-          setup_commands:
-            - import sys 
-            - sys.path.append('../')
-            - sys.path.append('../packages/chassisml/src/')
-          selection:
-            new_path_syntax: true
-            docstring_style: "google" 
-          rendering:
-            show_category_heading: no
+          paths: ["../packages/chassisml/src"]
+          options:
+            docstring_style: "google"
+            docstring_section_style: list
+            show_if_no_docstring: true
+            preload_modules:
+              - chassis
+            heading_level: 3
+            show_root_toc_entry: false
+            show_category_heading: false
+            inherited_members: true
+            show_signature: true
+            show_signature_annotations: true
+            show_root_heading: true
+            show_root_full_path: true
+            show_root_members_full_path: false
+
+watch:
+  - ../packages/chassisml/src/chassis
+  - ../packages/chassisml/src/chassisml
 
 # customization
 extra_css:
@@ -102,10 +119,7 @@ nav:
       - Common Data Types Support: how-to-guides/common-data-types.md
   - Reference:
       - reference/index.md
-      - Packages: 
-          - Chassis: reference/chassis.md
-          - Chassisml:  reference/chassisml.md
-      - Interfaces: reference/interfaces.md
+      - Chassis SDK: reference/
   - Community:
       - Get Involved: community/get-involved.md
   - Release Notes: release-notes.md
