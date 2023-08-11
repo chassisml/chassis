@@ -89,7 +89,10 @@ markdown_extensions:
 
 nav:
   - Home: index.md
-  - Getting Started: getting-started/getting-started.md
+  - Getting Started: 
+      - getting-started/index.md
+      - Quickstart: getting-started/quickstart.md
+      - Full Chassis Workflow: getting-started/full-workflow.md
   - Tutorials: 
       - tutorials/index.md
       - Install Remote Service: tutorials/install-service.md
@@ -99,11 +102,8 @@ nav:
       - Common Data Types Support: how-to-guides/common-data-types.md
   - Reference:
       - reference/index.md
-      - Chassisml Service: reference/service.md
-      - Python SDK: reference/sdk.md
-      - Interfaces:
-          - OMI: reference/omi.md
-          - KServe: reference/kserve.md
+      - Chassisml SDK: reference/service.md
+      - Interfaces: reference/interfaces.md
   - Community:
       - Get Involved: community/get-involved.md
   - Release Notes: release-notes.md
