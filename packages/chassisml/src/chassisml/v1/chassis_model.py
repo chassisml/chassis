@@ -17,17 +17,17 @@ DEFAULT_CUDA_VERSION = "11.0.3"
 
 
 class ChassisModel(Buildable):
+    """
+    The Chassis Model Object. This class inherits from `Buildable` and is the main object that gets fed into a Chassis builder object (i.e., `DockerBuilder` or `RemoteBuilder`)
+
+    Args:
+        process_fn: Single predict function of type `PredictFunction` that represents a model inference function
+        batch_size: Integer representing the batch size your model supports. If your model does not support batching, the default value is 1
+        legacy_predict_fn: For internal backwards-compatibility use only.
+        chassis_client: For internal backwards-compatibility use only.
+    """
 
     def __init__(self, process_fn: PredictFunction, batch_size: int = 1, legacy_predict_fn: bool = False, chassis_client=None):
-        """
-        The Chassis Model Object. This class inherits from `Buildable` and is the main object that gets fed into a Chassis builder object (i.e., `DockerBuilder` or `RemoteBuilder`)
-
-        Args:
-            process_fn (PredictFunction): Single predict function of type `PredictFunction` that represents a model inference function
-            batch_size (int): Integer representing the batch size your model supports. If your model does not support batching, the default value is 1
-            legacy_predict_fn (bool): For internal backwards-compatibility use only.
-            chassis_client (ChassisClient): For internal backwards-compatibility use only.
-        """
         self.runner = ModelRunner(process_fn, batch_size=batch_size, is_legacy_fn=legacy_predict_fn)
         self.python_modules[PYTHON_MODEL_KEY] = self.runner
         if legacy_predict_fn:
@@ -49,12 +49,12 @@ class ChassisModel(Buildable):
             - str: A string. If the string maps to a filesystem location, then the file at that location will be read and used as the value. If not the string itself is used as the value. Use of this type assumes that your predict function expects the input key to be "input".
 
         Args:
-            test_input (Union[str, bytes, _io.BufferedReader, Mapping[str, bytes], List[Mapping[str, bytes]]]): Sample input data used to test the model. See above for more information.
+            test_input: Sample input data used to test the model. See above for more information.
 
         Returns:
             List[Mapping[str, bytes]]: Results returned by your model's predict function based on the `test_input` sample data fed to this function.
 
-        Examples:
+        Example:
         ```python
         from chassisml import ChassisModel
         chassis_model = ChassisModel(process_fn=predict)

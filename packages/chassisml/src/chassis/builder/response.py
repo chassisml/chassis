@@ -8,6 +8,16 @@ from docker.errors import BuildError as DockerBuildError
 
 @dataclasses.dataclass
 class BuildResponse:
+    """
+    An object representing the status of a Chassis build.
+
+    This object is used for both local and remote builds. For local builds, this
+    object will be returned exactly once at the end of the build process with
+    all fields set except for `remote_build_id`.
+
+    For remote builds, this object will be returned each time `RemoteBuilder.get_build_status`
+    is called and will only have all its fields set once the build is complete.
+    """
     image_tag: Union[str, None]
     logs: Union[str, None]
     success: bool

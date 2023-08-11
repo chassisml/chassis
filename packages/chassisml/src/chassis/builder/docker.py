@@ -10,43 +10,63 @@ from .utils import sanitize_image_name
 
 
 class DockerBuilder:
+    """
+    Enables building Chassis images locally using Docker.
+
+    To use this builder, you need to have Docker installed and have access to the Docker socket.
+    If your Docker socket is in a non-standard location, use the appropriate Docker environment
+    variables to tell the Docker SDK how to connect. Any environment variable supported by the
+    official Docker Python SDK is supported.
+
+    Args:
+        package (Buildable): Chassis model object that serves as the primary model code to be containerized
+        options (BuildOptions): Object that provides specific build configuration options. See `chassis.builder.BuildOptions` for more details
+    """
+
     def __init__(self, package: Buildable, options: BuildOptions = DefaultBuildOptions):
-        '''Builder object that uses the local Docker daemon on the host machine to build containers from `Buildable` objects
-        
-        Args:
-            package (Buildable): Chassis model object that serves as the primary model code to be containerized
-            options (BuildOptions): Object that provides specific build configuration options. See `chassis.builder.BuildOptions` for more details
-        '''
         self.client = docker.from_env()
         self.context = package.prepare_context(options)
 
     def build_image(self, name: str, tag="latest", cache=False, show_logs=False, clean_context=True) -> BuildResponse:
-        '''Builds a local container image using the host machine Docker daemon
-        
+        """
+        Builds a local container image using the host machine Docker daemon.
+
+        To enable faster builds if you're iterating, you can set `cache=True` to not remove intermediate
+        containers when the build completes. This uses more disk space but can significantly speed up
+        subsequent builds.
+
+        To see the full log output during the Docker build, set `show_logs=True`.
+        Note: The logs will be printed at the end and will not stream as it's executing.
+
+        This method will automatically remove the build context (e.g. the temporary folder that all the
+        files were staged in) at the end of the build. If you need to troubleshoot the files that
+        are available to the Dockerfile, set `clean_context=False` and the directory will not
+        be removed at the end of the build, allowing you to inspect it. If you want to inspect the
+        context contents _before_ building, see `chassisml.ChassisModel.prepare_context`.
+
         Args:
             name (str): Name of container image repository
-            tag (str): Tag of container image
-            cache (bool): If True caches container image layers 
-            show_logs (bool): If True shows logs of the completed job (success or failure)
-            clean_context (bool): If False does not remove build context folder
-        
+            tag (str): Tag of container image. Default = "latest".
+            cache (bool): If True caches container image layers. Default = False.
+            show_logs (bool): If True shows logs of the completed job (success or failure). Default = False.
+            clean_context (bool): If False does not remove build context folder. Default = True.
+
         Returns:
             BuildResponse: `BuildResponse` object with details from the build job
-            
+
         Raises:
             BuildError: If build job fails
-            
+
         Examples:
         ```python
         from chassisml import ChassisModel
         from chassis.builder import DockerBuilder
-        
+
         model = ChassisModel(process_fn=predict)
         builder = DockerBuilder(model)
         res = builder.build_image(name="chassis-model")
         ```
-        '''
-
+        """
         try:
             platform = self.context.platforms[0]
             if len(self.context.platforms) > 1:

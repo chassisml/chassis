@@ -8,9 +8,12 @@ def sanitize_image_name(image_name: str, tag: str = "latest") -> str:
         The tag must be valid ASCII and can contain lowercase and uppercase letters, digits, underscores, periods, and hyphens.
         It cannot start with a period or hyphen and must be no longer than 128 characters.
 
-    :param image_name:
-    :param tag:
-    :return:
+    Args:
+        image_name (str): The name of the image to sanitize, _without_ the tag component.
+        tag (str): The tag of the image. Default = "latest"
+
+    Returns:
+        str: The full sanitized image tag suitable for use with `docker tag`, etc.
     """
     name = _sanitize_string(image_name)
     tag = _sanitize_string(tag)
