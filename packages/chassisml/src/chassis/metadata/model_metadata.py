@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import List, Type, TypeVar
 
 from chassis.protos.v1.model_pb2 import (ModelDescription, ModelFeatures, ModelInfo, ModelInput, ModelOutput, ModelResources, ModelTimeout, StatusResponse)
@@ -19,7 +21,7 @@ class ModelMetadata:
              timeout (ModelTimeout): `ModelTimeout` object that defines timeout thresholds for the model to load (`status`) and run (`run`)
              features (ModelFeatures): Set of metadata booleans and constants required by the OMI API specification
         '''
-        
+
         self._info: ModelInfo = info if info is not None else ModelInfo(source="chassis", model_type="grpc")
         self._description = description if description is not None else ModelDescription()
         self._inputs = inputs if inputs is not None else []
@@ -99,7 +101,7 @@ class ModelMetadata:
         '''
         return len(self._inputs) > 0
 
-    def add_input(self, key: str, accepted_media_types: list[str] = None, max_size: str = "1M", description: str = ""):
+    def add_input(self, key: str, accepted_media_types: List[str] = None, max_size: str = "1M", description: str = ""):
         '''Defines single or list of `ModelInput` objects associated with a model
         
         Args:
@@ -155,7 +157,7 @@ class ModelMetadata:
             "Classification results of computer vision model with class name and confidence score in JSON format"
         )
         ``` 
-        '''        
+        '''
         self._outputs = self._outputs + [ModelOutput(
             filename=key,
             media_type=media_type,

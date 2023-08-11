@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import docker
 from docker.errors import BuildError as DockerBuildError
 
@@ -44,7 +46,7 @@ class DockerBuilder:
         res = builder.build_image(name="chassis-model")
         ```
         '''
-        
+
         try:
             platform = self.context.platforms[0]
             if len(self.context.platforms) > 1:

@@ -1,13 +1,15 @@
+from __future__ import annotations
+
 import os.path
 import shutil
 import tempfile
-from typing import Union
+from typing import List, Union
 
 from chassis.runtime import PACKAGE_DATA_PATH
 
 
 class BuildContext:
-    def __init__(self, base_dir: Union[str, None] = None, platforms: list[str] = None):
+    def __init__(self, base_dir: Union[str, None] = None, platforms: List[str] = None):
         '''This class provides configuration options for the build context of a Chassis model container.
         
         Args:
@@ -19,7 +21,7 @@ class BuildContext:
         self.data_dir = os.path.join(self.base_dir, PACKAGE_DATA_PATH)
         if platforms is None:
             platforms = ["linux/amd64"]
-        self.platforms: list[str] = platforms
+        self.platforms: List[str] = platforms
 
     def cleanup(self):
         '''
