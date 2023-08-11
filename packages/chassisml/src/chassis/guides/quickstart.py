@@ -51,4 +51,4 @@ chassis_model.metadata.add_output(
 # define objects for quickstart import
 QuickstartDigitsClassifier = chassis_model
 DigitsClassifier = open(os.path.join(ROOT, "data", "logistic.pkl"), "rb")
-DigitsSampleData = [{"input", open(digits_sample, "rb").read()}]
+DigitsSampleData = [{"input": open(digits_sample, "rb").read()}]
