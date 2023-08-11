@@ -1,7 +1,7 @@
 import cloudpickle
 import chassis.guides as guides
 from chassis.builder import DockerBuilder
-cloudpickle.register_pickle_by_value(guides)
+# cloudpickle.register_pickle_by_value(guides)
 
 model = guides.QuickstartDigitsClassifier
 results = model.test(guides.DigitsSampleData)
