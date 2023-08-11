@@ -63,6 +63,12 @@ class ChassisClient:
 
     def get_job_status(self, job_id: str) -> BuildResponse:
         """
+        **DEPRECATED**
+
+        Please use `chassis.builder.RemoteBuilder.get_build_status` moving forward.
+
+        ---
+
         Checks the status of a chassis job
 
         Args:
@@ -93,7 +99,7 @@ class ChassisClient:
         ```
 
         """
-        deprecated("Please use `chassis.builder.RemoteBuilder` moving forward.")
+        deprecated("Please use `chassis.builder.RemoteBuilder.get_build_status` moving forward.")
         route = f'{urllib.parse.urljoin(self.base_url, routes["job"])}/{job_id}'
         if self.auth_header:
             res = requests.get(route, headers={'Authorization': self.auth_header}, verify=self.ssl_verification)
@@ -107,7 +113,7 @@ class ChassisClient:
         """
         **DEPRECATED**
 
-        Please use `chassis.builder.RemoteBuilder` moving forward.
+        Please use `chassis.builder.RemoteBuilder.get_build_logs` moving forward.
 
         ---
 
@@ -137,7 +143,7 @@ class ChassisClient:
         job_status = chassis_client.get_job_logs(job_id)
         ```
         """
-        deprecated("Please use `chassis.builder.RemoteBuilder` moving forward.")
+        deprecated("Please use `chassis.builder.RemoteBuilder.get_build_logs` moving forward.")
         route = f'{urllib.parse.urljoin(self.base_url, routes["job"])}/{job_id}/logs'
         if self.auth_header:
             res = requests.get(route, headers={'Authorization': self.auth_header}, verify=self.ssl_verification)
@@ -150,7 +156,7 @@ class ChassisClient:
         """
         **DEPRECATED**
 
-        Please use `chassis.builder.RemoteBuilder` moving forward.
+        Please use `chassis.builder.RemoteBuilder.block_until_complete` moving forward.
 
         ---
 
@@ -185,7 +191,7 @@ class ChassisClient:
         final_status = chassis_client.block_until_complete(job_id)
         ```
         """
-        deprecated("Please use `chassis.builder.RemoteBuilder` moving forward.")
+        deprecated("Please use `chassis.builder.RemoteBuilder.block_until_complete` moving forward.")
         endby = time.time() + timeout if (timeout is not None) else None
         while True:
             status = self.get_job_status(job_id)
@@ -283,7 +289,7 @@ class ChassisClient:
         """
         **DEPRECATED**
 
-        Please use `chassis.client.OMIClient` moving forward.
+        Please use `chassis.client.OMIClient.run` moving forward.
 
         ---
 
@@ -318,7 +324,7 @@ class ChassisClient:
             print(x)
         ```
         """
-        deprecated("Please use `chassis.client.OMIClient` moving forward.")
+        deprecated("Please use `chassis.client.OMIClient.run` moving forward.")
         with OMIClient(container_url, host_port) as client:
             return client.run([input_data]).outputs
 
@@ -326,7 +332,7 @@ class ChassisClient:
         """
         **DEPRECATED**
 
-        Please use `chassis.client.OMIClient` moving forward.
+        Please use `chassis.client.OMIClient.test` moving forward.
 
         ---
 
@@ -363,7 +369,7 @@ class ChassisClient:
             print(x)
         ```
         """
-        deprecated("Please use `chassis.client.OMIClient` moving forward.")
+        deprecated("Please use `chassis.client.OMIClient.test` moving forward.")
 
         image_parts = image_id.split(":", 2)
         result = OMIClient.test_container(image_parts[0], [input_data], tag=image_parts[1], pull=pull_container, port=host_port, timeout=timeout)
