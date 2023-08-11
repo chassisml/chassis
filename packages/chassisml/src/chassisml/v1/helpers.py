@@ -6,7 +6,7 @@ warnings.filterwarnings("default", category=DeprecationWarning)
 
 def deprecated(message: str = None):
     caller = caller_name()
-    msg = f"'{caller}' will be removed in the next major release."
+    msg = f"'{caller}' will change or be removed in the next release."
     if message is not None:
         msg += " " + message
     warnings.warn(msg, DeprecationWarning, stacklevel=3)

@@ -206,7 +206,7 @@ class ChassisClient:
         """
         This method is no longer available.
         """
-        deprecated()
+        deprecated("This method is no longer supported and will be removed in the next release.")
         raise NotImplementedError
 
     def create_model(self, process_fn: LegacyNormalPredictFunction = None, batch_process_fn: LegacyBatchPredictFunction = None, batch_size=None):
