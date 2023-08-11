@@ -102,7 +102,9 @@ nav:
       - Common Data Types Support: how-to-guides/common-data-types.md
   - Reference:
       - reference/index.md
-      - Chassisml SDK: reference/service.md
+      - Packages: 
+          - Chassis: reference/chassis.md
+          - Chassisml:  reference/chassisml.md
       - Interfaces: reference/interfaces.md
   - Community:
       - Get Involved: community/get-involved.md
