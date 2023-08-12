@@ -27,7 +27,6 @@ Next, open a Python file (new or existing) and paste the following inference cod
     from chassisml import ChassisModel # (1)
     from chassis.builder import DockerBuilder # (2)
     import chassis.guides as guides
-    cloudpickle.register_pickle_by_value(guides)
 
     # load model # (3)
     model = pickle.load(guides.DigitsClassifier) 
@@ -71,7 +70,7 @@ Next, open a Python file (new or existing) and paste the following inference cod
     # build container # (9)
     builder = DockerBuilder(chassis_model)
     start_time = time.time()
-    res = builder.build_image(name="quickstart-chassis-model", tag="0.0.1", show_logs=True)
+    res = builder.build_image(name="my-first-chassis-model", tag="0.0.1", show_logs=True)
     end_time = time.time()
     print(res)
     print(f"Container image built in {round((end_time-start_time)/60, 5)} minutes")
@@ -89,17 +88,21 @@ Next, open a Python file (new or existing) and paste the following inference cod
 
     Execute this snippet to kick off the local Docker build
 
-In just about 45 seconds, the local container build will complete. Confirm the new container is available with the following command:
-
-```bash
-docker images
-```
-
-Expected output:
+This local container build should take just under a minute. The `job_results` of a successful build will display the details of your new container (*note: the "Image ID" digest will be different for each build*):
 
 ```
-REPOSITORY                 TAG       IMAGE ID       CREATED         SIZE
-my-first-chassis-model     latest    5c4ec0cfeb99   4 minutes ago   377MB
+Generating Dockerfile...Done!
+Copying libraries...Done!
+Writing metadata...Done!     
+Compiling pip requirements...Done!
+Copying files...Done!   
+Starting Docker build...Done!
+Image ID: sha256:d222014ffe7bacd27382fb00cb8686321e738d7c80d65f0290f4c303459d3d65
+Image Tags: ['my-first-chassis-model:latest']
+Cleaning local context
+Completed:       True
+Success:         True
+Image Tag:       my-first-chassis-model:latest
 ```
 
 Congratulations! You just transformed a scikit-learn digits classifier into a production container! Next, run a sample inference through this container with Chassis's OMI inference client.
@@ -129,10 +132,16 @@ Next, open a Python file (new or existing) and paste the following inference cod
         from chassis.client import OMIClient
         from chassis.guides import DigitsSampleData
 
+        # Instantiate OMI Client connection to model running on localhost:45000 
         with OMIClient("localhost", 45000) as client:
+            # Call and view results of status RPC 
             status = client.status()
+            print(f"Status: {status}")
+            # Submit inference with quickstart sample data
             res = client.run(DigitsSampleData)
+            # Parse results from output item 
             result = res.outputs[0].output["results.json"]
+            # View results
             print(f"Result: {result}")
         ```
 

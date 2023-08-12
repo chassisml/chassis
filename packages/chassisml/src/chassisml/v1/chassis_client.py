@@ -332,7 +332,7 @@ class ChassisClient:
         """
         **DEPRECATED**
 
-        Please use `chassis.client.OMIClient.test` moving forward.
+        Please use `chassis.client.OMIClient.test_container` moving forward.
 
         ---
 
