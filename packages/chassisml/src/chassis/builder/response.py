@@ -15,9 +15,19 @@ class BuildResponse:
     object will be returned exactly once at the end of the build process with
     all fields set except for `remote_build_id`.
 
-    For remote builds, this object will be returned each time `RemoteBuilder.get_build_status`
-    is called and will only have all its fields set once the build is complete.
+    For remote builds, this object will be returned each time
+    [chassis.builder.RemoteBuilder.get_build_status][] is called and will only
+    have all its fields set once the build is complete.
+
+    Attributes:
+        image_tag: The URI where the built image was pushed.
+        logs: Build logs, if requested.
+        success: Whether the build was successful or not.
+        completed: Whether the build is finished or not.
+        error_message: The error message, if applicable.
+        remote_build_id: The unique ID of a remote build, if applicable.
     """
+
     image_tag: Union[str, None]
     logs: Union[str, None]
     success: bool

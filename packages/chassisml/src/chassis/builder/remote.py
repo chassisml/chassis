@@ -19,94 +19,112 @@ from .response import BuildResponse
 
 class RemoteBuilder:
     """
-    Initializes a connection to a Chassis remote build server for a `Buildable` object (like `ChassisModel`).
+    Initializes a connection to a Chassis remote build server for a
+    [Buildable][chassis.builder.Buildable] object (like
+    [ChassisModel][chassisml.ChassisModel]).
 
-    A Docker context also be prepared according to the options supplied. The Docker context is
-    a directory (in `/tmp` unless `base_dir` is given in `options`) containing a Dockerfile
-    and all the resources necessary to build the container. For more information on how the
-    context is prepared given the supplied options, see `chassis.builder.Buildable.prepare_context`.
-
-    Args:
-        url (str): The URL to the Chassis remote build server. Example: "https://chassis.example.com:8443"
-        package (Buildable): ChassisModel object that contains the code to be containerized.
-        options (BuildOptions): Object that provides specific build configuration options. See `chassis.builder.BuildOptions` for more details.
-        credentials (str): A string that will be used in the "Authorization" header. Default = None.
-        tls_verify (bool): Whether to enable TLS verification. Default = True.
-
-    Raises:
-        ValueError if:
-            - the URL is not valid
-            - the build server is not available
-            - the build server is too old
+    A Docker context also be prepared according to the options supplied. The
+    Docker context is a directory (in `/tmp` unless `base_dir` is given in
+    `options`) containing a Dockerfile and all the resources necessary to build
+    the container. For more information on how the context is prepared given the
+    supplied options, see [chassis.builder.Buildable.prepare_context][].
 
     Examples:
-        See `RemoteBuilder.build_image`.
+        See [chassis.builder.RemoteBuilder.build_image].
     """
 
-    def __init__(self, url: str, package: Buildable, options: BuildOptions = DefaultBuildOptions, credentials: str = None, tls_verify: bool = True):
+    def __init__(self, url: str, package: Buildable,
+                 options: BuildOptions = DefaultBuildOptions,
+                 credentials: str = None, tls_verify: bool = True):
+        """
+        Init.
+
+        Args:
+            url: The URL to the Chassis remote build server.
+                Example: "https://chassis.example.com:8443".
+            package: ChassisModel object that contains the code to be built.
+            options: Object that provides specific build configuration options.
+                See `chassis.builder.BuildOptions` for more details.
+            credentials: A string that will be used in the "Authorization" header.
+            tls_verify: Whether to enable TLS verification.
+
+        Raises:
+            ValueError: if
+                - the URL is not valid
+                - the build server is not available
+                - the build server is too old
+        """
         if not validators.url(url):
             raise ValueError("URL is not valid")
-        self.url = url
-        self.credentials = credentials
-        self.tls_verify = tls_verify
+        self._url = url
+        self._credentials = credentials
+        self._tls_verify = tls_verify
         self._validate_remote_server()
-        self.context = package.prepare_context(options)
+        self._context = package.prepare_context(options)
 
     def _validate_remote_server(self):
         """
-        Validates that the URL supplied points to a Chassis remote build server and that the
-        version is new enough to support the new builds.
+        Validates that the URL supplied points to a Chassis remote build server
+        and that the version is new enough to support the new builds.
 
-        This method is compatible with running unit tests and will skip this check if a magic
-        value is used for the URL.
+        This method is compatible with running unit tests and will skip this
+        check if a magic value is used for the URL.
 
         Raises:
             If the request fails or the version is not new enough.
         """
-        if self.url == "http://chassis-test-mode:9999":
+        if self._url == "http://chassis-test-mode:9999":
             # Don't try to reach out to a real server during tests.
             return
 
-        version_url = urllib.parse.urljoin(self.url, "/version")
+        version_url = urllib.parse.urljoin(self._url, "/version")
         headers = {}
-        if self.credentials:
-            headers["Authorization"] = self.credentials
-        res = requests.get(version_url, headers=headers, verify=self.tls_verify)
+        if self._credentials:
+            headers["Authorization"] = self._credentials
+        res = requests.get(version_url, headers=headers, verify=self._tls_verify)
         parsed_version = version.parse(res.text)
         if parsed_version < version.Version('1.5.0'):
             warnings.warn("Chassis service version should be >=1.5.0 for compatibility with this SDK version, things may not work as expected. Please update the service.")
 
-    def build_image(self, name: str, tag="latest", timeout: int = 3600, webhook: str = None, clean_context: bool = True, block_until_complete: bool = True) -> BuildResponse:
+    def build_image(self, name: str, tag="latest", timeout: int = 3600,
+                    webhook: str = None, clean_context: bool = True,
+                    block_until_complete: bool = True) -> BuildResponse:
         """
-        Starts a remote build of the container. When finished, the built image will be pushed
-        to the registry that the remote builder is configured for (see the Chassis remote build
-        server Helm chart for configuration options) with the name and tag supplied as arguments.
+        Starts a remote build of the container. When finished, the built image
+        will be pushed to the registry that the remote builder is configured for
+        (see the Chassis remote build server Helm chart for configuration
+        options) with the name and tag supplied as arguments.
 
-        By default, the build will be submitted with a timeout of one hour. You can change this
-        value if desired. If the build takes longer than the timeout value, it will be canceled.
+        By default, the build will be submitted with a timeout of one hour. You
+        can change this value if desired. If the build takes longer than the
+        timeout value, it will be canceled.
 
-        An optional webhook can be supplied as well. A webhook is a URL that will be called by
-        the remote build server with the result of the build (see `chassis.builder.BuildResponse`).
+        An optional webhook can be supplied as well. A webhook is a URL that
+        will be called by the remote build server with the result of the build
+        (see [chassis.builder.BuildResponse][]).
 
-        Finally, at the end of this function, the Docker context that was created when the
-        `RemoteBuilder` was initialized will be deleted by default. To prevent this, pass
-        `clean_context=False` to this function.
+        Finally, at the end of this function, the Docker context that was created
+        when the [RemoteBuilder][chassis.builder.RemoteBuilder] was initialized
+        will be deleted by default. To prevent this, pass `clean_context=False`
+        to this function.
 
         Args:
-            name (str): Name of container image repository
-            tag (str): Tag of container image
-            timeout (int): Timeout value passed to build config object
-            webhook (str): A URL that will be called when the remote build finishes
-            clean_context (bool): If False does not remove build context folder
-            block_until_complete (bool): If True, will block until the job is complete. To get an immediate response and poll for build completion yourself, set to False.
+            name: Name of container image repository.
+            tag: Tag of container image.
+            timeout: Timeout value passed to build config object.
+            webhook: A URL that will be called when the remote build finishes.
+            clean_context: If False does not remove build context folder.
+            block_until_complete: If `True`, will block until the job is
+                complete. To get an immediate response and poll for build
+                completion yourself, set to `False`.
 
         Returns:
-            BuildResponse: `BuildResponse` object with details from the build job
+            A `BuildResponse` object with details from the build job.
 
         Raises:
             ValueError: If webhook is not valid URL
 
-        Examples:
+        Example:
         ```python
         from chassisml import ChassisModel
         from chassis.builder import RemoteBuilder, BuildOptions
@@ -131,12 +149,13 @@ class RemoteBuilder:
             # Zip up the build context.
             tmpdir = tempfile.mkdtemp()
             package_basename = os.path.join(tmpdir, "package")
-            package_filename = shutil.make_archive(package_basename, "zip", self.context.base_dir)
+            package_filename = shutil.make_archive(
+                package_basename, "zip", self._context.base_dir)
 
             # Construct the build arguments.
             build_config = {
                 "image_tag": sanitize_image_name(name, tag),
-                "platform": ",".join(self.context.platforms),
+                "platform": ",".join(self._context.platforms),
                 "webhook": webhook,
                 "timeout": timeout,
             }
@@ -145,8 +164,8 @@ class RemoteBuilder:
             headers = {
                 "User-Agent": "ChassisClient/1.5"
             }
-            if self.credentials is not None:
-                headers["Authorization"] = self.credentials
+            if self._credentials is not None:
+                headers["Authorization"] = self._credentials
 
             # Compile the files we're going to upload.
             build_context = open(package_filename, "rb")
@@ -156,8 +175,13 @@ class RemoteBuilder:
             ]
 
             # Submit the build request.
-            url = urllib.parse.urljoin(self.url, "/build")
-            response = requests.post(url, headers=headers, files=files, verify=self.tls_verify)
+            url = urllib.parse.urljoin(self._url, "/build")
+            response = requests.post(
+                url,
+                headers=headers,
+                files=files,
+                verify=self._tls_verify
+            )
             response.raise_for_status()
 
             obj = response.json()
@@ -165,14 +189,14 @@ class RemoteBuilder:
             print(f"Job has been submitted with id {build_response.remote_build_id}")
 
             if block_until_complete:
-                build_response = self.block_until_complete()
+                build_response = self.block_until_complete(build_response.remote_build_id)
 
             return build_response
         finally:
             # Clean up
             if clean_context:
                 print("Cleaning local context")
-                self.context.cleanup()
+                self._context.cleanup()
             if build_context is not None and not build_context.closed:
                 build_context.close()
             if tmpdir is not None and os.path.exists(tmpdir):
@@ -183,12 +207,13 @@ class RemoteBuilder:
         Checks the status of a remote build.
 
         Args:
-            remote_build_id (str): Remote build identifier generated from `RemoteBuilder.build_image`
+            remote_build_id: Remote build identifier generated from
+                [chassis.builder.RemoteBuilder.build_image].
 
         Returns:
-            BuildResponse: `BuildResponse` object with details from the build job
+            A `BuildResponse` object with details from the build job.
 
-        Examples:
+        Example:
         ```python
         from chassisml import ChassisModel
         from chassis.builder import RemoteBuilder, BuildOptions
@@ -205,11 +230,11 @@ class RemoteBuilder:
         print(builder.get_build_status(build_id))
         ```
         """
-        route = urllib.parse.urljoin(self.url, f"/jobs/{remote_build_id}")
+        route = urllib.parse.urljoin(self._url, f"/jobs/{remote_build_id}")
         headers = {}
-        if self.credentials:
-            headers["Authorization"] = self.credentials
-        res = requests.get(route, headers=headers, verify=self.tls_verify)
+        if self._credentials:
+            headers["Authorization"] = self._credentials
+        res = requests.get(route, headers=headers, verify=self._tls_verify)
         data = res.json()
         return BuildResponse(**data)
 
@@ -218,12 +243,13 @@ class RemoteBuilder:
         Retrieves the logs from the remote build container.
 
         Args:
-            remote_build_id (str): Remote build identifier generated from `RemoteBuilder.build_image`
+            remote_build_id: Remote build identifier generated from
+                [chassis.builder.RemoteBuilder.build_image][].
 
         Returns:
-            Text: The logs from the remote build container
+            The logs from the remote build container
 
-        Examples:
+        Example:
         ```python
         from chassisml import ChassisModel
         from chassis.builder import RemoteBuilder, BuildOptions
@@ -240,28 +266,32 @@ class RemoteBuilder:
         print(builder.get_build_logs(build_id))
         ```
         """
-        route = urllib.parse.urljoin(self.url, f"/jobs/{remote_build_id}/logs")
+        route = urllib.parse.urljoin(self._url, f"/jobs/{remote_build_id}/logs")
         headers = {}
-        if self.credentials:
-            headers["Authorization"] = self.credentials
-        res = requests.get(route, headers=headers, verify=self.tls_verify)
+        if self._credentials:
+            headers["Authorization"] = self._credentials
+        res = requests.get(route, headers=headers, verify=self._tls_verify)
         res.raise_for_status()
         return res.text
 
-    def block_until_complete(self, remote_build_id: str, timeout=None, poll_interval=5) -> BuildResponse:
+    def block_until_complete(self, remote_build_id: str, timeout: int = None,
+                             poll_interval: int = 5) -> BuildResponse:
         """
-        Blocks until Chassis remote build is complete or the timeout has been reached.
-        Polls the Chassis job API until a result is marked as Completed or Failed.
+        Blocks until Chassis remote build is complete or the timeout has been
+        reached. Polls the Chassis job API until a result is marked as Completed
+        or Failed.
 
         Args:
-            remote_build_id (str): Remote build identifier generated from `RemoteBuilder.build_image`
-            timeout (int): Timeout threshold in seconds
-            poll_interval (int): Amount of time in seconds to wait in between API polls to check the build status
+            remote_build_id: Remote build identifier generated from
+                [chassis.builder.RemoteBuilder.build_image][].
+            timeout: Timeout threshold in seconds.
+            poll_interval: Amount of time in seconds to wait in between API
+                polls to check the build status.
 
         Returns:
-            BuildResponse: `BuildResponse` object with details from the build job
+            A `BuildResponse` object with details from the build job.
 
-        Examples:
+        Example:
         ```python
         from chassisml import ChassisModel
         from chassis.builder import RemoteBuilder, BuildOptions
@@ -286,5 +316,12 @@ class RemoteBuilder:
                 return status
             if (endby is not None) and (time.time() > endby - poll_interval):
                 print('Timed out before completion.')
-                return BuildResponse(image_tag=None, logs=None, success=False, completed=False, error_message="Timed out before completion.", remote_build_id=remote_build_id)
+                return BuildResponse(
+                    image_tag=None,
+                    logs=None,
+                    success=False,
+                    completed=False,
+                    error_message="Timed out before completion.",
+                    remote_build_id=remote_build_id
+                )
             time.sleep(poll_interval)

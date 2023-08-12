@@ -53,6 +53,7 @@ plugins:
             show_if_no_docstring: true
             preload_modules:
               - chassis
+            show_source: false
             heading_level: 3
             show_root_toc_entry: false
             show_category_heading: false
@@ -62,6 +63,10 @@ plugins:
             show_root_heading: true
             show_root_full_path: true
             show_root_members_full_path: false
+            merge_init_into_class: true
+            docstring_options:
+              ignore_init_summary: true
+
 
 watch:
   - ../packages/chassisml/src/chassis
