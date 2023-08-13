@@ -66,7 +66,6 @@ class ModzyModel(ModzyModelBase):
             if self.model is None:
                 # If there is a problem in loading the model, catch it and report the error
                 message = "Model Failed to Initialize."
-                LOGGER.critical(f"{message} Error: {e}")
                 log_stack_trace()
                 status_response = self._build_status_response(500, message)
             else:

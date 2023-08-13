@@ -54,7 +54,7 @@ class Buildable(metaclass=abc.ABCMeta):
         self.additional_files = self.additional_files.union(package.additional_files)
         self.python_modules.update(package.python_modules)
 
-    def add_requirements(self, reqs: Union[str, list]):
+    def add_requirements(self, reqs: Union[str, list[str]]):
         '''This function adds python dependencies to a `Buildable` model object
         
         Args:

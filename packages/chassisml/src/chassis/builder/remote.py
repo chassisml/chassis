@@ -18,31 +18,32 @@ from .response import BuildResponse
 
 
 class RemoteBuilder:
+    """
+    Initializes a connection to a Chassis remote build server for a `Buildable` object (like `ChassisModel`).
+
+    A Docker context also be prepared according to the options supplied. The Docker context is
+    a directory (in `/tmp` unless `base_dir` is given in `options`) containing a Dockerfile
+    and all the resources necessary to build the container. For more information on how the
+    context is prepared given the supplied options, see `chassis.builder.Buildable.prepare_context`.
+
+    Args:
+        url (str): The URL to the Chassis remote build server. Example: "https://chassis.example.com:8443"
+        package (Buildable): ChassisModel object that contains the code to be containerized.
+        options (BuildOptions): Object that provides specific build configuration options. See `chassis.builder.BuildOptions` for more details.
+        credentials (str): A string that will be used in the "Authorization" header. Default = None.
+        tls_verify (bool): Whether to enable TLS verification. Default = True.
+
+    Raises:
+        ValueError if:
+            - the URL is not valid
+            - the build server is not available
+            - the build server is too old
+
+    Examples:
+        See `RemoteBuilder.build_image`.
+    """
+
     def __init__(self, url: str, package: Buildable, options: BuildOptions = DefaultBuildOptions, credentials: str = None, tls_verify: bool = True):
-        """
-        Initializes a connection to a Chassis remote build server for a `Buildable` object (like `ChassisModel`).
-
-        A Docker context also be prepared according to the options supplied. The Docker context is
-        a directory (in `/tmp` unless `base_dir` is given in `options`) containing a Dockerfile
-        and all the resources necessary to build the container. For more information on how the
-        context is prepared given the supplied options, see `chassis.builder.Buildable.prepare_context`.
-
-        Args:
-            url (str): The URL to the Chassis remote build server. Example: "https://chassis.example.com:8443"
-            package (Buildable): ChassisModel object that contains the code to be containerized.
-            options (BuildOptions): Object that provides specific build configuration options. See `chassis.builder.BuildOptions` for more details.
-            credentials (str): A string that will be used in the "Authorization" header. Default = None.
-            tls_verify (bool): Whether to enable TLS verification. Default = True.
-
-        Raises:
-            ValueError if:
-                - the URL is not valid
-                - the build server is not available
-                - the build server is too old
-
-        Examples:
-            See `RemoteBuilder.build_image`.
-        """
         if not validators.url(url):
             raise ValueError("URL is not valid")
         self.url = url

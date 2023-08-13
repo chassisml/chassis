@@ -7,7 +7,6 @@ from typing import Mapping
 from chassisml import ChassisModel # 
 from chassis.builder import DockerBuilder # 
 import chassis.guides as guides
-cloudpickle.register_pickle_by_value(guides)
 
 # load model # 
 model = pickle.load(guides.DigitsClassifier) 
@@ -51,7 +50,7 @@ print(results)
 # build container # 
 builder = DockerBuilder(chassis_model)
 start_time = time.time()
-res = builder.build_image(name="quickstart-chassis-model", tag="0.0.1", show_logs=True)
+res = builder.build_image(name="my-first-chassis-model", tag="0.0.1", show_logs=True)
 end_time = time.time()
 print(res)
 print(f"Container image built in {round((end_time-start_time)/60, 5)} minutes")
