@@ -25,11 +25,11 @@
     white-space: nowrap
 }
 
-[dir=ltr] .md-banner .discord {
+[dir=ltr] .md-banner .banner-icon {
     margin-left: .2em
 }
 
-[dir=rtl] .md-banner .discord {
+[dir=rtl] .md-banner .banner-icon {
     margin-right: .2em
 }
 
@@ -441,8 +441,8 @@ h3 {
     color:#00E676
 }
 
-.discord {
-    color: #7289da;
+.banner-icon {
+    color: #B8D5B8;
 }
 
 .git {

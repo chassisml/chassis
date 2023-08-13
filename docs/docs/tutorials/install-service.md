@@ -1,13 +1,5 @@
 # Install Remote Service
 
-**TODO - edit this page**
-
-!!! info "Different Connection Options"
-    Before following this guide, note that you can connect to the Chassis service in one of two ways:
-    
-    1. Continue following this guide to install the Chassis service locally on a private Kubernetes cluster
-    2. Bypass this guide and follow the [instructions](../getting-started/getting-started.md) to connect to our [publicly-hosted](https://modzy.com/chassis-ml-sign-up/) and free instance of the service 
-
 ## Install required dependencies
 
 - [X] Install [Docker Desktop](https://docs.docker.com/get-docker/)
@@ -142,4 +134,4 @@ Congratulations, you have now successfully deployed the service in a private Kub
 pip install chassisml
 ```
 
-For more resources, check out our [tutorials](../tutorials/ds-connect.md) and [how-to guides](../how-to-guides/frameworks.md)
+For more resources, check out our [how-to guides](../how-to-guides/frameworks.md)
