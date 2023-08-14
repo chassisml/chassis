@@ -22,7 +22,6 @@ theme:
     - navigation.footer
     - navigation.indexes
     - navigation.header
-    - navigation.expand
     - navigation.tabs
     - navigation.tabs.sticky
     - navigation.top
