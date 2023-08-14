@@ -10,7 +10,7 @@ from chassis.builder import BuildContext
 from chassis.builder import DockerBuilder
 from chassis.builder import Buildable, BuildOptions
 from chassis.runtime import ModelRunner, PYTHON_MODEL_KEY
-from chassis.typing import PredictFunction
+from chassis.t import PredictFunction
 from .helpers import deprecated
 
 DEFAULT_CUDA_VERSION = "11.0.3"

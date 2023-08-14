@@ -5,7 +5,7 @@ import json
 import cloudpickle
 from typing import List, Mapping, Union
 
-from chassis.typing import PredictFunction
+from chassis.t import PredictFunction
 from .numpy_encoder import NumpyEncoder
 from .constants import (PACKAGE_DATA_PATH, PYTHON_MODEL_KEY,
                         python_pickle_filename_for_key)
@@ -29,7 +29,7 @@ class ModelRunner:
     signatures into a single API that can be used by the model servers.
 
     When initializing the model, pass in a Python function that adheres to
-    any of the defined signatures indicated by [chassis.typing.PredictFunction][]
+    any of the defined signatures indicated by [chassis.t.PredictFunction][]
     type alias. If your model supports batch predictions, set the `batch_size`
     to the number of inputs that your model can process at once.
     """
@@ -121,7 +121,8 @@ class ModelRunner:
             outputs = []
             for input_item in inputs:
                 output = self.predict_fn(input_item["input"])
-                outputs.append({"results.json": json.dumps(output, separators=(",", ":"), cls=NumpyEncoder).encode()})
+                outputs.append({"results.json": json.dumps(output, separators=(
+                    ",", ":"), cls=NumpyEncoder).encode()})
             return outputs
         else:
             adjusted_inputs = [input_item["input"] for input_item in inputs]
@@ -130,5 +131,7 @@ class ModelRunner:
             batches = batch(adjusted_inputs, self.batch_size)
             for b in batches:
                 outputs.extend(self.predict_fn(b))
-            adjusted_outputs = [{"results.json": json.dumps(o, separators=(",", ":"), cls=NumpyEncoder).encode()} for o in outputs]
+            adjusted_outputs = [
+                {"results.json": json.dumps(o, separators=(",", ":"), cls=NumpyEncoder).encode()}
+                for o in outputs]
             return adjusted_outputs

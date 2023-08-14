@@ -5,6 +5,8 @@ venv
 chassis-sdk/examples/model
 *__pycache__
 *.egg-info
+.tox
+.coverage
 build
 dist
 .idea
