@@ -14,7 +14,10 @@ class ModelMetadata:
     the model container.
     """
 
-    def __init__(self, info: ModelInfo = None, description: ModelDescription = None, inputs: List[ModelInput] = None, outputs: List[ModelOutput] = None, resources: ModelResources = None, timeout: ModelTimeout = None, features: ModelFeatures = None):
+    def __init__(self, info: ModelInfo = None, description: ModelDescription = None,
+                 inputs: List[ModelInput] = None, outputs: List[ModelOutput] = None,
+                 resources: ModelResources = None, timeout: ModelTimeout = None,
+                 features: ModelFeatures = None):
         self._info: ModelInfo = info if info is not None else ModelInfo(source="chassis", model_type="grpc")
         self._description = description if description is not None else ModelDescription()
         self._inputs = inputs if inputs is not None else []
