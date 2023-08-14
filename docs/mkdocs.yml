@@ -115,16 +115,19 @@ nav:
       - getting-started/index.md
       - Quickstart: getting-started/quickstart.md
       - Full Chassis Workflow: getting-started/full-workflow.md
-  - Tutorials: 
-      - tutorials/index.md
-      - Install Remote Service: tutorials/install-service.md
-  - How-to Guides:
-      - how-to-guides/index.md
-      - Model Containers by Framework: how-to-guides/frameworks.md
-      - Common Data Types Support: how-to-guides/common-data-types.md
+  - Guides:
+      # - guides/index.md
+      - Common ML/DL Frameworks: 
+          - guides/frameworks/index.md
+          - Diffusers: guides/frameworks/diffusers.md
+          - Transformers: guides/frameworks/transformers.md
+          - Torch: guides/frameworks/torch.md
+      - Common Data Bytes Conversion: guides/common-data-types.md
+      - Install Remote Service: guides/install-service.md
   - Reference:
       - reference/index.md
       - Chassis SDK: reference/sdk/
+      - Interfaces: reference/interfaces.md
   - Community:
       - Get Involved: community/get-involved.md
   - Release Notes: release-notes.md

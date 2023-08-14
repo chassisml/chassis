@@ -1,19 +1,7 @@
-# Chassis Python SDK
+# Reference Documentation
 
-## Introduction
+Welcome to Chassis's reference documentation page! There are two main sections included in the set of available reference documentation:
 
-The Chassisml Python SDK offers convenience functions that interact with the Chassisml service to automate the containerization and deployment of models to your preferred model serving platform. It is organized into two classes:
-
-* `ChassisClient`: interacts with the Chassis routes that build a user's container from their model artifacts
-* `ChasissModel`: creates a chassis compliant model out of a few lines of Python code from user supplied model artifacts
-
-First, install the Chassisml SDK to get started:
-
-```pip install chassisml```
-
-To import the library into your editor:
-
-```import chassisml```
-
-## Usage
+1. **Chassis SDK**: Full reference documentation for the Chassisml SDK Python package, which includes two namespace packages included within the library. For usage examples, visit our [Guides Section](../guides/index.md)
+2. **[Interfaces](./interfaces.md)**: Provides summaries and explanations of the container interfaces Chassis supports
 
