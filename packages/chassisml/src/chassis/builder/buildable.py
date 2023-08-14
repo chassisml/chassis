@@ -28,7 +28,7 @@ A list of pip requirements that are modified when writing out the container's
 `requirements.txt`.
 
 Items in this list are primarily to ensure that large packages that have a
-headless variant use the headless variant since the container doesn't use a 
+headless variant use the headless variant since the container doesn't use a
 display.
 """
 REQUIREMENTS_SUBSTITUTIONS = {
@@ -39,10 +39,14 @@ REQUIREMENTS_SUBSTITUTIONS = {
 def _copy_libraries(context: BuildContext, server: str, ignore_patterns: List[str]):
     root = os.path.join(os.path.dirname(__file__), "..", "..")
     ignore = shutil.ignore_patterns(*ignore_patterns)
-    copytree(os.path.join(root, "chassis", "runtime"), os.path.join(context.chassis_dir, "runtime"), ignore=ignore)
-    copytree(os.path.join(root, "chassis", "metadata"), os.path.join(context.chassis_dir, "metadata"), ignore=ignore)
-    copytree(os.path.join(root, "chassis", "typing"), os.path.join(context.chassis_dir, "typing"), ignore=ignore)
-    copytree(os.path.join(root, "chassis", "server", server), os.path.join(context.chassis_dir, "server", server), ignore=ignore)
+    copytree(os.path.join(root, "chassis", "runtime"),
+             os.path.join(context.chassis_dir, "runtime"), ignore=ignore)
+    copytree(os.path.join(root, "chassis", "metadata"),
+             os.path.join(context.chassis_dir, "metadata"), ignore=ignore)
+    copytree(os.path.join(root, "chassis", "typing"),
+             os.path.join(context.chassis_dir, "typing"), ignore=ignore)
+    copytree(os.path.join(root, "chassis", "server", server),
+             os.path.join(context.chassis_dir, "server", server), ignore=ignore)
 
 
 class Buildable(metaclass=abc.ABCMeta):
@@ -101,9 +105,9 @@ class Buildable(metaclass=abc.ABCMeta):
                   `pip install` or that would be added to a Python dependencies
                   txt file (e.g., `requirements.txt`)
         """
-        if type(reqs) == str:
+        if isinstance(reqs, str):
             self.requirements = self.requirements.union(reqs.splitlines())
-        elif type(reqs) == list:
+        elif isinstance(reqs, list):
             self.requirements = self.requirements.union(reqs)
 
     def add_apt_packages(self, packages: Union[str, list]):
@@ -120,9 +124,9 @@ class Buildable(metaclass=abc.ABCMeta):
                       `ChassisModel.process_fn` attribute. These values are the
                       same values that can be installed via `apt-get install`.
         """
-        if type(packages) == str:
+        if isinstance(packages, str):
             self.apt_packages = self.apt_packages.union(packages.splitlines())
-        elif type(packages) == list:
+        elif isinstance(packages, list):
             self.apt_packages = self.apt_packages.union(packages)
 
     def get_packaged_path(self, path: str) -> str:
@@ -154,13 +158,17 @@ class Buildable(metaclass=abc.ABCMeta):
             RequiredFieldMissing
         """
         if len(self.metadata.model_name) == 0:
-            raise RequiredFieldMissing("The model must have a name set before it can be built. Please set `metadata.model_name`.")
+            raise RequiredFieldMissing(
+                "The model must have a name set before it can be built. Please set `metadata.model_name`.")
         if len(self.metadata.model_version) == 0:
-            raise RequiredFieldMissing("The model must have a version set before it can be built. Please set `metadata.model_version`.")
+            raise RequiredFieldMissing(
+                "The model must have a version set before it can be built. Please set `metadata.model_version`.")
         if not self.metadata.has_inputs():
-            raise RequiredFieldMissing("The model must have at least one input defined before it can be built. Please call `metadata.add_input()`.")
+            raise RequiredFieldMissing(
+                "The model must have at least one input defined before it can be built. Please call `metadata.add_input()`.")
         if not self.metadata.has_outputs():
-            raise RequiredFieldMissing("The model must have at least one output defined before it can be built. Please call `metadata.add_output()`.")
+            raise RequiredFieldMissing(
+                "The model must have at least one output defined before it can be built. Please call `metadata.add_output()`.")
         if options.cuda_version is not None and options.python_version != "3.8":
             print(f"Warning: Building a container with CUDA currently only supports Python 3.8. Python 3.8 will be used instead of '{options.python_version}'.")
 

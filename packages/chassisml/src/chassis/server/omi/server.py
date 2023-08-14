@@ -59,7 +59,7 @@ class ModzyModel(ModzyModelBase):
         return sr
 
     async def Status(self, stream):
-        request = await stream.recv_message()
+        _ = await stream.recv_message()
         start_status_call = t()
         if self.model is None:
             self.model = ModelRunner.load()
@@ -106,7 +106,8 @@ class ModzyModel(ModzyModelBase):
         else:
             try:
                 input_length = len(request.inputs)
-                raw_outputs = self.model.predict([input_item.input for input_item in request.inputs])
+                raw_outputs = self.model.predict([input_item.input for input_item in
+                                                  request.inputs])
                 for i, raw_output in enumerate(raw_outputs):
                     # TODO: It would probably be useful to have an example of explanation/drift metadata here
                     output_item = create_output_item(
@@ -132,7 +133,7 @@ class ModzyModel(ModzyModelBase):
         await stream.send_message(response)
 
     async def Shutdown(self, stream):
-        # request = await stream.recv_message()
+        _ = await stream.recv_message()
         shutdown_response = ShutdownResponse(
             status_code=200,
             status="OK",

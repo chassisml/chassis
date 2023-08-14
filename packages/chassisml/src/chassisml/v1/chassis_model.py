@@ -264,7 +264,7 @@ class ChassisModel(Buildable):
         Supports legacy Chassis `conda_env` functionality by parsing pip
         dependencies and inserting into the `Buildable` object via the
         `add_requirements` function.
-        
+
         If supplied, the input parameter will look like this:
 
         ```python
