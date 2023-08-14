@@ -9,13 +9,22 @@ from chassis.runtime import PACKAGE_DATA_PATH
 
 
 class BuildContext:
+    """
+    This class provides configuration options for the build context of a
+    Chassis model container.
+    """
+
     def __init__(self, base_dir: Union[str, None] = None, platforms: List[str] = None):
         """
-        This class provides configuration options for the build context of a Chassis model container.
+        Init.
 
         Args:
-            base_dir (Union[str, None]): Optional directory path to save build context of model container
-            platforms (list[str]): List of target platforms to build and compile container versions. If multiple provided, the `RemoteBuilder` will build a separate version for each architecture and push them to the designated registry under the same container repository and tag
+            base_dir: Optional directory path to save build context of model container
+            platforms: List of target platforms to build and compile container
+                       versions. If multiple provided, the `RemoteBuilder` will
+                       build a separate version for each architecture and push them
+                       to the designated registry under the same container repository
+                       and tag.
         """
         self.base_dir = base_dir if base_dir is not None else tempfile.mkdtemp()
         self.chassis_dir = os.path.join(self.base_dir, "chassis")

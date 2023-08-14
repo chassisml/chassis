@@ -11,7 +11,7 @@ if os.path.exists(os.path.join(server_dir, "omi")):
         asyncio.run(serve())
         sys.exit(0)
     except Exception as e:
-        print("Error starting OMI server: {e}")
+        print(f"Error starting OMI server: {e}")
         sys.exit(1)
 
 if os.path.exists(os.path.join(server_dir, "kserve")):
@@ -19,8 +19,8 @@ if os.path.exists(os.path.join(server_dir, "kserve")):
         from chassis.server.kserve import serve
         serve()
         sys.exit(0)
-    except Exception as e2:
-        print("Error starting KServe server: {e}")
+    except Exception as e:
+        print(f"Error starting KServe server: {e}")
         sys.exit(1)
 
 print("Unable to find suitable server")

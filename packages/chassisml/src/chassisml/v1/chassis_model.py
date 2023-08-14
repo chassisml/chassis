@@ -18,17 +18,28 @@ DEFAULT_CUDA_VERSION = "11.0.3"
 
 class ChassisModel(Buildable):
     """
-    The Chassis Model Object. This class inherits from `Buildable` and is the main object that gets fed into a Chassis builder object (i.e., `DockerBuilder` or `RemoteBuilder`)
+    The Chassis Model Object.
 
-    Args:
-        process_fn: Single predict function of type `PredictFunction` that represents a model inference function
-        batch_size: Integer representing the batch size your model supports. If your model does not support batching, the default value is 1
-        legacy_predict_fn: For internal backwards-compatibility use only.
-        chassis_client: For internal backwards-compatibility use only.
+    This class inherits from [chassis.builder.Buildable][] and is the main
+    object that gets fed into a Chassis builder object
+    (i.e., [chassis.builder.DockerBuilder][] or [chassis.builder.RemoteBuilder][])
     """
 
-    def __init__(self, process_fn: PredictFunction, batch_size: int = 1, legacy_predict_fn: bool = False, chassis_client=None):
-        self.runner = ModelRunner(process_fn, batch_size=batch_size, is_legacy_fn=legacy_predict_fn)
+    def __init__(self, process_fn: PredictFunction, batch_size: int = 1,
+                 legacy_predict_fn: bool = False, chassis_client=None):
+        """
+        Init.
+
+        Args:
+            process_fn: Single predict function of type `PredictFunction` that
+                represents a model inference function.
+            batch_size: Integer representing the batch size your model supports.
+                If your model does not support batching, the default value is 1.
+            legacy_predict_fn: For internal backwards-compatibility use only.
+            chassis_client: For internal backwards-compatibility use only.
+        """
+        self.runner = ModelRunner(process_fn, batch_size=batch_size,
+                                  is_legacy_fn=legacy_predict_fn)
         self.python_modules[PYTHON_MODEL_KEY] = self.runner
         if legacy_predict_fn:
             self.metadata = ModelMetadata.legacy()
@@ -39,20 +50,33 @@ class ChassisModel(Buildable):
         """
         Runs a test inference against the model before it is packaged.
 
-        This method supports multiple input types:
-            - Single input: A map-like object with a string for the key and bytes as the value.
-            - Batch input: A list of map-like objects with strings for keys and bytes for values.
+        This method supports multiple input types
 
-        The following input types are also supported but considered deprecated and may be removed in a future release:
-            - File: A BufferedReader object. Use of this type assumes that your predict function expects the input key to be "input".
-            - bytes: Any arbitrary bytes. Use of this type assumes that your predict function expects the input key to be "input".
-            - str: A string. If the string maps to a filesystem location, then the file at that location will be read and used as the value. If not the string itself is used as the value. Use of this type assumes that your predict function expects the input key to be "input".
+        - Single input: A map-like object with a string for the key and
+            bytes as the value.
+        - Batch input: A list of map-like objects with strings for keys and
+            bytes for values.
+
+        The following input types are also supported but considered deprecated
+            and may be removed in a future release
+
+        - File: A BufferedReader object. Use of this type assumes that your
+            predict function expects the input key to be "input".
+        - bytes: Any arbitrary bytes. Use of this type assumes that your
+            predict function expects the input key to be "input".
+        - str: A string. If the string maps to a filesystem location, then
+            the file at that location will be read and used as the value.
+            If not the string itself is used as the value. Use of this type
+            assumes that your predict function expects the input key to
+            be "input".
 
         Args:
-            test_input: Sample input data used to test the model. See above for more information.
+            test_input: Sample input data used to test the model.
+                See above for more information.
 
         Returns:
-            List[Mapping[str, bytes]]: Results returned by your model's predict function based on the `test_input` sample data fed to this function.
+            Results returned by your model's predict function based on the
+                `test_input` sample data fed to this function.
 
         Example:
         ```python
@@ -87,7 +111,8 @@ class ChassisModel(Buildable):
         """
         **DEPRECATED**
 
-        The `test` method now supports supplying batches of inputs.
+        The [chassisml.ChassisModel.test][] method now supports supplying
+        batches of inputs.
         """
         deprecated("Please use the `test` method moving forward as it now supports batched inputs..")
         if not self.runner.supports_batch:
@@ -114,34 +139,39 @@ class ChassisModel(Buildable):
         """
         **No Longer Available**
 
-        Please use `chassis.client.OMIClient.test_container`.
+        Please use [chassis.client.OMIClient.test_container][] moving forward.
         """
         deprecated("Method no longer supported and will be removed in the next release.")
         raise NotImplementedError
 
-    def save(self, path: str = None, requirements: Union[str, List[str]] = None, overwrite=False, fix_env=False, gpu=False, arm64=False, conda_env=None) -> BuildContext:
+    def save(self, path: str = None, requirements: Union[str, List[str]] = None,
+             overwrite: bool = False, fix_env: bool = False, gpu=False,
+             arm64: bool = False, conda_env: dict = None) -> BuildContext:
         """
         **DEPRECATED**
 
-        Please use `ChassisModel.prepare_context()` moving forward.
+        Please use [chassisml.ChassisModel.prepare_context][] moving forward.
 
         ---
 
         Saves a copy of ChassisModel to local filepath
 
         Args:
-            path (str): Filepath to save chassis model.
-            requirements (Union[str, list[str]]): Additional pip requirements needed by the model.
-            conda_env (dict): A dictionary with environment requirements.
-            overwrite (bool): No longer used.
-            fix_env (bool): No longer used.
-            gpu (bool): If True and `arm64` is True, modifies dependencies as needed by chassis for ARM64+GPU support
-            arm64 (bool): If True and `gpu` is True, modifies dependencies as needed by chassis for ARM64+GPU support
+            path: Filepath to save chassis model.
+            requirements: Additional pip requirements needed by the model.
+            conda_env: A dictionary with environment requirements.
+            overwrite: No longer used.
+            fix_env: No longer used.
+            gpu: If True and `arm64` is True, modifies dependencies as
+                needed by chassis for ARM64+GPU support
+            arm64: If True and `gpu` is True, modifies dependencies as
+                needed by chassis for ARM64+GPU support
 
         Returns:
-            BuildContext: The BuildContext object that allows for further actions to be taken.
+            The `BuildContext` object that allows for further actions to be
+                taken.
 
-        Examples:
+        Example:
         ```python
         chassis_model = ChassisModel(process_fn=process)
         context = chassis_model.save("local_model_directory")
@@ -156,36 +186,42 @@ class ChassisModel(Buildable):
         if path is not None and not os.path.exists(path):
             os.makedirs(path, exist_ok=True)
 
-        options = BuildOptions(base_dir=path, arch="arm64" if arm64 else "amd64", cuda_version=DEFAULT_CUDA_VERSION if gpu else None)
+        options = BuildOptions(base_dir=path, arch="arm64" if arm64 else "amd64",
+                               cuda_version=DEFAULT_CUDA_VERSION if gpu else None)
         return self.prepare_context(options)
 
-    def publish(self, model_name: str, model_version: str, registry_user=None, registry_pass=None, requirements: Union[str, list[str]] = None, fix_env=True, gpu=False, arm64=False, sample_input_path=None, webhook=None, conda_env=None):
+    def publish(self, model_name: str, model_version: str, registry_user: str = None,
+                registry_pass: str = None, requirements: Union[str, list[str]] = None,
+                fix_env: bool = True, gpu: bool = False, arm64: bool = False,
+                sample_input_path: str = None, webhook: str = None,
+                conda_env: dict = None):
         """
         **DEPRECATED**
 
-        Please use `chassis.builder.RemoteBuilder` moving forward.
+        Please use [chassis.builder.RemoteBuilder][] moving forward.
 
         ---
 
         Builds the model locally using Docker.
 
         Args:
-            model_name (str): Model name that serves as model's name and docker registry repository name.
-            model_version (str): Version of model
-            registry_user (str): Docker registry username
-            registry_pass (str): Docker registry password
-            requirements (Union[str, list[str]]): Additional pip requirements needed by the model.
-            conda_env (dict): A dictionary with environment requirements.
-            fix_env (bool): No longer used.
-            gpu (bool): If True, builds container image that runs on GPU hardware
-            arm64 (bool): If True, builds container image that runs on ARM64 architecture
-            sample_input_path (str): No longer used.
-            webhook (str): No longer used.
+            model_name: Model name that serves as model's name and docker
+                registry repository name.
+            model_version: Version of model
+            registry_user: Docker registry username
+            registry_pass: Docker registry password
+            requirements: Additional pip requirements needed by the model.
+            conda_env: A dictionary with environment requirements.
+            fix_env: No longer used.
+            gpu: If True, builds container image that runs on GPU hardware
+            arm64: If True, builds container image that runs on ARM64 architecture
+            sample_input_path: No longer used.
+            webhook: No longer used.
 
         Returns:
-            BuildResponse: Details about the result of the build.
+            Details about the result of the build.
 
-        Examples:
+        Example:
         ```python
         # Create Chassisml model
         chassis_model = ChassisModel(process_fn=process)
@@ -225,10 +261,10 @@ class ChassisModel(Buildable):
 
     def parse_conda_env(self, conda_env: dict):
         """
-        Supports legacy Chassis `conda_env` functionality by parsing pip dependencies and inserting into the `Buildable` object via the `add_requirements` function.
-        
-        Args:
-            conda_env (dict): Python dictionary representing a conda environment yaml file that includes pip dependencies
+        Supports legacy Chassis `conda_env` functionality by parsing pip
+        dependencies and inserting into the `Buildable` object via the
+        `add_requirements` function.
+
         If supplied, the input parameter will look like this:
 
         ```python
@@ -251,7 +287,8 @@ class ChassisModel(Buildable):
         ```
 
         Args:
-            conda_env (dict): A conda environment structure. See above for more details.
+            conda_env: A conda environment structure.
+                See above for more details.
         """
         if conda_env is not None:
             pip_dependencies = conda_env["dependencies"][1]["pip"]

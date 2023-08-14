@@ -3,17 +3,18 @@ import re
 
 def sanitize_image_name(image_name: str, tag: str = "latest") -> str:
     """
-    Sanitizes the image name according to the Docker spec:
+    Sanitizes the image name according to the Docker spec.
 
-        The tag must be valid ASCII and can contain lowercase and uppercase letters, digits, underscores, periods, and hyphens.
-        It cannot start with a period or hyphen and must be no longer than 128 characters.
+        The tag must be valid ASCII and can contain lowercase and uppercase
+        letters, digits, underscores, periods, and hyphens. It cannot start
+        with a period or hyphen and must be no longer than 128 characters.
 
     Args:
-        image_name (str): The name of the image to sanitize, _without_ the tag component.
-        tag (str): The tag of the image. Default = "latest"
+        image_name: The name of the image to sanitize, _without_ the tag component.
+        tag: The tag of the image.
 
     Returns:
-        str: The full sanitized image tag suitable for use with `docker tag`, etc.
+        The full sanitized image tag suitable for use with `docker tag`, etc.
     """
     name = _sanitize_string(image_name)
     tag = _sanitize_string(tag)

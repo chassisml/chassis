@@ -1,16 +1,23 @@
 from __future__ import annotations
 
-from typing import List, Type, TypeVar
+from typing import List
 
-from chassis.protos.v1.model_pb2 import (ModelDescription, ModelFeatures, ModelInfo, ModelInput, ModelOutput, ModelResources, ModelTimeout, StatusResponse)
+from chassis.protos.v1.model_pb2 import (ModelDescription, ModelFeatures,
+                                         ModelInfo, ModelInput, ModelOutput,
+                                         ModelResources, ModelTimeout,
+                                         StatusResponse)
 
 
 class ModelMetadata:
     """
-    This class provides an interface for customizing metadata embedded into the model container.
+    This class provides an interface for customizing metadata embedded into
+    the model container.
     """
 
-    def __init__(self, info: ModelInfo = None, description: ModelDescription = None, inputs: List[ModelInput] = None, outputs: List[ModelOutput] = None, resources: ModelResources = None, timeout: ModelTimeout = None, features: ModelFeatures = None):
+    def __init__(self, info: ModelInfo = None, description: ModelDescription = None,
+                 inputs: List[ModelInput] = None, outputs: List[ModelOutput] = None,
+                 resources: ModelResources = None, timeout: ModelTimeout = None,
+                 features: ModelFeatures = None):
         self._info: ModelInfo = info if info is not None else ModelInfo(source="chassis", model_type="grpc")
         self._description = description if description is not None else ModelDescription()
         self._inputs = inputs if inputs is not None else []
@@ -29,8 +36,8 @@ class ModelMetadata:
         )
 
     @property
-    def model_name(self):
-        """str: The human-readable name of the model."""
+    def model_name(self) -> str:
+        """The human-readable name of the model."""
         return self._info.model_name
 
     @model_name.setter
@@ -38,8 +45,8 @@ class ModelMetadata:
         self._info.model_name = name
 
     @property
-    def model_version(self):
-        """str: The semantic-versioning compatible version of the model."""
+    def model_version(self) -> str:
+        """The semantic-versioning compatible version of the model."""
         return self._info.model_version
 
     @model_version.setter
@@ -47,8 +54,13 @@ class ModelMetadata:
         self._info.model_version = version
 
     @property
-    def model_author(self):
-        """str: The name and optional email of the author. Example: 'John Smith <john.smith@example.com>'"""
+    def model_author(self) -> str:
+        """
+        The name and optional email of the author.
+
+        Example:
+            John Smith <john.smith@example.com>
+        """
         return self._info.model_author
 
     @model_author.setter
@@ -56,8 +68,8 @@ class ModelMetadata:
         self._info.model_author = author
 
     @property
-    def summary(self):
-        """str: A short summary of what the model does and how to use it."""
+    def summary(self) -> str:
+        """A short summary of what the model does and how to use it."""
         return self._description.summary
 
     @summary.setter
@@ -65,8 +77,11 @@ class ModelMetadata:
         self._description.summary = summary
 
     @property
-    def details(self):
-        """str: A longer description of the model that contains useful information that was unsuitable to put in the Summary."""
+    def details(self) -> str:
+        """
+        A longer description of the model that contains useful information
+        that was unsuitable to put in the Summary.
+        """
         return self._description.details
 
     @details.setter
@@ -74,8 +89,11 @@ class ModelMetadata:
         self._description.details = details
 
     @property
-    def technical(self):
-        """str: Technical information about the model such as how it was trained, any known biases, the dataset that was used, etc."""
+    def technical(self) -> str:
+        """
+        Technical information about the model such as how it was trained, any
+        known biases, the dataset that was used, etc.
+        """
         return self._description.technical
 
     @technical.setter
@@ -83,8 +101,8 @@ class ModelMetadata:
         self._description.technical = technical
 
     @property
-    def performance(self):
-        """str: Performance information about the model."""
+    def performance(self) -> str:
+        """Performance information about the model."""
         return self._description.performance
 
     @performance.setter
@@ -93,33 +111,41 @@ class ModelMetadata:
 
     def has_inputs(self) -> bool:
         """
-        Returns `True` if at least one input has been defined.
-
         Returns:
-            bool
+            `True` if at least one input has been defined.
         """
         return len(self._inputs) > 0
 
-    def add_input(self, key: str, accepted_media_types: List[str] = None, max_size: str = "1M", description: str = ""):
+    def add_input(self, key: str, accepted_media_types: List[str] = None,
+                  max_size: str = "1M", description: str = ""):
         """
-        Defines an input to the model. Inputs are identified by a string `key` that will be used to retrieve them from the
-        dictionary of inputs during inference.
+        Defines an input to the model. Inputs are identified by a string `key`
+        that will be used to retrieve them from the dictionary of inputs during
+        inference.
 
-        Since all input values are sent as `bytes`, each input should define one or more MIME types that are suitable for
-        decoding the bytes into a usable object.
+        Since all input values are sent as `bytes`, each input should define
+        one or more MIME types that are suitable for decoding the bytes into a
+        usable object.
 
-        Additionally, each input can be set to have a maximum size to easily reject requests with inputs that are too large.
+        Additionally, each input can be set to have a maximum size to easily
+        reject requests with inputs that are too large.
 
-        Finally, you can give each input a description which can be used in documentation to explain any further details about
-        the input requirements, such as indicating whether color channels need to be stripped from the image, etc.
+        Finally, you can give each input a description which can be used in
+        documentation to explain any further details about the input
+        requirements, such as indicating whether color channels need to be
+        stripped from the image, etc.
 
         Args:
-             key (str): Key name to represent the input. E.g., "input", "image", "text", etc.
-             accepted_media_types (list[str]): Acceptable mime type(s) for the respective input. For more information on common mime types, visit (https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types)
-             max_size (str): Maximum acceptable size of input. This value should include an integer followed by a letter indicating the unit of measure (e.g., "3M" = 3 MB, "1.5G" = 1.5 GB, etc.)
-             description (str): Short description of the input
+             key: Key name to represent the input. E.g., "input", "image", etc.
+             accepted_media_types: Acceptable mime type(s) for the respective
+                input. For more information on common mime types, visit
+                [https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types]()
+             max_size: Maximum acceptable size of input. This value should
+                include an integer followed by a letter indicating the unit of
+                measure (e.g., "3M" = 3 MB, "1.5G" = 1.5 GB, etc.)
+             description: Short description of the input
 
-        Examples:
+        Example:
         ```python
         from chassisml import ChassisModel
         model = ChassisModel(process_fn=predict)
@@ -142,34 +168,41 @@ class ModelMetadata:
 
     def has_outputs(self) -> bool:
         """
-        Returns `True` if at least one output has been defined.
-
         Returns:
-            bool
+            `True` if at least one output has been defined.
         """
         return len(self._outputs) > 0
 
-    def add_output(self, key: str, media_type: str = "application/octet-stream", max_size: str = "1M", description: str = ""):
+    def add_output(self, key: str, media_type: str = "application/octet-stream",
+                   max_size: str = "1M", description: str = ""):
         """
-        Defines an output from the model. Outputs are identified by a string `key` that will be used to retrieve them from the
-        dictionary of outputs received after inference.
+        Defines an output from the model. Outputs are identified by a string
+        `key` that will be used to retrieve them from the dictionary of outputs
+        received after inference.
 
-        Since all output values are sent as `bytes`, each output should define the MIME type that is suitable for
-        decoding the bytes into a usable object.
+        Since all output values are sent as `bytes`, each output should define
+        the MIME type that is suitable for decoding the bytes into a usable
+        object.
 
-        Additionally, each output should be set to have a maximum size to prevent results that are too large for practical use.
+        Additionally, each output should be set to have a maximum size to
+        prevent results that are too large for practical use.
 
-        Finally, you can give each output a description which can be used in documentation to explain any further details about
-        the output.
+        Finally, you can give each output a description which can be used in
+        documentation to explain any further details about the output.
 
 
         Args:
-             key (str): Key name to represent the output. E.g., "results.json", "results", "output", etc.
-             media_type (list[str]): Acceptable mime type for the respective output. For more information on common mime types, visit (https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types)
-             max_size (str): Maximum acceptable size of output. This value should include an integer followed by a letter indicating the unit of measure (e.g., "3M" = 3 MB, "1.5G" = 1.5 GB, etc.)
-             description (str): Short description of the output
+             key: Key name to represent the output. E.g., "results.json",
+                "results", "output", etc.
+             media_type: Acceptable mime type for the respective output. For
+                more information on common mime types, visit
+                [https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types]()
+             max_size: Maximum acceptable size of output. This value should
+                include an integer followed by a letter indicating the unit of
+                measure (e.g., "3M" = 3 MB, "1.5G" = 1.5 GB, etc.)
+             description: Short description of the output
 
-        Examples:
+        Example:
         ```python
         from chassisml import ChassisModel
         model = ChassisModel(process_fn=predict)
@@ -189,8 +222,11 @@ class ModelMetadata:
         )]
 
     @property
-    def required_ram(self):
-        """str: The amount of RAM required to run the model. This string can be any value accepted by Docker or Kubernetes."""
+    def required_ram(self) -> str:
+        """
+        The amount of RAM required to run the model. This string can be any
+        value accepted by Docker or Kubernetes.
+        """
         return self._resources.required_ram
 
     @required_ram.setter
@@ -198,8 +234,8 @@ class ModelMetadata:
         self._resources.required_ram = required_ram
 
     @property
-    def num_cpus(self):
-        """float: The number of fractional CPU cores required to run the model."""
+    def num_cpus(self) -> float:
+        """The number of fractional CPU cores required to run the model."""
         return self._resources.num_cpus
 
     @num_cpus.setter
@@ -207,8 +243,8 @@ class ModelMetadata:
         self._resources.num_cpus = num_cpus
 
     @property
-    def num_gpus(self):
-        """int: The number of GPUs required to run the model."""
+    def num_gpus(self) -> int:
+        """The number of GPUs required to run the model."""
         return self._resources.num_gpus
 
     @num_gpus.setter
@@ -216,8 +252,11 @@ class ModelMetadata:
         self._resources.num_gpus = num_gpus
 
     @property
-    def status_timeout(self):
-        """str: The amount of time after which a model should be considered to have failed initializing itself."""
+    def status_timeout(self) -> str:
+        """
+        The amount of time after which a model should be considered to have
+        failed initializing itself.
+        """
         return self._timeout.status
 
     @status_timeout.setter
@@ -225,8 +264,11 @@ class ModelMetadata:
         self._timeout.status = status_timeout
 
     @property
-    def run_timeout(self):
-        """str: The amount of time after which an inference should be considered to have failed."""
+    def run_timeout(self) -> str:
+        """
+        The amount of time after which an inference should be considered to
+        have failed.
+        """
         return self._timeout.run
 
     @run_timeout.setter
@@ -234,8 +276,11 @@ class ModelMetadata:
         self._timeout.run = run_timeout
 
     @property
-    def batch_size(self):
-        """int: The batch size supported by this model. For models that don't support batch, set this to 1."""
+    def batch_size(self) -> int:
+        """
+        The batch size supported by this model. For models that don't support
+        batch, set this to 1.
+        """
         return self._features.batch_size
 
     @batch_size.setter
@@ -248,11 +293,11 @@ class ModelMetadata:
         """
         For internal use only.
 
-        This method will take the values of this object and serialize them in the protobuf message
-        that the final container expects to receive.
+        This method will take the values of this object and serialize them in
+        the protobuf message that the final container expects to receive.
 
         Returns:
-            bytes
+            The serialized protobuf object.
         """
         sr = StatusResponse()
         sr.model_info.CopyFrom(self._info)
@@ -267,16 +312,18 @@ class ModelMetadata:
     @classmethod
     def default(cls) -> ModelMetadata:
         """
-        A ModelMetadata object that corresponds to the defaults used by Chassis v1.5+.
+        A ModelMetadata object that corresponds to the defaults used by Chassis
+        v1.5+.
 
-        The defaults are blank values for all properties. You are responsible for setting
-        any appropriate values for your model.
+        The defaults are blank values for all properties. You are responsible
+        for setting any appropriate values for your model.
 
-        Note: It is always required to set the `model_name`, `model_version` fields and to
-        add at least one input and one output.
+        Note:
+            It is always required to set the `model_name`, `model_version`
+            fields and to add at least one input and one output.
 
         Returns:
-            ModelMetadata
+            An empty `ModelMetadata` object.
         """
         md = cls()
         return md
@@ -284,10 +331,11 @@ class ModelMetadata:
     @classmethod
     def legacy(cls) -> ModelMetadata:
         """
-        A ModelMetadata object that corresponds to the values used before Chassis v1.5.
+        A ModelMetadata object that corresponds to the values used before
+        Chassis v1.5.
 
         Returns:
-            ModelMetadata
+            A partially filled `ModelMetadata` object.
         """
         md = cls()
         md._inputs = [

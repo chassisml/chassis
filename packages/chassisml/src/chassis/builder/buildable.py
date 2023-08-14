@@ -18,11 +18,19 @@ from chassis.runtime import PACKAGE_DATA_PATH, python_pickle_filename_for_key
 from .options import BuildOptions, DefaultBuildOptions
 from .errors import RequiredFieldMissing
 
-env = Environment(
+_env = Environment(
     loader=PackageLoader(package_name="chassis.builder"),
     autoescape=select_autoescape()
 )
 
+"""
+A list of pip requirements that are modified when writing out the container's
+`requirements.txt`.
+
+Items in this list are primarily to ensure that large packages that have a
+headless variant use the headless variant since the container doesn't use a
+display.
+"""
 REQUIREMENTS_SUBSTITUTIONS = {
     "opencv-python=": "opencv-python-headless="
 }
@@ -31,13 +39,34 @@ REQUIREMENTS_SUBSTITUTIONS = {
 def _copy_libraries(context: BuildContext, server: str, ignore_patterns: List[str]):
     root = os.path.join(os.path.dirname(__file__), "..", "..")
     ignore = shutil.ignore_patterns(*ignore_patterns)
-    copytree(os.path.join(root, "chassis", "runtime"), os.path.join(context.chassis_dir, "runtime"), ignore=ignore)
-    copytree(os.path.join(root, "chassis", "metadata"), os.path.join(context.chassis_dir, "metadata"), ignore=ignore)
-    copytree(os.path.join(root, "chassis", "typing"), os.path.join(context.chassis_dir, "typing"), ignore=ignore)
-    copytree(os.path.join(root, "chassis", "server", server), os.path.join(context.chassis_dir, "server", server), ignore=ignore)
+    copytree(os.path.join(root, "chassis", "runtime"),
+             os.path.join(context.chassis_dir, "runtime"), ignore=ignore)
+    copytree(os.path.join(root, "chassis", "metadata"),
+             os.path.join(context.chassis_dir, "metadata"), ignore=ignore)
+    copytree(os.path.join(root, "chassis", "typing"),
+             os.path.join(context.chassis_dir, "typing"), ignore=ignore)
+    copytree(os.path.join(root, "chassis", "server", server),
+             os.path.join(context.chassis_dir, "server", server), ignore=ignore)
 
 
 class Buildable(metaclass=abc.ABCMeta):
+    """
+    `Buildable` is an abstract base class the encodes all the behavior needed
+    to build a Chassis container.
+
+    Attributes:
+        packaged: `True` if running in a built container.
+        metadata: The metadata for the model. It is initialized with no values.
+        requirements: A set of pip requirements needed by this model.
+        apt_packages: A set of `apt-get` packages required by this model.
+        additional_files: A set of additional files required by the model
+            at runtime.
+        python_modules: A dictionary of Python objects that will be serialized
+            using `cloudpickle` before being copied into the container. The
+            key should be one of the constants defined in
+            [chassis.runtime.constants][].
+    """
+
     packaged = False
     metadata = ModelMetadata.default()
     requirements: set[str] = set()
@@ -46,61 +75,128 @@ class Buildable(metaclass=abc.ABCMeta):
     python_modules: dict = {}
 
     def merge_package(self, package: Buildable):
-        '''
-        TODO - internal?
-        '''
+        """
+        Allows for merging two [Buildable][chassis.builder.buildable.Buildable]
+        objects. This will ensure that any pip requirements, apt packages,
+        files, or modules are merged.
+
+        Args:
+            package: Another `Buildable` object to merge into this one.
+        """
         self.requirements = self.requirements.union(package.requirements)
         self.apt_packages = self.apt_packages.union(package.apt_packages)
         self.additional_files = self.additional_files.union(package.additional_files)
         self.python_modules.update(package.python_modules)
 
     def add_requirements(self, reqs: Union[str, list[str]]):
-        '''This function adds python dependencies to a `Buildable` model object
-        
+        """
+        Declare a pip requirement for your model.
+
+        The value of each requirement can be anything supported by a line in
+        a `requirements.txt` file, including version constraints, etc.
+
+        All pip requirements declared via this method will be automatically
+        installed when the container is built.
+
         Args:
-            reqs: (Union[str, list]): Single python package (str) or list of python packages that are required dependencies to run the `ChassisModel.process_fn` attribute. These values are the same values that would follow `pip install` or that would be added to a Python dependencies txt file (e.g., `requirements.txt`) 
-        '''
-        if type(reqs) == str:
+            reqs: Single python package (str) or list of python packages that
+                  are required dependencies to run the `ChassisModel.process_fn`
+                  attribute. These values are the same values that would follow
+                  `pip install` or that would be added to a Python dependencies
+                  txt file (e.g., `requirements.txt`)
+        """
+        if isinstance(reqs, str):
             self.requirements = self.requirements.union(reqs.splitlines())
-        elif type(reqs) == list:
+        elif isinstance(reqs, list):
             self.requirements = self.requirements.union(reqs)
 
     def add_apt_packages(self, packages: Union[str, list]):
-        '''This function adds OS-level dependencies to a `Buildable` model object
-        
+        """
+        Add an OS package that will be installed via `apt-get`.
+
+        If your model requires additional OS packages that are not part of the
+        standard Python container, you can declare them here. Each package
+        declared here will be `apt-get install`'d when the container is built.
+
         Args:
-            reqs: (Union[str, list]): Single OS-level package (str) or list of OS-level packages that are required dependencies to run the `ChassisModel.process_fn` attribute. These values are the same values that can be installed via `apt-get install` 
-        '''
-        if type(packages) == str:
+            packages: Single OS-level package (str) or list of OS-level packages
+                      that are required dependencies to run the
+                      `ChassisModel.process_fn` attribute. These values are the
+                      same values that can be installed via `apt-get install`.
+        """
+        if isinstance(packages, str):
             self.apt_packages = self.apt_packages.union(packages.splitlines())
-        elif type(packages) == list:
+        elif isinstance(packages, list):
             self.apt_packages = self.apt_packages.union(packages)
 
-    def get_packaged_path(self, path: str):
-        '''
-        TODO - internal?
-        '''
+    def get_packaged_path(self, path: str) -> str:
+        """
+        Convenience method for developers wanting to implement their own
+        subclasses of [Buildable][chassis.builder.buildable.Buildable]. This
+        method will return the final path in the built container of any
+        additional files, etc.
+
+        Args:
+            path: The local path of a file.
+
+        Returns:
+            The path the file will have in the final built container.
+        """
         return posixpath.join(PACKAGE_DATA_PATH, os.path.basename(path))
 
     def verify_prerequisites(self, options: BuildOptions):
-        '''
-        TODO - internal?
-        '''
+        """
+        Raises an exception if the object is not yet ready for building.
+
+        Models require having a name, version, and at least one input and
+        one output.
+
+        Args:
+            options: The `BuildOptions` used for the build.
+
+        Raises:
+            RequiredFieldMissing
+        """
         if len(self.metadata.model_name) == 0:
-            raise RequiredFieldMissing("The model must have a name set before it can be built. Please set `metadata.model_name`.")
+            raise RequiredFieldMissing(
+                "The model must have a name set before it can be built. Please set `metadata.model_name`.")
         if len(self.metadata.model_version) == 0:
-            raise RequiredFieldMissing("The model must have a version set before it can be built. Please set `metadata.model_version`.")
+            raise RequiredFieldMissing(
+                "The model must have a version set before it can be built. Please set `metadata.model_version`.")
         if not self.metadata.has_inputs():
-            raise RequiredFieldMissing("The model must have at least one input defined before it can be built. Please call `metadata.add_input()`.")
+            raise RequiredFieldMissing(
+                "The model must have at least one input defined before it can be built. Please call `metadata.add_input()`.")
         if not self.metadata.has_outputs():
-            raise RequiredFieldMissing("The model must have at least one output defined before it can be built. Please call `metadata.add_output()`.")
+            raise RequiredFieldMissing(
+                "The model must have at least one output defined before it can be built. Please call `metadata.add_output()`.")
         if options.cuda_version is not None and options.python_version != "3.8":
             print(f"Warning: Building a container with CUDA currently only supports Python 3.8. Python 3.8 will be used instead of '{options.python_version}'.")
 
     def prepare_context(self, options: BuildOptions = DefaultBuildOptions) -> BuildContext:
-        '''
-        TODO - internal?
-        '''
+        """
+        Constructs the build context that will be used to build the container.
+
+        A build context is a directory containing a `Dockerfile` and any other
+        resources the `Dockerfile` needs to build the container.
+
+        This method is called just before the build is initiated and compiles
+        all the resources necessary to build the container. This includes the
+        `Dockerfile`, required Chassis library code, the server implementation
+        indicated by the `BuildOptions`, the cloudpickle'd model, the
+        serialized model metadata, copies of any additional files, and a
+        `requirements.txt`.
+
+        Typically, you won't call this method directly, it will be called
+        automatically by a Builder. The one instance where you might want to
+        use this method directly is if you want to inspect the contents of the
+        build context _before_ sending it to a Builder.
+
+        Args:
+            options: The `BuildOptions` to be used for this build.
+
+        Returns:
+            A `BuildContext` object.
+        """
         self.verify_prerequisites(options)
 
         platforms = []
@@ -124,13 +220,13 @@ class Buildable(metaclass=abc.ABCMeta):
             f.write(rendered_template.encode())
 
         # Save .dockerignore to package location.
-        dockerignore_template = env.get_template(".dockerignore")
+        dockerignore_template = _env.get_template(".dockerignore")
         dockerignore = dockerignore_template.render()
         with open(os.path.join(context.base_dir, ".dockerignore"), "wb") as f:
             f.write(dockerignore.encode())
 
         # Save the entrypoint file.
-        entrypoint_template = env.get_template("entrypoint.py")
+        entrypoint_template = _env.get_template("entrypoint.py")
         with open(os.path.join(context.base_dir, "entrypoint.py"), "wb") as f:
             f.write(entrypoint_template.render().encode())
         print("Done!")
@@ -153,10 +249,16 @@ class Buildable(metaclass=abc.ABCMeta):
         return context
 
     def render_dockerfile(self, options: BuildOptions) -> str:
-        '''
-        TODO - internal?
-        '''
-        dockerfile_template = env.get_template("Dockerfile")
+        """
+        Renders an appropriate `Dockerfile` for this object with the supplied
+        `BuildOptions`.
+        Args:
+            options: The `BuildOptions` that will be used for this build.
+
+        Returns:
+            A string containing the contents for a `Dockerfile`.
+        """
+        dockerfile_template = _env.get_template("Dockerfile")
         run_apt_get = ""
         if len(self.apt_packages) > 0:
             apt_package_list = " ".join(self.apt_packages)
@@ -173,8 +275,9 @@ class Buildable(metaclass=abc.ABCMeta):
             copy(file, os.path.join(context.data_dir, os.path.basename(file)))
 
     def _write_requirements(self, context: BuildContext, options: BuildOptions):
-        requirements_template = env.get_template("requirements.txt")
-        # Convert to a set then back to a list to unique the entries in case there are duplicates.
+        requirements_template = _env.get_template("requirements.txt")
+        # Convert to a set then back to a list to unique the entries in case
+        # there are duplicates.
         additional_requirements = list(set(self.requirements))
         # Append the server requirements.
         if options.server == "omi":
@@ -183,7 +286,7 @@ class Buildable(metaclass=abc.ABCMeta):
         elif options.server == "kserve":
             from chassis.server.kserve import REQUIREMENTS
             additional_requirements.extend(REQUIREMENTS)
-        # Sort the list so that our requirements.txt is stable for Docker caching.
+        # Sort the list so our requirements.txt is stable for Docker caching.
         additional_requirements.sort()
         rendered_template = requirements_template.render(
             additional_requirements="\n".join(additional_requirements)
@@ -193,8 +296,11 @@ class Buildable(metaclass=abc.ABCMeta):
         with open(requirements_in, "wb") as f:
             f.write(rendered_template.encode("utf-8"))
         # Use pip-tools to expand the list out to a frozen and pinned list.
-        subprocess.run([sys.executable, "-m", "piptools", "compile", "-q", "-o", requirements_txt, requirements_in])
-        # Now post-process the full requirements.txt with automatic replacements.
+        subprocess.run([
+            sys.executable, "-m", "piptools", "compile", "-q",
+            "-o", requirements_txt, requirements_in,
+        ])
+        # Post-process the full requirements.txt with automatic replacements.
         with open(requirements_txt, "rb") as f:
             reqs = f.read().decode()
         for old, new in REQUIREMENTS_SUBSTITUTIONS.items():
