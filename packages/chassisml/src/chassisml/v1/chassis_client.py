@@ -11,7 +11,7 @@ from packaging import version
 
 from chassis.client import OMIClient
 from chassis.protos.v1.model_pb2 import OutputItem
-from chassis.typing import LegacyBatchPredictFunction, LegacyNormalPredictFunction
+from chassis.t import LegacyBatchPredictFunction, LegacyNormalPredictFunction
 from chassis.builder import BuildResponse
 from .chassis_model import ChassisModel
 from .helpers import deprecated
