@@ -33,7 +33,7 @@ class RemoteBuilder:
     supplied options, see [chassis.builder.Buildable.prepare_context][].
 
     Examples:
-        See [chassis.builder.RemoteBuilder.build_image].
+        See [chassis.builder.RemoteBuilder.build_image][].
     """
 
     def __init__(self, url: str, package: Buildable,
