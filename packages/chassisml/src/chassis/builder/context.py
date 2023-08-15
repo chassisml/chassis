@@ -3,7 +3,7 @@ from __future__ import annotations
 import os.path
 import shutil
 import tempfile
-from typing import List, Union
+from typing import List, Optional
 
 from chassis.runtime import PACKAGE_DATA_PATH
 
@@ -14,7 +14,8 @@ class BuildContext:
     Chassis model container.
     """
 
-    def __init__(self, base_dir: Union[str, None] = None, platforms: List[str] = None):
+    def __init__(self, base_dir: Optional[str] = None,
+                 platforms: Optional[List[str]] = None):
         """
         Init.
 

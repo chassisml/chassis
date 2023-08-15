@@ -3,15 +3,15 @@ from __future__ import annotations
 import os
 import json
 import cloudpickle
-from typing import List, Mapping, Union
+from typing import List, Mapping, Optional, Sequence, cast
 
-from chassis.t import PredictFunction
+from chassis.ftypes import BatchPredictFunction, LegacyBatchPredictFunction, LegacyNormalPredictFunction, NormalPredictFunction, PredictFunction
 from .numpy_encoder import NumpyEncoder
 from .constants import (PACKAGE_DATA_PATH, PYTHON_MODEL_KEY,
                         python_pickle_filename_for_key)
 
 
-def batch(items: list, size: int):
+def batch(items: Sequence, size: int):
     """
     Yields lists of size `size` until all items have been exhausted.
 
@@ -29,13 +29,13 @@ class ModelRunner:
     signatures into a single API that can be used by the model servers.
 
     When initializing the model, pass in a Python function that adheres to
-    any of the defined signatures indicated by [chassis.t.PredictFunction][]
+    any of the defined signatures indicated by [chassis.ftypes.PredictFunction][]
     type alias. If your model supports batch predictions, set the `batch_size`
     to the number of inputs that your model can process at once.
     """
 
     @classmethod
-    def load(cls) -> Union[ModelRunner, None]:
+    def load(cls) -> Optional[ModelRunner]:
         """
         Convenience function used by model servers to load a cloudpickle'd
         model in the model container.
@@ -60,7 +60,7 @@ class ModelRunner:
             return None
 
     def __init__(self, predict_fn: PredictFunction, batch_size: int = 1,
-                 is_legacy_fn=False):
+                 is_legacy_fn: bool = False):
         """
         Init.
 
@@ -77,7 +77,7 @@ class ModelRunner:
         self.batch_size = batch_size
         self.legacy = is_legacy_fn
 
-    def predict(self, inputs: List[Mapping[str, bytes]]) -> List[Mapping[str, bytes]]:
+    def predict(self, inputs: Sequence[Mapping[str, bytes]]) -> Sequence[Mapping[str, bytes]]:
         """
         Performs an inference against the model.
 
@@ -95,43 +95,58 @@ class ModelRunner:
         else:
             return self._predict_single(inputs)
 
-    def _predict_single(self, inputs: List[Mapping[str, bytes]]) -> List[Mapping[str, bytes]]:
-        outputs = []
+    def _predict_single(self, inputs: Sequence[Mapping[str, bytes]]) -> Sequence[Mapping[str, bytes]]:
+        # Since the predict function could be any of a number of types,
+        # we need to cast it to the particular type we're expecting to
+        # avoid mypy errors.
+        predict_fn = cast(NormalPredictFunction, self.predict_fn)
+        outputs: List[Mapping[str, bytes]] = []
         for input_item in inputs:
             try:
-                output = self.predict_fn(input_item)
+                output: Mapping[str, bytes] = predict_fn(input_item)
             except Exception as e:
                 print(f"Error: {e}")
                 # TODO - is there more information we can include here like a backtrace?
                 # TODO - convert the error to bytes
-                output = {"error": e}
+                output = {"error": f"{e}".encode()}
             outputs.append(output)
         return outputs
 
-    def _predict_batch(self, inputs: List[Mapping[str, bytes]]) -> List[Mapping[str, bytes]]:
-        outputs = []
+    def _predict_batch(self, inputs: Sequence[Mapping[str, bytes]]) -> Sequence[Mapping[str, bytes]]:
+        # Since the predict function could be any of a number of types,
+        # we need to cast it to the particular type we're expecting to
+        # avoid mypy errors.
+        predict_fn = cast(BatchPredictFunction, self.predict_fn)
+        outputs: List[Mapping[str, bytes]] = []
         # Split inputs into groups of self.batch_size
         batches = batch(inputs, self.batch_size)
         for b in batches:
-            outputs.extend(self.predict_fn(b))
+            outputs.extend(predict_fn(b))
         return outputs
 
-    def _predict_legacy(self, inputs: List[Mapping[str, bytes]]) -> List[Mapping[str, bytes]]:
+    def _predict_legacy(self, inputs: Sequence[Mapping[str, bytes]]) -> Sequence[Mapping[str, bytes]]:
+        outputs: List[Mapping[str, bytes]] = []
         if self.batch_size == 1:
-            outputs = []
+            # Since the predict function could be any of a number of types,
+            # we need to cast it to the particular type we're expecting to
+            # avoid mypy errors.
+            predict_fn = cast(LegacyNormalPredictFunction, self.predict_fn)
             for input_item in inputs:
-                output = self.predict_fn(input_item["input"])
+                output = predict_fn(input_item["input"])
                 outputs.append({"results.json": json.dumps(output, separators=(
                     ",", ":"), cls=NumpyEncoder).encode()})
             return outputs
         else:
+            # Since the predict function could be any of a number of types,
+            # we need to cast it to the particular type we're expecting to
+            # avoid mypy errors.
+            batch_predict_fn = cast(LegacyBatchPredictFunction, self.predict_fn)
             adjusted_inputs = [input_item["input"] for input_item in inputs]
             # Split inputs into groups of self.batch_size
-            outputs = []
             batches = batch(adjusted_inputs, self.batch_size)
             for b in batches:
-                outputs.extend(self.predict_fn(b))
-            adjusted_outputs = [
+                outputs.extend(batch_predict_fn(b))
+            adjusted_outputs: List[Mapping[str, bytes]] = [
                 {"results.json": json.dumps(o, separators=(",", ":"), cls=NumpyEncoder).encode()}
                 for o in outputs]
             return adjusted_outputs

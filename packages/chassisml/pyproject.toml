@@ -49,7 +49,7 @@ docs = [
 where = ["src"]
 
 [tool.setuptools.package-data]
-"*" = ["*.pyi"]
+"*" = ["*.pyi", "py.typed"]
 "chassis.builder" = ["templates/*"]
 "chassis.guides" = ["data/*"]
 
@@ -63,9 +63,9 @@ ignore = ["tests.old"]
 [tool.mypy]
 mypy_path = "src"
 explicit_package_bases = true
+ignore_missing_imports = true
 #check_untyped_defs = true
 #disallow_any_generics = true
-ignore_missing_imports = true
 #no_implicit_optional = true
 #show_error_codes = true
 #strict_equality = true

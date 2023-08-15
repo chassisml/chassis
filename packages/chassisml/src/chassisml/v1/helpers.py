@@ -1,10 +1,11 @@
 import warnings
 import inspect
+from typing import Optional
 
 warnings.filterwarnings("default", category=DeprecationWarning)
 
 
-def deprecated(message: str = None):
+def deprecated(message: Optional[str] = None):
     caller = caller_name()
     msg = f"'{caller}' will change or be removed in the next release."
     if message is not None:

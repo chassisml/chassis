@@ -3,7 +3,7 @@ from __future__ import annotations
 import base64
 import os
 import sys
-from typing import Dict, Union
+from typing import Dict, Optional, Union
 from uuid import uuid4
 import kserve
 from kserve import InferRequest, InferResponse
@@ -19,7 +19,7 @@ class KServe(kserve.Model):
         self.name = name
         self.protocol = protocol
         self.ready = False
-        self.model: Union[ModelRunner, None] = None
+        self.model: Optional[ModelRunner] = None
 
         with open(os.path.join(PACKAGE_DATA_PATH, "model_info"), "rb") as f:
             data = f.read()
@@ -34,23 +34,28 @@ class KServe(kserve.Model):
         return self.ready
 
     def predict(self, payload: Union[Dict, InferRequest, ModelInferRequest],
-                headers: Dict[str, str] = None) -> Union[Dict, InferResponse]:
+                headers: Optional[Dict[str, str]] = None) -> Union[Dict, InferResponse]:
         if self.protocol == "v1":
             return self._predictv1(payload, headers)
         elif self.protocol == "v2":
             return self._predictv2(payload, headers)
+        raise ValueError("Unsupported protocol version")
 
     def _predictv1(self, payload: Union[Dict, InferRequest, ModelInferRequest],
-                   headers: Dict[str, str] = None) -> Union[Dict, InferResponse]:
-        input_key = self.metadata.inputs[0].filename
-        output_key = self.metadata.outputs[0].filename
+                   headers: Optional[Dict[str, str]] = None) -> Union[Dict, InferResponse]:
+        if self.model is None:
+            raise RuntimeError("Model not available")
+        input_key: str = self.metadata.inputs[0].filename
+        output_key: str = self.metadata.outputs[0].filename
         instances = [{input_key: base64.b64decode(instance)} for instance in payload["instances"]]
         outputs = self.model.predict(instances)
         predictions = [o[output_key].decode() for o in outputs]
         return {"predictions": predictions}
 
     def _predictv2(self, payload: Union[Dict, InferRequest, ModelInferRequest],
-                   headers: Dict[str, str] = None) -> Union[Dict, InferResponse]:
+                   headers: Optional[Dict[str, str]] = None) -> Union[Dict, InferResponse]:
+        if self.model is None:
+            raise RuntimeError("Model not available")
         output_data = {
             "id": str(uuid4()),
             "model_name": self.metadata.model_info.model_name,

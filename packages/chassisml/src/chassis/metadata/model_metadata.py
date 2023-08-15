@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List
+from typing import List, Optional
 
 from chassis.protos.v1.model_pb2 import (ModelDescription, ModelFeatures,
                                          ModelInfo, ModelInput, ModelOutput,
@@ -14,10 +14,14 @@ class ModelMetadata:
     the model container.
     """
 
-    def __init__(self, info: ModelInfo = None, description: ModelDescription = None,
-                 inputs: List[ModelInput] = None, outputs: List[ModelOutput] = None,
-                 resources: ModelResources = None, timeout: ModelTimeout = None,
-                 features: ModelFeatures = None):
+    def __init__(self,
+                 info: Optional[ModelInfo] = None,
+                 description: Optional[ModelDescription] = None,
+                 inputs: Optional[List[ModelInput]] = None,
+                 outputs: Optional[List[ModelOutput]] = None,
+                 resources: Optional[ModelResources] = None,
+                 timeout: Optional[ModelTimeout] = None,
+                 features: Optional[ModelFeatures] = None):
         self._info: ModelInfo = info if info is not None else ModelInfo(source="chassis", model_type="grpc")
         self._description = description if description is not None else ModelDescription()
         self._inputs = inputs if inputs is not None else []
@@ -116,7 +120,7 @@ class ModelMetadata:
         """
         return len(self._inputs) > 0
 
-    def add_input(self, key: str, accepted_media_types: List[str] = None,
+    def add_input(self, key: str, accepted_media_types: Optional[List[str]] = None,
                   max_size: str = "1M", description: str = ""):
         """
         Defines an input to the model. Inputs are identified by a string `key`

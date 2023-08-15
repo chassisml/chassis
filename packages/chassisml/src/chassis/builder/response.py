@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import dataclasses
-from typing import Union
+from typing import Optional
 
 from docker.errors import BuildError as DockerBuildError
 
@@ -28,12 +28,12 @@ class BuildResponse:
         remote_build_id: The unique ID of a remote build, if applicable.
     """
 
-    image_tag: Union[str, None]
-    logs: Union[str, None]
+    image_tag: Optional[str]
+    logs: Optional[str]
     success: bool
     completed: bool
-    error_message: Union[str, None]
-    remote_build_id: Union[str, None]
+    error_message: Optional[str]
+    remote_build_id: Optional[str]
 
     def __str__(self):
         lines = []
@@ -49,6 +49,6 @@ class BuildResponse:
 
 
 class BuildError(RuntimeError):
-    def __init__(self, error: DockerBuildError, logs: str = None):
+    def __init__(self, error: DockerBuildError, logs: Optional[str] = None):
         super().__init__(error)
         self.logs = logs

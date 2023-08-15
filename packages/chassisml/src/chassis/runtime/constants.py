@@ -34,3 +34,4 @@ def python_pickle_filename_for_key(key: str) -> str:
     #     return "formatter.pkl"
     # if key == PYTHON_SINGLE_PREDICT_FUNCTION_KEY:
     #     return "simple_python_pipeline.pkl"
+    raise ValueError("Unsupported key")
