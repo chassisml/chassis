@@ -129,8 +129,8 @@ nav:
       - Common ML/DL Frameworks: 
           - guides/frameworks/index.md
           - Diffusers: guides/frameworks/diffusers.md
-          - Transformers: guides/frameworks/transformers.md
           - Torch: guides/frameworks/torch.md
+          - Transformers: guides/frameworks/transformers.md
       - Common Data Bytes Conversion: guides/common-data-types.md
       - Install Remote Service: guides/install-service.md
   - Reference:

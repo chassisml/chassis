@@ -26,7 +26,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-test = ["pytest"]
+test = ["pytest", "pytest-cov", "mypy", "flake8", "tox"]
 kserve = ["kserve >= 0.11"]
 quickstart = ["scikit-learn"]
 docs = [
@@ -52,6 +52,28 @@ where = ["src"]
 "*" = ["*.pyi"]
 "chassis.builder" = ["templates/*"]
 "chassis.guides" = ["data/*"]
+
+[tool.pytest.ini_options]
+addopts = "--cov=chassisml --cov=chassis"
+testpaths = [
+    "tests",
+]
+ignore = ["tests.old"]
+
+[tool.mypy]
+mypy_path = "src"
+explicit_package_bases = true
+#check_untyped_defs = true
+#disallow_any_generics = true
+ignore_missing_imports = true
+#no_implicit_optional = true
+#show_error_codes = true
+#strict_equality = true
+#warn_redundant_casts = true
+#warn_return_any = true
+#warn_unreachable = true
+#warn_unused_configs = true
+#no_implicit_reexport = true
 
 [build-system]
 requires = ["setuptools>=41.0.0"]
