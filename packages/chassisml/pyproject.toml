@@ -49,7 +49,7 @@ docs = [
 where = ["src"]
 
 [tool.setuptools.package-data]
-"*" = ["*.pyi"]
+"*" = ["*.pyi", "py.typed"]
 "chassis.builder" = ["templates/*"]
 "chassis.guides" = ["data/*"]
 
