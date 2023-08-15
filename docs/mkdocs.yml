@@ -127,6 +127,6 @@ nav:
       - reference/index.md
       - Chassis SDK: reference/sdk/
       - Interfaces: reference/interfaces.md
-  - Community:
-      - Get Involved: community/get-involved.md
+  - Get Involved:
+      - get-involved/index.md
   - Release Notes: release-notes.md
