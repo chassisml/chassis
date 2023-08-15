@@ -5,7 +5,7 @@ import json
 import cloudpickle
 from typing import List, Mapping, Optional, Sequence, cast
 
-from chassis.t import BatchPredictFunction, LegacyBatchPredictFunction, LegacyNormalPredictFunction, NormalPredictFunction, PredictFunction
+from chassis.ftypes import BatchPredictFunction, LegacyBatchPredictFunction, LegacyNormalPredictFunction, NormalPredictFunction, PredictFunction
 from .numpy_encoder import NumpyEncoder
 from .constants import (PACKAGE_DATA_PATH, PYTHON_MODEL_KEY,
                         python_pickle_filename_for_key)
@@ -29,7 +29,7 @@ class ModelRunner:
     signatures into a single API that can be used by the model servers.
 
     When initializing the model, pass in a Python function that adheres to
-    any of the defined signatures indicated by [chassis.t.PredictFunction][]
+    any of the defined signatures indicated by [chassis.ftypes.PredictFunction][]
     type alias. If your model supports batch predictions, set the `batch_size`
     to the number of inputs that your model can process at once.
     """
