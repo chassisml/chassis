@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import time
-from typing import List, Mapping, Union
+from typing import Mapping, Optional, Sequence
 
 import docker
 from docker.models.containers import Container
@@ -54,12 +54,12 @@ class OMIClient:
             try:
                 status_response: StatusResponse = self.status()
                 if status_response.status_code != 200:
-                    raise "Model did not initialize successfully"
+                    raise RuntimeError("Model did not initialize successfully")
                 return self
             except Exception:
                 time.sleep(0.5)
         print(f"Error connecting to model running on '{self._host}:{self._port}'")
-        raise "Model server failed to become available in the allotted time"
+        raise RuntimeError("Model server failed to become available in the allotted time")
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self._channel.close()
@@ -80,7 +80,7 @@ class OMIClient:
         res: StatusResponse = loop.run_until_complete(coroutine)
         return res
 
-    def run(self, inputs: List[Mapping[str, bytes]], detect_drift: bool = False,
+    def run(self, inputs: Sequence[Mapping[str, bytes]], detect_drift: bool = False,
             explain: bool = False) -> RunResponse:
         """
         Perform an inference.
@@ -147,10 +147,10 @@ class OMIClient:
         loop.run_until_complete(coroutine)
 
     @classmethod
-    def test_container(cls, container_name: str, inputs: List[Mapping[str, bytes]],
+    def test_container(cls, container_name: str, inputs: Sequence[Mapping[str, bytes]],
                        tag: str = "latest", port: int = 45000, timeout: int = 10,
                        pull: bool = True, detect_drift: bool = False,
-                       explain: bool = False) -> Union[RunResponse, None]:
+                       explain: bool = False) -> Optional[RunResponse]:
         """
         Tests a container. This method will use your local Docker engine to
         spin up the named container, perform an inference against it with the
@@ -197,7 +197,7 @@ class OMIClient:
             docker_client.images.pull(container_name, tag)
             print("Done!")
 
-        container: Union[Container, None] = None
+        container: Optional[Container] = None
         try:
             # Start the container configured to expose the port to `localhost`.
             container = docker_client.containers.run(

@@ -4,7 +4,7 @@ import time
 import urllib.parse
 import warnings
 from collections.abc import Iterable
-from typing import Dict, Mapping, Union
+from typing import Dict, Mapping, Optional
 
 import requests
 from packaging import version
@@ -37,7 +37,7 @@ class ChassisClient:
     """
 
     def __init__(self, base_url: str = 'http://localhost:5000',
-                 auth_header: str = None, ssl_verification: bool = True):
+                 auth_header: Optional[str] = None, ssl_verification: bool = True):
         """
         Init.
 
@@ -161,7 +161,7 @@ class ChassisClient:
         res.raise_for_status()
         return res.text
 
-    def block_until_complete(self, job_id: str, timeout: int = None,
+    def block_until_complete(self, job_id: str, timeout: Optional[int] = None,
                              poll_interval: int = 5) -> BuildResponse:
         """
         **DEPRECATED**
@@ -230,9 +230,9 @@ class ChassisClient:
         deprecated("This method is no longer supported and will be removed in the next release.")
         raise NotImplementedError
 
-    def create_model(self, process_fn: LegacyNormalPredictFunction = None,
-                     batch_process_fn: LegacyBatchPredictFunction = None,
-                     batch_size: int = None) -> ChassisModel:
+    def create_model(self, process_fn: Optional[LegacyNormalPredictFunction] = None,
+                     batch_process_fn: Optional[LegacyBatchPredictFunction] = None,
+                     batch_size: Optional[int] = None) -> ChassisModel:
         """
         **DEPRECATED**
 
@@ -378,7 +378,7 @@ class ChassisClient:
 
     def docker_infer(self, image_id: str, input_data: Mapping[str, bytes],
                      container_url: str = "localhost", host_port: int = 5001,
-                     container_port: str = None, timeout: int = 20,
+                     container_port: Optional[str] = None, timeout: int = 20,
                      clean_up: bool = True,
                      pull_container: bool = False) -> Iterable[OutputItem]:
         """
@@ -438,4 +438,7 @@ class ChassisClient:
             port=host_port,
             timeout=timeout
         )
-        return result.outputs
+        if result is None:
+            return []
+        else:
+            return result.outputs

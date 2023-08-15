@@ -6,11 +6,11 @@ import os
 import signal
 import traceback
 from time import time as t
-from typing import Mapping, Union
+from typing import Mapping, Optional, Union
 
 from grpclib.health.service import Health
 from grpclib.reflection.service import ServerReflection
-from grpclib.server import Server
+from grpclib.server import Server, Stream
 from grpclib.utils import graceful_exit
 
 from chassis.protos.v1.model_grpc import ModzyModelBase
@@ -37,8 +37,8 @@ def log_stack_trace():
 
 
 class ModzyModel(ModzyModelBase):
-    def __init__(self):
-        self.model: Union[ModelRunner, None] = None
+    def __init__(self) -> None:
+        self.model: Optional[ModelRunner] = None
 
         with open(os.path.join(PACKAGE_DATA_PATH, "model_info"), "rb") as f:
             data = f.read()
@@ -58,7 +58,7 @@ class ModzyModel(ModzyModelBase):
         sr.message = message
         return sr
 
-    async def Status(self, stream):
+    async def Status(self, stream: Stream):
         _ = await stream.recv_message()
         start_status_call = t()
         if self.model is None:
@@ -89,7 +89,7 @@ class ModzyModel(ModzyModelBase):
         LOGGER.info(f"Completed call to Status Route in {t() - start_status_call}")
         await stream.send_message(status_response)
 
-    async def Run(self, stream):
+    async def Run(self, stream: Stream):
         request: RunRequest = await stream.recv_message()
         start_run_call = t()
         response = RunResponse()
@@ -132,7 +132,7 @@ class ModzyModel(ModzyModelBase):
         )
         await stream.send_message(response)
 
-    async def Shutdown(self, stream):
+    async def Shutdown(self, stream: Stream):
         _ = await stream.recv_message()
         shutdown_response = ShutdownResponse(
             status_code=200,
@@ -150,7 +150,7 @@ class ModzyModel(ModzyModelBase):
         os.kill(os.getpid(), signal.SIGTERM)
 
 
-def create_output_item(message, data: Mapping[str, bytes] = None):
+def create_output_item(message, data: Optional[Mapping[str, bytes]] = None):
     output_item = OutputItem()
     if data is None:
         # Deals with output items that encapsulate errors

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import dataclasses
 import platform
-from typing import List, Union
+from typing import List, Optional, Union
 
 
 @dataclasses.dataclass
@@ -53,10 +53,10 @@ class BuildOptions:
         server: Server specification to build. "omi" and "kserve" supported.
         base_dir: Optional directory path to save the build context.
     """
-    base_dir: str = None
+    base_dir: Optional[str] = None
     arch: Union[str, List[str]] = platform.machine() or "amd64"
     python_version: str = "3.9"
-    cuda_version: str = None
+    cuda_version: Optional[str] = None
     server: str = "omi"
 
 

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import io
 import json
 import os.path
 import shutil
@@ -7,6 +8,8 @@ import tempfile
 import time
 import urllib.parse
 import warnings
+from typing import Optional
+
 from .buildable import Buildable
 from .options import BuildOptions, DefaultBuildOptions
 import requests
@@ -35,7 +38,7 @@ class RemoteBuilder:
 
     def __init__(self, url: str, package: Buildable,
                  options: BuildOptions = DefaultBuildOptions,
-                 credentials: str = None, tls_verify: bool = True):
+                 credentials: Optional[str] = None, tls_verify: bool = True):
         """
         Init.
 
@@ -87,7 +90,7 @@ class RemoteBuilder:
             warnings.warn("Chassis service version should be >=1.5.0 for compatibility with this SDK version, things may not work as expected. Please update the service.")
 
     def build_image(self, name: str, tag="latest", timeout: int = 3600,
-                    webhook: str = None, clean_context: bool = True,
+                    webhook: Optional[str] = None, clean_context: bool = True,
                     block_until_complete: bool = True) -> BuildResponse:
         """
         Starts a remote build of the container. When finished, the built image
@@ -168,9 +171,10 @@ class RemoteBuilder:
                 headers["Authorization"] = self._credentials
 
             # Compile the files we're going to upload.
+            bc = io.StringIO(json.dumps(build_config))
             build_context = open(package_filename, "rb")
             files = [
-                ("build_config", json.dumps(build_config)),
+                ("build_config", bc),
                 ("build_context", build_context),
             ]
 
@@ -188,7 +192,7 @@ class RemoteBuilder:
             build_response = BuildResponse(**obj)
             print(f"Job has been submitted with id {build_response.remote_build_id}")
 
-            if block_until_complete:
+            if block_until_complete and build_response.remote_build_id is not None:
                 build_response = self.block_until_complete(build_response.remote_build_id)
 
             return build_response
@@ -274,7 +278,8 @@ class RemoteBuilder:
         res.raise_for_status()
         return res.text
 
-    def block_until_complete(self, remote_build_id: str, timeout: int = None,
+    def block_until_complete(self, remote_build_id: str,
+                             timeout: Optional[int] = None,
                              poll_interval: int = 5) -> BuildResponse:
         """
         Blocks until Chassis remote build is complete or the timeout has been

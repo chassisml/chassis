@@ -3,7 +3,7 @@ from __future__ import annotations
 import _io
 import os
 import string
-from typing import List, Mapping, Union
+from typing import List, Mapping, Optional, Sequence, Union
 
 from chassis.metadata import ModelMetadata
 from chassis.builder import BuildContext
@@ -46,7 +46,7 @@ class ChassisModel(Buildable):
         if chassis_client is not None:
             self.chassis_client = chassis_client
 
-    def test(self, test_input: Union[str, bytes, _io.BufferedReader, Mapping[str, bytes], List[Mapping[str, bytes]]]) -> List[Mapping[str, bytes]]:
+    def test(self, test_input: Union[str, bytes, _io.BufferedReader, Mapping[str, bytes], Sequence[Mapping[str, bytes]]]) -> Sequence[Mapping[str, bytes]]:
         """
         Runs a test inference against the model before it is packaged.
 
@@ -144,9 +144,10 @@ class ChassisModel(Buildable):
         deprecated("Method no longer supported and will be removed in the next release.")
         raise NotImplementedError
 
-    def save(self, path: str = None, requirements: Union[str, List[str]] = None,
-             overwrite: bool = False, fix_env: bool = False, gpu=False,
-             arm64: bool = False, conda_env: dict = None) -> BuildContext:
+    def save(self, path: Optional[str] = None,
+             requirements: Optional[Union[str, List[str]]] = None,
+             overwrite: bool = False, fix_env: bool = False, gpu: bool = False,
+             arm64: bool = False, conda_env: Optional[dict] = None) -> BuildContext:
         """
         **DEPRECATED**
 
@@ -180,8 +181,10 @@ class ChassisModel(Buildable):
         deprecated("Please use `ChassisModel.prepare_context()` moving forward.")
 
         # Append any additional requirements.
-        self.parse_conda_env(conda_env)
-        self.add_requirements(requirements)
+        if conda_env is not None:
+            self.parse_conda_env(conda_env)
+        if requirements is not None:
+            self.add_requirements(requirements)
 
         if path is not None and not os.path.exists(path):
             os.makedirs(path, exist_ok=True)
@@ -190,11 +193,14 @@ class ChassisModel(Buildable):
                                cuda_version=DEFAULT_CUDA_VERSION if gpu else None)
         return self.prepare_context(options)
 
-    def publish(self, model_name: str, model_version: str, registry_user: str = None,
-                registry_pass: str = None, requirements: Union[str, list[str]] = None,
+    def publish(self, model_name: str, model_version: str,
+                registry_user: Optional[str] = None,
+                registry_pass: Optional[str] = None,
+                requirements: Optional[Union[str, list[str]]] = None,
                 fix_env: bool = True, gpu: bool = False, arm64: bool = False,
-                sample_input_path: str = None, webhook: str = None,
-                conda_env: dict = None):
+                sample_input_path: Optional[str] = None,
+                webhook: Optional[str] = None,
+                conda_env: Optional[dict] = None):
         """
         **DEPRECATED**
 
@@ -236,8 +242,10 @@ class ChassisModel(Buildable):
         deprecated("Please use `chassis.builder.RemoteBuilder` moving forward.")
 
         # Append any additional requirements.
-        self.parse_conda_env(conda_env)
-        self.add_requirements(requirements)
+        if conda_env is not None:
+            self.parse_conda_env(conda_env)
+        if requirements is not None:
+            self.add_requirements(requirements)
 
         # Update the model name and version in the metadata.
         self.metadata.model_name = model_name
@@ -259,7 +267,7 @@ class ChassisModel(Buildable):
         builder = DockerBuilder(package=self, options=options)
         builder.build_image(image_path, model_version)
 
-    def parse_conda_env(self, conda_env: dict):
+    def parse_conda_env(self, conda_env: Optional[dict]):
         """
         Supports legacy Chassis `conda_env` functionality by parsing pip
         dependencies and inserting into the `Buildable` object via the
