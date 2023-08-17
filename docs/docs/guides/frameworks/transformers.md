@@ -93,6 +93,7 @@ Now, simply copy the below example code in your Python environment and editor of
     # test model  # (10)
     text = open("data/input.txt", 'rb').read()
     results = chassis_model.test({"input.txt": text})
+    print(results)
 
     # define builder object # (11)
     builder = DockerBuilder(package=chassis_model)    
