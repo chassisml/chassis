@@ -1,5 +1,5 @@
 
-This page provides examples that build model containers from models built with the **[Transformers](https://huggingface.co/docs/transformers/index)** library.
+This page provides examples that build model containers from models developed from the **[Transformers](https://huggingface.co/docs/transformers/index)** library.
 
 Each example requires the `transformers` package be installed at a minimum. Use pip to install this in your Python environment:
 
@@ -65,7 +65,7 @@ Now, simply copy the below example code in your Python environment and editor of
         results = {
             "data": {
                 "result": {
-                    "classPredictions": [{"class": labels[i], "score": softmax[0][i]} for i in indices]
+                    "classPredictions": [{"class": labels[i], "score": round(softmax[0][i].item(), 4)} for i in indices]
                 }
             }
         }        
