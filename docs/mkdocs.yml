@@ -134,9 +134,9 @@ nav:
       - Common Data Bytes Conversion: guides/common-data-types.md
       - Install Remote Service: guides/install-service.md
   - Reference:
-      - reference/index.md
-      - Chassis SDK: reference/sdk/
+      - Chassis Basics: reference/basics.md
       - Interfaces: reference/interfaces.md
+      - Chassis SDK: reference/sdk/
   - Get Involved:
       - get-involved/index.md
   - Release Notes: release-notes.md
