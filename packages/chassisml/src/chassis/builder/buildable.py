@@ -43,8 +43,8 @@ def _copy_libraries(context: BuildContext, server: str, ignore_patterns: List[st
              os.path.join(context.chassis_dir, "runtime"), ignore=ignore)
     copytree(os.path.join(root, "chassis", "metadata"),
              os.path.join(context.chassis_dir, "metadata"), ignore=ignore)
-    copytree(os.path.join(root, "chassis", "typing"),
-             os.path.join(context.chassis_dir, "typing"), ignore=ignore)
+    copytree(os.path.join(root, "chassis", "ftypes"),
+             os.path.join(context.chassis_dir, "ftypes"), ignore=ignore)
     copytree(os.path.join(root, "chassis", "server", server),
              os.path.join(context.chassis_dir, "server", server), ignore=ignore)
 
