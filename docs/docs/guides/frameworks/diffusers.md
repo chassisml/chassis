@@ -1,5 +1,5 @@
 
-This page provides examples that build model containers from models built with the **[:hugging: Diffusers](https://huggingface.co/docs/diffusers/index)** library.
+This page provides examples that build model containers from models built with the **[:firecracker: Diffusers](https://huggingface.co/docs/diffusers/index)** library.
 
 Each example requires the `diffusers` package be installed at a minimum. Use pip to install this in your Python environment:
 
@@ -8,7 +8,7 @@ pip install diffusers
 ```
 
 !!! tip "GPU Recommended"
-    Like most computer vision-based and Generative AI-based models, fast performance is heavily dependent on available hardware resources. For a smoother experience, it is highly recommended that you only follow these examples if you have access to a GPU. 
+    Like most computer vision-based and generative AI-based models, fast performance is heavily dependent on available hardware resources. For a smoother experience, it is highly recommended that you only follow these examples if you have access to a GPU. 
 
 
 ## Instruct Pix2Pix

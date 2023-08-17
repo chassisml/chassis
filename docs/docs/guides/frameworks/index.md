@@ -1,6 +1,6 @@
 # Commom ML/DL Frameworks
 
-This collection of how-to guides provides sample workflows that leverage Chassis to create containers out of your models built from the most popular ML frameworks. *Note*: This list of frameworks is not all-inclusive. 
+This collection of how-to guides provides sample workflows that leverage Chassis to create containers out of your models built from the most popular ML frameworks. *NOTE: This list of frameworks is not all-inclusive.* 
 
 Can't find the framework you are looking for? Feel free to fork this repository, add an example or two from your framework of choice, and open a PR. Or come chat with us directly on **[Discord](https://discord.gg/tdfXFY2y)**!
 
@@ -22,7 +22,7 @@ If you prefer to jump straight to the source code, check out the examples sectio
 
 Jump straight to the framework you are looking for!
 
-:hugging: [Diffusers](./diffusers.md)
+:firecracker: [Diffusers](./diffusers.md)
 
 <!-- :simple-scikitlearn: [Scikit-learn](./sklearn.md) -->
 
