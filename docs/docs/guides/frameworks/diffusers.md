@@ -1,7 +1,7 @@
 
 This page provides examples that build model containers from models built with the **[Diffusers](https://huggingface.co/docs/diffusers/index)** library.
 
-Each example requires the `diffusers` package be installed at a minimum, so use pip to install this in your Python environment:
+Each example requires the `diffusers` package be installed at a minimum. Use pip to install this in your Python environment:
 
 ```bash
 pip install diffusers
@@ -124,3 +124,16 @@ Now, simply copy the below example code in your Python environment and editor of
 Using the data inputs provided in the sample data folder, the inputs and outputs of this model should look similar to the following:
 
 TODO: add example in & out?
+
+***Sample input***
+
+![example-input](../../images/example.jpg)
+
+***Prompt***
+
+"turn him into captain america"
+
+***Sample output***
+
+![example-output](../../images/example_out.png)
+
