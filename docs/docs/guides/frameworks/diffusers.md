@@ -1,5 +1,5 @@
 
-This page provides examples that build model containers from models built with the **[Diffusers](https://huggingface.co/docs/diffusers/index)** library.
+This page provides examples that build model containers from models built with the **[:hugging: Diffusers](https://huggingface.co/docs/diffusers/index)** library.
 
 Each example requires the `diffusers` package be installed at a minimum. Use pip to install this in your Python environment:
 

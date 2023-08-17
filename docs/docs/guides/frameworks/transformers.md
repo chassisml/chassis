@@ -1,5 +1,5 @@
 
-This page provides examples that build model containers from models developed from the **[Transformers](https://huggingface.co/docs/transformers/index)** library.
+This page provides examples that build model containers from models developed from the **[:hugging: Transformers](https://huggingface.co/docs/transformers/index)** library.
 
 Each example requires the `transformers` package be installed at a minimum. Use pip to install this in your Python environment:
 
