@@ -305,6 +305,8 @@ class Buildable(metaclass=abc.ABCMeta):
             reqs = f.read().decode()
         for old, new in REQUIREMENTS_SUBSTITUTIONS.items():
             reqs = reqs.replace(old, new)
+        if "torch" in reqs and options.cuda_version is None:
+            reqs = "--extra-index-url https://download.pytorch.org/whl/cpu\n\n" + reqs
         with open(requirements_txt, "wb") as f:
             f.write(reqs.encode())
 
