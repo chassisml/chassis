@@ -4,16 +4,17 @@
 {% extends "base.html" %}
 {% block extrahead %}
   <link rel="stylesheet" href="{{ 'assets/stylesheets/code-snippet.css' | url }}">
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/styles/default.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>  
 {% endblock %}
 {% block announce %}
-  <a href="https://discord.gg/anSeEj8ARg">
-    For updates join the 
-    <span style="color: #7289da">#chassisml</span> 
-    channel on 
-    <span class="twemoji discord">
-      {% include ".icons/fontawesome/brands/discord.svg" %}
-    </span>
-    <strong>Discord</strong>
+  <a href="/getting-started/">
+    <span class="twemoji banner-icon">
+      {% include ".icons/material/party-popper.svg" %}
+    </span>   
+    <strong>Chassis.ml v1.5</strong> now in <em>Beta</em>! Try the getting started guide today
   </a>
 {% endblock %}
 {% block scripts %}

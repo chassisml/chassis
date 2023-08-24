@@ -1,0 +1,81 @@
+[project]
+name = "chassisml"
+version = "1.5.0"
+authors = [
+    { name="Bradley Munday", email="bradley.munday@modzy.com" },
+    { name="Nathan Mellis", email="nathan.mellis@modzy.com" },
+    { name="Carlos Millán Soler", email="cmillan@sciling.com" },
+]
+description = ""
+readme = "README.md"
+requires-python = ">= 3.8"
+classifiers = [
+]
+license = { file = "LICENSE" }
+dependencies = [
+    "requests",
+    "packaging",
+    "chassisml-protobuf",
+    "Jinja2 >= 3.1.2",
+    "cloudpickle == 2.2.0",
+    "pyyaml",
+    "docker",
+    "validators",
+    "numpy",
+    "pip-tools",
+]
+
+[project.optional-dependencies]
+test = ["pytest", "pytest-cov", "mypy", "flake8", "tox"]
+kserve = ["kserve >= 0.11"]
+quickstart = ["scikit-learn"]
+docs = [
+    "tox",
+    "mkdocs>=1.3.0",
+    "mkdocs-autorefs>=0.4.1",
+    "mkdocs-material>=8.1.6",
+    "mkdocs-material-extensions>=1.0.3",
+    "mkdocs-minify-plugin>=0.6.2",
+    "mkdocstrings[python]>=0.18",
+    "mkdocs-gen-files",
+    "mkdocs-literate-nav",
+]
+
+[project.urls]
+"Homepage" = "https://modzy.github.io/chassis"
+"Repository" = "https://github.com/modzy/chassis"
+"Bug Tracker" = "https://github.com/modzy/chassis/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"*" = ["*.pyi", "py.typed"]
+"chassis.builder" = ["templates/*"]
+"chassis.guides" = ["data/*"]
+
+[tool.pytest.ini_options]
+addopts = "--cov=chassisml --cov=chassis"
+testpaths = [
+    "tests",
+]
+ignore = ["tests.old"]
+
+[tool.mypy]
+mypy_path = "src"
+explicit_package_bases = true
+ignore_missing_imports = true
+#check_untyped_defs = true
+#disallow_any_generics = true
+#no_implicit_optional = true
+#show_error_codes = true
+#strict_equality = true
+#warn_redundant_casts = true
+#warn_return_any = true
+#warn_unreachable = true
+#warn_unused_configs = true
+#no_implicit_reexport = true
+
+[build-system]
+requires = ["setuptools>=41.0.0"]
+build-backend = "setuptools.build_meta"

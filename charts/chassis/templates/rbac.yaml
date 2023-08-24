@@ -3,56 +3,28 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: {{ include "chassis.serviceAccountName" . }}
+  labels:
+    {{- include "chassis.labels" . | nindent 4 }}
 rules:
-  - apiGroups: [""] # "" indicates the core API group
-    resources: ["pods", "secrets", "pods/log"]
-    verbs: ["get", "create", "list", "delete", "watch"]
-  - apiGroups: ["batch", "extensions"]
-    resources: ["jobs", "pods"]
-    verbs: ["get", "create", "patch"]
+  - apiGroups: ["batch"]
+    resources: ["jobs"]
+    verbs: ["get", "watch", "list", "create", "update", "patch", "delete"]
+  - apiGroups: [""]
+    resources: ["pods", "pods/log"]
+    verbs: ["list", "get"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-# This role binding allows "jane" to read pods in the "default" namespace.
-# You need to already have a Role named "pod-reader" in that namespace.
 kind: RoleBinding
 metadata:
   name: {{ include "chassis.serviceAccountName" . }}
+  labels:
+    {{- include "chassis.labels" . | nindent 4 }}
 subjects:
-  # You can specify more than one "subject"
   - kind: ServiceAccount
     name: {{ include "chassis.serviceAccountName" . }}
     namespace: {{ .Release.Namespace }}
 roleRef:
-  # "roleRef" specifies the binding to a Role / ClusterRole
   apiGroup: rbac.authorization.k8s.io
-  kind: Role #this must be Role or ClusterRole
+  kind: Role
   name: {{ include "chassis.serviceAccountName" . }}
-
----
-
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  name: job-builder
-rules:
-  - apiGroups: ["batch"]
-    resources: ["jobs"]
-    verbs: ["get","patch"]
----
-apiVersion: rbac.authorization.k8s.io/v1
-# This role binding allows "jane" to read pods in the "default" namespace.
-# You need to already have a Role named "pod-reader" in that namespace.
-kind: RoleBinding
-metadata:
-  name: job-builder
-subjects:
-  # You can specify more than one "subject"
-  - kind: ServiceAccount
-    name: job-builder
-    namespace: {{ .Release.Namespace }}
-roleRef:
-  # "roleRef" specifies the binding to a Role / ClusterRole
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role #this must be Role or ClusterRole
-  name: job-builder
 {{- end }}

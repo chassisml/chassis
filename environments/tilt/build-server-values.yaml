@@ -1,0 +1,15 @@
+debug: true
+
+registry:
+  url: "registry-docker-registry:5000"
+  repositoryPrefix: "tilt"
+  insecure: true
+
+builder:
+  resources:
+    requests:
+      cpu: 2
+      memory: 8Gi
+    limits:
+      cpu: 2
+      memory: 8Gi

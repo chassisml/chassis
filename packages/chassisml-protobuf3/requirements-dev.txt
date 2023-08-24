@@ -1,0 +1,3 @@
+protobuf >= 3.20.0, < 4
+grpcio-tools
+grpclib

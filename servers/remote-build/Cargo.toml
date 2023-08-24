@@ -1,0 +1,26 @@
+[package]
+name = "chassis-build-server"
+version = "2.0.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+actix-web = "4"
+actix-multipart = "0.6.0"
+actix-files = "0.6.2"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1"
+serde_yaml = "0.9"
+kube = { version = "0.83.0", features = ["runtime", "derive"] }
+k8s-openapi = { version = "0.18.0", features = ["v1_24"] }
+uuid = { version = "1", features = ["v4"] }
+tokio = { version = "1", features = ["full"] }
+handlebars = "4.3.7"
+log = "0.4"
+fern = { version = "0.6", features = ["colored"] }
+chrono = "0.4"
+regex = "1.9.1"
+lazy_static = "1.4.0"
+base64 = "0.21.2"
+reqwest = { version = "0.11.18", features = ["json"] }

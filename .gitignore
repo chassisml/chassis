@@ -1,14 +1,22 @@
-.*
 *~
 *.tar
+.venv
 venv
 chassis-sdk/examples/model
 *__pycache__
 *.egg-info
+.tox
+.coverage
 build
 dist
+.idea
+.DS_Store
+scratch
 
 chassisml/examples/keras/*
+examples/hugging-face/model/*
+examples-new/1.5-examples/tf/model/*
 local_test_.py
-hello-world.txt
-*test_sdk.py
+*.ipynb_checkpoints/
+.vscode
+experience_feedback.md

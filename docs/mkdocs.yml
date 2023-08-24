@@ -18,10 +18,12 @@ theme:
   logo: images/chassis-symbol-negative.png
   favicon: images/chassis-symbol.png
   features:
+    - navigation.instant
     - navigation.footer
+    - navigation.indexes
     - navigation.header
-    - navigation.expand
     - navigation.tabs
+    - navigation.tabs.sticky
     - navigation.top
     - toc.integrate
     - content.tabs.link
@@ -33,19 +35,51 @@ plugins:
   - search:
       separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
   - minify:
-      minify_html: true      
+      minify_html: true
+  - gen-files:
+      scripts:
+        - docs/generate_sdk_pages.py
+  - literate-nav:
+      nav_file: navigation.md
   - mkdocstrings:
+      default_handler: python
       handlers:
         python:
-          setup_commands:
-            - import sys 
-            - sys.path.append('../')
-            - sys.path.append('../service/')
-          selection:
-            new_path_syntax: true
-            docstring_style: "google" 
-          rendering:
-            show_category_heading: no
+          paths: ["../packages/chassisml/src"]
+          options:
+            allow_inspection: false
+            docstring_options:
+              ignore_init_summary: true
+            docstring_section_style: table
+            docstring_style: "google"
+            filters:
+              - "!^_"
+            group_by_category: true
+            heading_level: 3
+            inherited_members: true
+            line_length: 60
+            members_order: source
+            merge_init_into_class: true            
+            preload_modules:
+              - chassis
+            separate_signature: true
+            show_bases: false
+            show_category_heading: false
+            show_if_no_docstring: true
+            show_object_full_path: false
+            show_root_full_path: false
+            show_root_heading: false
+            show_root_members_full_path: false
+            show_root_toc_entry: false
+            show_signature: true
+            show_signature_annotations: false
+            show_source: false
+            show_submodules: false
+
+
+watch:
+  - ../packages/chassisml/src/chassis
+  - ../packages/chassisml/src/chassisml
 
 # customization
 extra_css:
@@ -86,35 +120,23 @@ markdown_extensions:
 
 nav:
   - Home: index.md
-  - Getting Started:
-      - getting-started/getting-started.md
-  - Tutorials:
-      - tutorials/deploy-manual.md
-      - tutorials/ds-connect.md
-      - tutorials/ds-postman.md
-      - tutorials/ds-deploy.md
-  - How-to Guides:
-      - Model Containers by Framework: how-to-guides/frameworks.md
-      - Common Data Types Support: how-to-guides/common-data-types.md
-      - Arm Support: how-to-guides/arm-support.md
-      - GPU Support: how-to-guides/gpu-support.md
-      # - Adding Explainability: how-to-guides/explainability.md
-      - Private Docker Registry Support: how-to-guides/private-registry.md
+  - Getting Started: 
+      - getting-started/index.md
+      - Quickstart: getting-started/quickstart.md
+      - Full Chassis Workflow: getting-started/full-workflow.md
+  - Guides:
+      # - guides/index.md
+      - Common ML/DL Frameworks: 
+          - guides/frameworks/index.md
+          - Diffusers: guides/frameworks/diffusers.md
+          - Torch: guides/frameworks/torch.md
+          - Transformers: guides/frameworks/transformers.md
+      - Common Data Bytes Conversion: guides/common-data-types.md
+      - Install Remote Service: guides/install-service.md
   - Reference:
-      - Chassisml Service: service-reference.md
-      - Python SDK: chassisml_sdk-reference.md
-  - Conceptual Guides:
-      - Overview: conceptual-guides/overview.md
-      - Design & Architecture: conceptual-guides/design.md
-      - gRPC: conceptual-guides/grpc.md
-      - Containers: conceptual-guides/containers.md
-  - Community:
-      - FAQs: common-errors.md
-      - Get Involved: get-involved.md
+      - Chassis Basics: reference/basics.md
+      - Interfaces: reference/interfaces.md
+      - Chassis SDK: reference/sdk/
+  - Get Involved:
+      - get-involved/index.md
   - Release Notes: release-notes.md
-
-
-   
-
-
-# use_directory_controls: false

@@ -1,0 +1,16 @@
+[project]
+name = "chassisml-protobuf"
+version = "4.0.0"
+dependencies = [
+    "protobuf >= 4.21.0, < 5",
+    "grpclib",
+]
+
+#[tool.setuptools.packages]
+#find = {}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"*" = ["*.pyi"]

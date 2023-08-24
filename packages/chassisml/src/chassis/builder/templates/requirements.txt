@@ -1,0 +1,5 @@
+cloudpickle == 2.2.0
+chassisml-protobuf
+numpy
+
+{{ additional_requirements }}

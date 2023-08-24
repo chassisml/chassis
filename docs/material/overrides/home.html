@@ -51,16 +51,16 @@
         <p>
           Chassis is an open-source project that automatically turns your ML models into production containers. 
           <br><br>
-          With easy integration in mind, Chassis picks up right where your training code leaves off and builds containers for 
+          Chassis picks up right where your training code leaves off and builds containers for 
           <strong>any</strong> 
-          target architecture. Execute a single Chassis job and run your models in the cloud, on-prem, or on edge devices (
+          target architecture. Execute a single Chassis job then run your containerized models in the cloud, on-prem, or on edge devices (
           <img height="16" width="16" src="https://cdn.simpleicons.org/raspberrypi" />
           Raspberry Pi, 
           <img height="16" width="16" src="https://cdn.simpleicons.org/nvidia" />          
           NVIDIA Jetson Nano, 
           <img height="16" width="16" src="https://cdn.simpleicons.org/intel" />
           Intel NUC, 
-          and more!).
+          and others).
           <br><br>
           <strong>Benefits:</strong>
           <br>
@@ -68,7 +68,7 @@
             {% include ".icons/fontawesome/solid/circle-check.svg" %}
           </span>          
           Turns models into containers, automatically
-          <br>
+          <br>          
           <span class="twemoji check">
             {% include ".icons/fontawesome/solid/circle-check.svg" %}
           </span>           
@@ -76,13 +76,13 @@
           <br>
           <span class="twemoji check">
             {% include ".icons/fontawesome/solid/circle-check.svg" %}
-          </span>           
-          Containers can run on Modzy, KServe (v1), and more
+          </span>          
+          Builds containers locally on Docker or as a K8s service
           <br>
           <span class="twemoji check">
             {% include ".icons/fontawesome/solid/circle-check.svg" %}
           </span>           
-          Connects to Docker Hub and other registries
+          Chassis containers run on Docker, containerd, Modzy, and more
           <br>
           <span class="twemoji check">
             {% include ".icons/fontawesome/solid/circle-check.svg" %}
@@ -124,17 +124,17 @@
           <span class="twemoji arrow">
             {% include ".icons/fontawesome/solid/arrow-right.svg" %}
           </span>
-          <strong>Chassis SDK</strong>: The Chassis Python package enables you to interact with the Chassis service. Download via <a href="https://pypi.org/project/chassisml/" class="light-accent">PyPi</a>: <code>pip install chassisml</code>
+          <strong>Docker</strong>: To leverage Chassis's local build option, you will need to make sure Docker is installed on your machine. If it is not already installed, follow the installation instructions specific to your OS <strong><a href="https://www.docker.com/products/docker-desktop/" class="light-accent">here</a></strong>.                               
+          <br><br>
+          <span class="twemoji arrow">
+            {% include ".icons/fontawesome/solid/arrow-right.svg" %}
+          </span>
+          <strong>Chassis SDK</strong>: The Chassis Python package enables you to build model containers locally. Download via <strong><a href="https://pypi.org/project/chassisml/" class="light-accent">PyPi</a></strong>: <code>pip install chassisml</code>
           <br><br>
           <span class="twemoji arrow">
             {% include ".icons/fontawesome/solid/arrow-right.svg" %}
           </span>          
           <strong>Python model</strong>: Bring your model trained with your favorite Python ML framework (Scikit-learn, PyTorch, Tensorflow, or any framework you use!) 
-          <br><br>
-          <span class="twemoji arrow">
-            {% include ".icons/fontawesome/solid/arrow-right.svg" %}
-          </span>
-          <strong>Registry Credentials</strong>: Chassis will build a container image and push it to your preferred registry, so make sure you either have a Docker Hub account or credentials to your private container registry. You can create a free <a href="https://hub.docker.com/signup" class="light-accent">Docker Hub</a> account today if you need one!                     
         </p>
         <br>
         <a href="{{ page.next_page.url | url }}" title="{{ page.next_page.title | e }}" class="md-button md-button--primary">
@@ -148,43 +148,39 @@
         </a>           
       </div>
       <div class="mdx-hero__codeblock">
-        <div class="demo-highlight"><pre><span></span>
-          <span class="kn">import</span> <span class="nn">chassisml</span>
-
-          <span class="c1"># NOTE: The below code snippet is pseudo code that</span>
-          <span class="c1"># intends to demonstrate the general workflow when </span>
-          <span class="c1"># using Chassis and will not execute as is. Substitute</span>
-          <span class="c1"># with your own Python framework, any revelant utility </span>
-          <span class="c1"># methods, and syntax specific to your model. </span>
+        <pre><code class="python">
+          from typing import Mapping
+          from chassisml import ChassisModel
+          from chassis.builder import DockerBuilder
           
-          <span class="kn">import</span> <span class="nn">framework</span> 
-          <span class="kn">import</span> <span class="nn">preprocess</span><span class="o">,</span> <span class="nn">postprocess</span>
+          # NOTE: The below code snippet is pseudo code that
+          # intends to demonstrate the general workflow when 
+          # using Chassis and will not execute as is. Substitute
+          # with your own Python framework, any revelant utility 
+          # methods, and syntax specific to your model.
           
-          <span class="c1"># load model</span>
-          <span class="n">model</span> <span class="o">=</span> <span class="n">framework</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">"path/to/model/file"</span><span class="p">)</span>
+          import framework 
+          import preprocess, postprocessmodel
           
-          <span class="c1"># define process function and create model</span>
-          <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="n">input_bytes</span><span class="p">):</span>
-              <span class="c1"># preprocess data</span>
-              <span class="n">data</span> <span class="o">=</span> <span class="n">preprocess</span><span class="p">(</span><span class="n">input_bytes</span><span class="p">)</span>
-              <span class="c1"># perform inference</span>
-              <span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-              <span class="c1"># process output</span>
-              <span class="n">output</span> <span class="o">=</span> <span class="n">postprocess</span><span class="p">(</span><span class="n">predictions</span><span class="p">)</span>
-              <span class="k">return</span> <span class="n">output</span>
+          # load model
+          model = framework.load("path/to/model/file")
           
-          <span class="c1"># connect to Chassis, create and publish model</span>
-          <span class="n">chassis_client</span> <span class="o">=</span> <span class="n">chassisml</span><span class="o">.</span><span class="n">ChassisClient</span><span class="p">(</span><span class="s2">"https://chassis.app.modzy.com"</span><span class="p">)</span>
-          <span class="n">chassis_model</span> <span class="o">=</span> <span class="n">chassis_client</span><span class="o">.</span><span class="n">create_model</span><span class="p">(</span><span class="n">process_fn</span><span class="o">=</span><span class="n">process</span><span class="p">)</span>
+          # define predict function
+          def predict(input_data: Mapping[str, bytes]) -> dict[str, bytes]:
+              # preprocess data
+              data = preprocess(input_data['input'])
+              # perform inference
+              predictions = model.predict(data)
+              # process output
+              output = postprocess(predictions)
+              return {"results.json": output}    
           
-          <span class="c1"># publish model to Docker registry</span>
-          <span class="n">response</span> <span class="o">=</span> <span class="n">chassis_model</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
-              <span class="n">model_name</span><span class="o">=</span><span class="s2">"My First Chassis Model!"</span><span class="p">,</span>
-              <span class="n">model_version</span><span class="o">=</span><span class="s2">"0.0.1"</span><span class="p">,</span>
-              <span class="n">registry_user</span><span class="o">=</span><span class="s2">"insert-dockerhub-username"</span><span class="p">,</span>
-              <span class="n">registry_pass</span><span class="o">=</span><span class="s2">"insert-dockerhub-password"</span><span class="p">,</span>
-          <span class="p">)</span>
-          </pre></div>
+          # create ChassisModel object
+          model = ChassisModel(predict)
+          builder = DockerBuilder(model)
+          # build container with local Docker option
+          build_response = builder.build_image(name="My First Chassis Model", tag="0.0.1")
+        </code></pre>        
       </div>
     </div>
   </div>
@@ -193,10 +189,10 @@
 
 <!-- Footer -->
 <footer class="md-footer">
-  <nav class="md-footer__inner md-grid" aria-label="Footer"> <a href="getting-started/getting-started/"
+  <nav class="md-footer__inner md-grid" aria-label="Footer"> <a href="getting-started/"
       class="md-footer__link md-footer__link--next" aria-label="Next: Getting Started" rel="next">
       <div class="md-footer__title">
-        <div class="md-ellipsis"> <span class="md-footer__direction"> Next </span> Getting Started </div>
+        <div class="md-ellipsis"> <span class="md-footer__direction"> Next </span> <div class="md-ellipsis"> Getting Started </div> </div>
       </div>
       <div class="md-footer__button md-icon"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
           <path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"></path>

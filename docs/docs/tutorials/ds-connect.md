@@ -88,7 +88,7 @@ chassis_client = chassisml.ChassisClient("http://localhost:5000")
 
 Now let's create a Chassis model with our process function, test it locally with a local input file, and then also test the creation of the environment and the execution of the model with a sample input file within that created environment (this will occur within the Chassis service):
 
-**NOTE**: `test_env` function not available in [publicly-hosted](../getting-started/getting-started.md) service.
+**NOTE**: `test_env` function not available in [publicly-hosted](../getting-started/index.md) service.
 
 ```python
 # create Chassis model
