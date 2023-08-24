@@ -171,7 +171,7 @@ jobs:
           push: true
           tags: |
             ghcr.io/${{ github.repository }}-build-server:${{ env.RELEASE_VERSION }}
-#            ghcr.io/${{ github.repository }}-build-server:latest
+            ghcr.io/${{ github.repository }}-build-server:latest
 
 #  helm:
 #    name: Publish Helm chart
