@@ -78,7 +78,7 @@ jobs:
           tox -e ${{ matrix.tox-name }}
 
   pip:
-    name: Build and publish SDK to PyPI
+    name: Build SDK
     needs: [lint, tests]
     runs-on: ubuntu-latest
     steps:
