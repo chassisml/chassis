@@ -1,157 +1,204 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI
 
 # Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
-    branches: [ main ]
-    # tags: v*
-  
-  # pull_request: 
+    branches:
+      - main
+      - nathan/overhaul
+    tags:
+      - v*.*.*
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
+
   lint:
+    name: Run Python lint and type checks
     runs-on: ubuntu-latest
-    env:
-      CHASSIS_URL: ${{secrets.CHASSIS_URL}}
-      DOCKER_USER: ${{secrets.DOCKER_USER}}
-      DOCKER_PASS: ${{secrets.DOCKER_PASS}}
-      MODZY_BASE_URL: ${{secrets.MODZY_BASE_URL}}
-      MODZY_API_KEY: ${{secrets.MODZY_API_KEY}}
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - name: Setup Repo
-        uses: actions/checkout@v2
-        with:
-          submodules: recursive 
+      - name: Checkout
+        uses: actions/checkout@v3
 
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v2
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
           # Semantic version range syntax or exact version of a Python version
-          python-version: 3.8
+          python-version: 3.9
+          cache: pip
+          cache-dependency-path: |
+            packages/chassisml/pyproject.toml
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install ./packages/chassisml[test]
 
-      - name: Lint with flake8
-        run: |
-          # stop the build if there are Python syntax errors or undefined names
-          flake8 . --extend-ignore E303,E501,E712,E111,F821,E225 --count --select=E9,F63,F7,F82 --show-source --statistics
-          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+      - name: Lint
+        run: tox lint
 
-  docs:
-    runs-on: ubuntu-latest
-    env:
-      PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION: python
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
+      - name: Verify Types
+        run: tox type
+
+  tests:
+    name: Run tests for ${{ matrix.os }}/${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: [3.8, 3.9, 3.10, 3.11]
+        include:
+          - python-version: 3.8
+            tox-name: py38
+          - python-version: 3.9
+            tox-name: py39
+          - python-version: 3.10
+            tox-name: py310
+          - python-version: 3.11
+            tox-name: py311
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
-          submodules: recursive 
-
-      - name: Deploy
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.10'
-
-      - name: Upgrade pip
-        run: |
-          # install pip=>20.1 to use "pip cache dir"
-          python3 -m pip install --upgrade pip
-
-      - name: Get pip cache dir
-        id: pip-cache
-        run: echo "::set-output name=dir::$(pip cache dir)"
-
-      - name: Cache dependencies
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.pip-cache.outputs.dir }}
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: |
+            packages/chassisml/pyproject.toml
 
       - name: Install dependencies
-        run: python3 -m pip install -r ./requirements.txt
-
-      - run: |
-          cd docs/
-          mkdocs build
-          cd ../
-
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
-        if: ${{ github.ref == 'refs/heads/main' }}
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: /home/runner/work/chassis/chassis/docs/site         
-          
-  helm:
-    # This is required since mkdocs wipes the
-    # branch so it could delete all helm stuff.
-    needs: [docs]
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: See output of helm charts
         run: |
-          helm template --debug --set $(echo $(cat service/.env | grep -v '^#') | tr ' ' ',') charts/*
+          python -m pip install --upgrade pip
+          pip install ./packages/chassisml[test]
 
-      # - name: Override values from service .env
-      #   run: |
-      #     # Populate values from .env file to helm values.
-      #     cat service/.env \
-      #       | grep -v '^#' \
-      #       | grep -v '^$' \
-      #       | while read -r line; do \
-      #           field=$(echo $line | awk -F= '{ print $1  }'); \
-      #           value=$(echo $line | awk -F= '{ print $2  }'); \
-      #           sed -i "s,${field}:.*,${field}: ${value},g" charts/*/values.yaml; \
-      #         done
-      #     repo_service=ghcr.io/${{ github.repository }}-service:${{ github.sha }}
-      #     sed -i "s,SERVICE_REPOSITORY:.*,SERVICE_REPOSITORY: ${repo_service},g" charts/*/values.yaml
+      - name: Run tests
+        run: |
+          tox ${{ matrix.tox-name }}
 
-      - name: Publish Helm charts
-        uses: stefanprodan/helm-gh-pages@master
+  pip:
+    name: Build and publish SDK to PyPI
+    needs: [lint, tests]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          charts_dir: charts
+          python-version: 3.9
+          cache: pip
+          cache-dependency-path: |
+            packages/chassisml/pyproject.toml
 
-  docker-service:
-    needs: [lint]
+      - name: Install pypa/build
+        run: |
+          pip install build
+
+      - name: Build distribution
+        run: |
+          python3 -m build --sdist --wheel --outdir dist/ packages/chassisml
+
+      - name: Publish distribution to PyPI
+        if: startsWith(github.ref, "refs/tags")
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
+
+  docs:
+    name: Update docs
+    needs: [lint, tests]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.10
+          cache: pip
+          cache-dependency-path: |
+            packages/chassisml/pyproject.toml
+
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install ./packages/chassisml[docs]
+
+      - name: Build docs
+        run: |
+          tox docs
+
+#      - name: Publish docs
+#        if: startsWith(github.ref, "refs/tags")
+#        uses: peaceiris/actions-gh-pages@v3
+#        with:
+#          github_token: ${{ secrets.GITHUB_TOKEN }}
+#          publish_dir: /home/runner/work/chassis/build/docs
+
+  container-images:
+    name: Build container images
+    needs: [lint, tests]
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: recursive
+      - name: Set tag value
+        run: |
+          if [ '${{github.ref_type}}' = 'tag' ]; then
+            echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+          else
+            echo "RELEASE_VERSION=build-$(git rev-parse --short $GITHUB_SHA)" >> $GITHUB_ENV
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v3
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           registry: ghcr.io
-          username: ${{ github.repository_owner }}
+          username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push service
+      - name: Build and push remote build server
         uses: docker/build-push-action@v2
         with:
-          context: ./service
+          context: ./servers/remote-build
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}-service:${{ github.sha }}
-            ghcr.io/${{ github.repository }}-service:latest
+            ghcr.io/${{ github.repository }}-build-server:${{ env.RELEASE_VERSION }}
+#            ghcr.io/${{ github.repository }}-build-server:latest
+
+#  helm:
+#    name: Publish Helm chart
+#    # This is required since mkdocs wipes the
+#    # branch so it could delete all helm stuff.
+#    needs: [docs, container-images]
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v2
+#        with:
+#          # Fetch all branches/tags
+#          fetch-depth: 0
+#
+#      - name: Configure Git
+#        run: |
+#          git config user.name "$GITHUB_ACTOR"
+#          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+#
+#      - name: Install Helm
+#        uses: azure/setup-helm@v3
+#
+#      - name: Run chart-releaser
+#        uses: helm/chart-releaser-action@v1.6.0
+#        with:
+#          charts_dir: charts
+#        env:
+#          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
