@@ -74,7 +74,7 @@ builder = DockerBuilder(package=chassis_model)
 
 # local docker mode
 start_time = time.time()
-res = builder.build_image(name="resnet5-image-classification", show_logs=True)
+res = builder.build_image(name="resnet50-image-classification", show_logs=True)
 end_time = time.time()
 print(res)
 print(f"Container image built in {round((end_time-start_time)/60, 5)} minutes")

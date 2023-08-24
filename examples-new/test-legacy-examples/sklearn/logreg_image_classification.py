@@ -1,8 +1,10 @@
 import json
 import time
+import pickle
 from typing import Mapping
 
 from chassis.builder import DockerBuilder
+from chassis.metadata import ModelMetadata
 from chassisml import ChassisModel, ChassisClient
 
 from sklearn.linear_model import LogisticRegression
@@ -59,9 +61,11 @@ Create Model
 # model = chassis_client.create_model(process_fn=process)
 # new way
 model = ChassisModel(process_fn=process, legacy_predict_fn=True)
-
 # add pip requirements
 model.add_requirements(["scikit-learn", "numpy"])
+# add metadata
+model.metadata.model_name = "Scikit-learn Digits Classifier"
+model.metadata.model_version = "0.0.1"
 
 # test model
 sample_filepath = './data/digits_sample.json'

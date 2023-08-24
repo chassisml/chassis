@@ -1,0 +1,7 @@
+cloudpickle == 2.2.0
+chassisml-protobuf
+numpy
+
+grpclib
+torch
+ultralytics

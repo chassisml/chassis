@@ -1,5 +1,6 @@
 import io
 import time
+import json
 import numpy as np
 from typing import Mapping
 
@@ -13,7 +14,7 @@ from PIL import Image
 model = yolov5.load('keremberke/yolov5n-license-plate')
 
 # set model params
-model.conf = 0.2  # NMS confidence threshold
+# model.conf = 0.0  # NMS confidence threshold
 model.iou = 0.45  # NMS IoU threshold
 model.agnostic = False  # NMS class-agnostic
 model.multi_label = False  # NMS multiple labels per box
@@ -33,9 +34,9 @@ def xyxy2xywh(x):
     return y  
 
 # create predict function
-def predict(input_bytes: Mapping[str, bytes]) -> dict[str, bytes]:
+def predict(inputs: Mapping[str, bytes]) -> dict[str, bytes]:
     # load data
-    img = Image.open(io.BytesIO(input_bytes['input'])).convert("RGB")
+    img = Image.open(io.BytesIO(inputs['image'])).convert("RGB")
     
     # run inference
     results = model(img, size=640)
@@ -47,7 +48,7 @@ def predict(input_bytes: Mapping[str, bytes]) -> dict[str, bytes]:
         # print(det.shape)
         detection_output = {}
         detection_output["class"] = labels[int(det[5].item())]
-        detection_output["score"] = det[4].item()
+        detection_output["score"] = round(det[4].item(), 4)
         detection_output["bounding_box"] = {
             "x": det[0].item(),
             "y": det[1].item(),
@@ -60,35 +61,41 @@ def predict(input_bytes: Mapping[str, bytes]) -> dict[str, bytes]:
         'detections': final_output
     }
     
-    return {'results.json': output}    
+    return {'results.json': json.dumps(output).encode()}    
 
 
 # create chassis model object
 chassis_model = ChassisModel(predict)
 chassis_model.add_requirements(["yolov5", "Pillow", "opencv-python-headless"])
+chassis_model.metadata.model_name = "YOLOv5 LP Detection"  
+chassis_model.metadata.model_version = "0.0.1"
+chassis_model.metadata.add_input(                                                                    
+    key="image",
+    accepted_media_types=["image/jpeg", "image/png"],
+    max_size="10M",
+    description="Image data"
+)
+chassis_model.metadata.add_output(
+    key="results.json",
+    media_type="application/json",
+    max_size="1M",
+    description="LP detections with label, confidence score, and bounding box in xywh format"
+)
 
 # test model
-img_path = "data/sempre-bcam-4.png"
-results = chassis_model.test(img_path)
+img = open("data/sempre-bcam-4.png", "rb").read()
+results = chassis_model.test({"image": img})
 print(results)
 
+# define builder object
+# options = BuildOptions(base_dir=")
+# chassis_model.prepare_context(context)
+builder = DockerBuilder(package=chassis_model)    
+
 # local docker mode
-builder = DockerBuilder(chassis_model)
 start_time = time.time()
-res = builder.build_image(name="bmunday131/yolov5-object-detection", tag="0.0.1", show_logs=True)
+res = builder.build_image(name="yolov5-lp-detection", show_logs=True)
 end_time = time.time()
 print(res)
 print(f"Container image built in {round((end_time-start_time)/60, 5)} minutes")
-    
-# server mode
-# chassis_client = ChassisClient("http://localhost:8080")
-
-# # new way
-# builder = RemoteBuilder(chassis_client, chassis_model)
-# start_time = time.time()
-# res = builder.build_image(name="yolov5-object-detection", tag="0.0.1")
-# end_time = time.time()
-# print(res)
-# print(f"Container image built in {round((end_time-start_time)/60, 5)} minutes")
-    
     

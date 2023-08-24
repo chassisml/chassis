@@ -77,7 +77,7 @@ print(results)
 # local docker mode
 builder = DockerBuilder(chassis_model)
 start_time = time.time()
-res = builder.build_image(name="bmunday131/yolos-license-plate-detection", tag="0.0.2", show_logs=True)
+res = builder.build_image(name="bmunday131/yolos-license-plate-detection", tag="test", show_logs=True)
 end_time = time.time()
 print(res)
 print(f"Container image built in {round((end_time-start_time)/60, 5)} minutes")
