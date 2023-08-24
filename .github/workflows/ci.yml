@@ -39,10 +39,10 @@ jobs:
           pip install ./packages/chassisml[test]
 
       - name: Lint
-        run: tox lint
+        run: tox -e lint
 
       - name: Verify Types
-        run: tox type
+        run: tox -e type
 
   tests:
     name: Run tests for ${{ matrix.os }}/${{ matrix.python-version }}
@@ -78,7 +78,7 @@ jobs:
 
       - name: Run tests
         run: |
-          tox ${{ matrix.tox-name }}
+          tox -e ${{ matrix.tox-name }}
 
   pip:
     name: Build and publish SDK to PyPI
@@ -131,7 +131,7 @@ jobs:
 
       - name: Build docs
         run: |
-          tox docs
+          tox -e docs
 
 #      - name: Publish docs
 #        if: startsWith(github.ref, 'refs/tags')
