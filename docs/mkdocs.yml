@@ -64,6 +64,8 @@ extra:
       link: https://join.slack.com/t/mlops-community/shared_invite/zt-10jopsclv-sny902l2GOFdElU2blfACg
     - icon: fontawesome/brands/github
       link: https://github.com/modzy/chassis
+  version:
+    provider: mike
 
 # extensions
 markdown_extensions:
