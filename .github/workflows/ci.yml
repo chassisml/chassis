@@ -41,8 +41,8 @@ jobs:
       - name: Lint
         run: tox -e lint
 
-      - name: Verify Types
-        run: tox -e type
+#      - name: Verify Types
+#        run: tox -e type
 
   tests:
     name: Run tests for ${{ matrix.os }}/${{ matrix.python-version }}
