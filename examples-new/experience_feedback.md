@@ -1,15 +1,5 @@
-# Raw Feedback/thoughts/notes
-- the `--editable` version isn't recognized by the python interpreter in vscode which is annoying
-        - was able to fix by creating a `.vscode/settings.json` file
-
-- error returned by model.test is unclear where it comes from
-- NOTE TO SELF: using old method need to add legacy_predict_fn to ChassisModel instantiation
-
 # Questions
 - can we get rid of the proxy issue by hosting a base image in our modzy dockerhub account?
-- block until complete functionality?
-- recommended workflow for pulling container down?
-
 
 # Bugs
 - tf models still present cloudpickle issue (supported in 1.6?)
@@ -53,19 +43,14 @@ ImportError: libGL.so.1: cannot open shared object file: No such file or directo
 - still haven't figured out cpu version of torch
 
 
-# Todo (examples)
-- remove "publicly-hosted" svm sklearn example
-- remove all ONNX models?
-- remove PMML example that no longer works?
-
 
 # docs specific todos
 - ~~~look into versioning~~~
-- overwrite docs
+- ~~~overwrite docs~~~
 - alpha version
     - ~~~ home page --> tighten up a little ~~~ 
     - ~~~ bottom getting started --> change to local docker build ~~~
-    - Fix margins on home page code block
+    - ~~~Fix margins on home page code block~~~
     - ~~~ Getting started --> getting started (get rid of weirdness) ~~~
     - Getting started
         - ~~~ docker should be default method we point people towards ~~~
@@ -82,13 +67,11 @@ ImportError: libGL.so.1: cannot open shared object file: No such file or directo
         - generative AI example
         - pytorch
         - tensorflow
-
-        - remove common data types suport
         - ~~~ arm support remove for now ~~~
         - ~~~ gpu support for now ~~~
         - documenting model metadata
     - ~~~ reference --> docstrings ~~~
-    - reference --> protofile ("Interfaces" --> OMI & KServe)
+    - ~~~reference --> protofile ("Interfaces" --> OMI & KServe)~~~
     - ~~~ get rid of conceptual guides for alpha ~~~
     - ~~~ kill FAQs and recreate as needed ~~~
     - ~~~ add 1.5 alpha tag ~~~
