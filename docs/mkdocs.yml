@@ -59,7 +59,7 @@ plugins:
             inherited_members: true
             line_length: 60
             members_order: source
-            merge_init_into_class: true            
+            merge_init_into_class: true
             preload_modules:
               - chassis
             separate_signature: true
@@ -98,6 +98,8 @@ extra:
       link: https://join.slack.com/t/mlops-community/shared_invite/zt-10jopsclv-sny902l2GOFdElU2blfACg
     - icon: fontawesome/brands/github
       link: https://github.com/modzy/chassis
+  version:
+    provider: mike
 
 # extensions
 markdown_extensions:
@@ -114,19 +116,19 @@ markdown_extensions:
       emoji_index: !!python/name:materialx.emoji.twemoji
       emoji_generator: !!python/name:materialx.emoji.to_svg
   - pymdownx.tabbed:
-      alternate_style: true    
+      alternate_style: true
   - pymdownx.tasklist:
-      custom_checkbox: true      
+      custom_checkbox: true
 
 nav:
   - Home: index.md
-  - Getting Started: 
+  - Getting Started:
       - getting-started/index.md
       - Quickstart: getting-started/quickstart.md
       - Full Chassis Workflow: getting-started/full-workflow.md
   - Guides:
       # - guides/index.md
-      - Common ML/DL Frameworks: 
+      - Common ML/DL Frameworks:
           - guides/frameworks/index.md
           - Diffusers: guides/frameworks/diffusers.md
           - Torch: guides/frameworks/torch.md
