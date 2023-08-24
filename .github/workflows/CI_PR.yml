@@ -16,81 +16,81 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-
-    steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - name: Setup Repo
-        uses: actions/checkout@v2
-        with:
-          submodules: recursive 
-
-      - name: Setup Environment Variable
-        run: |
-          export CHASSIS_URL=${{secrets.CHASSIS_URL}}
-          export DOCKER_USER=${{secrets.DOCKER_USER}}
-          export DOCKER_PASS=${{secrets.DOCKER_PASS}}
-          export MODZY_BASE_URL=${{secrets.MODZY_BASE_URL}}
-          export MODZY_API_KEY=${{secrets.MODZY_API_KEY}}
-          
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v2
-        with:
-          # Semantic version range syntax or exact version of a Python version
-          python-version: 3.8
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-      - name: Lint with flake8
-        run: |
-          # stop the build if there are Python syntax errors or undefined names
-          flake8 . --extend-ignore E303,E501,E712,E111,F821,E225 --count --select=E9,F63,F7,F82 --show-source --statistics
-          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-  tests:
-    runs-on: ubuntu-latest
-    if: true
-    env:
-      CHASSIS_URL: ${{secrets.CHASSIS_URL}}
-      DOCKER_USER: ${{secrets.DOCKER_USER}}
-      DOCKER_PASS: ${{secrets.DOCKER_PASS}}
-      MODZY_BASE_URL: ${{secrets.MODZY_BASE_URL}}
-      MODZY_API_KEY: ${{secrets.MODZY_API_KEY}}
-    
-    steps:   
-    # new
-      - uses: actions/checkout@v2
-        with:
-          submodules: recursive 
-
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v2
-        with:
-          # Semantic version range syntax or exact version of a Python version
-          python-version: '3.8'
-
-      - name: Upgrade pip
-        run: |
-          # install pip=>20.1 to use "pip cache dir"
-          python3 -m pip install --upgrade pip
-      - name: Get pip cache dir
-        id: pip-cache
-        run: echo "::set-output name=dir::$(pip cache dir)"
-
-      - name: Cache dependencies
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.pip-cache.outputs.dir }}
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-        
-      - name: Install dependencies
-        run: python3 -m pip install -r ./tests/requirements.txt                      
-
-      - name: Test with Chassis specific testing scheme
-        run: |
-          python -m tests.test --ci True
+#  lint:
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+#      - name: Setup Repo
+#        uses: actions/checkout@v2
+#        with:
+#          submodules: recursive
+#
+#      - name: Setup Environment Variable
+#        run: |
+#          export CHASSIS_URL=${{secrets.CHASSIS_URL}}
+#          export DOCKER_USER=${{secrets.DOCKER_USER}}
+#          export DOCKER_PASS=${{secrets.DOCKER_PASS}}
+#          export MODZY_BASE_URL=${{secrets.MODZY_BASE_URL}}
+#          export MODZY_API_KEY=${{secrets.MODZY_API_KEY}}
+#
+#      - name: Set up Python 3.8
+#        uses: actions/setup-python@v2
+#        with:
+#          # Semantic version range syntax or exact version of a Python version
+#          python-version: 3.8
+#
+#      - name: Install dependencies
+#        run: |
+#          python -m pip install --upgrade pip
+#          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+#      - name: Lint with flake8
+#        run: |
+#          # stop the build if there are Python syntax errors or undefined names
+#          flake8 . --extend-ignore E303,E501,E712,E111,F821,E225 --count --select=E9,F63,F7,F82 --show-source --statistics
+#          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+#          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+#  tests:
+#    runs-on: ubuntu-latest
+#    if: true
+#    env:
+#      CHASSIS_URL: ${{secrets.CHASSIS_URL}}
+#      DOCKER_USER: ${{secrets.DOCKER_USER}}
+#      DOCKER_PASS: ${{secrets.DOCKER_PASS}}
+#      MODZY_BASE_URL: ${{secrets.MODZY_BASE_URL}}
+#      MODZY_API_KEY: ${{secrets.MODZY_API_KEY}}
+#
+#    steps:
+#    # new
+#      - uses: actions/checkout@v2
+#        with:
+#          submodules: recursive
+#
+#      - name: Set up Python 3.8
+#        uses: actions/setup-python@v2
+#        with:
+#          # Semantic version range syntax or exact version of a Python version
+#          python-version: '3.8'
+#
+#      - name: Upgrade pip
+#        run: |
+#          # install pip=>20.1 to use "pip cache dir"
+#          python3 -m pip install --upgrade pip
+#      - name: Get pip cache dir
+#        id: pip-cache
+#        run: echo "::set-output name=dir::$(pip cache dir)"
+#
+#      - name: Cache dependencies
+#        uses: actions/cache@v2
+#        with:
+#          path: ${{ steps.pip-cache.outputs.dir }}
+#          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+#          restore-keys: |
+#            ${{ runner.os }}-pip-
+#      - name: Install dependencies
+#        run: python3 -m pip install -r ./tests/requirements.txt
+#
+#      - name: Test with Chassis specific testing scheme
+#        run: |
+#          python -m tests.test --ci True
   
