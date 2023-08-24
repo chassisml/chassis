@@ -67,11 +67,11 @@ For more details, check out our [Getting Started](./getting-started/README.md) p
 
 # Docs
 
-📘 [Full Docs](https://chassis.ml)
+📘 [Full Docs](https://modzy.github.io/chassis/)
 
-🧑‍🏫 [Container Build Tutorial](https://chassis.ml/tutorials/ds-connect/)
+🧑‍🏫 [Container Build Tutorial](https://modzy.github.io/chassis/getting-started/getting-started/)
 
-☁️ [Full Service Install](https://chassis.ml/getting-started/deploy-manual/)
+☁️ [Full Service Install](https://modzy.github.io/chassis/tutorials/deploy-manual/)
 - Note: If you would like to stand up your own private instance of the Chassis service, follow these instructions. All you need is [Helm](https://helm.sh/docs/intro/install/) and [Docker](https://www.docker.com/products/docker-desktop/)!
 
 
