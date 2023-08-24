@@ -165,13 +165,15 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push remote build server
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v4
         with:
           context: ./servers/remote-build
           push: true
           tags: |
             ghcr.io/${{ github.repository }}-build-server:${{ env.RELEASE_VERSION }}
             ghcr.io/${{ github.repository }}-build-server:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
 #  helm:
 #    name: Publish Helm chart
