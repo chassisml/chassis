@@ -177,32 +177,31 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-#  helm:
-#    name: Publish Helm chart
-#    # This is required since mkdocs wipes the
-#    # branch so it could delete all helm stuff.
-#    needs: [docs, container-images]
-#    runs-on: ubuntu-latest
-#
-#    steps:
-#      - name: Checkout
-#        uses: actions/checkout@v2
-#        with:
-#          # Fetch all branches/tags
-#          fetch-depth: 0
-#
-#      - name: Configure Git
-#        run: |
-#          git config user.name "$GITHUB_ACTOR"
-#          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
-#
-#      - name: Install Helm
-#        uses: azure/setup-helm@v3
-#
-#      - name: Run chart-releaser
-#        uses: helm/chart-releaser-action@v1.6.0
-#        with:
-#          charts_dir: charts
-#        env:
-#          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+  helm:
+    name: Publish Helm chart
+    needs: [container-images]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          # Fetch all branches/tags. This is needed to so that it can commit
+          # to the `gh-pages` branch.
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+
+      - name: Run chart-releaser
+        uses: helm/chart-releaser-action@v1.6.0
+        with:
+          charts_dir: charts
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
