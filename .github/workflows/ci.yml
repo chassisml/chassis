@@ -184,7 +184,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           # Fetch all branches/tags. This is needed to so that it can commit
           # to the `gh-pages` branch.
