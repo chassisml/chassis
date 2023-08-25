@@ -102,11 +102,11 @@ jobs:
         run: |
           python3 -m build --sdist --wheel --outdir dist/ packages/chassisml
 
-      - name: Publish distribution to PyPI
-        if: startsWith(github.ref, 'refs/tags')
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          password: ${{ secrets.PYPI_API_TOKEN }}
+#      - name: Publish distribution to PyPI
+#        if: startsWith(github.ref, 'refs/tags')
+#        uses: pypa/gh-action-pypi-publish@release/v1
+#        with:
+#          password: ${{ secrets.PYPI_API_TOKEN }}
 
   docs:
     name: Update docs
