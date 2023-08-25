@@ -197,6 +197,13 @@ jobs:
 
       - name: Install Helm
         uses: azure/setup-helm@v3
+        # When we don't pass a token, we get a warning annotation in the build
+        # result about missing a token but it still works by downloading the
+        # latest hard-coded version. This should be fine, but if at any point
+        # we want that warning annotation to go away, then simply uncomment the
+        # following two lines.
+#        with:
+#          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.5.0
