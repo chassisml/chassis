@@ -16,7 +16,7 @@ This example was adapted from the `torchvision` guides for using pre-trained mod
 
 
 !!! info "Source Code"
-    If you prefer to view the source code directly, reference this example and utility data files [here](TODO - add link).
+    If you prefer to view the source code directly, reference this example and utility data files [here](https://github.com/modzy/chassis/blob/main/examples/torch/resnet50_img_class.py).
 
 First, install the additional dependencies required by this model.
 

@@ -16,7 +16,7 @@ Can't find the framework you are looking for? Feel free to fork this repository,
 If you prefer to jump straight to the source code, check out the examples section in the Chassis GitHub repository!
 
 <!-- TODO: center -->
-[Chassis Examples on GitHub :fontawesome-brands-github:](https://github.com/modzy/chassis/tree/main/chassisml_sdk/examples){.md-button .md-primary-button}
+[Chassis Examples on GitHub :fontawesome-brands-github:](https://github.com/modzy/chassis/tree/main/examples){.md-button .md-primary-button}
 
 ## Included Framework Examples
 

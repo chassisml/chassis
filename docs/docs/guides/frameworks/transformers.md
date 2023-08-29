@@ -17,7 +17,7 @@ This example was adapted from the `bhadresh-savani/distilbert-base-uncased-emoti
 
 
 !!! info "Source Code"
-    If you prefer to view the source code directly, reference this example and utility data files [here](TODO - add link).
+    If you prefer to view the source code directly, reference this example and utility data files [here](https://github.com/modzy/chassis/blob/main/examples/transformers/distilbert_text_classification.py).
 
 First, install the additional dependencies required by this model.
 

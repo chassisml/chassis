@@ -16,7 +16,7 @@ pip install diffusers
 This Diffusers example was adapted from the `InstructPix2Pix` model from Hugging Face. View the original model card [here](https://huggingface.co/timbrooks/instruct-pix2pix).
 
 !!! info "Source Code"
-    If you prefer to view the source code directly, reference this example and utility data files [here](TODO - add link).
+    If you prefer to view the source code directly, reference this example and utility data files [here](https://github.com/modzy/chassis/blob/main/examples/diffusers/instructpix2pix.py).
 
 First, install the additional dependencies required by this model.
 
@@ -122,8 +122,6 @@ Now, simply copy the below example code in your Python environment and editor of
     15. With our builder object defined with our model and build options as parameters, we can kick off the build using the `DockerBuilder.build_image` function to build a Docker container locally.
 
 Using the data inputs provided in the sample data folder, the inputs and outputs of this model should look similar to the following:
-
-TODO: add example in & out?
 
 ***Sample input***
 

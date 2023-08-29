@@ -1,6 +1,6 @@
 [project]
 name = "chassisml"
-version = "1.5.0-beta1"
+version = "1.5.0-beta2"
 authors = [
     { name="Bradley Munday", email="bradley.munday@modzy.com" },
     { name="Nathan Mellis", email="nathan.mellis@modzy.com" },
@@ -52,7 +52,7 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 "*" = ["*.pyi", "py.typed"]
-"chassis.builder" = ["templates/*"]
+"chassis.builder" = ["templates/*", "templates/.dockerignore"]
 "chassis.guides" = ["data/*"]
 
 [tool.pytest.ini_options]
