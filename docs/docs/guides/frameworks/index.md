@@ -8,7 +8,7 @@ Can't find the framework you are looking for? Feel free to fork this repository,
     To follow along with the how-to guides, you will need to install the Chassis SDK:
 
     ```bash
-    pip install chassisml
+    pip install --pre chassisml
     ```
 
     Additional dependencies that are example-specific will be listed on each page, respectively. If you would like to learn more about the Chassis workflow before diving in to these framework-specific examples, be sure to check out the **[Getting Started section](../../getting-started/index.md)**!

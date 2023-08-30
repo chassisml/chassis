@@ -176,4 +176,4 @@ Congratulations, you have now successfully deployed the service in a private Kub
 pip install chassisml
 ```
 
-For more resources, check out our [tutorials](../tutorials/index.md) and [how-to guides](../how-to-guides/index.md).
+For more resources, check out our [guides](../guides/index.md).

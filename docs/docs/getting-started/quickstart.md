@@ -1,9 +1,8 @@
 
-First, you will need to set up a [Python virtual enviornment](https://realpython.com/what-is-pip/#using-pip-in-a-python-virtual-environment) and install the Chassis SDK. Include `[quickstart]` to install the extra dependencies required to use the quickstart model. 
-
+First, you will need to set up a [Python virtual enviornment](https://realpython.com/what-is-pip/#using-pip-in-a-python-virtual-environment) and install the Chassis SDK. Include `--pre` to install the pre-release beta version and `[quickstart]` to install the extra dependencies required to use the quickstart model.
 
 ```bash
-pip install chassisml[quickstart]
+pip install --pre chassisml[quickstart]
 ```
 
 ## Build Container

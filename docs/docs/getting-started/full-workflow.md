@@ -2,11 +2,11 @@
 
 In this guide, we will transform a pre-trained scikit-learn digits classification model into a `ChassisModel` object that we will use to build a container.    
 
-If you did not follow the **[Quickstart Guide](./quickstart.md)**, you will need to first set up a [Python virtual enviornment](https://realpython.com/what-is-pip/#using-pip-in-a-python-virtual-environment) and install the Chassis SDK. Include `[quickstart]` to install the extra dependencies required to use an embedded model and sample data for convenience.
+If you did not follow the **[Quickstart Guide](./quickstart.md)**, you will need to first set up a [Python virtual enviornment](https://realpython.com/what-is-pip/#using-pip-in-a-python-virtual-environment) and install the Chassis SDK. Include `--pre` to install the pre-release beta version and `[quickstart]` to install the extra dependencies required to use the quickstart model.
 
 
 ```bash
-pip install chassisml[quickstart]
+pip install --pre chassisml[quickstart]
 ```
 
 ## Build Container
@@ -79,7 +79,7 @@ Next, open a Python file (new or existing) and paste the following inference cod
     1. First, we will import the `ChassisModel` class from the Chassis SDK. If you have not already done so, make sure you install it via PyPi: `pip install chassisml`
     2. In addition to the `ChassisModel` object, we need to import a Builder object. The two available options, `DockerBuilder` and `RemoteBuilder`, will both build the same container but in different execution environments. Since we'd like to build a container locally with Docker, we will import the `DockerBuilder` object.  
     3. Next, we will load our model. For this example, we have a pre-trained Scikit-learn classifier embedded into the Chassis library (`chassis.guides.DigitsClassifier`). When integrating Chassis into your own code, this can be done however you load your model. You might load your model from a pickle file, checkpoint file, multiple configuration files, etc. The *key* is that you load your model into memory so it can be accessed in the below `predict` function. 
-    4. Here, we will define a *single* predict function, which you can think of as an inference function for your model. This function can access in-memory objects (e.g., `model` loaded above), and the only requirement is it must convert input data from raw bytes form to the data type your model expects. See this **[guide](../how-to-guides/common-data-types.md)** for help on converting common data types. In this example, we process the raw bytes data using `numpy` and `json`, pass this processed data through to our model for predictions (`model.predict`), and perform some postprocessing to return the results in a human-readable manner. You can customize this function based on your model and preferences.    
+    4. Here, we will define a *single* predict function, which you can think of as an inference function for your model. This function can access in-memory objects (e.g., `model` loaded above), and the only requirement is it must convert input data from raw bytes form to the data type your model expects. See this **[guide](../guides/common-data-types.md)** for help on converting common data types. In this example, we process the raw bytes data using `numpy` and `json`, pass this processed data through to our model for predictions (`model.predict`), and perform some postprocessing to return the results in a human-readable manner. You can customize this function based on your model and preferences.    
     5. Now, we will simply create a `ChassisModel` object directly from our predict function.
     6. With our `ChassisModel` object defined, there are a few optional methods we can call. Here, we will add the Python libraries our model will need to run. You can pass a list of packages you would list in a `requirements.txt` file that will be installed with Pip.
     7. In the next few lines, we will define the four minimum metadata fields that are required before building our container. These fields represent your model's name, version, inputs, and outputs. *NOTE: There are many other optional fields you can choose to document if preferred.*

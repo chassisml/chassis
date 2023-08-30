@@ -5,7 +5,7 @@ Chassis containers currently support two interfaces: the [Open Model Interface](
 ## OMI
 The Open Model Interace is a specification for a multi-platform [OCI-compliant](https://opencontainers.org) container image designed specifically for machine learning models.
 
-The OMI server provides a gRPC interface defined by OMI's [protofile](../protos/chassis/protos/v1/model.proto). This interface provides three remote procedure calls (RPCs) that are used to interact with a chassis contianer: `Status`, `Run`, and `Shutdown`. The Run RPC is most important, as it provides a simple way to run inferences through models packaged into chassis container images.
+The OMI server provides a gRPC interface defined by OMI's [protofile](https://github.com/modzy/chassis/blob/main/protos/chassis/protos/v1/model.proto). This interface provides three remote procedure calls (RPCs) that are used to interact with a chassis contianer: `Status`, `Run`, and `Shutdown`. The Run RPC is most important, as it provides a simple way to run inferences through models packaged into chassis container images.
 
 | RPC      | Input                                                                                                     | Description                                                                    | Example Response                                                                                                                                                                                                                                                                                                                             |
 |----------|-----------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -24,12 +24,12 @@ The OMI server provides a gRPC interface defined by OMI's [protofile](../protos/
 ## KServe V1
 KServe's V1 protocol offers a standardized prediction workflow across all model frameworks. This protocol version is still supported, but it is recommended that users migrate to the V2 protocol for better performance and standardization among serving runtimes. However, if a use case requires a more flexible schema than protocol v2 provides, v1 protocol is still an option.
 
-| API         | Verb | Path                            | Request Payload      | Response Payload                        |
-|-------------|------|---------------------------------|----------------------|-----------------------------------------|
-| List Models | GET  | /v1/models                      |                      | {"models": [<model_name>]}              |
-| Model Ready | GET  | /v1/models/<model_name>         |                      | {"name": <model_name>,"ready": $bool}   |
-| Predict     | POST | /v1/models/<model_name>:predict | {"instances": []} ** | {"predictions": []}                     |
-| Explain     | POST | /v1/models/<model_name>:explain | {"instances": []} ** | {"predictions": [], "explanations": []} |
+| API         | Verb | Path                            | Request Payload      | Response Payload                               |
+|-------------|------|---------------------------------|----------------------|------------------------------------------------|
+| List Models | GET  | /v1/models                      |                      | ```{"models": [<model_name>]}```               |
+| Model Ready | GET  | /v1/models/<model_name>         |                      | ```{"name": <model_name>,"ready": $bool}```    |
+| Predict     | POST | /v1/models/<model_name>:predict | {"instances": []} ** | ```{"predictions": []}```                      |
+| Explain     | POST | /v1/models/<model_name>:explain | {"instances": []} ** | ```{"predictions": [], "explanations": []}```  |
 
 See Kserve's documentation for full details:
 [https://kserve.github.io/website/0.10/modelserving/data_plane/v1_protocol/](https://kserve.github.io/website/0.10/modelserving/data_plane/v1_protocol/)

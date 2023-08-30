@@ -3,7 +3,7 @@ Chassis's goal is to make it easier for Python developers to turn machine learni
 
 Since machine learning development is typically performed in Python, Chassis was made to be a Python-first library, meaning that anything you need to define about how your ML model must operate as a service (e.g. writing a custom preprocessor, specifying if a GPU is required, asking for a specific Python or package versions, etc.) can be done simply in Python. After specifying how you want your model service to work, Chassis takes over the process of turning your trained model into a self-contained, ML-specific container image.
 
-| 1: Define model details in Python 	| 2: Run builder.build_image() 	| 3: Receive ready-to-run model image 	|
+| 1: Define model details in Python 	| 2: Run `builder.build_image()` 	| 3: Receive ready-to-run model image 	|
 |---	|---	|---	|
 | Define model info with a simple python script 	| Send model info off to be built into a container 	| Get back a self-contained ML container image 	|
 | You will:<ul>  <li>Load a pre-trained model</li> <li>Define a predict function</li> <li>List PIP dependencies</li> <li>Set harware requirements</li> <li>[Optional] Add model docs</li> </ul> 	| Chassis will:<ul> <li>Select base image</li> <li>Implement APIs</li> <li>Define layers</li> <li>Construct image</li> </ul> 	| Resulting image:<ul> <li>Bakes in model, dependencies, and server</li> <li>Provides `run`, `status`, and `shutdown` RPCs</li> <li>Runs on Docker, containerd, Modzy, and more</li> </ul> 	|
