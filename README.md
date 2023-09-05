@@ -70,12 +70,19 @@ pip install chassisml
 
 # Docs
 
+📗 [Getting Started](https://chassisml.io/v1.5/getting-started/)
+
 📘 [Full Docs](https://chassisml.io)
 
 Framework-specific examples:
-|  |  |  |  |  |
-|---|---|---|---|---|
-| 🤗 [Diffusers](https://chassisml.io/v1.5/guides/frameworks/diffusers/) | <!-- JSDelivr --> <img height="16" width="16" src="https://cdn.simpleicons.org/pytorch" /> [Torch](https://chassisml.io/v1.5/guides/frameworks/torch/) | 🤗 [Transformers](https://chassisml.io/v1.5/guides/frameworks/transformers/) | Coming soon... | Coming soon... |
+<table>
+    <tr>
+        <td>🤗 <a href="https://chassisml.io/v1.5/guides/frameworks/diffusers/">Diffusers</a></td>
+        <td> <!-- JSDelivr --> <img height="16" width="16" src="https://cdn.simpleicons.org/pytorch" /> <a href="https://chassisml.io/v1.5/guides/frameworks/torch/">Torch</a></td>
+        <td>🤗 <a href="https://chassisml.io/v1.5/guides/frameworks/transformers/">Transformers</a></td>
+        <td>Coming soon...</td>
+    </tr>
+</table>
 
 # Support
 
