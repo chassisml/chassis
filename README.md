@@ -8,12 +8,12 @@
 ![GitHub issues](https://img.shields.io/github/issues-raw/modzy/chassis?logo=github&style=flat)
 ![GitHub](https://img.shields.io/github/license/modzy/chassis?logo=apache&style=flat)
 
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/modzy/chassis/CI?logo=github)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/modzy/chassis/ci.yml?logo=github)
 ![PyPI](https://img.shields.io/pypi/v/chassisml?logo=pypi&style=flat)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/chassisml?logo=pypi&style=flat)
 
 <h3 align="center">
-  <a href="https://chassis.ml">Docs</a>
+  <a href="https://chassisml.io">Docs</a>
   <span> · </span>
   <a href="https://discord.gg/anSeEj8ARg">Discord</a> (#chassisml)
   <span> · </span>
@@ -34,15 +34,15 @@
 
 </div>
 
-Chassis is an open-source project that turns ML models into containerized prediction APIs in just minutes. We built this tool for Data Scientists, Machine Learning Engineers, and DevOps teams who need an easier way to automatically build ML model containers and ship them to production.
+Chassis turns ML models written in Python into containerized prediction APIs in just minutes. We built it to be an easier way to put our models into containers and ship them to production.
 
 Chassis picks up right where your training code leaves off and builds containers for a variety of target architectures. This means that after completing a single Chassis job, you can run your models in the cloud, on-prem, or on a fleet of edge devices (Raspberry Pi, NVIDIA Jetson Nano, Intel NUC, etc.).
 
 ## Benefits
 * <img height="16" width="16" src="https://cdn.simpleicons.org/docker/0092DF" /> Turns models into containers, automatically
 * <img height="16" width="16" src="https://cdn.simpleicons.org/linuxfoundation/0092DF" /> Creates easy-to-use prediction APIs
-* <img height="16" width="16" src="https://cdn.simpleicons.org/kubernetes/0092DF" /> Containers can run on Modzy, KServe (v1), and more
-* <img height="16" width="16" src="https://cdn.simpleicons.org/docker/0092DF" /> Connects to Docker Hub and other registries
+* <img height="16" width="16" src="https://cdn.simpleicons.org/kubernetes/0092DF" /> Builds containers locally on Docker or as a K8s service
+* <img height="16" width="16" src="https://cdn.simpleicons.org/docker/0092DF" /> Chassis containers run on Docker, containerd, Modzy, and more
 * <img height="16" width="16" src="https://cdn.simpleicons.org/intel/0092DF" /> Compiles for both x86 and ARM processors
 * <img height="16" width="16" src="https://cdn.simpleicons.org/nvidia/0092DF" /> Supports GPU batch processing
 * <img height="16" width="16" src="https://cdn.simpleicons.org/pypi/0092DF" /> No missing dependencies, perfect for edge AI
@@ -50,37 +50,32 @@ Chassis picks up right where your training code leaves off and builds containers
 # Installation
 Install Chassis on your machine or in a virtual environment via [PyPi](https://pypi.org/project/chassisml/):
 
+### Beta - v1.5 (Recommended)
+```bash
+pip install --pre chassisml[quickstart]
+```
+
+### Stable - v1.4.*
 ```bash
 pip install chassisml
 ```
 
-Check out our full [installation](https://chassis.ml/getting-started/deploy-connect/) guide for more details.
-
 # Try it out
-Follow these steps to build your first model container (*estimated time: 5 minutes*)
 
-1. Clone this repository into your environment: `git clone https://github.com/modzy/chassis.git`
-2. Create virtual environment and install [Jupyter](https://jupyter.org/install)
-3. Open and run our [Quick Start Example](./getting-started/Getting%20Started%20with%20Chassis.ipynb) notebook
+### [Quickstart Guide](https://chassisml.io/v1.5/getting-started/quickstart/)
+(<5 minutes)
 
-For more details, check out our [Getting Started](./getting-started/README.md) page.
+### [Full Workflow](https://chassisml.io/v1.5/getting-started/full-workflow/)
+(~10 minutes)
 
 # Docs
 
-📘 [Full Docs](https://modzy.github.io/chassis/)
-
-🧑‍🏫 [Container Build Tutorial](https://modzy.github.io/chassis/getting-started/getting-started/)
-
-☁️ [Full Service Install](https://modzy.github.io/chassis/tutorials/deploy-manual/)
-- Note: If you would like to stand up your own private instance of the Chassis service, follow these instructions. All you need is [Helm](https://helm.sh/docs/intro/install/) and [Docker](https://www.docker.com/products/docker-desktop/)!
-
+📘 [Full Docs](https://chassisml.io)
 
 Framework-specific examples:
 |  |  |  |  |  |
 |---|---|---|---|---|
-| <!-- JSDelivr --> <img height="16" width="16" src="https://cdn.simpleicons.org/pytorch" /> [Pytorch](https://chassis.ml/how-to-guides/frameworks/#pytorch) | <!-- JSDelivr --> <img height="16" width="16" src="https://cdn.simpleicons.org/scikitlearn" /> [SciKit-Learn](https://chassis.ml/how-to-guides/frameworks/#scikit-learn) | <!-- JSDelivr --> <img height="16" width="16" src="https://cdn.simpleicons.org/onnx" /> [ONNX](https://chassis.ml/how-to-guides/frameworks/#onnx) | <!-- JSDelivr --> <img height="16" width="16" src="https://cdn.simpleicons.org/keras" />  [Keras](https://chassis.ml/how-to-guides/frameworks/#tensorflow-keras) | <!-- JSDelivr --> <img height="16" width="16" src="https://cdn.simpleicons.org/tensorflow" />  [Tensorflow](https://chassis.ml/how-to-guides/frameworks/#tensorflow-keras) |
-| [spaCy](https://chassis.ml/how-to-guides/frameworks/#spacy) | <!-- JSDelivr --> <img height="16" width="16" src="https://cdn.simpleicons.org/apachespark" />  [Spark MLlib](https://chassis.ml/how-to-guides/frameworks/#spark-mllib) | [XGBoost](https://chassis.ml/how-to-guides/frameworks/#xgboost) | [LightGBM](https://chassis.ml/how-to-guides/frameworks/#lightgbm) | [Fastai](https://chassis.ml/how-to-guides/frameworks/#fastai) |
-| [MXNet](https://chassis.ml/how-to-guides/frameworks/#mxnet) | [PMML](https://chassis.ml/how-to-guides/frameworks/#pmml) |  |  |  |
+| 🤗 [Diffusers](https://chassisml.io/v1.5/guides/frameworks/diffusers/) | <!-- JSDelivr --> <img height="16" width="16" src="https://cdn.simpleicons.org/pytorch" /> [Torch](https://chassisml.io/v1.5/guides/frameworks/torch/) | 🤗 [Transformers](https://chassisml.io/v1.5/guides/frameworks/transformers/) | Coming soon... | Coming soon... |
 
 # Support
 
