@@ -28,7 +28,7 @@ dependencies = [
 [project.optional-dependencies]
 test = ["pytest", "pytest-cov", "mypy", "flake8", "tox"]
 kserve = ["kserve >= 0.11"]
-quickstart = ["scikit-learn"]
+quickstart = ["scikit-learn==1.3.0"]
 docs = [
     "tox",
     "mkdocs>=1.3.0",
