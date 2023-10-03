@@ -3,14 +3,14 @@ import json
 import pickle
 import numpy as np
 from typing import Mapping
-from chassisml import ChassisModel # 
-from chassis.builder import DockerBuilder # 
+from chassisml import ChassisModel #
+from chassis.builder import DockerBuilder, BuildOptions  #
 import chassis.guides as guides
 
-# load model # 
-model = pickle.load(guides.DigitsClassifier) 
+# load model #
+model = pickle.load(guides.DigitsClassifier)
 
-# define predict function # 
+# define predict function #
 def predict(input_bytes: Mapping[str, bytes]) -> dict[str, bytes]:
     inputs = np.array(json.loads(input_bytes['input']))
     inference_results = model.predict_proba(inputs)
@@ -25,9 +25,9 @@ def predict(input_bytes: Mapping[str, bytes]) -> dict[str, bytes]:
     return {'results.json': json.dumps(structured_results).encode()}
 
 # create chassis model object, add required dependencies, and define metadata
-chassis_model = ChassisModel(process_fn=predict)                # 
-chassis_model.add_requirements(["scikit-learn", "numpy"])       # 
-chassis_model.metadata.model_name = "Digits Classifier"         # 
+chassis_model = ChassisModel(process_fn=predict)                #
+chassis_model.add_requirements(["scikit-learn", "numpy"])       #
+chassis_model.metadata.model_name = "Digits Classifier"         #
 chassis_model.metadata.model_version = "0.0.1"
 chassis_model.metadata.add_input(
     key="input",
@@ -40,14 +40,15 @@ chassis_model.metadata.add_output(
     media_type="application/json",
     max_size="1M",
     description="Top digit prediction and confidence score"
-)    
+)
 
-# test model # 
+# test model #
 results = chassis_model.test(guides.DigitsSampleData)
 print(results)
 
-# build container # 
-builder = DockerBuilder(chassis_model)
+options = BuildOptions(labels={"key1": "value1"})
+# build container #
+builder = DockerBuilder(chassis_model, options)
 start_time = time.time()
 res = builder.build_image(name="my-first-chassis-model", tag="0.0.1", show_logs=True)
 end_time = time.time()

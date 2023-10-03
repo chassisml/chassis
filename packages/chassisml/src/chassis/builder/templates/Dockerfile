@@ -13,6 +13,11 @@ FROM python:{{ python_version }}-slim-bullseye
 
 WORKDIR /app
 
+{% for key,value in labels.items() -%}
+LABEL {{key}}="{{value}}"
+{% endfor %}
+
+
 # Copy requirements file and pip install.
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt

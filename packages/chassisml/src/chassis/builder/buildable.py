@@ -264,10 +264,12 @@ class Buildable(metaclass=abc.ABCMeta):
             apt_package_list = " ".join(self.apt_packages)
             run_apt_get = f"RUN apt-get update && apt-get install -y {apt_package_list} && rm -rf /var/lib/apt/lists/*"
 
+        #   TODO keys here are variables available in template
         return dockerfile_template.render(
             python_version=options.python_version,
             cuda_version=options.cuda_version,
             apt_packages=run_apt_get,
+            labels=options.labels or {},
         )
 
     def _write_additional_files(self, context: BuildContext):
