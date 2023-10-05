@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import dataclasses
 import platform
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Dict
 
 
 @dataclasses.dataclass
@@ -58,6 +58,7 @@ class BuildOptions:
     python_version: str = "3.9"
     cuda_version: Optional[str] = None
     server: str = "omi"
+    labels: Optional[Dict[str, str]] = None
 
 
 DefaultBuildOptions = BuildOptions()
