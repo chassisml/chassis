@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 import dataclasses
 import platform
 from typing import List, Optional, Union, Dict
@@ -55,7 +56,7 @@ class BuildOptions:
     """
     base_dir: Optional[str] = None
     arch: Union[str, List[str]] = platform.machine() or "amd64"
-    python_version: str = "3.9"
+    python_version: str = f"{sys.version_info.major}.{sys.version_info.minor}"
     cuda_version: Optional[str] = None
     server: str = "omi"
     labels: Optional[Dict[str, str]] = None

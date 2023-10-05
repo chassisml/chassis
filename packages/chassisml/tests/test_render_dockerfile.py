@@ -1,3 +1,4 @@
+import sys
 import re
 
 import pytest
@@ -10,7 +11,7 @@ def test_render_cpu_dockerfile(echo_predict_function):
     model = ChassisModel(echo_predict_function)
     options = BuildOptions()
     rendered_dockerfile = model.render_dockerfile(options)
-    assert rendered_dockerfile.startswith("FROM python:3.9-slim-bullseye")
+    assert rendered_dockerfile.startswith(f"FROM python:{sys.version_info.major}.{sys.version_info.minor}-slim-bullseye")
 
 
 def test_render_gpu_dockerfile(echo_predict_function):
@@ -22,9 +23,9 @@ def test_render_gpu_dockerfile(echo_predict_function):
 
 def test_render_cpu_dockerfile_with_nondefault_python_version(echo_predict_function):
     model = ChassisModel(echo_predict_function)
-    options = BuildOptions(python_version="3.10")
+    options = BuildOptions(python_version="4.0")
     rendered_dockerfile = model.render_dockerfile(options)
-    assert rendered_dockerfile.startswith("FROM python:3.10-slim-bullseye")
+    assert rendered_dockerfile.startswith("FROM python:4.0-slim-bullseye")
 
 
 def test_render_dockerfile_with_no_apt_packages(echo_predict_function):
