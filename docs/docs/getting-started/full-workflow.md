@@ -2,11 +2,11 @@
 
 In this guide, we will transform a pre-trained scikit-learn digits classification model into a `ChassisModel` object that we will use to build a container.    
 
-If you did not follow the **[Quickstart Guide](./quickstart.md)**, you will need to first set up a [Python virtual enviornment](https://realpython.com/what-is-pip/#using-pip-in-a-python-virtual-environment) and install the Chassis SDK. Include `--pre` to install the pre-release beta version and `[quickstart]` to install the extra dependencies required to use the quickstart model.
+If you did not follow the **[Quickstart Guide](./quickstart.md)**, you will need to first set up a [Python virtual enviornment](https://realpython.com/what-is-pip/#using-pip-in-a-python-virtual-environment) and install the Chassis SDK. Include `[quickstart]` to install the extra dependencies required to use the quickstart model.
 
 
 ```bash
-pip install --pre chassisml[quickstart]
+pip install chassisml[quickstart]
 ```
 
 ## Build Container
