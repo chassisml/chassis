@@ -21,7 +21,7 @@ with open(requirements_txt, "rb") as f:
     reqs = f.read().decode()
 for old, new in REQUIREMENTS_SUBSTITUTIONS.items():
     reqs = reqs.replace(old, new)
-if "torch" in reqs and not os.getenv("GPU").strip() == "true":
+if "torch" in reqs and not os.getenv("GPU", "false").strip() == "true":
     reqs = "--extra-index-url https://download.pytorch.org/whl/cpu\n\n" + reqs
 with open(requirements_txt, "wb") as f:
     f.write(reqs.encode())

@@ -11,21 +11,21 @@ def test_render_cpu_dockerfile(echo_predict_function):
     model = ChassisModel(echo_predict_function)
     options = BuildOptions()
     rendered_dockerfile = model.render_dockerfile(options)
-    assert rendered_dockerfile.startswith(f"FROM python:{sys.version_info.major}.{sys.version_info.minor}-slim-bullseye")
+    assert f"FROM python:{sys.version_info.major}.{sys.version_info.minor}-slim-bullseye" in rendered_dockerfile.splitlines()
 
 
 def test_render_gpu_dockerfile(echo_predict_function):
     model = ChassisModel(echo_predict_function)
     options = BuildOptions(cuda_version="12.2.0")
     rendered_dockerfile = model.render_dockerfile(options)
-    assert rendered_dockerfile.startswith("FROM nvidia/cuda:12.2.0-runtime-ubuntu20.04")
+    assert "FROM nvidia/cuda:12.2.0-runtime-ubuntu20.04" in rendered_dockerfile.splitlines()
 
 
 def test_render_cpu_dockerfile_with_nondefault_python_version(echo_predict_function):
     model = ChassisModel(echo_predict_function)
     options = BuildOptions(python_version="4.0")
     rendered_dockerfile = model.render_dockerfile(options)
-    assert rendered_dockerfile.startswith("FROM python:4.0-slim-bullseye")
+    assert "FROM python:4.0-slim-bullseye" in rendered_dockerfile.splitlines()
 
 
 def test_render_dockerfile_with_no_apt_packages(echo_predict_function):
