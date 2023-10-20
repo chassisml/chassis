@@ -47,6 +47,8 @@ def _copy_libraries(context: BuildContext, server: str, ignore_patterns: List[st
              os.path.join(context.chassis_dir, "ftypes"), ignore=ignore)
     copytree(os.path.join(root, "chassis", "server", server),
              os.path.join(context.chassis_dir, "server", server), ignore=ignore)
+    copytree(os.path.join(root, "chassis", "scripts"),
+             os.path.join(context.chassis_dir, "scripts"), ignore=ignore)
 
 
 class Buildable(metaclass=abc.ABCMeta):
@@ -294,23 +296,23 @@ class Buildable(metaclass=abc.ABCMeta):
             additional_requirements="\n".join(additional_requirements)
         )
         requirements_in = os.path.join(context.base_dir, "requirements.in")
-        requirements_txt = os.path.join(context.base_dir, "requirements.txt")
+        # requirements_txt = os.path.join(context.base_dir, "requirements.txt")
         with open(requirements_in, "wb") as f:
             f.write(rendered_template.encode("utf-8"))
-        # Use pip-tools to expand the list out to a frozen and pinned list.
-        subprocess.run([
-            sys.executable, "-m", "piptools", "compile", "-q",
-            "-o", requirements_txt, requirements_in,
-        ])
-        # Post-process the full requirements.txt with automatic replacements.
-        with open(requirements_txt, "rb") as f:
-            reqs = f.read().decode()
-        for old, new in REQUIREMENTS_SUBSTITUTIONS.items():
-            reqs = reqs.replace(old, new)
-        if "torch" in reqs and options.cuda_version is None:
-            reqs = "--extra-index-url https://download.pytorch.org/whl/cpu\n\n" + reqs
-        with open(requirements_txt, "wb") as f:
-            f.write(reqs.encode())
+        # # Use pip-tools to expand the list out to a frozen and pinned list.
+        # subprocess.run([
+        #     sys.executable, "-m", "piptools", "compile", "-q",
+        #     "-o", requirements_txt, requirements_in,
+        # ])
+        # # Post-process the full requirements.txt with automatic replacements.
+        # with open(requirements_txt, "rb") as f:
+        #     reqs = f.read().decode()
+        # for old, new in REQUIREMENTS_SUBSTITUTIONS.items():
+        #     reqs = reqs.replace(old, new)
+        # if "torch" in reqs and options.cuda_version is None:
+        #     reqs = "--extra-index-url https://download.pytorch.org/whl/cpu\n\n" + reqs
+        # with open(requirements_txt, "wb") as f:
+        #     f.write(reqs.encode())
 
     def _write_python_modules(self, context: BuildContext):
         for key, m in self.python_modules.items():
