@@ -132,16 +132,17 @@ Next, open a Python file (new or existing) and paste the following inference cod
         from chassis.client import OMIClient
         from chassis.guides import DigitsSampleData
 
-        # Call and view results of status RPC
+        # Instantiate OMI Client connection to model running on localhost:45000 
+        client = OMIClient("localhost", 45000)
+        # Call and view results of status RPC 
         status = await client.status()
         print(f"Status: {status}")
         # Submit inference with quickstart sample data
         res = await client.run(DigitsSampleData)
-        # Parse results from output item
+        # Parse results from output item 
         result = res.outputs[0].output["results.json"]
         # View results
         print(f"Result: {result}")
-
         ```
 
         Execute this code to perform an inference against your running container.
