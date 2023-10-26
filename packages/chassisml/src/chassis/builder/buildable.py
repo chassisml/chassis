@@ -69,12 +69,13 @@ class Buildable(metaclass=abc.ABCMeta):
             [chassis.runtime.constants][].
     """
 
-    packaged = False
-    metadata = ModelMetadata.default()
-    requirements: set[str] = set()
-    apt_packages: set[str] = set()
-    additional_files: set[str] = set()
-    python_modules: dict = {}
+    def __init__(self):
+        self.packaged = False
+        self.metadata = ModelMetadata.default()
+        self.requirements: set[str] = set()
+        self.apt_packages: set[str] = set()
+        self.additional_files: set[str] = set()
+        self.python_modules: dict = {}
 
     def merge_package(self, package: Buildable):
         """
