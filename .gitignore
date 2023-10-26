@@ -13,6 +13,7 @@ dist
 .DS_Store
 scratch
 
+packages/chassisml/README.md
 chassisml/examples/keras/*
 examples/hugging-face/model/*
 examples-new/1.5-examples/tf/model/*
