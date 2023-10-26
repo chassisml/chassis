@@ -62,8 +62,25 @@ To quickly test your new model container, you can leverage Chassis's `OMIClient.
 Open a Python file (new or existing) and paste the following inference code. Again, we will use Chassis's quickstart mode to import load a sample piece of data.
 
 !!! example "Inference"
-    === "Python"
+    === "Jupyter Notebook"
         The below inference code leverages Chassis's `OMIClient`. This client provides a convenience wrapper around a gRPC client that allows you to interact with the gRPC server within your model container.
+
+        ```python
+        from chassis.client import OMIClient
+        from chassis.guides import DigitsSampleData
+
+        # Execute the test_container method to spin up the container, run inference, and return the results
+        res = await OMIClient.test_container(container_name="my-first-chassis-model", inputs=DigitsSampleData, pull=False)
+        # Parse results from output item 
+        result = res.outputs[0].output["results.json"]
+        # View results
+        print(f"Result: {result}")
+        ```
+
+        Execute this code to perform an inference against your running container.   
+
+    === "Other Python IDE"
+        The below inference code leverages Chassis's `OMIClient` to run inference. Notice this code is slighly different than when running it in a Jupyter notebook, due to the built-in async functionality that comes with IPython. 
 
         ```python
         import asyncio
@@ -82,7 +99,7 @@ Open a Python file (new or existing) and paste the following inference code. Aga
             asyncio.run(run_test())
         ```
 
-        Execute this code to perform an inference against your running container.
+        Execute this code to perform an inference against your running container.     
 
 A successful inference run should yield the following result:
 

@@ -124,9 +124,31 @@ Serving on: 45000
 Next, open a Python file (new or existing) and paste the following inference code. Again, we will use a convenience import with Chassis's quickstart mode to load a sample piece of data.
 
 !!! example "Inference"
-    === "Python"
+    === "Jupyter Notebook"
 
         The below inference code leverages Chassis's `OMIClient` for inference. This client provides a convenience wrapper around a gRPC client that allows you to interact with the gRPC server within your model container.
+
+        ```python
+        from chassis.client import OMIClient
+        from chassis.guides import DigitsSampleData
+
+        # Call and view results of status RPC
+        status = await client.status()
+        print(f"Status: {status}")
+        # Submit inference with quickstart sample data
+        res = await client.run(DigitsSampleData)
+        # Parse results from output item
+        result = res.outputs[0].output["results.json"]
+        # View results
+        print(f"Result: {result}")
+
+        ```
+
+        Execute this code to perform an inference against your running container.
+
+    === "Other Python IDE"
+
+        The below inference code leverages Chassis's `OMIClient` for inference. Notice this code is slighly different than when running it in a Jupyter notebook, due to the built-in async functionality that comes with IPython.
 
         ```python
         import asyncio
