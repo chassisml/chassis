@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-import time
 from typing import Mapping, Optional, Sequence
 
 import docker
@@ -19,21 +18,18 @@ class OMIClient:
     Provides a convenient client for interacting with a model running the OMI
     (Open Model Interface) server.
 
-    The API for this object is synchronous even though the underlying gRPC
-    client uses `grpclib` which is asynchronous. To interact with a model
-    asynchronously, use the [client][chassis.client.OMIClient.client]
-    attribute to get access to the pre-configured gRPC client and use the
-    standard `grpclib` async pattern.
+    The API for this object is asynchronous like the underlying gRPC `grpclib`
+    client.
 
     Attributes:
         client: Access to the underlying `grpclib` async client.
 
     Example:
         ```python
-        with OMIClient("localhost", 45000) as client:
-            status = client.status()
+        async with OMIClient("localhost", 45000) as client:
+            status = await client.status()
             print(f"Status: {status}")
-            res = client.run([{"input": b"testing one two three"}])
+            res = await client.run([{"input": b"testing one two three"}])
             result = res.outputs[0].output["results.json"]
             print(f"Result: {result}")
         ```
@@ -49,22 +45,22 @@ class OMIClient:
     def __del__(self):
         self._channel.close()
 
-    def __enter__(self) -> OMIClient:
+    async def __aenter__(self) -> OMIClient:
         for _ in range(self._timeout * 2):
             try:
-                status_response: StatusResponse = self.status()
+                status_response: StatusResponse = await self.status()
                 if status_response.status_code != 200:
                     raise RuntimeError("Model did not initialize successfully")
                 return self
             except Exception:
-                time.sleep(0.5)
+                await asyncio.sleep(0.5)
         print(f"Error connecting to model running on '{self._host}:{self._port}'")
         raise RuntimeError("Model server failed to become available in the allotted time")
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
         self._channel.close()
 
-    def status(self) -> StatusResponse:
+    async def status(self) -> StatusResponse:
         """
         Queries the model to get its status.
 
@@ -75,13 +71,10 @@ class OMIClient:
         Returns:
             The status of the model.
         """
-        coroutine = self.client.Status(StatusRequest())
-        loop = asyncio.get_event_loop()
-        res: StatusResponse = loop.run_until_complete(coroutine)
-        return res
+        return await self.client.Status(StatusRequest())
 
-    def run(self, inputs: Sequence[Mapping[str, bytes]], detect_drift: bool = False,
-            explain: bool = False) -> RunResponse:
+    async def run(self, inputs: Sequence[Mapping[str, bytes]], detect_drift: bool = False,
+                  explain: bool = False) -> RunResponse:
         """
         Perform an inference.
 
@@ -132,25 +125,20 @@ class OMIClient:
             detect_drift=detect_drift,
             explain=explain,
         )
-        coroutine = self.client.Run(req)
-        loop = asyncio.get_event_loop()
-        res: RunResponse = loop.run_until_complete(coroutine)
-        return res
+        return await self.client.Run(req)
 
-    def shutdown(self):
+    async def shutdown(self):
         """
         Tells the model to shut itself down. The container will immediately
         shut down upon receiving this call.
         """
-        coroutine = self.client.Shutdown(ShutdownRequest())
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(coroutine)
+        return await self.client.Shutdown(ShutdownRequest())
 
     @classmethod
-    def test_container(cls, container_name: str, inputs: Sequence[Mapping[str, bytes]],
-                       tag: str = "latest", port: int = 45000, timeout: int = 10,
-                       pull: bool = True, detect_drift: bool = False,
-                       explain: bool = False) -> Optional[RunResponse]:
+    async def test_container(cls, container_name: str, inputs: Sequence[Mapping[str, bytes]],
+                             tag: str = "latest", port: int = 45000, timeout: int = 10,
+                             pull: bool = True, detect_drift: bool = False,
+                             explain: bool = False) -> Optional[RunResponse]:
         """
         Tests a container. This method will use your local Docker engine to
         spin up the named container, perform an inference against it with the
@@ -214,8 +202,8 @@ class OMIClient:
             )
 
             # Use the OMIClient to run an inference.
-            with cls("localhost", port, timeout=timeout) as omi_client:
-                return omi_client.run(inputs, detect_drift=detect_drift, explain=explain)
+            async with cls("localhost", port, timeout=timeout) as omi_client:
+                return await omi_client.run(inputs, detect_drift=detect_drift, explain=explain)
         finally:
             # No matter what happens, kill the container at the end.
             if container is not None:

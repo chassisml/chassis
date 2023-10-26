@@ -41,9 +41,9 @@ This local container build should take just under a minute. The `job_results` of
 ```
 Generating Dockerfile...Done!
 Copying libraries...Done!
-Writing metadata...Done!     
+Writing metadata...Done!
 Compiling pip requirements...Done!
-Copying files...Done!   
+Copying files...Done!
 Starting Docker build...Done!
 Image ID: sha256:d222014ffe7bacd27382fb00cb8686321e738d7c80d65f0290f4c303459d3d65
 Image Tags: ['my-first-chassis-model:latest']
@@ -63,21 +63,26 @@ Open a Python file (new or existing) and paste the following inference code. Aga
 
 !!! example "Inference"
     === "Python"
-        The below inference code leverages Chassis's `OMIClient`. This client provides a convenience wrapper around a gRPC client that allows you to interact with the gRPC server within your model container. 
+        The below inference code leverages Chassis's `OMIClient`. This client provides a convenience wrapper around a gRPC client that allows you to interact with the gRPC server within your model container.
 
         ```python
+        import asyncio
         from chassis.client import OMIClient
         from chassis.guides import DigitsSampleData
 
-        # Execute the test_container method to spin up the container, run inference, and return the results
-        res = OMIClient.test_container(container_name="my-first-chassis-model", inputs=DigitsSampleData, pull=False)
-        # Parse results from output item 
-        result = res.outputs[0].output["results.json"]
-        # View results
-        print(f"Result: {result}")
+        async def run_test():
+            # Execute the test_container method to spin up the container, run inference, and return the results
+            res = await OMIClient.test_container(container_name="my-first-chassis-model", inputs=DigitsSampleData, pull=False)
+            # Parse results from output item
+            result = res.outputs[0].output["results.json"]
+            # View results
+            print(f"Result: {result}")
+
+        if __name__ == '__main__':
+            asyncio.run(run_test())
         ```
 
-        Execute this code to perform an inference against your running container. 
+        Execute this code to perform an inference against your running container.
 
 A successful inference run should yield the following result:
 
@@ -88,5 +93,5 @@ Result: b'[{"data": {"result": {"classPredictions": [{"class": 5, "score": 0.712
 !!! info "What's next?"
     After completing this quickstart guide, you might be wondering how to integrate *your own* model into this workflow. This guide intentionally abstracts out much of the model configuration for a quick and easy experience to get up and running.
 
-    Visit the **[Full Chassis Workflow](full-workflow.md)** guide to learn how to use Chassis with your own model!  
+    Visit the **[Full Chassis Workflow](full-workflow.md)** guide to learn how to use Chassis with your own model!
 

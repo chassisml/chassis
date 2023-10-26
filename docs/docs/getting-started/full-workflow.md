@@ -1,6 +1,6 @@
 
 
-In this guide, we will transform a pre-trained scikit-learn digits classification model into a `ChassisModel` object that we will use to build a container.    
+In this guide, we will transform a pre-trained scikit-learn digits classification model into a `ChassisModel` object that we will use to build a container.
 
 If you did not follow the **[Quickstart Guide](./quickstart.md)**, you will need to first set up a [Python virtual enviornment](https://realpython.com/what-is-pip/#using-pip-in-a-python-virtual-environment) and install the Chassis SDK. Include `[quickstart]` to install the extra dependencies required to use the quickstart model.
 
@@ -11,7 +11,7 @@ pip install chassisml[quickstart]
 
 ## Build Container
 
-Next, open a Python file (new or existing) and paste the following inference code. If you did follow the Quickstart guide, you will notice there is more code in the below example. That is because this example demonstrates the process of taking an in-memory model object, constructing a custom `predict` function, and using both to create your own `ChassisModel` object.  
+Next, open a Python file (new or existing) and paste the following inference code. If you did follow the Quickstart guide, you will notice there is more code in the below example. That is because this example demonstrates the process of taking an in-memory model object, constructing a custom `predict` function, and using both to create your own `ChassisModel` object.
 
 !!! example "Model Configuration & Container Build"
 
@@ -29,7 +29,7 @@ Next, open a Python file (new or existing) and paste the following inference cod
     import chassis.guides as guides
 
     # load model # (3)
-    model = pickle.load(guides.DigitsClassifier) 
+    model = pickle.load(guides.DigitsClassifier)
 
     # define predict function # (4)
     def predict(input_bytes: Mapping[str, bytes]) -> dict[str, bytes]:
@@ -61,7 +61,7 @@ Next, open a Python file (new or existing) and paste the following inference cod
         media_type="application/json",
         max_size="1M",
         description="Top digit prediction and confidence score"
-    )    
+    )
 
     # test model # (8)
     results = chassis_model.test(guides.DigitsSampleData)
@@ -77,13 +77,13 @@ Next, open a Python file (new or existing) and paste the following inference cod
     ```
 
     1. First, we will import the `ChassisModel` class from the Chassis SDK. If you have not already done so, make sure you install it via PyPi: `pip install chassisml`
-    2. In addition to the `ChassisModel` object, we need to import a Builder object. The two available options, `DockerBuilder` and `RemoteBuilder`, will both build the same container but in different execution environments. Since we'd like to build a container locally with Docker, we will import the `DockerBuilder` object.  
-    3. Next, we will load our model. For this example, we have a pre-trained Scikit-learn classifier embedded into the Chassis library (`chassis.guides.DigitsClassifier`). When integrating Chassis into your own code, this can be done however you load your model. You might load your model from a pickle file, checkpoint file, multiple configuration files, etc. The *key* is that you load your model into memory so it can be accessed in the below `predict` function. 
-    4. Here, we will define a *single* predict function, which you can think of as an inference function for your model. This function can access in-memory objects (e.g., `model` loaded above), and the only requirement is it must convert input data from raw bytes form to the data type your model expects. See this **[guide](../guides/common-data-types.md)** for help on converting common data types. In this example, we process the raw bytes data using `numpy` and `json`, pass this processed data through to our model for predictions (`model.predict`), and perform some postprocessing to return the results in a human-readable manner. You can customize this function based on your model and preferences.    
+    2. In addition to the `ChassisModel` object, we need to import a Builder object. The two available options, `DockerBuilder` and `RemoteBuilder`, will both build the same container but in different execution environments. Since we'd like to build a container locally with Docker, we will import the `DockerBuilder` object.
+    3. Next, we will load our model. For this example, we have a pre-trained Scikit-learn classifier embedded into the Chassis library (`chassis.guides.DigitsClassifier`). When integrating Chassis into your own code, this can be done however you load your model. You might load your model from a pickle file, checkpoint file, multiple configuration files, etc. The *key* is that you load your model into memory so it can be accessed in the below `predict` function.
+    4. Here, we will define a *single* predict function, which you can think of as an inference function for your model. This function can access in-memory objects (e.g., `model` loaded above), and the only requirement is it must convert input data from raw bytes form to the data type your model expects. See this **[guide](../guides/common-data-types.md)** for help on converting common data types. In this example, we process the raw bytes data using `numpy` and `json`, pass this processed data through to our model for predictions (`model.predict`), and perform some postprocessing to return the results in a human-readable manner. You can customize this function based on your model and preferences.
     5. Now, we will simply create a `ChassisModel` object directly from our predict function.
     6. With our `ChassisModel` object defined, there are a few optional methods we can call. Here, we will add the Python libraries our model will need to run. You can pass a list of packages you would list in a `requirements.txt` file that will be installed with Pip.
     7. In the next few lines, we will define the four minimum metadata fields that are required before building our container. These fields represent your model's name, version, inputs, and outputs. *NOTE: There are many other optional fields you can choose to document if preferred.*
-    8. Before kicking off the Chassis job, we can test our `ChassisModel` object by passing through sample data. For convenience, we can use the sample data embedded in the Chassis library specific to this Digits Classifier. 
+    8. Before kicking off the Chassis job, we can test our `ChassisModel` object by passing through sample data. For convenience, we can use the sample data embedded in the Chassis library specific to this Digits Classifier.
     9. After our test has passed, we can define our builder object, which as mentioned before, will be `DockerBuilder`. This builder object uses your local Docker daemon to build a model container and store it on your machine. First, we will simply pass our `ChassisModel` object to our builder, and build the container image using the `build_image` function.
 
     Execute this snippet to kick off the local Docker build
@@ -93,9 +93,9 @@ This local container build should take just under a minute. The `job_results` of
 ```
 Generating Dockerfile...Done!
 Copying libraries...Done!
-Writing metadata...Done!     
+Writing metadata...Done!
 Compiling pip requirements...Done!
-Copying files...Done!   
+Copying files...Done!
 Starting Docker build...Done!
 Image ID: sha256:d222014ffe7bacd27382fb00cb8686321e738d7c80d65f0290f4c303459d3d65
 Image Tags: ['my-first-chassis-model:latest']
@@ -126,23 +126,28 @@ Next, open a Python file (new or existing) and paste the following inference cod
 !!! example "Inference"
     === "Python"
 
-        The below inference code leverages Chassis's `OMIClient` for inference. This client provides a convenience wrapper around a gRPC client that allows you to interact with the gRPC server within your model container.     
+        The below inference code leverages Chassis's `OMIClient` for inference. This client provides a convenience wrapper around a gRPC client that allows you to interact with the gRPC server within your model container.
 
         ```python
+        import asyncio
         from chassis.client import OMIClient
         from chassis.guides import DigitsSampleData
 
-        # Instantiate OMI Client connection to model running on localhost:45000 
-        with OMIClient("localhost", 45000) as client:
-            # Call and view results of status RPC 
-            status = client.status()
-            print(f"Status: {status}")
-            # Submit inference with quickstart sample data
-            res = client.run(DigitsSampleData)
-            # Parse results from output item 
-            result = res.outputs[0].output["results.json"]
-            # View results
-            print(f"Result: {result}")
+        async def run_test():
+            # Instantiate OMI Client connection to model running on localhost:45000
+            async with OMIClient("localhost", 45000) as client:
+                # Call and view results of status RPC
+                status = await client.status()
+                print(f"Status: {status}")
+                # Submit inference with quickstart sample data
+                res = await client.run(DigitsSampleData)
+                # Parse results from output item
+                result = res.outputs[0].output["results.json"]
+                # View results
+                print(f"Result: {result}")
+
+        if __name__ == '__main__':
+            asyncio.run(run_test())
         ```
 
         Execute this code to perform an inference against your running container.

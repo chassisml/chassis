@@ -9,7 +9,6 @@ from typing import Dict, Mapping, Optional
 import requests
 from packaging import version
 
-from chassis.client import OMIClient
 from chassis.protos.v1.model_pb2 import OutputItem
 from chassis.ftypes import LegacyBatchPredictFunction, LegacyNormalPredictFunction
 from chassis.builder import BuildResponse
@@ -330,7 +329,7 @@ class ChassisClient:
                       container_url: str = "localhost",
                       host_port: int = 45000) -> Iterable[OutputItem]:
         """
-        **DEPRECATED**
+        **No Longer Available**
 
         Please use [chassis.client.OMIClient.run][] moving forward.
 
@@ -373,8 +372,7 @@ class ChassisClient:
         ```
         """
         deprecated("Please use `chassis.client.OMIClient.run` moving forward.")
-        with OMIClient(container_url, host_port) as client:
-            return client.run([input_data]).outputs
+        raise NotImplementedError
 
     def docker_infer(self, image_id: str, input_data: Mapping[str, bytes],
                      container_url: str = "localhost", host_port: int = 5001,
@@ -382,7 +380,7 @@ class ChassisClient:
                      clean_up: bool = True,
                      pull_container: bool = False) -> Iterable[OutputItem]:
         """
-        **DEPRECATED**
+        **No Longer Available**
 
         Please use [chassis.client.OMIClient.test_container][] moving forward.
 
@@ -427,18 +425,5 @@ class ChassisClient:
             print(x)
         ```
         """
-        deprecated("Please use `chassis.client.OMIClient.test` moving forward.")
-
-        image_parts = image_id.split(":", 2)
-        result = OMIClient.test_container(
-            image_parts[0],
-            [input_data],
-            tag=image_parts[1],
-            pull=pull_container,
-            port=host_port,
-            timeout=timeout
-        )
-        if result is None:
-            return []
-        else:
-            return result.outputs
+        deprecated("Please use `chassis.client.OMIClient.test_container` moving forward.")
+        raise NotImplementedError
