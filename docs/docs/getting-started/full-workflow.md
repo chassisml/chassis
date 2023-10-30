@@ -6,7 +6,7 @@ If you did not follow the **[Quickstart Guide](./quickstart.md)**, you will need
 
 
 ```bash
-pip install --pre chassisml[quickstart]
+pip install --pre "chassisml[quickstart]"
 ```
 
 ## Build Container
