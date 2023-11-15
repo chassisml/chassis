@@ -1,0 +1,164 @@
+[data-md-color-scheme="chassis"] {
+  /* Sets the primary color (i.e., background of top nav) */
+  --md-primary-fg-color: rgb(17, 40, 80);
+
+  /* Sets the links color */
+  --md-typeset-a-color: #046aa5;
+  /* --md-typeset-mark-color:     #0092DF;
+    --md-typeset-kbd-color:      #0092DF; */
+
+  /* Sets the accent color (i.e., links on hover) */
+  --md-accent-fg-color: #024a74;
+}
+
+/* Styles the logos section on index.md  */
+#logos-container {
+  border: none;
+  height: 75px;
+  text-align: justify;
+  -ms-text-justify: distribute-all-lines;
+  text-justify: distribute-all-lines;
+  padding-top: 20px;
+
+  /* just for demo */
+  min-width: 612px;
+}
+
+.logo-box1,
+.logo-box2,
+.logo-box3,
+.logo-box4 {
+  width: 150px;
+  height: 125px;
+  vertical-align: top;
+  display: inline-block;
+  zoom: 1;
+}
+
+.stretch {
+  width: 100%;
+  display: inline-block;
+  font-size: 0;
+  line-height: 0;
+}
+
+.logo-box1 img {
+  width: 100%;
+  padding-top: 20px;
+}
+
+.logo-box2 img {
+  width: 100%;
+  padding-top: 20px;
+  padding-left: 20px;
+}
+
+.logo-box3 img {
+  height: 80px;
+  padding-left: 20px;
+}
+
+.logo-box4 img {
+  height: 80px;
+}
+
+/* Styles the buttons section on index.md  */
+#buttons-container {
+  border: none;
+  height: 200px;
+  text-align: justify;
+  -ms-text-justify: distribute-all-lines;
+  text-justify: distribute-all-lines;
+  padding-top: 20px;
+
+  /* just for demo */
+  min-width: 612px;
+}
+
+/* Connect Buttons on Index.md */
+.icon-color {
+  color: #0092df;
+}
+
+th  {
+  font-size: 1.3em;
+}
+
+td {
+  font-size: 1.3em;
+}
+
+/* For breakpoints above 641px */
+
+.button-styling {
+  color: #12284f !important;
+  text-decoration: none;
+  background-color: #fff;
+  border: 2px solid #12284f;
+  padding: 10px 20px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.button-styling:hover {
+  border: 2px solid #024a74;
+  color: white !important;
+  background-color: #024a74;
+}
+
+.primary-button {
+  color: white !important;
+  background-color: #12284f;
+}
+
+.primary-button:hover,
+.primary-button:active,
+.primary-button:focus,
+ {
+  border: 2px solid #024a74;
+  background-color: #024a74;
+}
+
+/* For breakpoints UNDER 640px */
+
+@media only screen 
+  and (min-device-width: 320px) 
+  and (max-device-width: 640px)
+  and (-webkit-min-device-pixel-ratio: 2) {
+    .button-styling {
+      color: #12284f !important;
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+    }
+    
+    .button-styling:hover {
+      color: #024a74; !important;
+      background-color: #fff;
+      border: none;
+    }
+    
+    .button-styling:active {
+      color: #024a74; !important;
+      background-color: #fff;
+      border: none;
+    }
+
+    .primary-button {
+      color: #12284f !important;
+      background-color: #fff;
+      border: none;
+    }
+    
+    .primary-button:hover {
+      color: #024a74 !important;
+      background-color: #fff;
+      border: none;
+    }
+
+    .primary-button:active {
+      color: #024a74 !important;
+      background-color: #fff;
+      border: none;
+    }
+}
