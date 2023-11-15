@@ -2,7 +2,7 @@
 First, you will need to set up a [Python virtual enviornment](https://realpython.com/what-is-pip/#using-pip-in-a-python-virtual-environment) and install the Chassis SDK. Include `[quickstart]` to install the extra dependencies required to use the quickstart model.
 
 ```bash
-pip install chassisml[quickstart]
+pip install "chassisml[quickstart]"
 ```
 
 ## Build Container
@@ -71,16 +71,16 @@ Open a Python file (new or existing) and paste the following inference code. Aga
 
         # Execute the test_container method to spin up the container, run inference, and return the results
         res = await OMIClient.test_container(container_name="my-first-chassis-model", inputs=DigitsSampleData, pull=False)
-        # Parse results from output item 
+        # Parse results from output item
         result = res.outputs[0].output["results.json"]
         # View results
         print(f"Result: {result}")
         ```
 
-        Execute this code to perform an inference against your running container.   
+        Execute this code to perform an inference against your running container.
 
     === "Other Python IDE"
-        The below inference code leverages Chassis's `OMIClient` to run inference. Notice this code is slighly different than when running it in a Jupyter notebook, due to the built-in async functionality that comes with IPython. 
+        The below inference code leverages Chassis's `OMIClient` to run inference. Notice this code is slighly different than when running it in a Jupyter notebook, due to the built-in async functionality that comes with IPython.
 
         ```python
         import asyncio
@@ -99,7 +99,7 @@ Open a Python file (new or existing) and paste the following inference code. Aga
             asyncio.run(run_test())
         ```
 
-        Execute this code to perform an inference against your running container.     
+        Execute this code to perform an inference against your running container.
 
 A successful inference run should yield the following result:
 

@@ -6,7 +6,7 @@ If you did not follow the **[Quickstart Guide](./quickstart.md)**, you will need
 
 
 ```bash
-pip install chassisml[quickstart]
+pip install "chassisml[quickstart]"
 ```
 
 ## Build Container
@@ -132,14 +132,14 @@ Next, open a Python file (new or existing) and paste the following inference cod
         from chassis.client import OMIClient
         from chassis.guides import DigitsSampleData
 
-        # Instantiate OMI Client connection to model running on localhost:45000 
+        # Instantiate OMI Client connection to model running on localhost:45000
         client = OMIClient("localhost", 45000)
-        # Call and view results of status RPC 
+        # Call and view results of status RPC
         status = await client.status()
         print(f"Status: {status}")
         # Submit inference with quickstart sample data
         res = await client.run(DigitsSampleData)
-        # Parse results from output item 
+        # Parse results from output item
         result = res.outputs[0].output["results.json"]
         # View results
         print(f"Result: {result}")

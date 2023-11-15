@@ -26,7 +26,7 @@ First, you will need to set up a [Python virtual enviornment](https://realpython
 
 
 ```bash
-pip install chassisml[quickstart]
+pip install "chassisml[quickstart]"
 ```
 
 ## Build Container
