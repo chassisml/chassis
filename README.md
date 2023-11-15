@@ -50,14 +50,9 @@ Chassis picks up right where your training code leaves off and builds containers
 # Installation
 Install Chassis on your machine or in a virtual environment via [PyPi](https://pypi.org/project/chassisml/):
 
-### Beta - v1.5 (Recommended)
+### Stable - v1.5.*
 ```bash
-pip install --pre chassisml[quickstart]
-```
-
-### Stable - v1.4.*
-```bash
-pip install chassisml
+pip install "chassisml[quickstart]"
 ```
 
 # Try it out
