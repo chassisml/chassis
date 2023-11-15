@@ -1,7 +1,7 @@
 <div align="center">
 
 <!-- ![chassis-banner-v1.3.png](https://raw.githubusercontent.com/modzy/chassis/main/chassis-banner-v1.3.png) -->
-![chassis-banner-v1.3.png](./chassis-banner-v1.3.png)
+![chassis-banner-v1.3.png](https://raw.githubusercontent.com/modzy/chassis/main/chassis-banner-v1.3.png)
 
 ![GitHub contributors](https://img.shields.io/github/contributors/modzy/chassis?logo=GitHub&style=flat)
 ![GitHub last commit](https://img.shields.io/github/last-commit/modzy/chassis?logo=GitHub&style=flat)
@@ -17,7 +17,7 @@
   <span> · </span>
   <a href="https://discord.gg/anSeEj8ARg">Discord</a> (#chassisml)
   <span> · </span>
-  <a href="https://go.mlops.community/slack">Slack</a> (#chassis-model-builder)
+  <a href="https://go.mlops.community/slack">Slack</a> (#chassis-model-builder)ha
   
 </h3>
 
@@ -28,7 +28,7 @@
 
 <!-- <img src="https://raw.githubusercontent.com/modzy/chassis/main/docs/docs/images/what-is-chassis.png" alt="what-is-chassis-diagram" width="650"/> -->
 
-<img src="./docs/docs/images/what-is-chassis.png" alt="what-is-chassis-diagram" width="600"/>
+<img src="https://raw.githubusercontent.com/modzy/chassis/main/docs/docs/images/what-is-chassis.png" alt="what-is-chassis-diagram" width="600"/>
 
 <br>
 
