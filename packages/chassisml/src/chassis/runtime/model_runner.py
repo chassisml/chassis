@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import os
 import json
+import traceback
+
 import cloudpickle
 from typing import List, Mapping, Optional, Sequence, cast
 
@@ -106,6 +108,7 @@ class ModelRunner:
                 output: Mapping[str, bytes] = predict_fn(input_item)
             except Exception as e:
                 print(f"Error: {e}")
+                traceback.print_exc()
                 # TODO - is there more information we can include here like a backtrace?
                 # TODO - convert the error to bytes
                 output = {"error": f"{e}".encode()}
