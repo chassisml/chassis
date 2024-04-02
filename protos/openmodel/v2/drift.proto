@@ -1,0 +1,10 @@
+syntax = "proto3";
+package openmodel.v2;
+
+message ModelDrift {
+  DataDrift data_drift = 1;
+}
+
+message DataDrift {
+  double score = 1;
+}

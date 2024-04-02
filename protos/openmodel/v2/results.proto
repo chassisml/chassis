@@ -1,0 +1,93 @@
+syntax = "proto3";
+package openmodel.v2;
+
+import "google/api/field_behavior.proto";
+import "openmodel/v2/types.proto";
+import "openmodel/v2/explanations.proto";
+import "openmodel/v2/drift.proto";
+
+message PredictionOutput {
+  string key = 1;
+  reserved 3; // For Tensor result type. See below.
+  oneof result {
+    // Tensor tensor = 3;
+    ClassificationResult classification = 4;
+    MultiClassificationResult multi_classification = 5;
+    ObjectDetectionResult object_detection = 6;
+    SegmentationResult segmentation = 7;
+    NamedEntityResult named_entity = 8;
+    TextResult text = 9;
+    ImageResult image = 10;
+    DataResult data = 11;
+  }
+}
+
+// Image Classification
+// Text Classification
+message ClassificationResult {
+  message Prediction {
+    string class = 1 [(google.api.field_behavior) = REQUIRED];
+    double score = 2 [(google.api.field_behavior) = REQUIRED];
+  }
+  repeated Prediction class_predictions = 1;
+}
+message MultiClassificationResult {
+  repeated ClassificationResult classifications = 1;
+}
+
+// Object Detection
+message ObjectDetectionResult {
+  message Detection {
+    string class = 1 [(google.api.field_behavior) = REQUIRED];
+    double score = 2 [(google.api.field_behavior) = REQUIRED];
+    BoundingBox bounding_box = 3 [(google.api.field_behavior) = REQUIRED];
+  }
+  repeated Detection detections = 1;
+}
+
+// Segmentation
+message SegmentationResult {
+  message Segment {
+    string class = 1 [(google.api.field_behavior) = REQUIRED];
+    double score = 2 [(google.api.field_behavior) = REQUIRED];
+    ImageMask image_mask = 3;
+    BoundingBox bounding_box = 4;
+  }
+  repeated Segment segments = 1;
+}
+
+// Named Entity Recognition
+message NamedEntityResult {
+  message NamedEntity {
+    string entity_group = 1 [(google.api.field_behavior) = REQUIRED];
+    double score = 2 [(google.api.field_behavior) = REQUIRED];
+    TextSpan text_span = 3;
+  }
+  repeated NamedEntity entities = 1;
+}
+
+// Text summarization
+// Text generation
+// Translation
+message TextResult {
+  string text = 1;
+}
+
+// Image/video
+message ImageResult {
+  bytes data = 1;
+}
+
+// Raw bytes
+message DataResult {
+  bytes data = 1;
+  string content_type = 2;
+}
+
+// Audio segmentation
+// Time-series classification
+// Regression (single floating point number)
+// Vector output (e.g. multiple floating point numbers)
+// - maybe do a TensorResult to fulfill Vector output plus more dimensions if desired.
+// - might also handle Regression as well.
+// Ranking

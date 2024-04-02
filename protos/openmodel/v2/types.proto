@@ -1,0 +1,63 @@
+syntax = "proto3";
+package openmodel.v2;
+
+import "google/api/field_behavior.proto";
+
+message Point {
+  int64 x = 1;
+  int64 y = 2;
+}
+
+message BoundingBox {
+  int64 x = 1 [(google.api.field_behavior) = REQUIRED];
+  int64 y = 2 [(google.api.field_behavior) = REQUIRED];
+  int64 width = 3 [(google.api.field_behavior) = REQUIRED];
+  int64 height = 4 [(google.api.field_behavior) = REQUIRED];
+  // rotation? degrees or radians?
+}
+
+message ImageMask {
+  int64 original_width = 1;
+  int64 original_height = 2;
+  // Pick one or the other below.
+  repeated int64 rle = 3;
+  repeated bytes image = 4;
+  repeated Point points = 5;
+}
+
+message TextSpan {
+  int64 start = 1;
+  int64 end = 2;
+  string text = 3;
+}
+
+message Tensor {
+  enum DataType {
+    UNKNOWN_TENSOR_DATA_TYPE = 0;
+    BOOL = 1;
+    INT32 = 2;
+    INT64 = 3;
+    UINT32 = 4;
+    UINT64 = 5;
+    FLOAT32 = 6;
+    FLOAT64 = 7;
+  }
+  repeated int64 shape = 1;
+  // The `data_type` field should correspond to the field below that contains
+  // the data.
+  DataType data_type = 2;
+  // Only one of the following fields should be provided. `oneof` is not
+  // used because `oneof` doesn't allow repeated fields.
+  // The data must be flattened, one-dimensional, row-major order of the tensor
+  // elements. The size must match the shape defined above.
+  repeated bool bool_data = 3;
+  repeated int32 int32_data = 4;
+  repeated int64 int64_data = 5;
+  repeated uint32 uint32_data = 6;
+  repeated uint64 uint64_data = 7;
+  repeated float float32_data = 8;
+  repeated double float64_data = 9;
+  // This field allows for passing in a raw byte-representation of the tensor.
+  // The bytes should match the data type and shape defined above.
+  repeated bytes raw_data = 10;
+}

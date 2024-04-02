@@ -1,0 +1,77 @@
+syntax = "proto3";
+package openmodel.v2;
+
+import "google/protobuf/duration.proto";
+import "openmodel/v2/container.proto";
+import "openmodel/v2/results.proto";
+import "openmodel/v2/explanations.proto";
+import "openmodel/v2/drift.proto";
+
+service InferenceService {
+  rpc Status(StatusRequest) returns (StatusResponse) {}
+  rpc GetContainerInfo(ContainerInfoRequest) returns (OpenModelContainer) {}
+  rpc Predict(PredictRequest) returns (PredictResponse) {}
+  //  rpc BatchPredict() returns () {}
+  //  rpc PredictStream(stream PredictRequest) returns (stream PredictResponse) {}
+  rpc Shutdown(ShutdownRequest) returns (ShutdownResponse) {}
+}
+
+// -----------------------------------------------------------------------------
+// Status
+
+message StatusRequest {}
+message StatusResponse {
+  enum Status {
+    UNKNOWN_STATUS = 0;
+    OK = 1;
+  }
+
+  Status status = 1;
+}
+
+// -----------------------------------------------------------------------------
+// Container Info
+
+message ContainerInfoRequest {}
+
+// -----------------------------------------------------------------------------
+// Predict
+
+message PredictRequest {
+  message Input {
+    string key = 1;
+    oneof source {
+      string text = 2;
+      bytes data = 3;
+      //Tensor tensor = 4;
+    }
+  }
+
+  repeated Input inputs = 1;
+  reserved 2; // For indication of whether an explanation is desired. bool explain = 2;
+  map<string, string> tags = 10;
+}
+
+message PredictResponse {
+  message Timings {
+    google.protobuf.Duration model_execution = 1;
+    google.protobuf.Duration preprocessing = 2;
+    google.protobuf.Duration postprocessing = 3;
+    google.protobuf.Duration formatting = 4;
+    google.protobuf.Duration total = 5;
+  }
+
+  repeated PredictionOutput outputs = 1;
+  Explanation explanation = 2;
+  ModelDrift drift = 3;
+  bool success = 7;
+  string error = 8;
+  Timings timings = 9;
+  map<string, string> tags = 10;
+}
+
+// -----------------------------------------------------------------------------
+// Shutdown
+
+message ShutdownRequest {}
+message ShutdownResponse {}

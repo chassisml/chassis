@@ -1,0 +1,96 @@
+syntax = "proto3";
+package openmodel.v2;
+
+message OpenModelContainer {
+  string name = 1;
+  string version = 2;
+
+  message Author {
+    string name = 1;
+    string email = 2;
+  }
+  Author author = 3;
+
+  message Biography {
+    string summary = 1;
+  }
+  Biography biography = 4;
+
+  //  oneof pipeline {
+  //    SimplePythonPipeline simple_python_pipeline = 10;
+  //    InferencePipeline inference_pipeline = 11;
+  //  }
+}
+
+// -----------------------------------------------------------------------------
+// Pipelines
+
+//message SimplePythonPipeline {
+//  PythonModule processor = 1;
+//}
+//
+//message InferencePipeline {
+//  message Step {
+//    oneof processor {
+//      PythonRuntime python_runtime = 2;
+//      OnnxRuntime onnx_runtime = 3;
+//    }
+//  }
+//  repeated PipelineInput inputs = 1;
+//  repeated Step steps = 2;
+//  repeated PipelineOutput outputs = 3;
+//}
+
+// -----------------------------------------------------------------------------
+// Runtimes
+
+//message PythonRuntime {
+//  PythonModule processor = 1;
+//  repeated string input_names = 2;
+//  repeated string output_names = 3;
+//}
+//
+//message OnnxRuntime {
+//  string model_path = 1;
+//  repeated string input_names = 2;
+//  repeated string output_names = 3;
+//}
+
+// -----------------------------------------------------------------------------
+// I/O
+
+//message PipelineInput {
+//  string name = 1;
+//  oneof preprocessor {
+//    PythonModule python_preprocessor = 10;
+//  }
+//}
+//
+//message PipelineOutput {
+//  string name = 1;
+//  oneof formatter {
+//    PythonModule python_formatter = 10;
+//    ClassificationFormatter classification_formatter = 11;
+//    ObjectDetectionFormatter object_detection_formatter = 12;
+//  }
+//}
+
+// -----------------------------------------------------------------------------
+// Modules
+
+//message PythonModule {
+//  string pkl_file = 1;
+//  string key = 2;
+//}
+
+// -----------------------------------------------------------------------------
+// Formatters
+
+//message ClassificationFormatter {
+//  repeated string labels = 1;
+//  uint32 top_n = 2;
+//}
+//
+//message ObjectDetectionFormatter {
+//  repeated string labels = 1;
+//}
