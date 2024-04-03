@@ -1,6 +1,6 @@
 [project]
 name = "chassisml-protobuf"
-version = "4.0.0"
+version = "4.1.0-beta1"
 dependencies = [
     "protobuf >= 4.21.0, < 5",
     "grpclib",
