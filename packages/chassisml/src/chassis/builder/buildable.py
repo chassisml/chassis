@@ -45,10 +45,16 @@ def _copy_libraries(context: BuildContext, server: str, ignore_patterns: List[st
              os.path.join(context.chassis_dir, "metadata"), ignore=ignore)
     copytree(os.path.join(root, "chassis", "ftypes"),
              os.path.join(context.chassis_dir, "ftypes"), ignore=ignore)
-    copytree(os.path.join(root, "chassis", "server", server),
-             os.path.join(context.chassis_dir, "server", server), ignore=ignore)
+    # copytree(os.path.join(root, "chassis", "server", server),
+    #          os.path.join(context.chassis_dir, "server", server), ignore=ignore)
     copytree(os.path.join(root, "chassis", "scripts"),
              os.path.join(context.chassis_dir, "scripts"), ignore=ignore)
+    copytree(os.path.join(root, "..", "..", "chassisml-protobuf4", "src", "chassis", "protos"),
+             os.path.join(context.chassis_dir, "protos"), ignore=ignore)
+    copytree(os.path.join(root, "..", "..", "chassisml-protobuf4", "src", "google"),
+             os.path.join(context.chassis_dir, "..", "google"), ignore=ignore)
+    copytree(os.path.join(root, "..", "..", "chassisml-protobuf4", "src", "openmodel"),
+             os.path.join(context.chassis_dir, "..", "openmodel"), ignore=ignore)
 
 
 class Buildable(metaclass=abc.ABCMeta):
@@ -166,14 +172,15 @@ class Buildable(metaclass=abc.ABCMeta):
         if len(self.metadata.model_version) == 0:
             raise RequiredFieldMissing(
                 "The model must have a version set before it can be built. Please set `metadata.model_version`.")
-        if not self.metadata.has_inputs():
-            raise RequiredFieldMissing(
-                "The model must have at least one input defined before it can be built. Please call `metadata.add_input()`.")
-        if not self.metadata.has_outputs():
-            raise RequiredFieldMissing(
-                "The model must have at least one output defined before it can be built. Please call `metadata.add_output()`.")
+        # if not self.metadata.has_inputs():
+        #     raise RequiredFieldMissing(
+        #         "The model must have at least one input defined before it can be built. Please call `metadata.add_input()`.")
+        # if not self.metadata.has_outputs():
+        #     raise RequiredFieldMissing(
+        #         "The model must have at least one output defined before it can be built. Please call `metadata.add_output()`.")
         if options.cuda_version is not None and options.python_version != "3.8":
-            print(f"Warning: Building a container with CUDA currently only supports Python 3.8. Python 3.8 will be used instead of '{options.python_version}'.")
+            print(
+                f"Warning: Building a container with CUDA currently only supports Python 3.8. Python 3.8 will be used instead of '{options.python_version}'.")
 
     def prepare_context(self, options: BuildOptions = DefaultBuildOptions) -> BuildContext:
         """
@@ -229,10 +236,10 @@ class Buildable(metaclass=abc.ABCMeta):
             f.write(dockerignore.encode())
 
         # Save the entrypoint file.
-        entrypoint_template = _env.get_template("entrypoint.py")
-        with open(os.path.join(context.base_dir, "entrypoint.py"), "wb") as f:
-            f.write(entrypoint_template.render().encode())
-        print("Done!")
+        # entrypoint_template = _env.get_template("entrypoint.py")
+        # with open(os.path.join(context.base_dir, "entrypoint.py"), "wb") as f:
+        #     f.write(entrypoint_template.render().encode())
+        # print("Done!")
 
         # Copy any Chassis libraries we need.
         print("Copying libraries...", end="", flush=True)

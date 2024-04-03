@@ -1,17 +1,17 @@
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct OpenModelContainer {
+pub struct OpenModelContainerInfo {
     #[prost(string, tag = "1")]
     pub name: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
     pub version: ::prost::alloc::string::String,
     #[prost(message, optional, tag = "3")]
-    pub author: ::core::option::Option<open_model_container::Author>,
+    pub author: ::core::option::Option<open_model_container_info::Author>,
     #[prost(message, optional, tag = "4")]
-    pub biography: ::core::option::Option<open_model_container::Biography>,
+    pub biography: ::core::option::Option<open_model_container_info::Biography>,
 }
-/// Nested message and enum types in `OpenModelContainer`.
-pub mod open_model_container {
+/// Nested message and enum types in `OpenModelContainerInfo`.
+pub mod open_model_container_info {
     #[allow(clippy::derive_partial_eq_without_eq)]
     #[derive(Clone, PartialEq, ::prost::Message)]
     pub struct Author {
@@ -611,7 +611,7 @@ pub mod inference_service_client {
             &mut self,
             request: impl tonic::IntoRequest<super::ContainerInfoRequest>,
         ) -> std::result::Result<
-            tonic::Response<super::OpenModelContainer>,
+            tonic::Response<super::OpenModelContainerInfo>,
             tonic::Status,
         > {
             self.inner
@@ -703,7 +703,7 @@ pub mod inference_service_server {
             &self,
             request: tonic::Request<super::ContainerInfoRequest>,
         ) -> std::result::Result<
-            tonic::Response<super::OpenModelContainer>,
+            tonic::Response<super::OpenModelContainerInfo>,
             tonic::Status,
         >;
         async fn predict(
@@ -850,7 +850,7 @@ pub mod inference_service_server {
                         T: InferenceService,
                     > tonic::server::UnaryService<super::ContainerInfoRequest>
                     for GetContainerInfoSvc<T> {
-                        type Response = super::OpenModelContainer;
+                        type Response = super::OpenModelContainerInfo;
                         type Future = BoxFuture<
                             tonic::Response<Self::Response>,
                             tonic::Status,

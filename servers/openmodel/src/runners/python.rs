@@ -71,8 +71,8 @@ impl ModelRunner for PythonModelRunner {
             // function.
             let predict_fn = &self
                 .runner
-                .getattr(py, "predict")
-                .context("model runner does not have a predict method")?;
+                .getattr(py, "predict_v1")
+                .context("model runner does not have a predict_v1 method")?;
 
             // Step 3: Pass the Python-ified inputs into the predict function. Ideally, there will be
             // at most one additional allocation for the Python object's backing memory. Even better

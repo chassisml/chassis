@@ -6,7 +6,7 @@ use crate::preprocessor::preprocess;
 use crate::proto::openmodel::v2::inference_service_server::InferenceService;
 use crate::proto::openmodel::v2::predict_response::Timings;
 use crate::proto::openmodel::v2::{
-    ContainerInfoRequest, OpenModelContainer, PredictRequest, PredictResponse, ShutdownRequest,
+    ContainerInfoRequest, OpenModelContainerInfo, PredictRequest, PredictResponse, ShutdownRequest,
     ShutdownResponse, StatusRequest, StatusResponse,
 };
 use crate::runners::python::PythonModelRunner;
@@ -24,7 +24,7 @@ use tonic_health::server::HealthReporter;
 use tracing::info;
 
 lazy_static! {
-    static ref CONTAINER_INFO: OpenModelContainer = {
+    static ref CONTAINER_INFO: OpenModelContainerInfo = {
         // Attempt to find the model metadata file. First check to see if the
         // CONTAINER_METADATA_PATH has been explicitly set. If so, use that. If not,
         // We expect that MODEL_DIR could be set and we can expect that its file
@@ -41,7 +41,7 @@ lazy_static! {
         };
         let data = std::fs::read(container_info_path).expect("unable to read container info");
         let data_buf = Bytes::from(data);
-        OpenModelContainer::decode(data_buf).expect("unable to decode container info")
+        OpenModelContainerInfo::decode(data_buf).expect("unable to decode container info")
     };
 }
 
@@ -113,7 +113,7 @@ impl InferenceService for OpenModelV2Service {
     async fn get_container_info(
         &self,
         _request: Request<ContainerInfoRequest>,
-    ) -> Result<Response<OpenModelContainer>, Status> {
+    ) -> Result<Response<OpenModelContainerInfo>, Status> {
         self.set_trace_fields();
         Ok(Response::new(CONTAINER_INFO.clone()))
     }

@@ -9,7 +9,7 @@ import "openmodel/v2/drift.proto";
 
 service InferenceService {
   rpc Status(StatusRequest) returns (StatusResponse) {}
-  rpc GetContainerInfo(ContainerInfoRequest) returns (OpenModelContainer) {}
+  rpc GetContainerInfo(ContainerInfoRequest) returns (OpenModelContainerInfo) {}
   rpc Predict(PredictRequest) returns (PredictResponse) {}
   //  rpc BatchPredict() returns () {}
   //  rpc PredictStream(stream PredictRequest) returns (stream PredictResponse) {}

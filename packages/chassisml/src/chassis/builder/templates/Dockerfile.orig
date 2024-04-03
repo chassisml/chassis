@@ -1,4 +1,4 @@
-FROM python:{{ python_version }}-slim-bookworm AS pip-compile
+FROM python:{{ python_version }}-slim-bullseye AS pip-compile
 
 RUN pip install --no-cache-dir pip-tools
 
@@ -17,23 +17,18 @@ RUN python scripts/normalize_requirements.py
 
 # ------------------------------------------------------------------------------
 
-#FROM python:{{ python_version }}-slim-bookworm \
-FROM openmodel-server-python-3.11
+{% if cuda_version -%}
+FROM nvidia/cuda:{{ cuda_version }}-runtime-ubuntu20.04
+
+# Install Python
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+RUN apt-get update && apt-get install -y python3 python3-pip && rm -rf /var/lib/apt/lists/*
+{%- else -%}
+FROM python:{{ python_version }}-slim-bullseye
+{%- endif %}
 
 {{ apt_packages }}
-
-ENV MODEL_PORT=9090
-ENV METRICS_PORT=8080
-
-#ENV MODEL_METADATA_PATH=/app/data/model_info
-#ENV MODEL_IDENTIFIER
-#ENV MODEL_VERSION
-
-ENV LOG_LEVEL=info
-ENV TELEMETRY_ENABLED=false
-ENV TELEMETRY_ENDPOINT=""
-
-ENV PYTHONPATH=/app
 
 WORKDIR /app
 
@@ -46,10 +41,13 @@ LABEL {{key}}="{{value}}"
 COPY --from=pip-compile requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Copy the entrypoint file and gRPC server implementation.
+COPY entrypoint.py ./
+
 # Copy app folder.
-COPY google google
-COPY openmodel openmodel
 COPY chassis chassis
 
 # Copy the app and data
 COPY data data
+
+CMD ["python3", "entrypoint.py"]
