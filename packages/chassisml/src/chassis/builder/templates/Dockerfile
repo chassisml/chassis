@@ -47,8 +47,6 @@ COPY --from=pip-compile requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy app folder.
-COPY google google
-COPY openmodel openmodel
 COPY chassis chassis
 
 # Copy the app and data

@@ -49,12 +49,6 @@ def _copy_libraries(context: BuildContext, server: str, ignore_patterns: List[st
     #          os.path.join(context.chassis_dir, "server", server), ignore=ignore)
     copytree(os.path.join(root, "chassis", "scripts"),
              os.path.join(context.chassis_dir, "scripts"), ignore=ignore)
-    copytree(os.path.join(root, "..", "..", "chassisml-protobuf4", "src", "chassis", "protos"),
-             os.path.join(context.chassis_dir, "protos"), ignore=ignore)
-    copytree(os.path.join(root, "..", "..", "chassisml-protobuf4", "src", "google"),
-             os.path.join(context.chassis_dir, "..", "google"), ignore=ignore)
-    copytree(os.path.join(root, "..", "..", "chassisml-protobuf4", "src", "openmodel"),
-             os.path.join(context.chassis_dir, "..", "openmodel"), ignore=ignore)
 
 
 class Buildable(metaclass=abc.ABCMeta):

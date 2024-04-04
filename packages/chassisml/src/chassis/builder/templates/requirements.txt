@@ -1,5 +1,5 @@
 cloudpickle == 2.2.0
-protobuf >= 4.21.0, < 5
+chassisml-protobuf >= 4.1.0b1
 numpy
 
 {{ additional_requirements }}
