@@ -18,7 +18,7 @@ RUN python scripts/normalize_requirements.py
 # ------------------------------------------------------------------------------
 
 #FROM python:{{ python_version }}-slim-bookworm \
-FROM openmodel-server-python-3.11
+FROM ghcr.io/chassisml/openmodel-server-python-3.11:0.0.1
 
 {{ apt_packages }}
 

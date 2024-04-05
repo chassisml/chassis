@@ -18,6 +18,8 @@ RUN cargo build --release --locked --bin server
 
 FROM python:3.11-slim-bookworm
 
+LABEL org.opencontainers.image.source=https://github.com/chassisml/chassis
+
 ENV MODEL_PORT=9090
 ENV METRICS_PORT=8080
 
