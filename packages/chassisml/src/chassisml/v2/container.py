@@ -11,6 +11,7 @@ class OpenModelContainer(Buildable):
 
     def __init__(self, info: OpenModelContainerInfo, model: ModelBase):
         super().__init__()
+        self.api_compatibility: set[str] = {"v1", "v2"}
         self.info = info
         self.model = model
         self.python_modules[PYTHON_MODEL_KEY] = self.model

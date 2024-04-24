@@ -12,6 +12,7 @@ from typing import List, Union
 import cloudpickle
 from jinja2 import Environment, PackageLoader, select_autoescape
 
+from openmodel.v2.container_pb2 import OpenModelContainerInfo
 from chassis.builder import BuildContext
 from chassis.metadata import ModelMetadata
 from chassis.runtime import PACKAGE_DATA_PATH, python_pickle_filename_for_key
@@ -72,10 +73,12 @@ class Buildable(metaclass=abc.ABCMeta):
     def __init__(self):
         self.packaged = False
         self.metadata = ModelMetadata.default()
+        self.info: Union[OpenModelContainerInfo, None] = None
         self.requirements: set[str] = set()
         self.apt_packages: set[str] = set()
         self.additional_files: set[str] = set()
         self.python_modules: dict = {}
+        self.api_compatibility: set[str] = set()
 
     def merge_package(self, package: Buildable):
         """
@@ -268,13 +271,48 @@ class Buildable(metaclass=abc.ABCMeta):
             apt_package_list = " ".join(self.apt_packages)
             run_apt_get = f"RUN apt-get update && apt-get install -y {apt_package_list} && rm -rf /var/lib/apt/lists/*"
 
+        labels = options.labels or {}
+
+        # Add a label to indicate which API versions this container is compatible with.
+        labels["io.openmodelml.container.api-compatibility"] = ",".join(self.api_compatibility)
+
+        # Add GPU and CUDA requirements.
+        if options.cuda_version is not None:
+            labels["io.openmodelml.container.resources"] = "nvidia.com/gpu=1"
+            labels["io.openmodelml.container.cuda_version"] = options.cuda_version
+
+        # Add some of the container info as labels.
+        if self.info is not None:
+            labels["io.openmodelml.info.name"] = self.info.name
+            labels["io.openmodelml.info.version"] = self.info.version
+            author_str = self._get_author_string()
+            if author_str is not None:
+                labels["io.openmodelml.info.author"] = author_str
+
         #   TODO keys here are variables available in template
         return dockerfile_template.render(
             python_version=options.python_version,
             cuda_version=options.cuda_version,
             apt_packages=run_apt_get,
-            labels=options.labels or {},
+            labels=labels,
         )
+
+    def _get_author_string(self) -> Union[str, None]:
+        if self.info is None:
+            return None
+        if self.info.author is None:
+            return None
+        if self.info.author.name is None and self.info.author.email is None:
+            return None
+        out_str = ""
+        if len(self.info.author.name) > 0:
+            out_str = self.info.author.name
+        if len(self.info.author.email) > 0:
+            if len(out_str) == 0:
+                out_str = self.info.author.email
+            else:
+                out_str += f" <{self.info.author.email}>"
+        return out_str
 
     def _write_additional_files(self, context: BuildContext):
         for file in self.additional_files:

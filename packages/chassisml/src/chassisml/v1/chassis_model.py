@@ -39,6 +39,7 @@ class ChassisModel(Buildable):
             chassis_client: For internal backwards-compatibility use only.
         """
         super().__init__()
+        self.api_compatibility: set[str] = {"v1"}
         self.runner = ModelRunner(process_fn, batch_size=batch_size,
                                   is_legacy_fn=legacy_predict_fn)
         self.python_modules[PYTHON_MODEL_KEY] = self.runner
